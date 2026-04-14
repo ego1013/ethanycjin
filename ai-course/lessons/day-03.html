@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 3 · Pre-train vs Post-train — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --yellow: #eab308;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1a0a00 0%, #0f0f0f 50%, #0a0a1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle { color: var(--text-dim); font-size: 1rem; margin-bottom: 1rem; }
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+  .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .opening .label {
+    color: var(--red);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  .opening p { font-size: 1.05rem; line-height: 1.8; color: var(--text); }
+  .opening .highlight {
+    background: var(--red-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--red);
+  }
+  .section { margin-bottom: 3rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .section-header h2 { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+  h3 { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin: 1.75rem 0 0.75rem; }
+  h4 { font-size: 1rem; font-weight: 600; color: var(--text); margin: 1.25rem 0 0.5rem; }
+  p { margin-bottom: 0.85rem; font-size: 0.95rem; color: var(--text); }
+  strong { color: #fff; }
+  em { color: var(--text-dim); font-style: italic; }
+  ul, ol { margin: 0.75rem 0 1rem 1.5rem; font-size: 0.95rem; }
+  li { margin-bottom: 0.4rem; }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  blockquote strong { color: var(--text); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+  th {
+    background: var(--surface-2);
+    color: var(--accent);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  tr:hover { background: var(--surface); }
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--accent);
+  }
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+  }
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+  .checkpoint h3 { color: var(--yellow); margin-top: 0; font-size: 1.15rem; }
+  .checkpoint .options { margin: 1rem 0; }
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+  .checkpoint .option:hover { border-color: var(--yellow); }
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--blue);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .teaser h3 { color: var(--blue); margin-top: 0; }
+  .card-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin: 1.5rem 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .card .card-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+  .card .card-title { font-weight: 700; font-size: 0.92rem; color: var(--text); }
+  .card .card-body { margin-top: 0.4rem; font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+  .connection-table { margin: 1.5rem 0; }
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+  .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+  .diagram .flow { color: var(--accent); font-weight: 600; }
+  .nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .nav-bar a {
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .nav-bar a:hover { text-decoration: underline; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🔴 长半衰期 · 深讲</div>
+  <h1>Day 3 · Pre-train vs Post-train</h1>
+  <p class="subtitle">为什么同一个模型，训练方式不同性格迥异？</p>
+  <div class="meta">
+    <span>📅 2026-04-10 Thu</span>
+    <span>📦 第一模块 · 地基篇</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>昨天我们留了一个问题：模型的那些「概率判断」是从哪来的？</p>
+  <p>答案是：<strong>训练。</strong> 但这里有一个很少有人讲透的事实——</p>
+  <p><strong>ChatGPT 其实不是一个模型，而是两个训练阶段叠加的产物。</strong></p>
+  <p>第一阶段：像一个读了全人类文字的「文字补全引擎」，什么都知道但不懂社交。<br>
+  第二阶段：变成你熟悉的、有礼貌的、会说"我理解你的感受"的 ChatGPT。</p>
+  <p><strong>同一个架构，训练方式不同，出来的「性格」天差地别。</strong></p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么训练阶段的区分如此重要？</h2>
+  </div>
+  <p>市面上每天都有新模型发布。你怎么判断谁更强？</p>
+  <p>答案藏在训练阶段里。<strong>Pre-train 决定了模型「知道什么」，Post-train 决定了模型「怎么说」。</strong></p>
+  <p>Kimi 擅长长文本、Claude 写文章好、GPT-4o 工具调用强——这些差异不是架构不同，<strong>而是 Pre-train 的数据配比和 Post-train 的策略不同</strong>。</p>
+  <div class="callout insight">
+    <div class="callout-label">🔑 一句话</div>
+    <p style="margin:0"><strong>Pre-train 决定了模型「知道什么」，Post-train 决定了模型「怎么说」。前者是知识，后者是人格。</strong></p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — Pre-train 与 Post-train 的本质</h2>
+  </div>
+
+  <h3>Pre-train（预训练）——「读遍人类所有文字」</h3>
+  <p>在万亿 Token 的数据上反复做一件事：<strong>预测下一个 Token。</strong></p>
+  <p>结果：一个极其强大但极其「原始」的文字补全引擎——知识满分，情商零分。</p>
+  <div class="callout blue">
+    <div class="callout-label">📊 类比</div>
+    <p style="margin:0">Pre-train 后的模型就像一个<strong>刚入职的超级天才新人</strong>。读过行业里所有研究报告，但完全不懂企业文化。知识满分，情商零分。</p>
+  </div>
+
+  <h3>Post-train（后训练）——「教它怎么做人」</h3>
+  <h4>步骤一：SFT（监督微调）</h4>
+  <p>用高质量的「问答示范」教模型：当用户这样问时，应该用这种格式、这种语气来回答。</p>
+  <p>本质：<strong>把文字补全引擎变成问答助手。</strong> 就像新人入职后的导师带教期。</p>
+  
+  <h4>步骤二：RLHF（人类反馈强化学习）</h4>
+  <p>让模型生成多个回答 → 人类标注员判断哪个更好 → 训练奖励模型 → 持续优化。</p>
+  <p>本质：<strong>教模型区分「好回答」和「不太好的回答」的标准。</strong> 就像绩效考核体系。</p>
+
+  <h3>全景图</h3>
+  <div class="diagram">
+    <strong>Pre-train</strong>（13万亿Token，几个月，上亿美元）<br>
+    → 强大的文字补全引擎（知识满分，情商零分）<br><br>
+    <strong>Post-train</strong><br>
+    ├── <strong>SFT</strong>（几万条高质量问答）→ 从补全变成问答助手<br>
+    └── <strong>RLHF</strong>（人类偏好排序）→ 回答质量大幅提升<br><br>
+    → 你手机上的 ChatGPT / Kimi / Claude
+  </div>
+  
+  <div class="callout danger">
+    <div class="callout-label">⚠️ 核心洞察</div>
+    <p style="margin:0"><strong>Post-train 的质量，往往比 Pre-train 的数据量更决定最终产品体验。</strong> 这就是为什么 DeepSeek 能用相对更少的计算资源做出不输 GPT-4 的产品。</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+  <h3>模型评估框架</h3>
+  <table>
+    <tr><th>问题</th><th>对应阶段</th><th>判断方法</th></tr>
+    <tr><td>知识够不够？</td><td>Pre-train</td><td>训练数据量、质量、新鲜度</td></tr>
+    <tr><td>行为好不好？</td><td>Post-train</td><td>意图理解、回答结构、拒绝判断</td></tr>
+  </table>
+  <p><strong>「知识不够」和「行为不好」是两种完全不同的问题，需要完全不同的解法。</strong></p>
+  
+  <h3>行业洞察：Post-train 是差异化的战场</h3>
+  <p>2026 年大模型竞争，Pre-train 趋同，<strong>真正的差异化来自 Post-train</strong>——Claude 重安全、GPT-4o 重多模态、Kimi 重中文长文本。Post-train 就是模型的「品牌定位」。</p>
+</div>
+
+<div class="divider"></div>
+
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+  <p><strong>如果一家公司拿到了一个开源的基座模型，它还需要做什么才能变成一个好用的 AI 产品？请用培养人才的类比来解释。</strong></p>
+</div>
+
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>今天你了解了 RLHF 是怎么让模型变得「好用」的。但这里有一个阴暗面：</p>
+  <p><strong>当模型学会了「怎么让评分变高」，它是真的变好了，还是学会了「讨好评委」？</strong></p>
+  <p>明天——<strong>RLHF 与 Reward Hacking</strong>。管理 AI 和管理人，踩的坑惊人地相似。</p>
+</div>
+
+<div class="divider"></div>
+
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card"><span class="card-num">1</span><span class="card-title">Pre-train = 学知识</span><div class="card-body">万亿 Token 训练，产出强大但「原始」的文字补全引擎。</div></div>
+  <div class="card"><span class="card-num">2</span><span class="card-title">Post-train = 学做人</span><div class="card-body">SFT + RLHF，数据量小但影响巨大。</div></div>
+  <div class="card"><span class="card-num">3</span><span class="card-title">SFT ≈ 导师带教</span><div class="card-body">用高质量问答示范教模型行为规范。</div></div>
+  <div class="card"><span class="card-num">4</span><span class="card-title">RLHF ≈ 绩效考核</span><div class="card-body">用人类偏好持续优化输出质量。</div></div>
+  <div class="card"><span class="card-num">5</span><span class="card-title">Post-train 质量 > Pre-train 数据量</span><div class="card-body">当前模型竞争的核心战场。</div></div>
+</div>
+
+<div class="divider"></div>
+
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row"><span class="conn-tag">← Day 1</span><span>Next Token Prediction 就是 Pre-train 的训练目标</span></div>
+  <div class="conn-row"><span class="conn-tag">← Day 2</span><span>概率分布和采样策略是 Pre-train 学出来的，Post-train 改变概率分布的「偏好」</span></div>
+  <div class="conn-row"><span class="conn-tag">→ Day 4</span><span>RLHF 的阴暗面——Reward Hacking</span></div>
+  <div class="conn-row"><span class="conn-tag">→ Day 12</span><span>Fine-tune vs RAG vs Prompt 三种定制路径</span></div>
+</div>
+
+
+<div class="nav-bar">
+  <a href="day-02.html">← 上一课</a>
+  <a href="../">📚 课程目录</a>
+  <a href="day-04.html">下一课 →</a>
+</div>
+
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 3 of 60 · 第一模块 · 地基篇
+</div>
+
+</div>
+</body>
+</html>

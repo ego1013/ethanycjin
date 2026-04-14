@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI & 大模型 · 12周系统课程</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-2: #1e1e1e;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --text-dim: #888;
+    --accent: #f97316;
+    --accent-dim: #f9731622;
+    --red: #ef4444;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --yellow: #eab308;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    background: linear-gradient(180deg, #1a0a00 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero-stats .stat-val {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .module {
+    margin-bottom: 3rem;
+  }
+
+  .module-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .module-num {
+    background: var(--accent);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 800;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .module-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .module-desc {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    padding-left: 2.25rem;
+  }
+
+  .lesson-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .lesson-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+
+  .lesson-card:hover {
+    border-color: var(--accent);
+    background: var(--surface-2);
+    transform: translateX(4px);
+  }
+
+  .lesson-card.locked {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .lesson-card.locked:hover {
+    transform: none;
+    border-color: var(--border);
+  }
+
+  .day-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    min-width: 3.5rem;
+    text-align: center;
+  }
+
+  .lesson-card.locked .day-num {
+    color: var(--text-dim);
+    background: var(--surface-2);
+  }
+
+  .lesson-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .lesson-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lesson-meta {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 0.15rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .halflife {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .halflife.long { background: #ef444422; color: var(--red); }
+  .halflife.mid { background: #eab30822; color: var(--yellow); }
+  .halflife.short { background: #22c55e22; color: var(--green); }
+
+  .status-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .progress-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .progress-label .pct {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .progress-track {
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #fb923c);
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.6rem; }
+    .hero-stats { flex-direction: column; gap: 1rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .lesson-card { padding: 0.75rem 1rem; gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">Coach M × Ethan</div>
+  <h1>AI & 大模型 · 12周系统课程</h1>
+  <p class="subtitle">从 Next Token Prediction 到 AI Native 工作方式</p>
+  <div class="hero-stats">
+    <div><span class="stat-val" id="completed-count">6</span>已完成</div>
+    <div><span class="stat-val">60</span>总课次</div>
+    <div><span class="stat-val">12</span>周</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="progress-bar">
+    <div class="progress-label">
+      <span>课程进度</span>
+      <span class="pct" id="progress-pct">10%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+    </div>
+  </div>
+
+  <!-- ═══ 第一模块 ═══ -->
+  <div class="module">
+    <div class="module-header">
+      <span class="module-num">1</span>
+      <span class="module-title">地基篇 · 理解大模型的本质</span>
+    </div>
+    <p class="module-desc">建立正确的底层心智模型，不再被表象迷惑</p>
+    <div class="lesson-list">
+      <a class="lesson-card" href="lessons/day-01.html">
+        <span class="day-num">Day 1</span>
+        <div class="lesson-info">
+          <div class="lesson-title">大模型到底在「做」什么</div>
+          <div class="lesson-meta"><span>04-08</span><span>Next Token Prediction</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">✅</span>
+      </a>
+      <a class="lesson-card" href="lessons/day-02.html">
+        <span class="day-num">Day 2</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Token与概率：语言模型的底层逻辑</div>
+          <div class="lesson-meta"><span>04-09</span><span>采样策略 · Temperature</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">✅</span>
+      </a>
+      <a class="lesson-card" href="lessons/day-03.html">
+        <span class="day-num">Day 3</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Pre-train vs Post-train</div>
+          <div class="lesson-meta"><span>04-10</span><span>SFT · RLHF · 两阶段训练</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">✅</span>
+      </a>
+      <a class="lesson-card" href="lessons/day-04.html">
+        <span class="day-num">Day 4</span>
+        <div class="lesson-info">
+          <div class="lesson-title">RLHF与Reward Hacking</div>
+          <div class="lesson-meta"><span>04-11</span><span>Goodhart定律 · 奖励攻击</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">✅</span>
+      </a>
+      <a class="lesson-card" href="lessons/day-05.html">
+        <span class="day-num">Day 5</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Temperature与采样策略</div>
+          <div class="lesson-meta"><span>04-14</span><span>确定性 vs 多样性 · Exploration vs Exploitation</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">✅</span>
+      </a>
+      <a class="lesson-card" href="lessons/day-06.html">
+        <span class="day-num">Day 6</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Hallucination的本质</div>
+          <div class="lesson-meta"><span>04-15</span><span>幻觉不是bug · 结构性缺陷</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">✅</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 7</span>
+        <div class="lesson-info">
+          <div class="lesson-title">【复习+实战】用本周知识重新解读一个AI产品现象</div>
+          <div class="lesson-meta"><span>04-16</span><span>综合应用</span></div>
+        </div>
+        <span class="status-icon">🔒</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 8</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Scaling Law：大力出奇迹的边界</div>
+          <div class="lesson-meta"><span>04-17</span><span>参数 · 数据 · 算力</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">🔒</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 9</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Token效率：Kimi的核心押注逻辑</div>
+          <div class="lesson-meta"><span>04-21</span></div>
+        </div>
+        <span class="halflife mid">🟡 中</span>
+        <span class="status-icon">🔒</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 10</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Context Window：为什么「记忆」这么贵？</div>
+          <div class="lesson-meta"><span>04-22</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">🔒</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 11</span>
+        <div class="lesson-info">
+          <div class="lesson-title">多模态：从文字到图像视频的统一</div>
+          <div class="lesson-meta"><span>04-23</span></div>
+        </div>
+        <span class="halflife mid">🟡 中</span>
+        <span class="status-icon">🔒</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 12</span>
+        <div class="lesson-info">
+          <div class="lesson-title">Fine-tune vs RAG vs Prompt：三种「定制」路径</div>
+          <div class="lesson-meta"><span>04-24</span></div>
+        </div>
+        <span class="halflife mid">🟡 中</span>
+        <span class="status-icon">🔒</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 13</span>
+        <div class="lesson-info">
+          <div class="lesson-title">SFT vs RL：特化与泛化的根本差异</div>
+          <div class="lesson-meta"><span>04-28</span></div>
+        </div>
+        <span class="halflife long">🔴 长</span>
+        <span class="status-icon">🔒</span>
+      </a>
+      <a class="lesson-card locked" href="#">
+        <span class="day-num">Day 14</span>
+        <div class="lesson-info">
+          <div class="lesson-title">【模块收尾】你现在的大模型心智模型是什么样的？</div>
+          <div class="lesson-meta"><span>04-29</span></div>
+        </div>
+        <span class="status-icon">🔒</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ 第二模块 ═══ -->
+  <div class="module">
+    <div class="module-header">
+      <span class="module-num">2</span>
+      <span class="module-title">应用篇 · 从Chat到Harness到Manage</span>
+    </div>
+    <p class="module-desc">理解人与AI协作关系的三个层次，找到自己的位置</p>
+    <div class="lesson-list">
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 15</span><div class="lesson-info"><div class="lesson-title">Prompt工程的本质：不是「咒语」是「规格说明书」</div><div class="lesson-meta"><span>04-30</span></div></div><span class="halflife mid">🟡 中</span><span class="status-icon">🔒</span></a>
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 16</span><div class="lesson-info"><div class="lesson-title">思维链（CoT）与推理增强</div><div class="lesson-meta"><span>05-06</span></div></div><span class="halflife long">🔴 长</span><span class="status-icon">🔒</span></a>
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 17</span><div class="lesson-info"><div class="lesson-title">Agent的定义：从问答到行动</div><div class="lesson-meta"><span>05-07</span></div></div><span class="halflife long">🔴 长</span><span class="status-icon">🔒</span></a>
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 18</span><div class="lesson-info"><div class="lesson-title">Agent的工具调用与记忆机制</div><div class="lesson-meta"><span>05-08</span></div></div><span class="halflife long">🔴 长</span><span class="status-icon">🔒</span></a>
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 19</span><div class="lesson-info"><div class="lesson-title">Multi-Agent：组织化的AI</div><div class="lesson-meta"><span>05-12</span></div></div><span class="halflife mid">🟡 中</span><span class="status-icon">🔒</span></a>
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 20</span><div class="lesson-info"><div class="lesson-title">Verifiable Problem：如何定义AI能做好的任务</div><div class="lesson-meta"><span>05-13</span></div></div><span class="halflife mid">🟡 中</span><span class="status-icon">🔒</span></a>
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 21</span><div class="lesson-info"><div class="lesson-title">【实战】为渠道绩效管理设计一个Agent工作流</div><div class="lesson-meta"><span>05-14</span></div></div><span class="status-icon">🔒</span></a>
+    </div>
+  </div>
+
+  <!-- ═══ 第三模块 ═══ -->
+  <div class="module">
+    <div class="module-header">
+      <span class="module-num">3</span>
+      <span class="module-title">判断篇 · 建立自己的AI产品审美</span>
+    </div>
+    <p class="module-desc">能独立判断AI产品/技术方向的价值，不被忽悠</p>
+    <div class="lesson-list">
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 22-35</span><div class="lesson-info"><div class="lesson-title">GPT · Claude · Gemini · Kimi · DeepSeek 横评 + 产品设计原则</div><div class="lesson-meta"><span>05-15 ~ 06-09</span><span>14课</span></div></div><span class="status-icon">🔒</span></a>
+    </div>
+  </div>
+
+  <!-- ═══ 第四模块 ═══ -->
+  <div class="module">
+    <div class="module-header">
+      <span class="module-num">4</span>
+      <span class="module-title">前沿篇 · 站在边界上看</span>
+    </div>
+    <p class="module-desc">理解行业正在发生什么，建立自己的判断框架</p>
+    <div class="lesson-list">
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 36-42</span><div class="lesson-info"><div class="lesson-title">Test-Time Compute · o1推理 · World Model · AGI路线</div><div class="lesson-meta"><span>06-10 ~ 06-19</span><span>7课</span></div></div><span class="status-icon">🔒</span></a>
+    </div>
+  </div>
+
+  <!-- ═══ 第五六模块 ═══ -->
+  <div class="module">
+    <div class="module-header">
+      <span class="module-num">5</span>
+      <span class="module-title">整合篇 · AI Native实践</span>
+    </div>
+    <p class="module-desc">将所有知识整合进「AI Native」的具体实践框架</p>
+    <div class="lesson-list">
+      <a class="lesson-card locked" href="#"><span class="day-num">Day 43-60</span><div class="lesson-info"><div class="lesson-title">AI Native工作方式 · 渠道应用 · 决策框架 · 毕业项目</div><div class="lesson-meta"><span>06-23 ~ 07-17</span><span>18课</span></div></div><span class="status-icon">🔒</span></a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  <a href="../">← 返回 Ethan's Lab</a>
+</div>
+
+</body>
+</html>

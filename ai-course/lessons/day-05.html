@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 5 · Temperature与采样策略 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --yellow: #eab308;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1a0a00 0%, #0f0f0f 50%, #0a0a1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle { color: var(--text-dim); font-size: 1rem; margin-bottom: 1rem; }
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+  .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .opening .label {
+    color: var(--red);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  .opening p { font-size: 1.05rem; line-height: 1.8; color: var(--text); }
+  .opening .highlight {
+    background: var(--red-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--red);
+  }
+  .section { margin-bottom: 3rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .section-header h2 { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+  h3 { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin: 1.75rem 0 0.75rem; }
+  h4 { font-size: 1rem; font-weight: 600; color: var(--text); margin: 1.25rem 0 0.5rem; }
+  p { margin-bottom: 0.85rem; font-size: 0.95rem; color: var(--text); }
+  strong { color: #fff; }
+  em { color: var(--text-dim); font-style: italic; }
+  ul, ol { margin: 0.75rem 0 1rem 1.5rem; font-size: 0.95rem; }
+  li { margin-bottom: 0.4rem; }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  blockquote strong { color: var(--text); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+  th {
+    background: var(--surface-2);
+    color: var(--accent);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  tr:hover { background: var(--surface); }
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--accent);
+  }
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+  }
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+  .checkpoint h3 { color: var(--yellow); margin-top: 0; font-size: 1.15rem; }
+  .checkpoint .options { margin: 1rem 0; }
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+  .checkpoint .option:hover { border-color: var(--yellow); }
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--blue);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .teaser h3 { color: var(--blue); margin-top: 0; }
+  .card-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin: 1.5rem 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .card .card-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+  .card .card-title { font-weight: 700; font-size: 0.92rem; color: var(--text); }
+  .card .card-body { margin-top: 0.4rem; font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+  .connection-table { margin: 1.5rem 0; }
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+  .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+  .diagram .flow { color: var(--accent); font-weight: 600; }
+  .nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .nav-bar a {
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .nav-bar a:hover { text-decoration: underline; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🔴 长半衰期 · 深讲</div>
+  <h1>Day 5 · Temperature与采样策略</h1>
+  <p class="subtitle">「创造力」和「准确性」为什么是一对矛盾？</p>
+  <div class="meta">
+    <span>📅 2026-04-14 Tue</span>
+    <span>📦 第一模块 · 地基篇</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>你手上管着一支渠道团队。有两种会议风格：</p>
+  <p><strong>风格 A：</strong>"按去年方案执行，不要创新。" → 稳，但不会有惊喜。</p>
+  <p><strong>风格 B：</strong>"放开想，天马行空。" → 也许有天才创意，更大概率是满屋子噪音。</p>
+  <p><strong>大模型每次生成文字时也面临同样的选择。</strong> 控制这个选择的，叫 <strong>Temperature</strong>。</p>
+  <p>Day 4 的问题：<strong>「创造力」和「准确性」为什么是一对矛盾？</strong> 今天给答案。</p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么 Temperature 值得你理解到底层？</h2>
+  </div>
+  <p>同一个模型、同一个 Prompt，Temperature 不同，输出天差地别：</p>
+  <div class="code-block">T = 0.0 → "深圳2025年GDP为3.87万亿元。"
+T = 0.7 → "深圳2025年GDP约3.87万亿元，值得注意的是新能源产业的爆发性增长…"
+T = 1.5 → "深圳的经济体量就像一头正在变形的巨兽——传统制造业的骨骼上长出了AI的翅膀…"</div>
+  <p><strong>同一个"大脑"，不同的"决策温度"，产出完全不同的东西。</strong></p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — Temperature 的底层机制</h2>
+  </div>
+
+  <h3>数学本质（一看就懂）</h3>
+  <div class="diagram">调整后的分数 = 原始分数 / Temperature<br><br>
+T < 1 → 放大差距（强者更强）→ 概率集中 → <span class="flow">保守</span><br>
+T = 1 → 保持原始 → 正常<br>
+T > 1 → 压缩差距（弱者也有机会）→ 概率平坦 → <span class="flow">冒险</span></div>
+
+  <table>
+    <tr><th>候选词</th><th>T=0.3</th><th>T=1.0</th><th>T=2.0</th></tr>
+    <tr><td>"深圳"</td><td><strong>97.2%</strong></td><td>69.8%</td><td>42.1%</td></tr>
+    <tr><td>"中国"</td><td>2.3%</td><td>14.2%</td><td>22.3%</td></tr>
+    <tr><td>"广东"</td><td>0.5%</td><td>8.9%</td><td>17.8%</td></tr>
+    <tr><td>"世界"</td><td>0.0%</td><td>5.7%</td><td>12.6%</td></tr>
+    <tr><td>"月球"</td><td>0.0%</td><td>1.4%</td><td>5.2%</td></tr>
+  </table>
+
+  <h3>直觉类比——渠道选择中的"风险偏好旋钮"</h3>
+  <div class="callout blue">
+    <div class="callout-label">📊 类比</div>
+    <p style="margin:0"><strong>低 T（保守策略）：</strong>"直接选 A 公司，不冒险。"<br>
+    <strong>中 T（均衡策略）：</strong>"A 优先，但给 B、C 一些机会。"<br>
+    <strong>高 T（激进策略）：</strong>"谁都可以试试，甚至给新人一个机会。"<br><br>
+    Temperature 就是「对确定性信息的信任程度」。</p>
+  </div>
+
+  <h3>Temperature + Top-K/Top-P 协作</h3>
+  <table>
+    <tr><th>场景</th><th>Temperature</th><th>Top-P</th><th>效果</th></tr>
+    <tr><td>数据分析/事实查询</td><td>0.0-0.3</td><td>0.5-0.8</td><td>极度精确</td></tr>
+    <tr><td>日常对话/邮件</td><td>0.5-0.7</td><td>0.9</td><td>自然流畅</td></tr>
+    <tr><td>创意文案/头脑风暴</td><td>0.8-1.2</td><td>0.95</td><td>高多样性</td></tr>
+    <tr><td>诗歌/实验性写作</td><td>1.0-1.5</td><td>1.0</td><td>极度发散</td></tr>
+  </table>
+
+  <h3>为什么"创造力"和"准确性"是矛盾的？</h3>
+  <div class="callout insight">
+    <div class="callout-label">🔑 核心答案</div>
+    <p style="margin:0"><strong>准确性需要确定性</strong> → 概率集中 → 低 Temperature<br>
+    <strong>创造力需要意外性</strong> → 跳出最可能 → 高 Temperature<br><br>
+    两者共享同一个旋钮，方向相反。这是信息论的基本约束——信息量和可预测性成反比。<br><br>
+    <strong>管理也一样——你不可能同时要求团队"严格执行"和"大胆创新"。你能做的是为不同任务设不同 Temperature。</strong></p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+  <h3>你的 AI 使用实操指南</h3>
+  <table>
+    <tr><th>任务</th><th>推荐设置</th><th>原因</th></tr>
+    <tr><td>查数据/核实事实</td><td>T=0, Top-P=0.5</td><td>要确定性，不要创意</td></tr>
+    <tr><td>写分析报告</td><td>T=0.3-0.5</td><td>逻辑严谨，允许自然表达</td></tr>
+    <tr><td>写广告文案</td><td>T=0.9-1.2</td><td>要的恰恰是"不太可能"的组合</td></tr>
+    <tr><td>头脑风暴</td><td>T=1.0-1.5</td><td>打开所有可能性，你负责筛选</td></tr>
+    <tr><td>写代码</td><td>T=0-0.2</td><td>代码是逻辑的，容错率极低</td></tr>
+  </table>
+
+  <h3>通用思维模型：Exploration vs Exploitation</h3>
+  <table>
+    <tr><th>领域</th><th>Exploitation（利用已知）</th><th>Exploration（探索未知）</th></tr>
+    <tr><td>AI 生成</td><td>低 T，选最大概率</td><td>高 T，尝试新组合</td></tr>
+    <tr><td>渠道管理</td><td>深耕头部代理商</td><td>开拓新区域</td></tr>
+    <tr><td>广告投放</td><td>加大已验证素材预算</td><td>20%预算测新创意</td></tr>
+    <tr><td>个人职业</td><td>深挖已有优势</td><td>学习全新领域</td></tr>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+  <p><strong>你需要让 AI 帮你生成下个季度的渠道拓展方案，你会选择哪个 Temperature 设置？</strong></p>
+  <div class="options">
+    <div class="option"><span class="letter">A</span>T=0 → 最精确，不出错</div>
+    <div class="option"><span class="letter">B</span>T=0.5 → 有点变化但总体保守</div>
+    <div class="option"><span class="letter">C</span>T=1.0 → 多样性高，可能有创意</div>
+    <div class="option"><span class="letter">D</span>取决于方案用途：给老板汇报选 B，团队头脑风暴选 C</div>
+  </div>
+  <p style="font-size:0.85rem; color:var(--text-dim)">（直接回一个字母就行，也欢迎补充你的理由）</p>
+</div>
+
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>如果你把 Temperature 调到 0（完全确定性），模型应该永远给正确答案，对吧？</p>
+  <p>然而——<strong>即使 Temperature = 0，模型依然会胡说八道。</strong></p>
+  <p>因为"确定性地选择概率最高的 Token"≠"选择了正确的 Token"。</p>
+  <p><strong>Day 6，我们正面面对大模型最大的结构性问题：Hallucination（幻觉）。</strong></p>
+</div>
+
+<div class="divider"></div>
+
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card"><span class="card-num">1</span><span class="card-title">Temperature = 概率分布的"锐度旋钮"</span><div class="card-body">低 T → 保守。高 T → 冒险。T=0 → Greedy Decoding。</div></div>
+  <div class="card"><span class="card-num">2</span><span class="card-title">公式：调整后分数 = 原始分数 / T</span><div class="card-body">T<1 放大差距，T>1 压缩差距。简单但深刻。</div></div>
+  <div class="card"><span class="card-num">3</span><span class="card-title">创造力 vs 准确性是结构性矛盾</span><div class="card-body">源自信息论：可预测性和信息量成反比。</div></div>
+  <div class="card"><span class="card-num">4</span><span class="card-title">Temperature + Top-K/Top-P = 完整采样策略</span><div class="card-body">Temperature 控形状，Top-K/Top-P 画底线。</div></div>
+  <div class="card"><span class="card-num">5</span><span class="card-title">Exploration vs Exploitation 通用思维模型</span><div class="card-body">不同任务设不同 Temperature——对 AI 如此，对管理和人生亦如此。</div></div>
+</div>
+
+<div class="divider"></div>
+
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row"><span class="conn-tag">← Day 1</span><span>Temperature 改变的是每次预测时的选择策略——不改变"知道什么"，只改变"选什么"</span></div>
+  <div class="conn-row"><span class="conn-tag">← Day 2</span><span>Day 2 首次介绍采样策略，今天是深化——Temperature 是统领所有采样的"元参数"</span></div>
+  <div class="conn-row"><span class="conn-tag">← Day 4</span><span>RLHF 是训练阶段的行为塑造，Temperature 是推理阶段的行为调节，两者共同决定输出</span></div>
+  <div class="conn-row"><span class="conn-tag">→ Day 6</span><span>T=0 也不能消除错误输出。Day 6 解释：幻觉不是 Temperature 的问题，是模型知识的局限</span></div>
+</div>
+
+
+<div class="nav-bar">
+  <a href="day-04.html">← 上一课</a>
+  <a href="../">📚 课程目录</a>
+  <a href="day-06.html">下一课 →</a>
+</div>
+
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 5 of 60 · 第一模块 · 地基篇
+</div>
+
+</div>
+</body>
+</html>

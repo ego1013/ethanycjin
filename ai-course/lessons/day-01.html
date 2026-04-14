@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 1 · 大模型到底在「做」什么 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --yellow: #eab308;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1a0a00 0%, #0f0f0f 50%, #0a0a1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle { color: var(--text-dim); font-size: 1rem; margin-bottom: 1rem; }
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+  .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .opening .label {
+    color: var(--red);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  .opening p { font-size: 1.05rem; line-height: 1.8; color: var(--text); }
+  .opening .highlight {
+    background: var(--red-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--red);
+  }
+  .section { margin-bottom: 3rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .section-header h2 { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+  h3 { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin: 1.75rem 0 0.75rem; }
+  h4 { font-size: 1rem; font-weight: 600; color: var(--text); margin: 1.25rem 0 0.5rem; }
+  p { margin-bottom: 0.85rem; font-size: 0.95rem; color: var(--text); }
+  strong { color: #fff; }
+  em { color: var(--text-dim); font-style: italic; }
+  ul, ol { margin: 0.75rem 0 1rem 1.5rem; font-size: 0.95rem; }
+  li { margin-bottom: 0.4rem; }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  blockquote strong { color: var(--text); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+  th {
+    background: var(--surface-2);
+    color: var(--accent);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  tr:hover { background: var(--surface); }
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--accent);
+  }
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+  }
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+  .checkpoint h3 { color: var(--yellow); margin-top: 0; font-size: 1.15rem; }
+  .checkpoint .options { margin: 1rem 0; }
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+  .checkpoint .option:hover { border-color: var(--yellow); }
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--blue);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .teaser h3 { color: var(--blue); margin-top: 0; }
+  .card-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin: 1.5rem 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .card .card-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+  .card .card-title { font-weight: 700; font-size: 0.92rem; color: var(--text); }
+  .card .card-body { margin-top: 0.4rem; font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+  .connection-table { margin: 1.5rem 0; }
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+  .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+  .diagram .flow { color: var(--accent); font-weight: 600; }
+  .nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .nav-bar a {
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .nav-bar a:hover { text-decoration: underline; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🔴 长半衰期 · 深讲</div>
+  <h1>Day 1 · 大模型到底在「做」什么</h1>
+  <p class="subtitle">为什么它不是「搜索」也不是「数据库」？</p>
+  <div class="meta">
+    <span>📅 2026-04-08 Tue</span>
+    <span>📦 第一模块 · 地基篇</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>你每天都在用大模型——让它写邮件、总结文档、回答问题。但你有没有想过：<strong>当你按下回车键之后、答案出现之前，模型到底经历了什么？</strong></p>
+  <p>它不是在搜索。它不是在查数据库。它做的事情，比你以为的更简单，也更深刻。</p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么理解「大模型在做什么」是一切的起点？</h2>
+  </div>
+  <p>Ethan，你用过 Kimi、ChatGPT，也听过很多行业分享。但我发现大部分人——包括很多互联网从业者——对大模型有一个<strong>根深蒂固的错误心智模型</strong>：</p>
+  <blockquote>「大模型是一个超级搜索引擎，或者一个超大的知识库。」</blockquote>
+  <p>这个误解不是无害的。它会导致你：</p>
+  <ul>
+    <li><strong>高估模型的可靠性</strong>：以为它「知道」答案，其实它只是在「生成」最像答案的文字</li>
+    <li><strong>低估模型的能力</strong>：以为它只能回答已有问题，其实它能做从未见过的创造性组合</li>
+    <li><strong>误判 AI 产品的价值</strong>：以为 AI 产品的核心是「数据多不多」，其实核心是「如何让模型更好地生成」</li>
+  </ul>
+  <p>这就像你管理渠道时，如果对代理商的核心驱动力有误判，整个绩效方案都会建立在错误假设上。底层模型搞错了，上面所有判断都是歪的。</p>
+  <p>今天的目标只有一个：<strong>把你脑子里的「搜索引擎」替换成正确的心智模型。</strong></p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 大模型的本质是什么？</h2>
+  </div>
+  
+  <h3>直觉类比：世界上最疯狂的「接龙选手」</h3>
+  <p>想象你在组织一场文字接龙游戏。但这个选手不是普通人——他读过人类历史上几乎所有的公开文本：所有的书、所有的网页、所有的论文、所有的代码、所有的对话记录。</p>
+  <p>现在你给他一句开头：「深圳今天的天气……」</p>
+  <p>他不会去查天气预报。他会基于他读过的无数包含「深圳」「天气」的文本，推测<strong>下一个最可能出现的词</strong>是什么。可能是「不错」「很热」「有雨」——每一个候选词都有一个概率。</p>
+  <div class="callout insight">
+    <div class="callout-label">🔑 核心认知</div>
+    <p style="margin:0"><strong>大模型的全部工作，就是这件事：给定前面的文字，预测下一个词。</strong> 就是这么简单。没有理解，没有思考，没有知识库查询。就是——预测下一个词。</p>
+  </div>
+  <p>但是，当这个「预测」能力被训练到极致——在万亿级数据上、用千亿级参数——一些惊人的事情发生了。</p>
+
+  <h3>底层机制：Next Token Prediction</h3>
+  <p><strong>大语言模型（LLM）的核心机制叫做 Next Token Prediction（下一个 Token 预测）。</strong></p>
+  <p>这里有三个关键概念需要一次性建立：</p>
+
+  <h4>1. Token ≠ 字</h4>
+  <p>模型不是逐字处理文本的。它把文本切成更小的单元叫 <strong>Token</strong>——可以是一个字、半个词、一个标点，甚至一个空格。中文大约是 1-2 个字 = 1 个 Token，英文大约是 1 个词 = 1-2 个 Token。</p>
+  <p>为什么要切成 Token？因为模型需要一个<strong>有限的词汇表</strong>来做概率计算。就像你管理渠道时，需要把无限多样的代理商行为归纳成有限的几个指标来衡量——Token 就是语言的「指标体系」。</p>
+
+  <h4>2. 概率分布 = 模型的「意见」</h4>
+  <p>当模型看到「深圳今天的天气」这句话时，它会输出一个<strong>概率分布</strong>——对词汇表里每一个 Token 都给一个概率：</p>
+  <table>
+    <tr><th>Token</th><th>概率</th></tr>
+    <tr><td>不错</td><td>0.15</td></tr>
+    <tr><td>很好</td><td>0.12</td></tr>
+    <tr><td>晴朗</td><td>0.10</td></tr>
+    <tr><td>有点热</td><td>0.08</td></tr>
+    <tr><td>…</td><td>…</td></tr>
+    <tr><td>巧克力</td><td>0.000001</td></tr>
+  </table>
+  <p>「巧克力」的概率不是零——这很重要。模型不会绝对否定任何可能性。它只是认为有些词比其他词「更像是应该出现在这里」。</p>
+  <p>这就是为什么大模型有时候会「胡说八道」——从概率角度看，它只是选了一个概率不那么高的路径。这不是 bug，这是它工作方式的必然结果。（这个话题我们 Day 6 会深入讲。）</p>
+
+  <h4>3. 自回归：一个词一个词地「长」出来</h4>
+  <p>模型不是一次性给出完整答案的。它是——</p>
+  <ol>
+    <li>看到你的输入 → 预测第 1 个词</li>
+    <li>把第 1 个词加到输入里 → 预测第 2 个词</li>
+    <li>把前 2 个词加到输入里 → 预测第 3 个词</li>
+    <li>……直到它预测出一个「结束符号」</li>
+  </ol>
+  <p>这个过程叫做<strong>自回归生成（Autoregressive Generation）</strong>。</p>
+  <p>你看到 ChatGPT 的答案一个字一个字蹦出来？那不是网速慢——那真的是它在一个 Token 一个 Token 地生成。每一步都是一次独立的预测。</p>
+
+  <h3>真实案例：为什么 GPT 写长代码后半段会「迷失」？</h3>
+  <p>你可能有过这个体验：让大模型写一段较长的代码或文章，前半段质量不错，后半段开始跑偏。</p>
+  <p>现在你能理解了——因为模型是<strong>一个 Token 一个 Token 生成的</strong>。前半段的每个决策都会影响后半段。如果它在第 50 个 Token 做了一个不太好的选择，这个选择会被「锁定」在后续的输入里，像滚雪球一样把后面的生成带偏。</p>
+  <div class="callout blue">
+    <div class="callout-label">📊 类比</div>
+    <p style="margin:0">这就像渠道管理中的<strong>路径依赖</strong>：一个季度的策略偏差，如果不及时纠正，整个年度目标都会被带偏。模型也一样，它没有「回头看看整体是不是对的」这个能力——除非你专门设计让它这么做（这就是后面要讲的 Chain of Thought 等技术）。</p>
+  </div>
+
+  <h3>一个反直觉的推论</h3>
+  <p>如果大模型只是在做「下一个词预测」，那么一个自然的问题是：</p>
+  <blockquote><strong>为什么一个「预测下一个词」的系统，能写诗、能推理、能编程？</strong></blockquote>
+  <p>这是当前 AI 领域最深刻的开放问题之一。一个主流的解释是：</p>
+  <p>当你要精确预测下一个词时，你不得不<strong>在内部构建某种对世界的压缩表示</strong>。你必须「理解」语法才能预测语法正确的句子；你必须「理解」因果关系才能预测合理的推理步骤；你必须「理解」代码逻辑才能预测能运行的代码。</p>
+  <p>就像一个足够聪明的孩子，如果你让他做一万道数学题，他不只是记住了答案——他在这个过程中<strong>自发地学会了数学</strong>。</p>
+  <p>这是不是真正的「理解」？还是只是极其精妙的「模拟」？这个问题，现在没有人能确定回答。但从实用角度看——<strong>效果上等价于理解，这对你使用它来说就够了。</strong></p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这个认知如何改变你的思维方式？</h2>
+  </div>
+  
+  <h3>1. 不再把 AI 当作「权威信息源」</h3>
+  <p>模型不是数据库，不是搜索引擎。它给你的答案不是「查出来的」，是「生成出来的」。这意味着：</p>
+  <ul>
+    <li><strong>数据和事实必须验证</strong>——模型可能用看似自信的语气说出完全不存在的「事实」</li>
+    <li><strong>模型的「自信程度」和「正确程度」之间没有必然关系</strong>——它说得越流畅，你反而应该越警惕</li>
+  </ul>
+  <div class="callout blue">
+    <div class="callout-label">📊 类比</div>
+    <p style="margin:0">这就像你在评估代理商报告时，不会因为PPT做得漂亮就相信数据准确。对 AI 的输出也应该建立同样的「批判性接收」习惯。</p>
+  </div>
+
+  <h3>2. 输入质量决定输出质量</h3>
+  <p>既然模型是基于你给它的文字来预测下一个 Token，那么——<strong>你给它的上下文越精确、越丰富，它的预测就越好。</strong></p>
+  <p>这是 Prompt 工程的底层逻辑（Day 15 会系统讲）。但今天你已经可以开始实践：</p>
+  <ul>
+    <li>不要只给模型一个模糊的问题，给它<strong>背景、约束条件、期望的输出格式</strong></li>
+    <li>把它当成一个新来的、读过所有书但不了解你具体情况的实习生——你给的 context 越多，它的表现越好</li>
+  </ul>
+
+  <h3>3. AI 产品的核心竞争力不在「数据」</h3>
+  <p>真正的竞争壁垒在于：<strong>如何让模型在有限的 Token 生成过程中，更精准地命中用户需要的结果。</strong> 这涉及到训练方法（Day 3-4）、上下文管理（Day 10）、定制化策略（Day 12）等一系列技术决策。</p>
+  <p>当你以后评估一个 AI 产品或技术方案时，可以从这个角度切入：<strong>它做了什么来让「下一个 Token 预测」更准确？</strong></p>
+</div>
+
+<div class="divider"></div>
+
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+  <p><strong>用一句话解释核心概念：如果有人问你「大模型到底是怎么工作的？」你怎么用一句话解释？</strong></p>
+  <blockquote style="border-color:var(--yellow)">（参考：大模型通过海量文本训练，学会了一件事——给定前面的文字，预测下一个最可能出现的词，然后一个词一个词地把答案「长」出来。）</blockquote>
+</div>
+
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>今天我们知道了模型在「预测下一个词」。但你有没有想过——</p>
+  <p><strong>如果每一步都选概率最高的那个词，答案会不会变得很无聊、很重复？模型的「创造力」从哪来？</strong></p>
+  <p>这就是明天要讲的 <strong>Token 与概率</strong> 的故事——那里藏着大模型最迷人也最危险的秘密。</p>
+</div>
+
+<div class="divider"></div>
+
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card"><span class="card-num">1</span><span class="card-title">大模型 ≠ 搜索引擎/数据库</span><div class="card-body">它不「查」答案，它「生成」答案。</div></div>
+  <div class="card"><span class="card-num">2</span><span class="card-title">核心机制：Next Token Prediction</span><div class="card-body">给定前面的文字，预测下一个 Token 的概率分布，然后采样一个 Token，循环往复。</div></div>
+  <div class="card"><span class="card-num">3</span><span class="card-title">Token 是模型的最小处理单元</span><div class="card-body">中文约 1-2 字 = 1 Token。Token 数 = 成本 = 性能瓶颈。</div></div>
+  <div class="card"><span class="card-num">4</span><span class="card-title">自回归生成</span><div class="card-body">答案是一个 Token 一个 Token 长出来的，每步决策影响后续所有步骤（路径依赖）。</div></div>
+  <div class="card"><span class="card-num">5</span><span class="card-title">极致的预测能力 ≈ 涌现的理解能力</span><div class="card-body">当预测做得足够好，模型在内部自发构建了对世界的压缩表示。</div></div>
+</div>
+
+<div class="divider"></div>
+
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row"><span class="conn-tag">→ Day 2</span><span>Token 与概率——深入「概率分布」和「采样」这两个核心</span></div>
+  <div class="conn-row"><span class="conn-tag">→ Day 3</span><span>Pre-train vs Post-train——「预测能力」是怎么训练出来的</span></div>
+  <div class="conn-row"><span class="conn-tag">→ Day 5</span><span>Temperature——回答「创造力 vs 准确性」这对矛盾</span></div>
+  <div class="conn-row"><span class="conn-tag">→ Day 6</span><span>Hallucination——为什么「胡说八道」是这个机制的必然产物</span></div>
+</div>
+
+
+<div class="nav-bar">
+  <span></span>
+  <a href="../">📚 课程目录</a>
+  <a href="day-02.html">下一课 →</a>
+</div>
+
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 1 of 60 · 第一模块 · 地基篇
+</div>
+
+</div>
+</body>
+</html>
