@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌱 小饭芽 · 第2周辅食计划（修订版）</title>
+<style>
+  :root {
+    --bg: #FFF8F0;
+    --card-bg: #FFFFFF;
+    --primary: #7BC67E;
+    --primary-dark: #5BA85E;
+    --accent: #FF9B85;
+    --accent-light: #FFE0D6;
+    --text: #3D3D3D;
+    --text-light: #777;
+    --border: #E8E0D8;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    --radius: 16px;
+    --warning-bg: #FFF3CD;
+    --warning-border: #FFCB47;
+    --danger-bg: #FFE5E5;
+    --danger-border: #FF8585;
+    --info-bg: #E8F4FD;
+    --info-border: #7EC8E3;
+    --papa-bg: #F0F4FF;
+    --papa-border: #7E9FE3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #7BC67E 0%, #A8E6A3 50%, #FFE4B5 100%);
+    padding: 32px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+    animation: shimmer 8s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, -20px); }
+  }
+  .header-content { position: relative; z-index: 1; }
+  .logo { font-size: 48px; margin-bottom: 4px; }
+  .header h1 {
+    font-size: 24px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .header .subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 400;
+  }
+  .week-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 6px 18px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #fff;
+    font-weight: 600;
+  }
+  .revision-badge {
+    display: inline-block;
+    background: rgba(255,200,100,0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 4px 12px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* Baby info bar */
+  .baby-info {
+    background: var(--card-bg);
+    margin: -12px 16px 16px;
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .baby-info.four-col { grid-template-columns: repeat(4, 1fr); }
+  .baby-info .info-item label {
+    font-size: 11px;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .baby-info .info-item span {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary-dark);
+  }
+  .baby-info .info-item span.highlight { color: #E65100; }
+
+  /* Container */
+  .container { max-width: 640px; margin: 0 auto; padding: 0 16px 24px; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .card-header {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .card-header:hover { background: rgba(123,198,126,0.05); }
+  .card-header .icon { font-size: 24px; flex-shrink: 0; }
+  .card-header .title-group { flex: 1; }
+  .card-header h2 { font-size: 17px; font-weight: 700; color: var(--text); }
+  .card-header .desc { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .card-header .toggle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .card.collapsed .toggle { transform: rotate(-90deg); }
+  .card-body {
+    padding: 0 20px 20px;
+    max-height: 8000px;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+  }
+  .card.collapsed .card-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Papa's feedback banner */
+  .papa-feedback {
+    background: var(--papa-bg);
+    border: 1px solid var(--papa-border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .papa-feedback h3 {
+    font-size: 15px;
+    color: #3A5DAE;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .papa-feedback .feedback-item {
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 6px;
+    padding-left: 20px;
+    position: relative;
+  }
+  .papa-feedback .feedback-item::before {
+    content: '📌';
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .papa-feedback .response {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.8;
+    border-left: 3px solid var(--primary);
+  }
+  .papa-feedback .response strong { color: var(--primary-dark); }
+
+  /* Milestone */
+  .milestone-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .milestone-item {
+    background: #F0FAF0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--primary);
+  }
+  .milestone-item.goal {
+    background: var(--info-bg);
+    border-left-color: var(--info-border);
+  }
+  .milestone-item.celebrate {
+    background: #FFF8E1;
+    border-left-color: #FFB74D;
+  }
+  .milestone-item.caution {
+    background: #FFF8F0;
+    border-left-color: #FF9800;
+  }
+  .milestone-item h4 {
+    font-size: 13px;
+    color: var(--primary-dark);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .milestone-item.goal h4 { color: #2E86AB; }
+  .milestone-item.celebrate h4 { color: #E65100; }
+  .milestone-item.caution h4 { color: #E65100; }
+  .milestone-item p { font-size: 14px; line-height: 1.6; }
+
+  /* Feeding guide - NEW */
+  .feeding-guide {
+    background: #F8F0FF;
+    border: 1px solid #E0D0F0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .feeding-guide h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #6A3EA1;
+    margin-bottom: 10px;
+  }
+  .feeding-timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+  .feeding-timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: #D0C0E0;
+  }
+  .ft-item {
+    position: relative;
+    margin-bottom: 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .ft-item:last-child { margin-bottom: 0; }
+  .ft-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #9C7BCC;
+  }
+  .ft-item .ft-time {
+    font-weight: 700;
+    color: #6A3EA1;
+  }
+  .ft-item .ft-desc { color: var(--text); }
+  .ft-item .ft-note {
+    color: var(--text-light);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  /* Intake guide table */
+  .intake-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0;
+  }
+  .intake-table th {
+    background: #F0FAF0;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary);
+    font-size: 12px;
+  }
+  .intake-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #F0EDE8;
+  }
+  .intake-table tr.current { background: #FFF8E1; }
+  .intake-table .stage-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .intake-table .stage-now { background: #FFE0B2; color: #E65100; }
+  .intake-table .stage-next { background: #E0E0E0; color: #666; }
+
+  /* Schedule Table */
+  .schedule-day {
+    background: #FAFAFA;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid #F0EDE8;
+  }
+  .schedule-day:last-child { margin-bottom: 0; }
+  .schedule-day.today {
+    border: 2px solid var(--primary);
+    background: #F8FFF8;
+  }
+  .day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .day-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .day-date {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .day-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .tag-new { background: #E8F5E9; color: #2E7D32; }
+  .tag-observe { background: #FFF8E1; color: #F57F17; }
+  .tag-increase { background: #E3F2FD; color: #1565C0; }
+  .tag-consolidate { background: #F3E5F5; color: #7B1FA2; }
+  .tag-today { background: #E8F5E9; color: #2E7D32; border: 1px solid #2E7D32; }
+  .tag-adapt { background: #FFF3E0; color: #E65100; }
+  .meal-detail {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 12px;
+    font-size: 14px;
+  }
+  .meal-detail dt { color: var(--text-light); font-size: 12px; }
+  .meal-detail dd { color: var(--text); }
+
+  /* Milk-food relationship */
+  .milk-food-box {
+    background: linear-gradient(135deg, #E3F2FD, #F3E5F5);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .milk-food-box h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1565C0;
+    margin-bottom: 10px;
+  }
+  .milk-food-box .key-point {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .milk-food-box .key-point:last-child { margin-bottom: 0; }
+  .milk-food-box .kp-icon { font-size: 20px; flex-shrink: 0; }
+  .milk-food-box .kp-title { font-weight: 700; color: #1565C0; }
+
+  /* Shopping list */
+  .shop-section { margin-bottom: 16px; }
+  .shop-section:last-child { margin-bottom: 0; }
+  .shop-section h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .shop-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #FAFAFA;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .shop-item:hover { background: #F0F0F0; }
+  .shop-item.checked { opacity: 0.5; text-decoration: line-through; }
+  .shop-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary);
+    margin-top: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .shop-item .item-info { flex: 1; }
+  .shop-item .item-name { font-weight: 600; font-size: 14px; }
+  .shop-item .item-note { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .shop-item .item-where {
+    font-size: 11px;
+    background: var(--primary);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  /* Recipe */
+  .recipe-card {
+    background: #F8FFF8;
+    border: 1px solid #E0F0E0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .recipe-card:last-child { margin-bottom: 0; }
+  .recipe-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .recipe-meta {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 16px;
+  }
+  .recipe-steps { counter-reset: step; }
+  .recipe-step {
+    position: relative;
+    padding-left: 36px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .recipe-step:last-child { margin-bottom: 0; }
+  .recipe-step::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .recipe-tip {
+    background: #FFF8E1;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .recipe-tip .tip-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* Allergy monitor */
+  .allergy-card {
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .allergy-card.low {
+    background: #F0FAF0;
+    border: 1px solid #C8E6C9;
+  }
+  .allergy-card.medium {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+  }
+  .allergy-card h4 { font-size: 14px; margin-bottom: 6px; }
+  .allergy-card ul { padding-left: 18px; font-size: 13px; }
+  .allergy-card li { margin-bottom: 3px; }
+  .emergency-box {
+    background: var(--danger-bg);
+    border: 2px solid var(--danger-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 10px;
+  }
+  .emergency-box h4 { color: #D32F2F; font-size: 14px; margin-bottom: 6px; }
+  .emergency-box p { font-size: 13px; }
+
+  /* Progress */
+  .progress-section { margin-bottom: 14px; }
+  .progress-section h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .food-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .food-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .food-tag.unlocked { background: #E8F5E9; color: #2E7D32; }
+  .food-tag.current { background: #FFF8E1; color: #E65100; border: 1px solid #FFCC80; }
+  .food-tag.preview { background: #F3E5F5; color: #7B1FA2; border: 1px dashed #CE93D8; }
+  .encouragement {
+    background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.8;
+    margin-top: 12px;
+  }
+  .encouragement .emoji { font-size: 28px; display: block; margin-bottom: 6px; }
+
+  /* Feedback */
+  .feedback-section { margin-top: 0; }
+  .feedback-food {
+    background: #FAFAFA;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .feedback-food h4 { font-size: 14px; margin-bottom: 8px; }
+  .emoji-rating {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .emoji-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid #E0E0E0;
+    background: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .emoji-btn:hover { transform: scale(1.15); }
+  .emoji-btn.selected {
+    border-color: var(--primary);
+    background: #E8F5E9;
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(123,198,126,0.3);
+  }
+  .feedback-textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.2s;
+  }
+  .feedback-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(123,198,126,0.15);
+  }
+  .feedback-textarea::placeholder { color: #bbb; }
+  .symptom-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0;
+  }
+  .symptom-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    border: 1px solid #E0E0E0;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .symptom-check.checked {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: #C62828;
+  }
+
+  /* Intake log */
+  .intake-log {
+    margin-top: 10px;
+  }
+  .intake-log h4 {
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .intake-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 100px;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .intake-row label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .intake-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .intake-slider {
+    flex: 1;
+    accent-color: var(--primary);
+    height: 6px;
+  }
+  .intake-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    min-width: 50px;
+    text-align: center;
+  }
+  .intake-comment {
+    font-size: 11px;
+    color: var(--text-light);
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 12px;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .feedback-result {
+    margin-top: 16px;
+    display: none;
+  }
+  .feedback-result.show { display: block; }
+  .feedback-result pre {
+    background: #F5F5F5;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: "SF Mono", "Menlo", monospace;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .copy-btn {
+    margin-top: 8px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: #e0e0e0; }
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: #F5F5F5;
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+  .disclaimer .icon { font-size: 14px; }
+
+  /* Responsive */
+  @media (max-width: 380px) {
+    .baby-info { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .baby-info.four-col { grid-template-columns: repeat(2, 1fr); }
+    .emoji-rating { gap: 4px; }
+    .emoji-btn { width: 38px; height: 38px; font-size: 18px; }
+    .intake-row { grid-template-columns: 60px 1fr 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<div class="header">
+  <div class="header-content">
+    <div class="logo">🌱</div>
+    <h1>小饭芽</h1>
+    <div class="subtitle">宝宝的专属辅食营养顾问</div>
+    <div class="week-badge">📅 第2周 · 破冰期 · 2026.04.13 - 04.19</div>
+    <div class="revision-badge">📝 修订版 · 基于爸爸反馈调整</div>
+  </div>
+</div>
+
+<!-- Baby Info Bar -->
+<div class="container">
+  <div class="baby-info four-col">
+    <div class="info-item">
+      <label>实际月龄</label>
+      <span>6月23天</span>
+    </div>
+    <div class="info-item">
+      <label>校正月龄</label>
+      <span>6月2天</span>
+    </div>
+    <div class="info-item">
+      <label>辅食第几天</label>
+      <span class="highlight">第5天</span>
+    </div>
+    <div class="info-item">
+      <label>辅食阶段</label>
+      <span>破冰期</span>
+    </div>
+  </div>
+
+  <!-- ==================== 爸爸反馈回应 ==================== -->
+  <div class="papa-feedback">
+    <h3>💬 爸爸的反馈 · 小饭芽的回应</h3>
+    <div class="feedback-item">
+      <strong>反馈：</strong>4天了还是无法完成30ml，弹舌反应，吃得满嘴都是
+    </div>
+    <div class="feedback-item">
+      <strong>反馈：</strong>每天10点喂，吃不完就补奶，感觉米粉像零食
+    </div>
+    <div class="feedback-item">
+      <strong>反馈：</strong>不确定一天该喂几顿，辅食和奶是什么关系
+    </div>
+    <div class="response">
+      <strong>🌱 小饭芽说：</strong>Ethan，你描述的情况<strong>完全正常</strong>，不需要焦虑！<br><br>
+      ❶ <strong>弹舌反应在校正6月初仍然存在是正常的</strong>——宝宝的挺舌反射正在消退中，但还没完全消失。大部分早产宝宝需要 1-2 周来适应"不是吸吮"的进食方式。<br><br>
+      ❷ <strong>吃不到 30ml 完全没问题。</strong>第一周的目标不是"吃饱"，而是"学会"——学会张嘴接受勺子、学会用舌头处理食物、学会吞咽。哪怕每次只吃进 5ml，都是在练习。<br><br>
+      ❸ <strong>你的喂法是对的！</strong>10点喂辅食→吃不完补奶，这就是现阶段正确的做法。详细的奶与辅食关系，请看下面专门的模块。<br><br>
+      基于你的反馈，本周计划做了以下调整：<br>
+      ✅ <strong>暂停南瓜引入</strong>——米粉还没稳定，不急着加新食材<br>
+      ✅ <strong>增加食量建议指导</strong>——每天给出参考量和"够了"的信号<br>
+      ✅ <strong>增加辅食与奶的关系说明</strong>——解答你的疑问<br>
+      ✅ <strong>调降预期</strong>——学吃的过程，吐出来 ≠ 失败
+    </div>
+  </div>
+
+  <!-- ==================== 新模块：辅食与奶的关系 ==================== -->
+  <div class="card" id="card-milk-food">
+    <div class="card-header" onclick="toggleCard('card-milk-food')">
+      <span class="icon">🍼</span>
+      <div class="title-group">
+        <h2>辅食与奶的关系</h2>
+        <div class="desc">现阶段奶是主食，辅食是"练习课"</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <div class="milk-food-box">
+        <h4>🔑 一句话结论</h4>
+        <div class="key-point">
+          <span class="kp-icon">🥇</span>
+          <div>
+            <div class="kp-title">1岁前，奶永远是主食，辅食是配角</div>
+            <p>WHO 和中国营养学会都明确：<strong>6-12月龄，奶类仍是婴儿的主要能量来源</strong>。辅食提供的热量在6-8月龄只占总摄入的 10-25%。所以你说"米粉像零食"——在这个阶段，这就是对的！</p>
+          </div>
+        </div>
+        <div class="key-point">
+          <span class="kp-icon">🕐</span>
+          <div>
+            <div class="kp-title">现在一天喂几顿辅食？</div>
+            <p><strong>只需1顿。</strong>校正6月龄初期，每天 1 次辅食完全足够。等宝宝适应吞咽后（大约辅食启动 3-4 周后），可以加到 2 次。不要着急加餐次。</p>
+          </div>
+        </div>
+        <div class="key-point">
+          <span class="kp-icon">📋</span>
+          <div>
+            <div class="kp-title">你现在的喂法完全正确 ✅</div>
+            <p>10点先喂辅食 → 吃不完/急躁了就停 → 补一顿奶。这就是"先辅后奶"的标准做法。辅食不替代奶，而是在奶的间隙中"加塞"一次练习。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="feeding-guide">
+        <h4>📅 一天的喂养时间线（参考）</h4>
+        <div class="feeding-timeline">
+          <div class="ft-item">
+            <span class="ft-time">07:00</span>
+            <span class="ft-desc"> — 晨奶（母乳/配方奶）</span>
+          </div>
+          <div class="ft-item" style="background:#FFF8E1; border-radius:8px; padding:8px 10px; margin-left:-10px;">
+            <span class="ft-time">10:00</span>
+            <span class="ft-desc"> — ⭐ 辅食时间！先喂米粉</span>
+            <div class="ft-note">宝宝心情好、不太饿也不太饱的时候最好。如果太饿了可以先喂 50ml 奶垫垫。</div>
+          </div>
+          <div class="ft-item">
+            <span class="ft-time">10:15-10:30</span>
+            <span class="ft-desc"> — 辅食结束后补奶，吃到饱</span>
+            <div class="ft-note">辅食吃了多少无所谓，奶一定要补够。这就是你现在的做法——没问题的！</div>
+          </div>
+          <div class="ft-item">
+            <span class="ft-time">13:00</span>
+            <span class="ft-desc"> — 午奶</span>
+          </div>
+          <div class="ft-item">
+            <span class="ft-time">16:00</span>
+            <span class="ft-desc"> — 下午奶</span>
+          </div>
+          <div class="ft-item">
+            <span class="ft-time">19:00</span>
+            <span class="ft-desc"> — 晚奶</span>
+          </div>
+          <div class="ft-item">
+            <span class="ft-time">22:00+</span>
+            <span class="ft-desc"> — 睡前奶 / 夜奶（按需）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="milk-food-box" style="background:linear-gradient(135deg, #FFF8E1, #FFF3E0); border-color:#FFE0B2;">
+        <h4>📊 每日奶量参考（校正6月龄）</h4>
+        <div class="key-point">
+          <span class="kp-icon">🍼</span>
+          <div>
+            <p><strong>每天总奶量：700-900ml</strong>（母乳或配方奶）<br>
+            大约每天 4-6 顿奶。这个量在辅食启动后的头一个月几乎不需要减少。<br>
+            <span style="color:var(--text-light); font-size:12px;">辅食量越来越大后（大约3月后），奶量才会自然缓慢减少到 500-600ml。</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 新模块：食量发展阶梯 ==================== -->
+  <div class="card" id="card-intake">
+    <div class="card-header" onclick="toggleCard('card-intake')">
+      <span class="icon">📏</span>
+      <div class="title-group">
+        <h2>食量发展阶梯</h2>
+        <div class="desc">循序渐进，不急不躁</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <p style="font-size:13px; color:var(--text-light); margin-bottom:12px;">
+        下表是<strong>大致参考</strong>，不是硬指标。每个宝宝节奏不同，尤其早产宝宝会更慢一些。吃到"宝宝不想吃了"就是这一顿的正确量。
+      </p>
+
+      <table class="intake-table">
+        <thead>
+          <tr>
+            <th>阶段</th>
+            <th>辅食天数</th>
+            <th>每次参考量</th>
+            <th>餐次</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="current">
+            <td><span class="stage-badge stage-now">👈 现在</span></td>
+            <td>第1-7天</td>
+            <td><strong>5-15ml</strong><br><span style="font-size:11px;color:var(--text-light);">1-3茶匙就够了</span></td>
+            <td>1次/天</td>
+          </tr>
+          <tr>
+            <td><span class="stage-badge stage-next">下一步</span></td>
+            <td>第8-14天</td>
+            <td><strong>15-30ml</strong><br><span style="font-size:11px;color:var(--text-light);">学会吞咽后自然增加</span></td>
+            <td>1次/天</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>第15-28天</td>
+            <td><strong>30-60ml</strong><br><span style="font-size:11px;color:var(--text-light);">可混合2种食材</span></td>
+            <td>1-2次/天</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>第29天+</td>
+            <td><strong>60-120ml</strong></td>
+            <td>2次/天</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="recipe-tip" style="margin-top:12px;">
+        <span class="tip-icon">💡</span>
+        <div>
+          <strong>关键信号——什么时候该停？</strong><br>
+          宝宝出现以下任一反应说明"这顿吃够了"：<br>
+          • 扭头避开勺子<br>
+          • 闭嘴不张<br>
+          • 开始急躁/哭闹<br>
+          • 用手推勺子<br>
+          • 注意力涣散、开始玩<br><br>
+          <strong>看到信号就停，绝不强迫</strong>。吃了3口还是吃了30ml，都OK。
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 模块一：发育里程碑 ==================== -->
+  <div class="card" id="card-milestone">
+    <div class="card-header" onclick="toggleCard('card-milestone')">
+      <span class="icon">📅</span>
+      <div class="title-group">
+        <h2>本周发育里程碑提示</h2>
+        <div class="desc">校正月龄 6月2天 · 第2周目标</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <div class="milestone-grid">
+        <div class="milestone-item caution">
+          <h4>🫦 弹舌反应仍在——完全正常！</h4>
+          <p>校正6月初的宝宝，<strong>挺舌反射还在消退中</strong>是正常的。吃进去 30% 吐出来 70%，不代表"不喜欢"或"不会吃"——只是舌头还在学新技能。通常辅食启动后 7-14 天，弹舌会明显减轻。宝宝才练了4天，给 ta 时间。</p>
+        </div>
+        <div class="milestone-item">
+          <h4>🧠 吞咽是"习得技能"</h4>
+          <p>吸吮是天生的，但吞咽泥糊状食物是<strong>后天学习</strong>的技能。就像你教宝宝翻身一样——不是一天就会的。现在每一次舌头接触到米粉糊、每一次试图吞咽（即使失败），都是大脑在建立新的神经通路。</p>
+        </div>
+        <div class="milestone-item">
+          <h4>🫃 消化适应中</h4>
+          <p>宝宝的消化酶正在"开机"。作为晚期早产宝宝，我们给消化系统更多耐心——本周<strong>不引入新食材</strong>，专心让米粉这一种食物完成适应。</p>
+        </div>
+        <div class="milestone-item goal">
+          <h4>🎯 本周核心目标（修订版）</h4>
+          <p><strong>目标不是"吃多少"，而是"弹舌减轻一点"。</strong><br>
+          如果到周末，宝宝能偶尔主动张嘴、吞进去的比例从30%→50%，就是巨大的成功。哪怕食量还是只有5-10ml，也完全OK。<br><br>
+          🚫 本周不引入南瓜泥——米粉先稳定再说。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 模块二：辅食计划表 ==================== -->
+  <div class="card" id="card-schedule">
+    <div class="card-header" onclick="toggleCard('card-schedule')">
+      <span class="icon">🥣</span>
+      <div class="title-group">
+        <h2>本周辅食计划表</h2>
+        <div class="desc">每天1次 · 专注米粉适应 · 不赶进度</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <!-- Day 1 - 周一 4/13 -->
+      <div class="schedule-day">
+        <div class="day-header">
+          <div>
+            <span class="day-name">周一</span>
+            <span class="day-date">4月13日 · 辅食第4天</span>
+          </div>
+          <span class="day-tag tag-adapt">🐣 继续适应</span>
+        </div>
+        <dl class="meal-detail">
+          <dt>⏰ 时间</dt><dd>10:00 左右（可以先喂50ml奶垫底，宝宝不焦躁时再喂）</dd>
+          <dt>🥄 食材</dt><dd>强化铁婴儿米粉</dd>
+          <dt>📝 做法</dt><dd>1平勺米粉 + 5勺温水/母乳，调成<strong>很稀</strong>的汤状（比上几天再稀一点！）</dd>
+          <dt>📏 建议食量</dt><dd><strong>5-10ml（1-2茶匙）就够了</strong> · 吐出来的不算</dd>
+          <dt>🍼 辅食后</dt><dd>立刻补奶，吃到饱</dd>
+          <dt>💡 要点</dt><dd>今天试试<strong>调得更稀</strong>——接近水的流动性。弹舌严重说明质地可能太稠了，舌头"不知道怎么处理"。更稀的米粉更接近奶的质地，宝宝更容易吞咽</dd>
+        </dl>
+      </div>
+
+      <!-- Day 2 - 周二 4/14 -->
+      <div class="schedule-day today">
+        <div class="day-header">
+          <div>
+            <span class="day-name">周二</span>
+            <span class="day-date">4月14日 · 辅食第5天</span>
+          </div>
+          <span class="day-tag tag-today">📍 今天</span>
+        </div>
+        <dl class="meal-detail">
+          <dt>⏰ 时间</dt><dd>10:00 左右</dd>
+          <dt>🥄 食材</dt><dd>强化铁婴儿米粉</dd>
+          <dt>📝 做法</dt><dd>保持昨天的稀度。如果昨天调稀了效果好（弹舌少一些），就继续这个稀度</dd>
+          <dt>📏 建议食量</dt><dd><strong>5-15ml</strong> · 5天了，宝宝可能比前几天多吞一两口</dd>
+          <dt>🍼 辅食后</dt><dd>立刻补奶，吃到饱</dd>
+          <dt>💡 要点</dt><dd>第5天！如果一切正常（无皮疹、无腹泻、无异常哭闹），<strong>米粉已安全通过早产儿5天观察期</strong> ✅ 但这不代表要加量，只是确认不过敏。继续慢慢练。<br><br>💪 <strong>试试这个小技巧</strong>：先在勺尖沾一点米粉糊放在宝宝嘴唇上让ta舔一下，比直接送进嘴里更容易被接受</dd>
+        </dl>
+      </div>
+
+      <!-- Day 3 - 周三 4/15 -->
+      <div class="schedule-day">
+        <div class="day-header">
+          <div>
+            <span class="day-name">周三</span>
+            <span class="day-date">4月15日 · 辅食第6天</span>
+          </div>
+          <span class="day-tag tag-adapt">🐣 继续适应</span>
+        </div>
+        <dl class="meal-detail">
+          <dt>⏰ 时间</dt><dd>10:00 左右</dd>
+          <dt>🥄 食材</dt><dd>强化铁婴儿米粉</dd>
+          <dt>📝 做法</dt><dd>保持很稀的质地。如果宝宝弹舌减少了，可以<strong>非常微小</strong>地调稠一丁点</dd>
+          <dt>📏 建议食量</dt><dd><strong>5-15ml</strong></dd>
+          <dt>🍼 辅食后</dt><dd>立刻补奶</dd>
+          <dt>💡 要点</dt><dd>观察宝宝的嘴巴动作——如果ta开始用上唇去"抿"勺子上的食物，而不是只靠舌头推，说明口腔技能在进步！这是个很棒的信号 🎉</dd>
+        </dl>
+      </div>
+
+      <!-- Day 4 - 周四 4/16 -->
+      <div class="schedule-day">
+        <div class="day-header">
+          <div>
+            <span class="day-name">周四</span>
+            <span class="day-date">4月16日 · 辅食第7天 🎉</span>
+          </div>
+          <span class="day-tag tag-adapt">🎯 一周里程碑</span>
+        </div>
+        <dl class="meal-detail">
+          <dt>⏰ 时间</dt><dd>10:00 左右</dd>
+          <dt>🥄 食材</dt><dd>强化铁婴儿米粉</dd>
+          <dt>📝 做法</dt><dd>同昨天的质地</dd>
+          <dt>📏 建议食量</dt><dd><strong>5-15ml</strong> · 吃多少都行，关注"弹舌是否比第1天好"</dd>
+          <dt>🍼 辅食后</dt><dd>立刻补奶</dd>
+          <dt>💡 要点</dt><dd>🎉 <strong>辅食第7天——整整一周了！</strong>回想一下Day 1，宝宝可能连嘴都不张。现在呢？哪怕只是"有时候愿意舔一下"，也是从0到1的跨越。给自己和宝宝点个赞！</dd>
+        </dl>
+      </div>
+
+      <!-- Day 5 - 周五 4/17 -->
+      <div class="schedule-day">
+        <div class="day-header">
+          <div>
+            <span class="day-name">周五</span>
+            <span class="day-date">4月17日 · 辅食第8天</span>
+          </div>
+          <span class="day-tag tag-increase">📈 微调进阶</span>
+        </div>
+        <dl class="meal-detail">
+          <dt>⏰ 时间</dt><dd>10:00 左右</dd>
+          <dt>🥄 食材</dt><dd>强化铁婴儿米粉</dd>
+          <dt>📝 做法</dt><dd>如果宝宝弹舌明显减少了 → 可以稍微调稠一点点（减半勺水）<br>如果弹舌还是很明显 → 继续保持很稀的质地，不着急</dd>
+          <dt>📏 建议食量</dt><dd><strong>10-20ml</strong> · 进入第二周，如果宝宝状态好，可能自然吃多一些</dd>
+          <dt>🍼 辅食后</dt><dd>立刻补奶</dd>
+          <dt>💡 要点</dt><dd>进入辅食第二周了，宝宝可能会有一个"突然开窍"的时刻——某一天忽然吞咽顺畅了很多。如果还没出现也完全正常，每个宝宝节奏不同</dd>
+        </dl>
+      </div>
+
+      <!-- Day 6 - 周六 4/18 -->
+      <div class="schedule-day">
+        <div class="day-header">
+          <div>
+            <span class="day-name">周六</span>
+            <span class="day-date">4月18日 · 辅食第9天</span>
+          </div>
+          <span class="day-tag tag-increase">📈 周末练习</span>
+        </div>
+        <dl class="meal-detail">
+          <dt>⏰ 时间</dt><dd>10:00 左右（周末不赶时间，可以慢慢来）</dd>
+          <dt>🥄 食材</dt><dd>强化铁婴儿米粉</dd>
+          <dt>📝 做法</dt><dd>试试用母乳/配方奶代替水来冲米粉——熟悉的奶味可能让宝宝更愿意接受</dd>
+          <dt>📏 建议食量</dt><dd><strong>10-20ml</strong></dd>
+          <dt>🍼 辅食后</dt><dd>补奶</dd>
+          <dt>💡 要点</dt><dd>周末时间充裕，<strong>让喂辅食变成一个开心的亲子互动</strong>，而不是一个"必须完成的任务"。宝宝能感受到你的放松和紧张。你放松了，ta也放松。可以边喂边说话、唱歌，让吃变成一件有趣的事 💛</dd>
+        </dl>
+      </div>
+
+      <!-- Day 7 - 周日 4/19 -->
+      <div class="schedule-day">
+        <div class="day-header">
+          <div>
+            <span class="day-name">周日</span>
+            <span class="day-date">4月19日 · 辅食第10天</span>
+          </div>
+          <span class="day-tag tag-consolidate">💜 本周收尾</span>
+        </div>
+        <dl class="meal-detail">
+          <dt>⏰ 时间</dt><dd>10:00 左右</dd>
+          <dt>🥄 食材</dt><dd>强化铁婴儿米粉</dd>
+          <dt>📝 做法</dt><dd>与昨天相同</dd>
+          <dt>📏 建议食量</dt><dd><strong>10-20ml</strong></dd>
+          <dt>🍼 辅食后</dt><dd>补奶</dd>
+          <dt>💡 要点</dt><dd>第二周收尾！做一个小总结：弹舌是否比上周好了？宝宝是否偶尔主动张嘴了？如果是——下周可以准备引入南瓜泥🎃。如果还在适应中——没关系，下周继续只吃米粉，节奏由宝宝决定。<br><br>📝 请在下面的反馈栏记录本周情况，帮助小饭芽生成更准确的下周计划！</dd>
+        </dl>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 模块三：采购清单 ==================== -->
+  <div class="card" id="card-shopping">
+    <div class="card-header" onclick="toggleCard('card-shopping')">
+      <span class="icon">🛒</span>
+      <div class="title-group">
+        <h2>本周采购清单</h2>
+        <div class="desc">点击勾选已购物品</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <div class="shop-section">
+        <h4>🟢 本周必购</h4>
+        <label class="shop-item" onclick="toggleCheck(this)">
+          <input type="checkbox">
+          <div class="item-info">
+            <div class="item-name">强化铁婴儿米粉（确认余量）</div>
+            <div class="item-note">本周继续只用米粉。检查开封后是否密封良好，开封超过1个月建议换新。</div>
+          </div>
+          <span class="item-where">上周库存</span>
+        </label>
+      </div>
+
+      <div class="shop-section">
+        <h4>🔵 可选备用（下周可能用到）</h4>
+        <label class="shop-item" onclick="toggleCheck(this)">
+          <input type="checkbox">
+          <div class="item-info">
+            <div class="item-name">贝壳南瓜（板栗南瓜）× 1个</div>
+            <div class="item-note">如果本周末宝宝弹舌明显改善，下周准备引入南瓜泥。可以周末先买好，不急着用。</div>
+          </div>
+          <span class="item-where">永辉/盒马</span>
+        </label>
+        <label class="shop-item" onclick="toggleCheck(this)">
+          <input type="checkbox">
+          <div class="item-info">
+            <div class="item-name">辅食冷冻格（硅胶带盖）</div>
+            <div class="item-note">为下周批量做南瓜泥做准备。推荐 BEABA / OXO。</div>
+          </div>
+          <span class="item-where">京东/天猫</span>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 模块四：制作指南 ==================== -->
+  <div class="card" id="card-recipe">
+    <div class="card-header" onclick="toggleCard('card-recipe')">
+      <span class="icon">👩‍🍳</span>
+      <div class="title-group">
+        <h2>米粉冲调技巧（弹舌宝宝版）</h2>
+        <div class="desc">针对弹舌反应优化的冲调方法</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <div class="recipe-card">
+        <div class="recipe-title">🥣 超稀米粉糊（弹舌适应版）</div>
+        <div class="recipe-meta">
+          <span>⏱ 2分钟</span>
+          <span>🍽 1份</span>
+          <span>🎯 减少弹舌</span>
+        </div>
+        <div class="recipe-steps">
+          <div class="recipe-step">
+            <strong>取米粉：</strong>只取<strong>半平勺</strong>米粉（约2-3g）放入小碗。量少一点没关系，减少浪费。
+          </div>
+          <div class="recipe-step">
+            <strong>加液体：</strong>加入 5-6 勺（约30ml）温水或<strong>母乳/配方奶</strong>（推荐！更易接受）。比例大约 1:10，非常稀。
+          </div>
+          <div class="recipe-step">
+            <strong>搅拌：</strong>轻轻搅匀至无颗粒。目标质地：<strong>像稀牛奶一样流动</strong>，勺子舀起来几乎是"流"下来的。
+          </div>
+          <div class="recipe-step">
+            <strong>试温：</strong>滴一滴在手腕内侧，温温的（约37°C）。
+          </div>
+          <div class="recipe-step">
+            <strong>喂法：</strong>用硅胶软勺沾一薄层，轻轻放在宝宝<strong>下唇上</strong>。让 ta 用上唇来"抿"——不要直接送进嘴里。如果弹舌了，等几秒再试下一口。
+          </div>
+        </div>
+        <div class="recipe-tip">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>为什么要调这么稀？</strong><br>
+            弹舌严重说明宝宝的舌头还不知道怎么处理"不是奶"的东西。质地越接近奶（流动的液体），舌头越容易"处理"。等弹舌减轻后再慢慢调稠——一次只减少半勺水。
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-card">
+        <div class="recipe-title">💪 弹舌期喂食5个小技巧</div>
+        <div class="recipe-steps">
+          <div class="recipe-step">
+            <strong>勺尖沾取法：</strong>不要满满一勺送进去，只在勺尖沾一层薄薄的米粉糊。量小=舌头好处理。
+          </div>
+          <div class="recipe-step">
+            <strong>唇上法：</strong>米粉放在下唇上等宝宝自己舔/抿，比直接送进嘴里更不容易触发弹舌。
+          </div>
+          <div class="recipe-step">
+            <strong>勺子预热：</strong>用温水泡一下勺子再喂。冰凉的勺子碰到嘴巴，宝宝可能会本能抗拒。
+          </div>
+          <div class="recipe-step">
+            <strong>平视喂食：</strong>让宝宝坐在高脚椅上，你蹲下来跟 ta 平视。从下方送勺子（不要从上往下），宝宝头部微微前倾，有助于吞咽。
+          </div>
+          <div class="recipe-step">
+            <strong>3口规则：</strong>如果连续3口都强烈弹舌/哭闹，今天就到这里。不勉强。明天再试。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 模块五：过敏监测 ==================== -->
+  <div class="card" id="card-allergy">
+    <div class="card-header" onclick="toggleCard('card-allergy')">
+      <span class="icon">⚠️</span>
+      <div class="title-group">
+        <h2>过敏与异常反应监测</h2>
+        <div class="desc">米粉第5天——观察期即将结束</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <div class="allergy-card low">
+        <h4>🟢 强化铁婴儿米粉 — 过敏风险：低</h4>
+        <p style="font-size:13px; margin-bottom:8px;">宝宝从4月10日开始吃米粉，今天（4/14）是第5天。早产儿过敏观察窗口为5天。</p>
+        <ul>
+          <li><strong>如果5天内无以下症状 → 米粉安全通过！✅</strong></li>
+          <li>需注意：口周或脸颊出现红疹、荨麻疹</li>
+          <li>需注意：腹泻（次数明显增多/水样便）、呕吐</li>
+          <li>需注意：持续哭闹不安、拒绝进食（排除其他原因）</li>
+        </ul>
+      </div>
+
+      <div class="allergy-card medium" style="margin-top:8px;">
+        <h4>⚠️ 注意区分：弹舌 ≠ 过敏</h4>
+        <ul>
+          <li><strong>弹舌/吐出来</strong> = 口腔运动不熟练，是正常的发育阶段现象</li>
+          <li><strong>过敏反应</strong> = 皮疹、荨麻疹、呕吐、腹泻、异常哭闹</li>
+          <li>宝宝目前的弹舌是<strong>运动问题不是过敏问题</strong>，不需要停止米粉</li>
+        </ul>
+      </div>
+
+      <div class="emergency-box">
+        <h4>🚨 需要立即就医的紧急信号</h4>
+        <p>如出现以下任一情况，<strong>停止喂食并立即就医</strong>：</p>
+        <ul style="font-size:13px; padding-left:18px; margin-top:6px;">
+          <li>面部/嘴唇/舌头肿胀</li>
+          <li>呼吸困难、喘鸣音</li>
+          <li>全身大面积荨麻疹</li>
+          <li>反复呕吐（≥3次）</li>
+          <li>精神萎靡、面色苍白</li>
+        </ul>
+        <p style="margin-top:8px; font-weight:600;">📞 紧急联系：拨打120 或前往最近的儿科急诊</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 模块六：进度追踪 ==================== -->
+  <div class="card" id="card-progress">
+    <div class="card-header" onclick="toggleCard('card-progress')">
+      <span class="icon">📊</span>
+      <div class="title-group">
+        <h2>进度追踪与下周预告</h2>
+        <div class="desc">按宝宝的节奏来</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body">
+
+      <div class="progress-section">
+        <h4>🔍 当前状态</h4>
+        <div class="food-tags">
+          <span class="food-tag current">🍚 强化铁米粉 · 适应中（第5天）</span>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <h4>👀 下周预告（取决于本周进展）</h4>
+        <div class="food-tags">
+          <span class="food-tag preview">🎃 南瓜泥（如果弹舌改善）</span>
+          <span class="food-tag current">🍚 强化铁米粉（继续巩固）</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-light); margin-top:8px;">
+          <strong>判断标准：</strong>如果本周末宝宝弹舌明显减轻，每餐能吃进 10-15ml → 下周引入南瓜泥。<br>
+          如果弹舌仍然很明显 → 下周继续只吃米粉，不着急。<strong>宝宝的节奏最重要。</strong>
+        </p>
+      </div>
+
+      <div class="progress-section">
+        <h4>🗺️ 辅食路线图（修订版）</h4>
+        <p style="font-size:13px; color:var(--text-light); line-height:1.8;">
+          <strong style="color:var(--primary-dark);">▶ 破冰期</strong>（当前 · 按宝宝节奏延长）：只吃米粉 → 弹舌消退后加南瓜 → 胡萝卜<br>
+          蔬菜探索：土豆/红薯/西兰花/西葫芦<br>
+          蛋白质引入：蛋黄/豆腐/鱼肉<br>
+          质地升级：粗泥→碎末<br>
+          多样化巩固<br><br>
+          <span style="color:#E65100;">⚡ 修订说明：不再按固定周数推进，改为按宝宝实际适应情况灵活调整。</span>
+        </p>
+      </div>
+
+      <div class="encouragement">
+        <span class="emoji">💪</span>
+        <p>
+          Ethan，你做得很好。<br>
+          愿意观察、愿意记录、愿意反馈——<br>
+          这本身就是最负责任的爸爸该做的事。<br><br>
+          弹舌反应会过去的。<br>
+          总有一天你会怀念她满嘴都是米粉的样子。<br>
+          <strong>慢慢来，不着急。</strong><br>
+          <span style="font-size:13px; color:var(--text-light);">—— 小饭芽 💚</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 反馈栏（增强版） ==================== -->
+  <div class="card" id="card-feedback">
+    <div class="card-header" onclick="toggleCard('card-feedback')">
+      <span class="icon">📝</span>
+      <div class="title-group">
+        <h2>本周食用反馈</h2>
+        <div class="desc">你的记录会直接影响下周计划</div>
+      </div>
+      <div class="toggle">▼</div>
+    </div>
+    <div class="card-body feedback-section">
+
+      <!-- Food: 强化铁米粉 -->
+      <div class="feedback-food" data-food="强化铁米粉">
+        <h4>🍚 强化铁米粉 — 本周接受度</h4>
+        <div class="emoji-rating">
+          <button class="emoji-btn" data-score="5" onclick="selectRating(this)" title="超爱！主动张嘴">😍</button>
+          <button class="emoji-btn" data-score="4" onclick="selectRating(this)" title="还不错，愿意吃">🙂</button>
+          <button class="emoji-btn" data-score="3" onclick="selectRating(this)" title="一般般，吃一点">😐</button>
+          <button class="emoji-btn" data-score="2" onclick="selectRating(this)" title="不太接受，大部分吐出">🙁</button>
+          <button class="emoji-btn" data-score="1" onclick="selectRating(this)" title="完全拒绝">❌</button>
+        </div>
+
+        <h4 style="font-size:13px; margin-bottom:6px;">弹舌情况（本周末 vs 上周）</h4>
+        <div class="symptom-checks" id="tongue-checks">
+          <span class="symptom-check" onclick="toggleSymptom(this)">👅 弹舌明显减轻</span>
+          <span class="symptom-check" onclick="toggleSymptom(this)">😐 弹舌差不多</span>
+          <span class="symptom-check" onclick="toggleSymptom(this)">😟 弹舌更严重了</span>
+        </div>
+
+        <h4 style="font-size:13px; margin-bottom:6px;">有没有出现以下症状？（可多选）</h4>
+        <div class="symptom-checks">
+          <span class="symptom-check" onclick="toggleSymptom(this)">🔴 皮疹/红疹</span>
+          <span class="symptom-check" onclick="toggleSymptom(this)">💩 腹泻</span>
+          <span class="symptom-check" onclick="toggleSymptom(this)">🤮 呕吐</span>
+          <span class="symptom-check" onclick="toggleSymptom(this)">😤 腹胀/胀气</span>
+          <span class="symptom-check" onclick="toggleSymptom(this)">😭 异常哭闹</span>
+          <span class="symptom-check" onclick="toggleSymptom(this)">✅ 一切正常</span>
+        </div>
+
+        <!-- Intake log -->
+        <div class="intake-log">
+          <h4>📏 这周大概每次吃多少？（拖动滑块）</h4>
+          <div class="intake-row">
+            <label>每次量：</label>
+            <div class="intake-slider-wrap">
+              <input type="range" class="intake-slider" id="intakeSlider" min="0" max="60" value="10" oninput="updateIntake(this)">
+              <span class="intake-value" id="intakeValue">10ml</span>
+            </div>
+            <span class="intake-comment" id="intakeComment">正常范围</span>
+          </div>
+        </div>
+
+        <textarea class="feedback-textarea" placeholder="比如：周三弹舌少了一些，周六用母乳冲的宝宝更愿意吃..."></textarea>
+      </div>
+
+      <!-- General feedback -->
+      <div class="feedback-food" data-food="整体反馈">
+        <h4>📋 本周整体感受 & 疑问</h4>
+        <textarea class="feedback-textarea" placeholder="比如：喂食时间是否合适？宝宝情绪怎么样？有什么困难或疑问？对下周有什么想法？"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="generateFeedback()">📋 生成反馈记录</button>
+
+      <div class="feedback-result" id="feedbackResult">
+        <p style="font-size:13px; color:var(--text-light); margin-bottom:8px;">以下是您的反馈记录，请复制后发送给小饭芽，我会在下周计划中参考：</p>
+        <pre id="feedbackText"></pre>
+        <button class="copy-btn" onclick="copyFeedback()">📋 复制到剪贴板</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== 免责声明 ==================== -->
+  <div class="disclaimer">
+    <span class="icon">📋</span>
+    <strong>免责声明</strong><br>
+    本计划基于 WHO、AAP、ESPGHAN 及中国营养学会《婴幼儿喂养指南（2022）》等通用婴幼儿营养指南生成，不构成医疗建议。每位宝宝发育情况不同，请结合儿科医生或营养师的个体化指导。如宝宝有特殊健康状况，请优先遵医嘱。
+    <br><br>
+    <span style="font-size:11px;">小饭芽 v1.1 · 第2周（修订版）· 生成于 2026年4月14日 · 基于爸爸反馈调整</span>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Card collapse/expand
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('collapsed');
+    const states = JSON.parse(localStorage.getItem('xiaofanya_card_states_w2r') || '{}');
+    states[id] = card.classList.contains('collapsed');
+    localStorage.setItem('xiaofanya_card_states_w2r', JSON.stringify(states));
+  }
+
+  // Restore card states
+  (function() {
+    const states = JSON.parse(localStorage.getItem('xiaofanya_card_states_w2r') || '{}');
+    Object.keys(states).forEach(id => {
+      if (states[id]) {
+        const card = document.getElementById(id);
+        if (card) card.classList.add('collapsed');
+      }
+    });
+  })();
+
+  // Shopping list checkbox
+  function toggleCheck(el) {
+    const checkbox = el.querySelector('input[type="checkbox"]');
+    el.classList.toggle('checked');
+    saveShoppingState();
+  }
+
+  function saveShoppingState() {
+    const items = document.querySelectorAll('.shop-item');
+    const states = [];
+    items.forEach((item, i) => {
+      states.push(item.classList.contains('checked'));
+    });
+    localStorage.setItem('xiaofanya_shopping_w2r', JSON.stringify(states));
+  }
+
+  // Restore shopping state
+  (function() {
+    const states = JSON.parse(localStorage.getItem('xiaofanya_shopping_w2r') || '[]');
+    const items = document.querySelectorAll('.shop-item');
+    states.forEach((checked, i) => {
+      if (checked && items[i]) {
+        items[i].classList.add('checked');
+        items[i].querySelector('input[type="checkbox"]').checked = true;
+      }
+    });
+  })();
+
+  // Emoji rating
+  function selectRating(btn) {
+    const parent = btn.closest('.emoji-rating');
+    parent.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  // Symptom toggle
+  function toggleSymptom(el) {
+    const parent = el.parentElement;
+    if (el.textContent.includes('一切正常')) {
+      parent.querySelectorAll('.symptom-check').forEach(s => {
+        if (s !== el) s.classList.remove('checked');
+      });
+    } else {
+      parent.querySelectorAll('.symptom-check').forEach(s => {
+        if (s.textContent.includes('一切正常')) s.classList.remove('checked');
+      });
+    }
+    el.classList.toggle('checked');
+  }
+
+  // Intake slider
+  function updateIntake(slider) {
+    const val = parseInt(slider.value);
+    document.getElementById('intakeValue').textContent = val + 'ml';
+    const comment = document.getElementById('intakeComment');
+    if (val <= 5) { comment.textContent = '刚开始，慢慢来'; comment.style.color = '#FF9800'; }
+    else if (val <= 15) { comment.textContent = '正常范围 ✅'; comment.style.color = '#4CAF50'; }
+    else if (val <= 30) { comment.textContent = '不错！在进步'; comment.style.color = '#2196F3'; }
+    else { comment.textContent = '很棒！超出预期'; comment.style.color = '#7B1FA2'; }
+  }
+
+  // Generate feedback
+  function generateFeedback() {
+    const lines = [];
+    lines.push('=== 小饭芽 · 第2周反馈记录（修订版） ===');
+    lines.push('日期范围：2026-04-13 ~ 2026-04-19');
+    lines.push('辅食天数：第4天 ~ 第10天');
+    lines.push('提交时间：' + new Date().toLocaleString('zh-CN'));
+    lines.push('');
+
+    document.querySelectorAll('.feedback-food').forEach(section => {
+      const food = section.dataset.food;
+      lines.push('【' + food + '】');
+
+      const selectedEmoji = section.querySelector('.emoji-btn.selected');
+      if (selectedEmoji) {
+        const scoreMap = {5:'😍 超爱',4:'🙂 还不错',3:'😐 一般',2:'🙁 不太接受',1:'❌ 完全拒绝'};
+        const score = selectedEmoji.dataset.score;
+        lines.push('接受度：' + scoreMap[score] + '（' + score + '/5）');
+      }
+
+      // Tongue checks
+      const tongueChecks = section.querySelector('#tongue-checks');
+      if (tongueChecks) {
+        const selected = [];
+        tongueChecks.querySelectorAll('.symptom-check.checked').forEach(s => {
+          selected.push(s.textContent.trim());
+        });
+        if (selected.length > 0) {
+          lines.push('弹舌情况：' + selected.join('、'));
+        }
+      }
+
+      const symptoms = [];
+      section.querySelectorAll('.symptom-checks:not(#tongue-checks) .symptom-check.checked').forEach(s => {
+        symptoms.push(s.textContent.trim());
+      });
+      if (symptoms.length > 0) {
+        lines.push('症状观察：' + symptoms.join('、'));
+      }
+
+      // Intake
+      const slider = section.querySelector('#intakeSlider');
+      if (slider) {
+        lines.push('每次食量：约 ' + slider.value + 'ml');
+      }
+
+      const textarea = section.querySelector('.feedback-textarea');
+      if (textarea && textarea.value.trim()) {
+        lines.push('备注：' + textarea.value.trim());
+      }
+
+      lines.push('');
+    });
+
+    lines.push('=== 反馈结束 ===');
+
+    const text = lines.join('\n');
+    document.getElementById('feedbackText').textContent = text;
+    document.getElementById('feedbackResult').classList.add('show');
+
+    localStorage.setItem('xiaofanya_feedback_w2r', text);
+
+    showToast('✅ 反馈已生成，请复制发送');
+  }
+
+  // Copy feedback
+  function copyFeedback() {
+    const text = document.getElementById('feedbackText').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('📋 已复制到剪贴板');
+    }).catch(() => {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast('📋 已复制到剪贴板');
+    });
+  }
+
+  // Toast notification
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+</script>
+
+</body>
+</html>
