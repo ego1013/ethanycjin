@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监督悖论：你越信任AI，就越无法监督它 · AI 每日洞见 #001</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* ── Header ── */
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .issue-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .issue-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+        }
+
+        .issue-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .issue-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--green-dim);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 750;
+            color: var(--white);
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .one-liner {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ── Source ── */
+        .source-box {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .source-box a { color: var(--accent); text-decoration: none; }
+        .source-box a:hover { text-decoration: underline; }
+
+        /* ── Body ── */
+        .body-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .body-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .body-section h2 .icon {
+            font-size: 1.1rem;
+        }
+
+        .body-text {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+
+        .body-text p {
+            margin-bottom: 1rem;
+        }
+
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        .body-text .highlight {
+            background: rgba(96, 165, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ── Data callout ── */
+        .data-callout {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1.25rem 0;
+        }
+
+        .data-callout .data-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-value.up { color: var(--green); }
+        .data-value.accent { color: var(--accent); }
+
+        /* ── Takeaways ── */
+        .takeaway-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .takeaway-item {
+            padding: 0.9rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .takeaway-item .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 0.6rem;
+        }
+
+        .takeaway-item strong { color: var(--white); }
+
+        /* ── Warning box ── */
+        .warning-box {
+            padding: 1rem 1.25rem;
+            background: var(--warn-dim);
+            border: 1px solid var(--warn-border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .warning-box h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* ── Further reading ── */
+        .further {
+            margin-bottom: 2.5rem;
+        }
+
+        .further h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .further-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .further-item a {
+            display: block;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .further-item a:hover {
+            border-color: var(--accent-border);
+            background: var(--surface-alt);
+        }
+
+        .further-item .label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Question ── */
+        .closing-question {
+            padding: 1.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+            border: 1px solid rgba(96,165,250,0.15);
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .closing-question .q-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .closing-question p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        /* ── Tags ── */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .container { padding: 1.25rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+            <span class="sep">/</span>
+            <a href="https://ego1013.github.io/ethanycjin/ainsight/">AI 每日洞见</a>
+            <span class="sep">/</span>
+            <span style="color:var(--text)">#001</span>
+        </nav>
+
+        <div class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#001</span>
+                <span class="issue-date">📅 2026-04-15 · 星期二</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>监督悖论：你越信任 AI，就越无法监督它</h1>
+
+            <div class="one-liner">
+                当人类对 AI agent 的信任随经验增长时，我们恰恰在丧失判断它何时出错的能力——这是一个结构性的正反馈陷阱，而不是"多加训练"能解决的问题。
+            </div>
+        </div>
+
+        <div class="source-box">
+            <strong>来源：</strong><br>
+            ① Anthropic Research, <a href="https://www.anthropic.com/research/measuring-agent-autonomy" target="_blank">"Measuring AI Agent Autonomy in Practice"</a>，2026.02.18 — 基于数百万次 Claude Code 交互的实证分析<br>
+            ② Dr. Tehseen Zia, <a href="https://www.unite.ai/the-learning-authority-dilemma-what-happens-when-ai-agent-capability-exceeds-human-oversight/" target="_blank">"The Learning-Authority Dilemma"</a>, Unite.AI, 2026.02.16
+        </div>
+
+        <!-- ── 深度解读 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🔬</span> 深度解读</h2>
+            <div class="body-text">
+                <p>
+                    我们一直以为"human-in-the-loop"是 AI 安全的终极保险——只要人类守在那里，机器就翻不了天。但 Anthropic 用数百万条真实交互数据告诉我们：<strong>人类的监督方式正在发生质变，而这个质变本身可能是个陷阱。</strong>
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">Anthropic 实证数据</div>
+                    <div class="data-row">
+                        <span class="data-label">新用户使用"全自动批准"</span>
+                        <span class="data-value">~20%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">资深用户使用"全自动批准"</span>
+                        <span class="data-value up">~40%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">3个月内单次自主运行时长</span>
+                        <span class="data-value accent">25min → 45min（↑80%）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">资深用户打断率</span>
+                        <span class="data-value up">5% → 9%</span>
+                    </div>
+                </div>
+
+                <p>
+                    Anthropic 对这组数据的解读很乐观：资深用户虽然放手更多，但打断率也从 5% 涨到 9%——这说明他们不是在"躺平"，而是从<strong>"逐步审批"转向了"监控+干预"</strong>模式。听起来挺合理对吧？但换个角度想——
+                </p>
+
+                <p>
+                    这恰好印证了 Unite.AI 文章中描述的<span class="highlight">问责-能力悖论（Accountability-Capability Paradox）</span>：AI 能力增强 → 分配更多任务 → 人类减少练习 → 判断力下降 → 更依赖 AI → 循环加深。那些"高经验用户"的打断频率上升，到底是<strong>更好的判断力</strong>，还是<strong>更多次地发现自己跟不上节奏而手忙脚乱地按暂停</strong>？
+                </p>
+
+                <p>
+                    这里有一个微妙但关键的类比：想象你雇了一个特别厉害的助理。一开始你检查每封邮件、每个日程安排。半年后你只看结果——"嗯，还行，继续"。一年后你甚至不记得自己的日程逻辑是什么了。<strong>你并没有变成一个更好的管理者，你只是变成了一个更信任助理的人。</strong>而"信任"和"有能力监督"是两码事。
+                </p>
+
+                <p>
+                    牛津哲学家 Philipp Koralus 把这叫做 <span class="highlight">agency-autonomy dilemma</span>（能动性-自主性困境）：不用 AI 你搞不定这个复杂的世界，用了 AI 你逐步丧失的恰恰是<strong>控制 AI 所需的那些能力</strong>——批判性思维、情境判断、伦理直觉。这不是意志力问题，这是<strong>结构性退化</strong>。
+                </p>
+
+                <p>
+                    最让人不安的是 Anthropic 数据中一个被轻描淡写的发现：存在 <strong>deployment overhang</strong>（部署超额）——AI 实际能处理的自主程度，已经超过它在实践中行使的程度。翻译成人话就是：<strong>AI 已经比我们允许它做的更能干了，目前限制它的不是技术，是惯性和谨慎。</strong>一旦这层谨慎被经验磨掉，自主性的天花板会迅速抬升。
+                </p>
+            </div>
+        </div>
+
+        <!-- ── 对你意味着什么 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>主动设置"能力保鲜"机制。</strong>当你开始让 AI agent 自动处理某类任务时，定期（比如每周）手动做一次同类任务。不是不信任工具，而是保持自己的判断力不生锈。肌肉会萎缩，认知肌肉也会。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>区分"信任"和"放弃"。</strong>下次你在 AI 工具里点"全部批准"时，问自己：我是因为验证过它足够好，还是因为验证太麻烦？如果是后者，你已经进入了悖论的下行螺旋。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>拥抱"苏格拉底式 AI"设计理念。</strong>最好的 AI 不是让你最少操心的 AI，而是让你在关键决策点上保持思考的 AI。选择那些会问你"你确定吗？你的判断标准是什么？"的工具，而不是默默全做完的。
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 认知偏差提醒 ── -->
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒</h2>
+            <p>
+                <strong>自动化偏见（Automation Bias）</strong>——人类倾向于过度信任自动化系统的输出，尤其当系统"大部分时候是对的"时。Anthropic 数据中资深用户的高自动批准率，可能部分就是这种偏见的产物。同时注意<strong>禀赋效应</strong>：一旦你习惯了 AI 代劳的便利，放弃它的心理成本会远超实际损失——这让你更难回头验证。
+            </p>
+        </div>
+
+        <!-- ── 延伸阅读 ── -->
+        <div class="further">
+            <h2>📖 想深入了解</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://www.anthropic.com/research/measuring-agent-autonomy" target="_blank">
+                        Anthropic: Measuring AI Agent Autonomy in Practice（完整报告）
+                        <br><span class="label">数据详尽，含 Claude Code 用户行为深度分析</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.unite.ai/the-learning-authority-dilemma-what-happens-when-ai-agent-capability-exceeds-human-oversight/" target="_blank">
+                        Unite.AI: The Learning-Authority Dilemma
+                        <br><span class="label">哲学视角 + 治理方案，6分钟快读</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://cmr.berkeley.edu/2026/03/governing-the-agentic-enterprise-a-new-operating-model-for-autonomous-ai-at-scale/" target="_blank">
+                        搜索关键词: "agentic enterprise operating model" / "accountability-capability paradox"
+                        <br><span class="label">UC Berkeley CMR 关于组织层面治理框架的前沿讨论</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 留一个问题 ── -->
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>在你日常使用的 AI 工具中，有哪些任务你已经"不再检查输出"了？<br>你上次手动验证 AI 结果是什么时候？你还有能力发现它错了吗？</p>
+        </div>
+
+        <!-- ── Tags ── -->
+        <div class="tags">
+            <span class="tag">AI Agent</span>
+            <span class="tag">Human Oversight</span>
+            <span class="tag">Trust Paradox</span>
+            <span class="tag">Automation Bias</span>
+            <span class="tag">Accountability</span>
+        </div>
+
+        <a href="https://ego1013.github.io/ethanycjin/ainsight/" class="back-btn">← 返回洞见列表</a>
+
+        <div class="footer">
+            🧠 AI 每日洞见 · 信号提取，不是新闻聚合 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+        </div>
+    </div>
+</body>
+</html>
