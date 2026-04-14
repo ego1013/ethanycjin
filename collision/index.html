@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日认知碰撞</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--accent:#6c5ce7;--accent2:#a29bfe;--text:#e8e8f0;--text2:#8888a0;--gold:#ffd700;--red:#ff6b6b;--green:#51cf66;--blue:#339af0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:720px;margin:0 auto;padding:24px 20px}
+.header{text-align:center;padding:40px 0 30px;position:relative}
+.header::after{content:'';display:block;width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin:16px auto 0;border-radius:2px}
+.header h1{font-size:24px;font-weight:700;letter-spacing:2px}
+.header .sub{color:var(--text2);font-size:13px;margin-top:8px}
+.day-badge{display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:12px;padding:4px 14px;border-radius:20px;margin-bottom:12px;font-weight:600}
+.level-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;margin:8px 4px}
+.level-tag.L1{background:#6c5ce720;color:#a29bfe;border:1px solid #6c5ce740}
+.level-tag.L2{background:#339af020;color:#74c0fc;border:1px solid #339af040}
+.level-tag.L3{background:#ffd70020;color:#ffd700;border:1px solid #ffd70040}
+.level-tag.L4{background:#ff6b6b20;color:#ff6b6b;border:1px solid #ff6b6b40}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin:20px 0;transition:all .3s}
+.card-title{font-size:15px;color:var(--accent2);font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:18px}
+.viewpoint-text{font-size:17px;line-height:1.9;color:var(--text);margin-bottom:20px;padding:20px;background:#1a1a28;border-left:3px solid var(--accent);border-radius:0 12px 12px 0}
+.anchor{color:var(--text2);font-size:14px;line-height:1.8;padding:16px;background:#0d0d15;border-radius:12px}
+.anchor strong{color:var(--accent2)}
+.collision-hint{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.hint-chip{padding:6px 14px;border-radius:20px;font-size:12px;background:#1a1a28;border:1px solid var(--border);color:var(--text2);cursor:default}
+.hint-chip.active{border-color:var(--accent);color:var(--accent2);background:#6c5ce715}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0}
+.response-area{margin:20px 0}
+.response-area label{display:block;font-size:14px;color:var(--accent2);margin-bottom:10px;font-weight:600}
+.response-area textarea{width:100%;min-height:140px;background:#0d0d15;border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-size:15px;line-height:1.7;resize:vertical;font-family:inherit;transition:border-color .3s}
+.response-area textarea:focus{outline:none;border-color:var(--accent)}
+.response-area textarea::placeholder{color:#555568}
+.guide-box{background:#1a1a28;border-radius:12px;padding:20px;margin:16px 0;border:1px solid var(--border)}
+.guide-box h4{color:var(--gold);font-size:13px;margin-bottom:12px}
+.guide-box .prompt-item{color:var(--text2);font-size:13px;margin:6px 0;padding-left:16px;position:relative}
+.guide-box .prompt-item::before{content:'›';position:absolute;left:0;color:var(--accent2)}
+.guide-box .sentence{color:var(--text);font-size:14px;font-style:italic;padding:12px 16px;background:#13131a;border-radius:8px;margin-top:12px;border-left:2px solid var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px #6c5ce740}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{background:var(--card);color:var(--accent2);border:1px solid var(--border);padding:10px 20px;font-size:13px}
+.btn-secondary:hover{border-color:var(--accent);background:#1a1a28}
+section{display:none}
+section.active{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.q-group{margin:24px 0;padding-bottom:20px;border-bottom:1px solid #1a1a28}
+.q-group:last-child{border-bottom:none}
+.q-label{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px}
+.q-sub{font-size:13px;color:var(--text2);margin:8px 0 12px}
+.radio-group,.check-group{display:flex;flex-wrap:wrap;gap:8px}
+.radio-item,.check-item{position:relative}
+.radio-item input,.check-item input{position:absolute;opacity:0;width:0;height:0}
+.radio-item label,.check-item label{display:block;padding:8px 18px;border-radius:10px;font-size:13px;background:#0d0d15;border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s}
+.radio-item input:checked+label,.check-item input:checked+label{border-color:var(--accent);color:var(--accent2);background:#6c5ce715}
+.q-input{width:100%;background:#0d0d15;border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .3s}
+.q-input:focus{outline:none;border-color:var(--accent)}
+.progress-bar{display:flex;gap:4px;margin:20px 0}
+.progress-bar .step{flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .4s}
+.progress-bar .step.done{background:var(--accent)}
+.progress-bar .step.current{background:var(--accent2)}
+.success-screen{text-align:center;padding:60px 20px}
+.success-screen .emoji{font-size:64px;margin-bottom:20px}
+.success-screen h2{font-size:22px;margin-bottom:12px}
+.success-screen p{color:var(--text2);font-size:14px;line-height:1.8}
+.yesterday-note{background:#1a1a28;border-radius:12px;padding:16px 20px;margin:16px 0;font-size:13px;color:var(--text2);line-height:1.7;border-left:3px solid var(--gold)}
+.yesterday-note strong{color:var(--gold)}
+.context-line{text-align:center;color:var(--text2);font-size:14px;margin:20px 0}
+</style>
+</head>
+<body>
+<div class="container">
+<!-- Progress -->
+<div class="progress-bar">
+<div class="step done" id="prog1"></div>
+<div class="step" id="prog2"></div>
+<div class="step" id="prog3"></div>
+</div>
+
+<!-- SECTION 1: 观点推送 -->
+<section id="sec-viewpoint" class="active">
+<div class="header">
+<div class="day-badge" id="dayBadge">第 1 天</div>
+<h1>📡 今日认知碰撞</h1>
+<div class="sub" id="dateDisplay"></div>
+</div>
+<div id="yesterdayBox"></div>
+<div style="text-align:center;margin:16px 0">
+<span class="level-tag" id="levelTag"></span>
+</div>
+<div class="card">
+<div class="card-title"><span class="icon">💡</span>今日观点</div>
+<div class="viewpoint-text" id="viewpointText"></div>
+</div>
+<div class="card">
+<div class="card-title"><span class="icon">🔗</span>背景锚点</div>
+<div class="anchor" id="anchorText"></div>
+</div>
+<div class="card">
+<div class="card-title"><span class="icon">💥</span>碰撞提示</div>
+<p style="font-size:13px;color:var(--text2);margin-bottom:12px">这个观点可能会触碰你的：</p>
+<div class="collision-hint" id="hintChips"></div>
+</div>
+<div style="margin-top:28px">
+<button class="btn btn-primary" onclick="goToResponse()">准备好了，开始碰撞 →</button>
+</div>
+</section>
+
+<!-- SECTION 2: 碰撞引导 + 回应 -->
+<section id="sec-response">
+<div class="header">
+<h1>💬 分享你的第一反应</h1>
+<div class="sub">让观点先进来，看看它会动摇你的哪块地基</div>
+</div>
+<div class="guide-box">
+<h4>⚠️ 高质量碰撞提醒</h4>
+<div class="prompt-item">这个观点触动了我什么？（情绪反应往往指向盲点）</div>
+<div class="prompt-item">我的第一反应是抵触还是共鸣？为什么？</div>
+<div class="prompt-item">它挑战了我的哪个前提假设？</div>
+<div class="prompt-item">一个月后回看，我的判断有没有变化？</div>
+<div class="sentence">"如果这个观点是对的，那我过去关于[X]的判断可能需要被重新审视，因为……"</div>
+</div>
+<div class="response-area">
+<label>✍️ 写下你的回应</label>
+<textarea id="responseText" placeholder="请避免直接判断对/错，尝试先让观点进来，看它动摇了什么……"></textarea>
+</div>
+<div style="margin-top:20px">
+<button class="btn btn-primary" id="btnSubmitResponse" disabled onclick="goToSurvey()">提交回应，进入记录 →</button>
+</div>
+</section>
+
+<!-- SECTION 3: 碰撞记录问卷 -->
+<section id="sec-survey">
+<div class="header">
+<h1>📋 今日碰撞记录</h1>
+<div class="sub">预计完成时间：3-5 分钟</div>
+</div>
+
+<div class="q-group">
+<div class="q-label">Q1｜你的第一情绪反应是？</div>
+<div class="radio-group" id="q1emotion">
+<div class="radio-item"><input type="radio" name="q1" id="q1a" value="强烈抵触"><label for="q1a">强烈抵触</label></div>
+<div class="radio-item"><input type="radio" name="q1" id="q1b" value="轻微不适"><label for="q1b">轻微不适</label></div>
+<div class="radio-item"><input type="radio" name="q1" id="q1c" value="好奇中立"><label for="q1c">好奇中立</label></div>
+<div class="radio-item"><input type="radio" name="q1" id="q1d" value="意外共鸣"><label for="q1d">意外共鸣</label></div>
+<div class="radio-item"><input type="radio" name="q1" id="q1e" value="完全陌生无感"><label for="q1e">完全陌生无感</label></div>
+</div>
+<div class="q-sub">→ 这个反应的来源：</div>
+<div class="check-group" id="q1source">
+<div class="check-item"><input type="checkbox" id="q1s1" value="与专业判断冲突"><label for="q1s1">与专业判断冲突</label></div>
+<div class="check-item"><input type="checkbox" id="q1s2" value="与价值观冲突"><label for="q1s2">与价值观冲突</label></div>
+<div class="check-item"><input type="checkbox" id="q1s3" value="触碰个人经历"><label for="q1s3">触碰个人经历</label></div>
+<div class="check-item"><input type="checkbox" id="q1s4" value="信息陌生感"><label for="q1s4">信息陌生感</label></div>
+</div>
+<input class="q-input" id="q1other" placeholder="其他来源（选填）" style="margin-top:10px">
+</div>
+
+<div class="q-group">
+<div class="q-label">Q2｜今天的观点挑战了你的哪个假设？</div>
+<input class="q-input" id="q2before" placeholder="我以为……" style="margin-bottom:10px">
+<input class="q-input" id="q2after" placeholder="现在我觉得……（可以是'还不确定'）">
+</div>
+
+<div class="q-group">
+<div class="q-label">Q3｜认知更新程度自评</div>
+<div class="radio-group" id="q3level">
+<div class="radio-item"><input type="radio" name="q3" id="q3a" value="完全没有更新"><label for="q3a">完全没有更新</label></div>
+<div class="radio-item"><input type="radio" name="q3" id="q3b" value="有一点松动"><label for="q3b">有一点松动</label></div>
+<div class="radio-item"><input type="radio" name="q3" id="q3c" value="明显更新"><label for="q3c">明显更新</label></div>
+<div class="radio-item"><input type="radio" name="q3" id="q3d" value="触发更大问题"><label for="q3d">触发更大问题</label></div>
+</div>
+<div class="q-sub">→ 如果有更新，发生在哪个层面？</div>
+<div class="check-group" id="q3dimension">
+<div class="check-item"><input type="checkbox" id="q3d1" value="事实/数据层面"><label for="q3d1">事实/数据</label></div>
+<div class="check-item"><input type="checkbox" id="q3d2" value="分析框架层面"><label for="q3d2">分析框架</label></div>
+<div class="check-item"><input type="checkbox" id="q3d3" value="价值判断层面"><label for="q3d3">价值判断</label></div>
+<div class="check-item"><input type="checkbox" id="q3d4" value="对自己的认知层面"><label for="q3d4">对自己的认知</label></div>
+</div>
+</div>
+
+<div class="q-group">
+<div class="q-label">Q4｜延伸思考（选填）</div>
+<input class="q-input" id="q4question" placeholder="这次碰撞让我想到了一个还没想清楚的问题……" style="margin-bottom:10px">
+<input class="q-input" id="q4explore" placeholder="我想在未来某天继续探索的方向……">
+</div>
+
+<div class="q-group">
+<div class="q-label">Q5｜对今日观点的异质度评价</div>
+<div class="q-sub">实际感受到的碰撞强度：</div>
+<div class="radio-group" id="q5intensity">
+<div class="radio-item"><input type="radio" name="q5" id="q5a" value="比标注更强"><label for="q5a">比标注更强</label></div>
+<div class="radio-item"><input type="radio" name="q5" id="q5b" value="与标注相符"><label for="q5b">与标注相符</label></div>
+<div class="radio-item"><input type="radio" name="q5" id="q5c" value="比标注更弱"><label for="q5c">比标注更弱</label></div>
+</div>
+</div>
+
+<div style="margin-top:28px">
+<button class="btn btn-primary" id="btnSubmitSurvey" onclick="submitSurvey()">提交今日碰撞记录 ✓</button>
+</div>
+</section>
+
+<!-- SECTION 4: 完成 -->
+<section id="sec-done">
+<div class="success-screen">
+<div class="emoji">🧠</div>
+<h2>今日碰撞已存档</h2>
+<p id="doneMsg"></p>
+<div style="margin-top:32px">
+<button class="btn btn-secondary" onclick="location.reload()">查看今日观点</button>
+</div>
+</div>
+</section>
+</div>
+
+<script>
+// === 今日碰撞数据（由 Agent 注入） ===
+const TODAY_DATA = {
+  date: "2026-04-14",
+  dayNumber: 9,
+  level: "L4",
+  levelDesc: "价值观直接碰撞区",
+  domain: "道德哲学 × 绩效管理",
+  viewpoint: `Ethan，今天不是学术碰撞，今天是拷问。
+
+你每天的工作是什么？渠道绩效管理。你设定 KPI，评估代理商表现，决定资源分配。表现好的给更多资源，表现差的削减甚至淘汰。这套逻辑你运行得很熟练，它有数据支撑，有商业合理性，有组织目标的正当性。
+
+但是，伊曼努尔·康德（Immanuel Kant）在 1785 年的《道德形而上学奠基》中写下了一个至今无法被绕过的命令——绝对命令的第二形式（the Formula of Humanity）："你应当如此行动，即无论是在你自身还是在任何他人的人格中，你都永远不只是把人当作手段，而同时也当作目的。"（Act so that you treat humanity, whether in your own person or in that of another, always as an end and never merely as a means.）
+
+现在把这条命令放到你的工作台上。你对渠道代理商做的事情是什么？你把他们的表现量化为数字，用这些数字决定他们能获得多少资源，当数字不达标时你削减他们的生存空间。在这个过程中，代理商的存在对你来说是什么？是目的还是手段？答案不需要我替你说——他们是实现公司商业目标的手段。你不是在关心张三李四作为人的发展和福祉，你是在关心他们作为渠道节点的投入产出比。
+
+你可能会反驳：这是商业环境，不是道德哲学课。代理商签了合同，大家是对等的市场关系。但康德的洞察比这深刻得多。他不是说你不能使用他人的劳动——他说的是"仅仅当作手段"（merely as a means）。问题是：在绩效管理的系统逻辑里，有没有任何结构性的设计让你"同时也把他们当作目的"？还是说这个系统从底层就排除了这种可能性？
+
+让我再推你一步。你不只是在管理代理商。你自己也是被管理的。你的上级看你的 KPI，你的存在对组织来说同样是达成目标的手段。你很清楚这一点。那么——你接受这种安排吗？你觉得你在这个系统中"同时也被当作目的"吗？还是你只是默认了"被当作手段是正常的"，然后用同样的逻辑对待你管理的代理商？
+
+这里有一个更深层的悖论。Peter Drucker 在《管理的实践》（The Practice of Management, 1954）中定义了"目标管理"（MBO）——通过目标的设定和分解来协调组织行为。但 Drucker 同时也写过："管理的本质不是技术和程序，而是使人有所成就。"（The purpose of management is to make people productive and to make their strengths effective.）这两个主张之间存在一种被刻意忽略的张力：MBO 在操作层面必然把人当作实现目标的手段，但 Drucker 在哲学层面要求管理把人当作目的。绩效管理的全部历史，就是在这个不可能调和的裂缝上反复粉刷的历史。
+
+Bernard Williams（1929-2003）在《Ethics and the Limits of Philosophy》（1985）中提出了一个更加尖锐的概念："道德运气"（moral luck）。一个代理商的绩效不达标，可能是因为他所在的市场突然萎缩、因为算法调整打乱了他的获客模型、因为他的核心团队成员生了重病。但在绩效评估表上，这些都不重要——数字就是数字。你在用"绩效"这个看似客观的标准做出的决策，实际上在很大程度上是由运气决定的。但你把基于运气的结果当作基于能力的判断，然后用这个判断来分配资源和机会。这不只是不准确——这是一种系统性的道德扭曲。
+
+现在到了最扎心的问题：你学过精神分析，你知道"合理化"（rationalization）是什么。你有没有可能——你对绩效管理的全部信仰，你对"数据驱动决策"的信心，你对"优胜劣汰是公平的"这个前提的接受——都是一种精致的合理化？你不是因为它是对的才相信它，你是因为你的工作需要你相信它，所以你找到了理由让自己相信。
+
+这不是在说你是一个坏人。这是在说：你可能在一个结构性地排除"把人当作目的"的系统中工作，而你发展出了一套精致的心理防御来让自己不必面对这个事实。`,
+  anchor: `<strong>核心来源</strong>：Immanuel Kant,《Grundlegung zur Metaphysik der Sitten》(1785)，英译 Groundwork of the Metaphysics of Morals。康德的绝对命令第二形式（Formula of Humanity）是西方义务论伦理学的基石。它不是说"不能使用他人"，而是说不能"仅仅"把人当作手段——必须同时尊重他们作为理性存在者的内在价值和自主性。这个"同时"（at the same time）是整个论证的关键。<br><br><strong>目标管理的内在矛盾</strong>：Peter Drucker,《The Practice of Management》(1954)。Drucker 发明了 MBO（Management by Objectives），但他同时也是人本管理的倡导者。Drucker 晚年在《管理的前沿》(1986) 中承认，MBO 在实践中经常退化为"目标的暴政"（tyranny of objectives），管理者把手段（达成指标）当成了目的本身。<br><br><strong>道德运气</strong>：Bernard Williams,《Moral Luck》(1981, Cambridge University Press) 和 Thomas Nagel 同名论文 (1979)。Williams 论证了道德评价不可避免地受到运气因素的影响——包括结果运气（outcome luck）、环境运气（circumstantial luck）、构成性运气（constitutive luck）。绩效评估的核心假设是"结果反映能力和努力"，但 Williams 指出这个假设在哲学上站不住脚。<br><br><strong>系统性合理化</strong>：本观点综合了 Kant 的义务论、Williams 的道德运气、Drucker 的管理哲学矛盾，以及精神分析中"合理化"防御机制的概念，指向一个核心问题：绩效管理是否在结构层面就排除了"把人当作目的"的可能性，而从业者通过心理防御机制回避了这个认知。`,
+  hints: ["价值观", "专业判断"],
+  yesterday: `上次碰撞（4月13日）推送了演化心理学×组织管理（L2），用 Dunbar 的社交脑假说和 Cosmides-Tooby 的模块心智理论挑战了精神分析对职场行为的解释框架——你以为自己在"看穿"行为本质，可能只是在运行一个演化出来的叙事模块。今天我们从认知框架的碰撞升级到价值观的直接拷问：你每天在做的这件事，在道德上站得住脚吗？`
+};
+
+// === 初始化 ===
+function init() {
+  document.getElementById('dateDisplay').textContent = TODAY_DATA.date;
+  document.getElementById('dayBadge').textContent = '第 ' + TODAY_DATA.dayNumber + ' 天';
+  const lt = document.getElementById('levelTag');
+  lt.className = 'level-tag ' + TODAY_DATA.level;
+  lt.textContent = TODAY_DATA.level + ' · ' + TODAY_DATA.domain;
+  document.getElementById('viewpointText').textContent = TODAY_DATA.viewpoint;
+  document.getElementById('anchorText').innerHTML = TODAY_DATA.anchor;
+  const hc = document.getElementById('hintChips');
+  const allHints = ['专业判断','价值观','行业假设','个人经验'];
+  allHints.forEach(h => {
+    const d = document.createElement('span');
+    d.className = 'hint-chip' + (TODAY_DATA.hints.includes(h) ? ' active' : '');
+    d.textContent = (TODAY_DATA.hints.includes(h) ? '☑ ' : '☐ ') + h;
+    hc.appendChild(d);
+  });
+  if (TODAY_DATA.yesterday) {
+    document.getElementById('yesterdayBox').innerHTML =
+      '<div class="yesterday-note"><strong>昨日回顾</strong>：' + TODAY_DATA.yesterday + '</div>';
+  }
+  const ta = document.getElementById('responseText');
+  const btn = document.getElementById('btnSubmitResponse');
+  ta.addEventListener('input', () => { btn.disabled = ta.value.trim().length < 10; });
+}
+
+function goToResponse() {
+  switchSection('sec-response');
+  document.getElementById('prog2').classList.add('current');
+}
+
+function goToSurvey() {
+  switchSection('sec-survey');
+  document.getElementById('prog2').classList.remove('current');
+  document.getElementById('prog2').classList.add('done');
+  document.getElementById('prog3').classList.add('current');
+}
+
+function switchSection(id) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function getRadio(name) {
+  const el = document.querySelector('input[name="'+name+'"]:checked');
+  return el ? el.value : '';
+}
+function getChecked(parentId) {
+  return Array.from(document.querySelectorAll('#'+parentId+' input:checked')).map(e=>e.value);
+}
+
+function submitSurvey() {
+  const record = {
+    date: TODAY_DATA.date,
+    dayNumber: TODAY_DATA.dayNumber,
+    level: TODAY_DATA.level,
+    domain: TODAY_DATA.domain,
+    viewpointTitle: TODAY_DATA.domain,
+    viewpointExcerpt: TODAY_DATA.viewpoint.substring(0, 100) + '...',
+    response: document.getElementById('responseText').value,
+    q1_emotion: getRadio('q1'),
+    q1_source: getChecked('q1source'),
+    q1_other: document.getElementById('q1other').value,
+    q2_before: document.getElementById('q2before').value,
+    q2_after: document.getElementById('q2after').value,
+    q3_update: getRadio('q3'),
+    q3_dimension: getChecked('q3dimension'),
+    q4_question: document.getElementById('q4question').value,
+    q4_explore: document.getElementById('q4explore').value,
+    q5_intensity: getRadio('q5'),
+    timestamp: new Date().toISOString()
+  };
+  // 将记录显示在完成页并存储到 localStorage
+  const key = 'collision_' + TODAY_DATA.date;
+  localStorage.setItem(key, JSON.stringify(record));
+  // 存储所有记录的索引
+  let index = JSON.parse(localStorage.getItem('collision_index') || '[]');
+  if (!index.includes(key)) index.push(key);
+  localStorage.setItem('collision_index', JSON.stringify(index));
+
+  document.getElementById('prog3').classList.remove('current');
+  document.getElementById('prog3').classList.add('done');
+
+  const emotion = record.q1_emotion || '未选择';
+  const update = record.q3_update || '未选择';
+  document.getElementById('doneMsg').innerHTML =
+    '情绪反应：<strong>' + emotion + '</strong><br>' +
+    '认知更新：<strong>' + update + '</strong><br><br>' +
+    '你的回应和问卷已保存。<br>明天 17:00，新的碰撞等着你。<br><br>' +
+    '<code style="background:#1a1a28;padding:8px 12px;border-radius:8px;font-size:12px;color:var(--text2);display:block;text-align:left;margin-top:12px;white-space:pre-wrap">' +
+    JSON.stringify(record, null, 2).substring(0, 500) + '...</code>';
+
+  switchSection('sec-done');
+}
+
+init();
+</script>
+</body>
+</html>
+<!-- deployed: 2026-04-14T12:34:35Z -->
