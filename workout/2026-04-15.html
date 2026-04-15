@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>腿日 · 2026-04-15 — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #a78bfa;
+    --accent-dim: rgba(167,139,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav a { color:var(--text-dim); text-decoration:none; font-size:0.85rem; transition:color .2s; }
+  .nav a:hover { color:var(--white); }
+  .nav .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #0d0a1a 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.legs { color: #a78bfa; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+  .badge.week { color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); }
+  .badge.intensity { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--accent);
+  }
+  .callout strong { color: var(--white); }
+
+  .exercise {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: border-color .2s;
+  }
+  .exercise:hover { border-color: var(--border-hover); }
+
+  .exercise .ex-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+  .exercise .ex-num {
+    font-size: 0.7rem; font-weight: 700; color: var(--accent);
+    background: var(--accent-dim); border-radius: 6px;
+    padding: 2px 8px; margin-right: 0.6rem; flex-shrink: 0;
+  }
+  .exercise .ex-name {
+    font-size: 1.05rem; font-weight: 700; color: var(--white); flex: 1;
+  }
+  .exercise .ex-badge {
+    font-size: 0.65rem; color: var(--orange); padding: 2px 6px;
+    border: 1px solid rgba(249,115,22,0.2); border-radius: 6px;
+    background: rgba(249,115,22,0.08); white-space: nowrap;
+  }
+  .exercise .ex-badge.green {
+    color: var(--green); border-color: rgba(74,222,128,0.2);
+    background: rgba(74,222,128,0.08);
+  }
+
+  .exercise .ex-target {
+    font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.5rem;
+  }
+
+  .exercise .ex-prescription {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.7rem;
+  }
+  .ex-pill {
+    font-size: 0.75rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 8px;
+    background: #1a1a1a; border: 1px solid #2a2a2a; color: var(--white);
+  }
+  .ex-pill.weight { color: var(--orange); border-color: rgba(249,115,22,0.2); background: rgba(249,115,22,0.06); }
+  .ex-pill.up { color: var(--green); border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.06); }
+
+  .exercise .ex-notes {
+    font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;
+  }
+  .exercise .ex-notes .tip { color: var(--green); }
+  .exercise .ex-notes .warn { color: var(--red); }
+  .exercise .ex-notes .info { color: #60a5fa; }
+
+  .ex-details {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+  .ex-details summary {
+    font-size: 0.78rem; color: var(--text-muted); cursor: pointer;
+    transition: color .2s;
+  }
+  .ex-details summary:hover { color: var(--text); }
+  .ex-details .detail-content {
+    margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-dim); line-height: 1.7;
+  }
+  .ex-details .detail-content ul { padding-left: 1.2rem; }
+  .ex-details .detail-content li { margin-bottom: 0.2rem; }
+
+  .phase-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  .phase-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .phase-table td:first-child { color: var(--white); font-weight: 500; }
+  .phase-table td:last-child { color: var(--text-dim); text-align: right; }
+
+  .nutrition-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .nutrition-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem;
+  }
+  .nutrition-card .n-name { font-size: 0.78rem; color: var(--white); font-weight: 600; margin-bottom: 0.3rem; }
+  .nutrition-card .n-cal { font-size: 0.72rem; color: var(--orange); }
+  .nutrition-card .n-protein { font-size: 0.72rem; color: var(--green); }
+
+  .feedback-result {
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .feedback-result h3 { color: var(--green); font-size: 0.95rem; margin-bottom: 0.75rem; }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  .back-btn {
+    display: inline-block;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    transition: color .2s;
+  }
+  .back-btn:hover { color: var(--white); }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .nutrition-grid { grid-template-columns: 1fr; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--text)">04/15</span>
+  </nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge legs">Legs · 腿</span>
+      <span class="badge week">第5周 Day 31</span>
+      <span class="badge intensity">中度 RPE 5-6</span>
+    </div>
+    <h1>🦵 下肢力量</h1>
+    <p class="sub">2026-04-15（周三）· 腿日距上次已 6 天 · 本周力量 3/3 💯</p>
+
+    <div class="quick-stats">
+      <div class="qs"><div class="num">45</div><div class="label">分钟</div></div>
+      <div class="qs"><div class="num">380</div><div class="label">卡路里</div></div>
+      <div class="qs"><div class="num">6</div><div class="label">动作</div></div>
+      <div class="qs"><div class="num">5-6</div><div class="label">RPE</div></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <a href="https://ego1013.github.io/ethanycjin/workout/" class="back-btn">← 返回训练仪表盘</a>
+
+    <!-- Key Adjustments -->
+    <div class="callout">
+      🦵 <strong>上次腿日整体 RPE 3.2 偏轻</strong>，今天微加重量：腿举 40→<strong>45kg</strong>、腿弯举 18→<strong>20kg</strong>、腿伸展 23→<strong>25kg</strong>、臀推加 <strong>10kg 哑铃</strong>。深蹲保持 60kg 巩固动作模式，罗马尼亚硬拉不加重、专注髋铰链。
+    </div>
+
+    <!-- Warmup -->
+    <div class="section-title">🔥 热身 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>原地高抬腿</td><td>30 秒</td></tr>
+      <tr><td>动态弓步走</td><td>每侧 8 步</td></tr>
+      <tr><td>臀桥激活</td><td>12 次</td></tr>
+      <tr><td>空杆深蹲（20kg）</td><td>10 次</td></tr>
+    </table>
+
+    <!-- Main Training -->
+    <div class="section-title">💪 主训练 · 35 分钟</div>
+
+    <!-- Exercise 1: 杠铃深蹲 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">01</span>
+        <span class="ex-name">杠铃深蹲</span>
+      </div>
+      <div class="ex-target">🎯 股四头肌、臀大肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">60 kg</span>
+        <span class="ex-pill">4 × 10</span>
+        <span class="ex-pill">休息 120s</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 脚与肩同宽，蹲到大腿平行或略低，膝盖方向对准脚尖</li>
+            <li class="tip">✅ 站起时臀部先发力，核心全程收紧</li>
+            <li class="tip">✅ 杠铃置于斜方肌上，不要压在颈椎</li>
+            <li class="warn">❌ 常见错误：膝盖内扣、脚跟离地、弓背</li>
+            <li class="info">🔄 替代：高脚杯深蹲（哑铃）</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 2: 腿举 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">02</span>
+        <span class="ex-name">腿举</span>
+        <span class="ex-badge green">⬆️ +5kg</span>
+      </div>
+      <div class="ex-target">🎯 股四头肌、臀</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">45 kg</span>
+        <span class="ex-pill up">↑ 40→45</span>
+        <span class="ex-pill">3 × 12</span>
+        <span class="ex-pill">休息 90s</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 双脚与肩同宽置于踏板中上部，下放至膝盖约 90°</li>
+            <li class="tip">✅ 推起时不完全锁死膝关节，保持肌肉张力</li>
+            <li class="warn">❌ 常见错误：脚位太低导致膝盖压力过大、下背离开靠垫</li>
+            <li class="info">🔄 替代：哑铃分腿蹲</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 3: 罗马尼亚硬拉 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">03</span>
+        <span class="ex-name">罗马尼亚硬拉</span>
+        <span class="ex-badge">🧠 专注动作模式</span>
+      </div>
+      <div class="ex-target">🎯 腘绳肌、臀大肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">12.5 kg × 2</span>
+        <span class="ex-pill">3 × 10</span>
+        <span class="ex-pill">休息 90s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="info">💡 上次反馈：发力难集中臀部，容易腰酸 → <strong style="color:var(--white)">今天重点体会髋铰链</strong>：速度放慢，先深吸气撑核心，想象"屁股往后坐"</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 膝盖微曲固定，从髋部铰链前倾，哑铃贴腿下滑</li>
+            <li class="tip">✅ 想象"屁股往后坐"而不是弯腰，感受大腿后侧拉伸</li>
+            <li class="tip">✅ 回到顶部时挤压臀部 1 秒，不要过度后仰</li>
+            <li class="warn">❌ 常见错误：弓背（腰椎代偿）、膝盖过度前移、下放太快</li>
+            <li class="info">🔄 替代：壶铃硬拉、Cable Pull-Through</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 4: 腿弯举 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">04</span>
+        <span class="ex-name">腿弯举</span>
+        <span class="ex-badge green">⬆️ +2kg</span>
+      </div>
+      <div class="ex-target">🎯 腘绳肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">20 kg</span>
+        <span class="ex-pill up">↑ 18→20</span>
+        <span class="ex-pill">3 × 12</span>
+        <span class="ex-pill">休息 75s</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 全程控制，离心阶段慢放 2 秒</li>
+            <li class="tip">✅ 感受腘绳肌收缩，不要用惯性</li>
+            <li class="warn">❌ 常见错误：用惯性甩腿、臀部抬起</li>
+            <li class="info">🔄 替代：瑞士球腿弯举</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 5: 腿伸展 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">05</span>
+        <span class="ex-name">腿伸展</span>
+        <span class="ex-badge green">⬆️ +2kg</span>
+      </div>
+      <div class="ex-target">🎯 股四头肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">25 kg</span>
+        <span class="ex-pill up">↑ 23→25</span>
+        <span class="ex-pill">3 × 12</span>
+        <span class="ex-pill">休息 75s</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 伸直时顶峰收缩 1 秒，充分挤压股四头</li>
+            <li class="tip">✅ 下放控制，不要自由落体</li>
+            <li class="warn">❌ 常见错误：借助身体后仰发力</li>
+            <li class="info">🔄 替代：靠墙静蹲</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 6: 臀推 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">06</span>
+        <span class="ex-name">臀推</span>
+        <span class="ex-badge green">⬆️ +10kg</span>
+      </div>
+      <div class="ex-target">🎯 臀大肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">自重 + 10 kg 哑铃</span>
+        <span class="ex-pill up">↑ 自重→+10kg</span>
+        <span class="ex-pill">3 × 15</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 肩胛骨靠凳，脚掌平踏地面，顶部挤压臀部 2 秒</li>
+            <li class="tip">✅ 全程感受臀部发力，避免腰部过伸</li>
+            <li class="warn">❌ 常见错误：腰椎过度后伸（肋骨外翻）</li>
+            <li class="info">🔄 替代：臀桥</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Cooldown -->
+    <div class="section-title">🧘 拉伸放松 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>股四头肌拉伸（站立抓脚踝）</td><td>每侧 30 秒</td></tr>
+      <tr><td>腘绳肌拉伸（坐姿前屈）</td><td>30 秒</td></tr>
+      <tr><td>臀部拉伸（鸽子式）</td><td>每侧 30 秒</td></tr>
+      <tr><td>小腿拉伸（推墙）</td><td>每侧 20 秒</td></tr>
+    </table>
+
+    <!-- Key Tips -->
+    <div class="section-title">📝 今日重点提示</div>
+    <div class="exercise" style="border-color: rgba(167,139,250,0.2);">
+      <div class="ex-notes" style="font-size:0.88rem; line-height:1.8;">
+        <p>1. 🦵 <strong style="color:var(--white)">腿日距上次已 6 天</strong>，充分恢复，今天状态应该不错！</p>
+        <p>2. 🏋️ 上次整体 RPE 3.2 偏轻 → <strong style="color:var(--white)">腿举/腿弯举/腿伸展各加 2-5kg</strong>，深蹲保持 60kg 巩固</p>
+        <p>3. 🧠 <strong style="color:var(--white)">罗马尼亚硬拉重点练髋铰链</strong> — 速度放慢，想"屁股后推"，不急着加重</p>
+        <p>4. 🎉 做完今天，<strong style="color:var(--green)">本周力量训练 3/3 达标！💯</strong></p>
+      </div>
+    </div>
+
+    <!-- Nutrition -->
+    <div class="section-title">🍽 午餐建议（≤650 kcal · 蛋白质 ≥40g）</div>
+    <div class="nutrition-grid">
+      <div class="nutrition-card">
+        <div class="n-name">卤牛腱 150g + 糙米 + 菠菜</div>
+        <div class="n-cal">~530 kcal</div>
+        <div class="n-protein">蛋白质 ~46g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">鸡腿 1 个 + 红薯 + 西兰花</div>
+        <div class="n-cal">~550 kcal</div>
+        <div class="n-protein">蛋白质 ~40g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">三文鱼 120g + 藜麦 + 沙拉</div>
+        <div class="n-cal">~500 kcal</div>
+        <div class="n-protein">蛋白质 ~42g</div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:2rem;">
+      <span style="color:var(--text-muted); font-size:0.82rem;">💧 训练前 30 分钟喝 200-300ml 水 · 训练中每 10 分钟补水 100-150ml</span>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    Coach M · AI 健身教练 · <a href="https://ego1013.github.io/ethanycjin/workout/">训练仪表盘</a> · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+  </footer>
+
+</body>
+</html>
