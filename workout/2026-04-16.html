@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>有氧 · 2026-04-16 — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #4ade80;
+    --accent-dim: rgba(74,222,128,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav a { color:var(--text-dim); text-decoration:none; font-size:0.85rem; transition:color .2s; }
+  .nav a:hover { color:var(--white); }
+  .nav .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #021a0a 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.cardio { color: #4ade80; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+  .badge.week { color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); }
+  .badge.intensity { color: #60a5fa; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2); }
+  .badge.milestone { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--green);
+  }
+  .callout strong { color: var(--white); }
+
+  .callout.gold {
+    background: rgba(251,191,36,0.08);
+    border-color: rgba(251,191,36,0.25);
+    color: var(--yellow);
+  }
+
+  /* Heart rate zone table */
+  .hr-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+  .hr-table th {
+    font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: .06em; padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--border); text-align: left;
+  }
+  .hr-table td {
+    padding: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .hr-table tr:hover { background: var(--surface-hover); }
+  .hr-table .zone-badge {
+    font-size: 0.68rem; font-weight: 600;
+    padding: 2px 8px; border-radius: 6px;
+    display: inline-block;
+  }
+  .zone-1 { color: #60a5fa; background: rgba(96,165,250,0.12); }
+  .zone-2 { color: #4ade80; background: rgba(74,222,128,0.12); }
+  .zone-3 { color: #f97316; background: rgba(249,115,22,0.12); }
+  .zone-cool { color: #888; background: rgba(136,136,136,0.12); }
+
+  .exercise {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: border-color .2s;
+  }
+  .exercise:hover { border-color: var(--border-hover); }
+
+  .exercise .ex-notes {
+    font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;
+  }
+  .exercise .ex-notes .tip { color: var(--green); }
+  .exercise .ex-notes .warn { color: var(--red); }
+  .exercise .ex-notes .info { color: #60a5fa; }
+
+  .phase-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  .phase-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .phase-table td:first-child { color: var(--white); font-weight: 500; }
+  .phase-table td:last-child { color: var(--text-dim); text-align: right; }
+
+  .nutrition-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .nutrition-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem;
+  }
+  .nutrition-card .n-name { font-size: 0.78rem; color: var(--white); font-weight: 600; margin-bottom: 0.3rem; }
+  .nutrition-card .n-cal { font-size: 0.72rem; color: var(--orange); }
+  .nutrition-card .n-protein { font-size: 0.72rem; color: var(--green); }
+
+  /* Feedback result section */
+  .feedback-yesterday {
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .feedback-yesterday h3 { color: #a78bfa; font-size: 0.95rem; margin-bottom: 0.75rem; }
+  .feedback-yesterday .fb-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.5rem; margin-bottom: 0.75rem;
+  }
+  .feedback-yesterday .fb-item {
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.1);
+    border-radius: 8px;
+    padding: 0.6rem;
+    text-align: center;
+  }
+  .feedback-yesterday .fb-item .fb-val { font-size: 1.05rem; font-weight: 700; color: var(--white); }
+  .feedback-yesterday .fb-item .fb-lbl { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+  .feedback-yesterday .fb-notes { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+  .feedback-yesterday .fb-notes strong { color: var(--white); }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  .back-btn {
+    display: inline-block;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    transition: color .2s;
+  }
+  .back-btn:hover { color: var(--white); }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .nutrition-grid { grid-template-columns: 1fr; }
+    .hr-table { font-size: 0.78rem; }
+    .hr-table td, .hr-table th { padding: 0.4rem; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--text)">04/16</span>
+  </nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge cardio">Cardio · 有氧</span>
+      <span class="badge week">第5周 Day 32</span>
+      <span class="badge intensity">中低强度</span>
+      <span class="badge milestone">🎉 力量 3/3 达标</span>
+    </div>
+    <h1>🏃 间歇走跑</h1>
+    <p class="sub">2026-04-16（周四）· 连续 3 天力量后主动恢复 · 有氧本周 2/2</p>
+
+    <div class="quick-stats">
+      <div class="qs"><div class="num">40</div><div class="label">分钟</div></div>
+      <div class="qs"><div class="num">380</div><div class="label">卡路里</div></div>
+      <div class="qs"><div class="num">4</div><div class="label">冲刺段</div></div>
+      <div class="qs"><div class="num">4-6</div><div class="label">RPE</div></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <a href="https://ego1013.github.io/ethanycjin/workout/" class="back-btn">← 返回训练仪表盘</a>
+
+    <!-- Milestone callout -->
+    <div class="callout gold">
+      🎉 <strong>本周力量训练 3/3 全部达标！</strong> 推日→拉日→腿日连续三天执行力拉满。今天安排间歇有氧，促进恢复 + 加强减脂。
+    </div>
+
+    <!-- Yesterday's feedback -->
+    <div class="feedback-yesterday">
+      <h3>🦵 昨日腿日反馈（04/15）</h3>
+      <div class="fb-grid">
+        <div class="fb-item">
+          <div class="fb-val">✅</div>
+          <div class="fb-lbl">完成状态</div>
+        </div>
+        <div class="fb-item">
+          <div class="fb-val">3.8</div>
+          <div class="fb-lbl">RPE</div>
+        </div>
+        <div class="fb-item">
+          <div class="fb-val">50</div>
+          <div class="fb-lbl">分钟</div>
+        </div>
+        <div class="fb-item">
+          <div class="fb-val">6</div>
+          <div class="fb-lbl">动作</div>
+        </div>
+      </div>
+      <div class="fb-notes">
+        <p>🔥 <strong>深蹲第 4 组加到 70kg 成功！</strong>（前 3 组 60kg）</p>
+        <p>📈 腿举渐进加重 45→52→59kg 全完成 · 腿弯举 23→27→32kg · 腿伸展 27→32→32kg</p>
+        <p>⚠️ 罗马尼亚硬拉对腿轻但小臂吃不消 → 下次考虑助力带</p>
+        <p>📝 器械配重确认：23/27/32/36/41/45/50/55/59/64/68/73/77 kg</p>
+      </div>
+    </div>
+
+    <!-- Warmup -->
+    <div class="section-title">🔥 热身 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>快步走（跑步机 4.0/坡度 0）</td><td>2 分钟</td></tr>
+      <tr><td>动态拉伸：腿部摆动</td><td>每侧 10 次</td></tr>
+      <tr><td>动态拉伸：开合跳</td><td>20 次</td></tr>
+    </table>
+
+    <!-- Main Training -->
+    <div class="section-title">🏃 主训练 · 30 分钟 — 间歇走跑</div>
+
+    <div class="exercise" style="border-color: rgba(74,222,128,0.15); margin-bottom: 1.2rem;">
+      <div class="ex-notes" style="font-size:0.85rem;">
+        <span class="info">💡 上次有氧（4/14）全程匀速 6.5/坡度5，RPE 4 很轻松。今天加入 <strong style="color:var(--white)">4 × 1min 间歇冲刺</strong>，提高心率区间利用效率和 EPOC 效应。</span>
+      </div>
+    </div>
+
+    <table class="hr-table">
+      <thead>
+        <tr>
+          <th>阶段</th>
+          <th>时间</th>
+          <th>速度</th>
+          <th>坡度</th>
+          <th>心率区间</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="zone-badge zone-1">Zone 1</span> 热身走</td>
+          <td>0:00-3:00</td>
+          <td>5.0</td>
+          <td>2</td>
+          <td>110-119 bpm</td>
+        </tr>
+        <tr>
+          <td><span class="zone-badge zone-2">Zone 2</span> 稳态慢跑</td>
+          <td>3:00-8:00</td>
+          <td>6.5</td>
+          <td>3</td>
+          <td>120-137 bpm</td>
+        </tr>
+        <tr style="background: rgba(249,115,22,0.04);">
+          <td><span class="zone-badge zone-3">⚡ 冲刺 1</span></td>
+          <td>8:00-9:00</td>
+          <td style="color:var(--orange); font-weight:700;">8.0</td>
+          <td>4</td>
+          <td style="color:var(--orange);">138-155 bpm</td>
+        </tr>
+        <tr>
+          <td><span class="zone-badge zone-2">Zone 2</span> 恢复</td>
+          <td>9:00-12:00</td>
+          <td>6.0</td>
+          <td>2</td>
+          <td>120-130 bpm</td>
+        </tr>
+        <tr style="background: rgba(249,115,22,0.04);">
+          <td><span class="zone-badge zone-3">⚡ 冲刺 2</span></td>
+          <td>12:00-13:00</td>
+          <td style="color:var(--orange); font-weight:700;">8.0</td>
+          <td>4</td>
+          <td style="color:var(--orange);">138-155 bpm</td>
+        </tr>
+        <tr>
+          <td><span class="zone-badge zone-2">Zone 2</span> 恢复</td>
+          <td>13:00-16:00</td>
+          <td>6.0</td>
+          <td>2</td>
+          <td>120-130 bpm</td>
+        </tr>
+        <tr style="background: rgba(249,115,22,0.04);">
+          <td><span class="zone-badge zone-3">⚡ 冲刺 3</span></td>
+          <td>16:00-17:00</td>
+          <td style="color:var(--orange); font-weight:700;">8.5</td>
+          <td>4</td>
+          <td style="color:var(--orange);">140-155 bpm</td>
+        </tr>
+        <tr>
+          <td><span class="zone-badge zone-2">Zone 2</span> 恢复</td>
+          <td>17:00-20:00</td>
+          <td>6.0</td>
+          <td>2</td>
+          <td>120-130 bpm</td>
+        </tr>
+        <tr style="background: rgba(249,115,22,0.04);">
+          <td><span class="zone-badge zone-3">⚡ 冲刺 4</span></td>
+          <td>20:00-21:00</td>
+          <td style="color:var(--orange); font-weight:700;">8.5</td>
+          <td>4</td>
+          <td style="color:var(--orange);">140-155 bpm</td>
+        </tr>
+        <tr>
+          <td><span class="zone-badge zone-2">Zone 2</span> 燃脂收尾</td>
+          <td>21:00-27:00</td>
+          <td>6.5</td>
+          <td>3</td>
+          <td>125-137 bpm</td>
+        </tr>
+        <tr>
+          <td><span class="zone-badge zone-cool">Cool</span> 缓慢降速</td>
+          <td>27:00-30:00</td>
+          <td>4.5→3.5</td>
+          <td>1</td>
+          <td>&lt;110 bpm</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="exercise" style="border-color: rgba(96,165,250,0.15);">
+      <div class="ex-notes" style="font-size:0.82rem; line-height:1.8;">
+        <p class="tip">✅ Zone 2 燃脂区约 14 分钟 + Zone 3 间歇 4 分钟 + 热身/恢复 12 分钟</p>
+        <p class="warn">⚠️ 如果腿部有明显酸痛（昨天腿日），冲刺速度可降到 7.5</p>
+        <p class="info">💡 关注心率：冲刺段目标 138-155 bpm，恢复段降到 120-130 bpm</p>
+      </div>
+    </div>
+
+    <!-- Cooldown -->
+    <div class="section-title">🧘 拉伸放松 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>股四头肌拉伸（站立抓脚踝）</td><td>每侧 30 秒</td></tr>
+      <tr><td>腘绳肌拉伸（坐姿前屈）</td><td>30 秒</td></tr>
+      <tr><td>小腿拉伸（推墙）</td><td>每侧 20 秒</td></tr>
+      <tr><td>髋屈肌拉伸（弓步下沉）</td><td>每侧 30 秒</td></tr>
+      <tr><td>胸椎旋转拉伸</td><td>每侧 5 次</td></tr>
+    </table>
+
+    <!-- Key Tips -->
+    <div class="section-title">📝 今日重点提示</div>
+    <div class="exercise" style="border-color: rgba(74,222,128,0.15);">
+      <div class="ex-notes" style="font-size:0.88rem; line-height:1.8;">
+        <p>1. 🎉 <strong style="color:var(--white)">本周力量 3/3 全部达标！</strong> 连续三天推→拉→腿，执行力满分</p>
+        <p>2. 🏃 今天间歇走跑比上次纯匀速更高效 — <strong style="color:var(--white)">4 × 1min 冲刺段</strong>提升 EPOC</p>
+        <p>3. 💓 <strong style="color:var(--white)">关注心率</strong>：冲刺段 138-155 bpm · 恢复段 120-130 bpm</p>
+        <p>4. 🦵 连续 3 天力量后，今天有氧 = <strong style="color:var(--green)">主动恢复</strong>，促进血液循环帮助肌肉修复</p>
+        <p>5. 📅 InBody 复测：2026-05-11（距今 25 天）</p>
+      </div>
+    </div>
+
+    <!-- Nutrition -->
+    <div class="section-title">🍽 午餐建议（≤650 kcal · 蛋白质 ≥40g）</div>
+    <div class="nutrition-grid">
+      <div class="nutrition-card">
+        <div class="n-name">鸡胸肉 150g + 糙米 + 时蔬</div>
+        <div class="n-cal">~520 kcal</div>
+        <div class="n-protein">蛋白质 ~45g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">牛肉面（瘦牛肉 120g）</div>
+        <div class="n-cal">~580 kcal</div>
+        <div class="n-protein">蛋白质 ~38g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">金枪鱼沙拉 + 全麦面包 2 片</div>
+        <div class="n-cal">~480 kcal</div>
+        <div class="n-protein">蛋白质 ~42g</div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:2rem;">
+      <span style="color:var(--text-muted); font-size:0.82rem;">💧 训练前 30 分钟喝 200-300ml 水 · 训练中每 10 分钟补水 100-150ml</span>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    Coach M · AI 健身教练 · <a href="https://ego1013.github.io/ethanycjin/workout/">训练仪表盘</a> · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+  </footer>
+
+</body>
+</html>
