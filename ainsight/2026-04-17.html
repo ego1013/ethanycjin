@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>锯齿状智能：能解奥数却不会看钟，这才是 AI 最危险的地方 · AI 每日洞见 #004</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* ── Header ── */
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .issue-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .issue-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+        }
+
+        .issue-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .issue-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--green-dim);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 750;
+            color: var(--white);
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .one-liner {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ── Source ── */
+        .source-box {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .source-box a { color: var(--accent); text-decoration: none; }
+        .source-box a:hover { text-decoration: underline; }
+
+        /* ── Body ── */
+        .body-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .body-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .body-section h2 .icon {
+            font-size: 1.1rem;
+        }
+
+        .body-text {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+
+        .body-text p {
+            margin-bottom: 1rem;
+        }
+
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        .body-text .highlight {
+            background: rgba(96, 165, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ── Data callout ── */
+        .data-callout {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1.25rem 0;
+        }
+
+        .data-callout .data-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .data-value.warn { color: var(--warn); }
+
+        /* ── Takeaways ── */
+        .takeaway-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .takeaway-item {
+            padding: 0.9rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .takeaway-item .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 0.6rem;
+        }
+
+        .takeaway-item strong { color: var(--white); }
+
+        /* ── Warning box ── */
+        .warning-box {
+            padding: 1rem 1.25rem;
+            background: var(--warn-dim);
+            border: 1px solid var(--warn-border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .warning-box h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* ── Further reading ── */
+        .further {
+            margin-bottom: 2.5rem;
+        }
+
+        .further h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .further-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .further-item a {
+            display: block;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .further-item a:hover {
+            border-color: var(--accent-border);
+            background: var(--surface-alt);
+        }
+
+        .further-item .label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Question ── */
+        .closing-question {
+            padding: 1.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+            border: 1px solid rgba(96,165,250,0.15);
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .closing-question .q-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .closing-question p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        /* ── Tags ── */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .container { padding: 1.25rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+            <span class="sep">/</span>
+            <a href="https://ego1013.github.io/ethanycjin/ainsight/">AI 每日洞见</a>
+            <span class="sep">/</span>
+            <span style="color:var(--text)">#004</span>
+        </nav>
+
+        <div class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#004</span>
+                <span class="issue-date">📅 2026-04-17 · 星期五</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>锯齿状智能：能解奥数却不会看钟，这才是 AI 最危险的地方</h1>
+
+            <div class="one-liner">
+                AI 不是"均匀地变聪明"——它在专家级考试中碾压人类的同时，连模拟时钟都读不对。真正的风险不是 AI 太蠢或太强，而是你无法预测它什么时候蠢、什么时候强。
+            </div>
+        </div>
+
+        <div class="source-box">
+            <strong>来源：</strong><br>
+            ① Stanford HAI, <a href="https://hai.stanford.edu/ai-index/2026-ai-index-report" target="_blank">2026 AI Index Report</a>，2026.04.13（423 页年度报告）<br>
+            ② IEEE Spectrum, <a href="https://spectrum.ieee.org/state-of-ai-index-2026" target="_blank">Stanford's AI Index for 2026 Shows the State of the Industry</a>，2026.04.13<br>
+            ③ Demis Hassabis (Google DeepMind CEO), <a href="https://news.qq.com/rain/a/20260117A0287W00" target="_blank">"Jagged Intelligence" 概念阐述</a>，2026.01
+        </div>
+
+        <!-- ── 深度解读 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🔬</span> 深度解读</h2>
+            <div class="body-text">
+                <p>
+                    先看一组让人认知失调的数据。斯坦福大学刚刚发布的《2026 AI Index 报告》（423 页，全球 AI 领域最权威的年度体检报告）揭示了一个极端矛盾的事实：<strong>同一个 AI 模型，在专家级别的考试中名列前茅，却连小学生都会的读钟都做不好。</strong>
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">同一代 AI 模型的能力断层</div>
+                    <div class="data-row">
+                        <span class="data-label">Humanity's Last Exam（专家级最难考试）</span>
+                        <span class="data-value accent">准确率 &gt;50%（一年前仅 8.8%）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">IMO 数学奥赛</span>
+                        <span class="data-value accent">35 分 · 金牌水平</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">SWE-bench（自主编程）</span>
+                        <span class="data-value accent">近 100%（一年前 60%）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">ClockBench（读模拟时钟）</span>
+                        <span class="data-value down">最佳模型仅 50.1%（掷硬币水平）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Claude Opus 4.6 读钟准确率</span>
+                        <span class="data-value down">仅 8.9%（HLE 考试的尖子生）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">家务机器人（折衣服、洗碗）</span>
+                        <span class="data-value down">成功率仅 12%</span>
+                    </div>
+                </div>
+
+                <p>
+                    Google DeepMind CEO Demis Hassabis 给这个现象取了一个精准的名字：<span class="highlight">Jagged Intelligence</span>——锯齿状智能。不是不聪明，是<strong>不均匀地聪明</strong>。能力曲线像锯齿一样高低起伏，有些地方锋利得惊人，有些地方缺口大到离谱。
+                </p>
+
+                <p>
+                    这为什么重要？因为<strong>人类对"智能"的直觉是线性的。</strong>我们习惯了一个假设：如果一个人能解奥数金牌题，那他一定也能看钟、叠衣服、写一封得体的邮件。这个假设对人类基本成立——人类智能是"平滑"的，各项能力高度相关。但 AI 的智能根本不是这样。它打破了我们对"聪明"这个词的所有隐含假设。
+                </p>
+
+                <p>
+                    斯坦福报告的联合主任 Ray Perrault 揭示了一个更深层的原因：<strong>当 AI 被问到需要语言和视觉结合的问题时，语言成分承担了"令人惊讶的大部分负担"，甚至到了完全忽略视觉信息的地步。</strong>换句话说，AI 不是在"看"钟面然后理解指针位置，而是在用语言推理来"猜"时间。它学会了用语言模拟一切——包括那些本不该用语言处理的任务。这不是能力不足，是<strong>能力错配</strong>。
+                </p>
+
+                <p>
+                    Hassabis 的判断更深一层：锯齿状智能比"明显不聪明"<strong>危险得多</strong>。一个明显笨的系统，你会保持警惕；但一个在 95% 的场景下表现惊艳的系统，你会在那 5% 的致命缺口上放松警惕。<strong>你不是被 AI 的弱项骗了，你是被它的强项骗了。</strong>
+                </p>
+
+                <p>
+                    而且这种锯齿不是静态的——它在快速变化。SWE-bench 一年内从 60% 跳到近 100%，但 ClockBench 几乎没有改善。<strong>AI 正在以极度不均匀的速度进化</strong>，某些齿在飞速长高，某些缺口却纹丝不动。这意味着你上个月对 AI 能力边界的判断，今天可能已经过时了——但你完全无法预测是哪个方向过时了。
+                </p>
+
+                <p>
+                    回到根本问题：AGI 不是在某些任务上超过人类，而是 Hassabis 所说的<strong>"整体能力形成一致性"</strong>。今天的 AI 缺的不是峰值能力，缺的是一致性。而在一致性到来之前，我们要和一个能力分布完全不可预测的系统共事——这本身就是一种全新的挑战。
+                </p>
+            </div>
+        </div>
+
+        <!-- ── 对你意味着什么 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>永远用"锯齿心智模型"评估 AI。</strong>不要因为 AI 在你的领域表现出色，就推断它在相邻领域也靠谱。每换一个任务类型，重新校准你的信任度。把 AI 想象成一个"偏科到极致的天才"——数学金牌得主不一定会系鞋带。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>你的核心价值在锯齿的低谷里。</strong>AI 的锯齿高峰不断往上走，但低谷移动很慢。常识判断、物理直觉、跨模态整合、面对面的人际感知——这些"简单"能力恰恰是 AI 最难补齐的短板。刻意投资那些看起来"不够高级"但 AI 做不好的能力。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>给 AI 设置"红线检查点"，而不是"平均信任度"。</strong>不要给 AI 一个笼统的信任评级。在你的工作流中，明确标出哪些环节 AI 已证明可靠（放手），哪些环节可能落在锯齿缺口上（必须人工复核）。这不是不信任 AI，是科学地使用一个能力不均匀的系统。
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 认知偏差提醒 ── -->
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒</h2>
+            <p>
+                <strong>光环效应（Halo Effect）</strong>——AI 在一个任务上的惊艳表现，会让你不自觉地高估它在其他任务上的能力。Claude 在专家考试中超过 50% 准确率，却在读钟上只有 8.9%——但你的直觉会告诉你"这么聪明的 AI 不可能连钟都读不对"。另外注意<strong>锚定偏误</strong>：我们倾向于把 AI 最近的一次表现当作它稳定能力的代表，而实际上它的表现方差极大。
+            </p>
+        </div>
+
+        <!-- ── 延伸阅读 ── -->
+        <div class="further">
+            <h2>📖 想深入了解</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://hai.stanford.edu/ai-index/2026-ai-index-report" target="_blank">
+                        Stanford HAI: 2026 AI Index Report（完整报告）
+                        <br><span class="label">423 页年度报告原文，全球 AI 现状最权威数据</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://spectrum.ieee.org/state-of-ai-index-2026" target="_blank">
+                        IEEE Spectrum: Stanford's AI Index for 2026 Shows the State of the Industry
+                        <br><span class="label">报告精华解读，10 分钟了解核心发现</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://news.pedaily.cn/202604/562771.shtml" target="_blank">
+                        硅星人：能解奥数，不会看钟——斯坦福 2026 年 AI 报告的 15 个判断
+                        <br><span class="label">中文深度解读，含投资与就业影响分析</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.toutiao.com/article/7603926064766648841/" target="_blank">
+                        锯齿状智能：AI "天才与白痴"并存的核心现象
+                        <br><span class="label">Jagged Intelligence 概念详解</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 留一个问题 ── -->
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>你上一次因为 AI 在某件事上表现太好，而在另一件事上放松了警惕，是什么时候？<br>那个"另一件事"，是不是恰好落在了锯齿的缺口上？</p>
+        </div>
+
+        <!-- ── Tags ── -->
+        <div class="tags">
+            <span class="tag">Jagged Intelligence</span>
+            <span class="tag">Stanford AI Index</span>
+            <span class="tag">Capability Gap</span>
+            <span class="tag">Halo Effect</span>
+            <span class="tag">Hassabis</span>
+            <span class="tag">AGI</span>
+        </div>
+
+        <a href="https://ego1013.github.io/ethanycjin/ainsight/" class="back-btn">← 返回洞见列表</a>
+
+        <div class="footer">
+            🧠 AI 每日洞见 · 信号提取，不是新闻聚合 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+        </div>
+    </div>
+</body>
+</html>
