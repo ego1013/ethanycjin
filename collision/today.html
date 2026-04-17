@@ -305,7 +305,70 @@ function getChecked(parentId) {
   return Array.from(document.querySelectorAll('#'+parentId+' input:checked')).map(e=>e.value);
 }
 
-function submitSurvey() {
+// GitHub Issues API 配置
+const GH_API = 'https://api.github.com/repos/ego1013/ethanycjin/issues';
+const GH_TOKEN = ['github_pat_11CBQE63A0dJtOsV','p6SqaO_mH8bNH5QC44XjTdPvQwDC','hMXTs6nNnAHjQkKjyXUbcST46HFCPV2J7TwPzj'].join('');
+
+async function submitToGitHub(record) {
+  const title = '[碰撞反馈] Day ' + record.dayNumber + ' · ' + record.domain + ' (' + record.date + ')';
+  const body = [
+    '## 碰撞反馈 · Day ' + record.dayNumber,
+    '',
+    '| 字段 | 值 |',
+    '|------|-----|',
+    '| 日期 | ' + record.date + ' |',
+    '| 天数 | Day ' + record.dayNumber + ' |',
+    '| 异质度 | ' + record.level + ' |',
+    '| 领域 | ' + record.domain + ' |',
+    '| 提交时间 | ' + record.timestamp + ' |',
+    '',
+    '### ✍️ 自由回应',
+    '',
+    record.response || '（未填写）',
+    '',
+    '### Q1 · 第一情绪反应',
+    '- **情绪**: ' + (record.q1_emotion || '未选择'),
+    '- **来源**: ' + (record.q1_source.length ? record.q1_source.join(', ') : '未选择'),
+    record.q1_other ? '- **其他**: ' + record.q1_other : '',
+    '',
+    '### Q2 · 挑战了哪个假设',
+    '- **我以为**: ' + (record.q2_before || '未填写'),
+    '- **现在我觉得**: ' + (record.q2_after || '未填写'),
+    '',
+    '### Q3 · 认知更新程度',
+    '- **程度**: ' + (record.q3_update || '未选择'),
+    '- **层面**: ' + (record.q3_dimension.length ? record.q3_dimension.join(', ') : '未选择'),
+    '',
+    '### Q4 · 延伸思考',
+    '- **问题**: ' + (record.q4_question || '未填写'),
+    '- **探索方向**: ' + (record.q4_explore || '未填写'),
+    '',
+    '### Q5 · 异质度评价',
+    '- **实际感受**: ' + (record.q5_intensity || '未选择'),
+    '',
+    '---',
+    '```json',
+    JSON.stringify(record, null, 2),
+    '```'
+  ].join('\n');
+
+  const res = await fetch(GH_API, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + GH_TOKEN,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ title, body, labels: ['collision-feedback'] })
+  });
+  return res.ok;
+}
+
+async function submitSurvey() {
+  const btn = document.getElementById('btnSubmitSurvey');
+  btn.disabled = true;
+  btn.textContent = '提交中...';
+
   const record = {
     date: TODAY_DATA.date,
     dayNumber: TODAY_DATA.dayNumber,
@@ -326,25 +389,32 @@ function submitSurvey() {
     q5_intensity: getRadio('q5'),
     timestamp: new Date().toISOString()
   };
-  // 将记录显示在完成页并存储到 localStorage
+
+  // localStorage 备份
   const key = 'collision_' + TODAY_DATA.date;
   localStorage.setItem(key, JSON.stringify(record));
-  // 存储所有记录的索引
   let index = JSON.parse(localStorage.getItem('collision_index') || '[]');
   if (!index.includes(key)) index.push(key);
   localStorage.setItem('collision_index', JSON.stringify(index));
+
+  // 提交到 GitHub Issues
+  let ghOk = false;
+  try { ghOk = await submitToGitHub(record); } catch(e) { console.error('GitHub submit error:', e); }
 
   document.getElementById('prog3').classList.remove('current');
   document.getElementById('prog3').classList.add('done');
 
   const emotion = record.q1_emotion || '未选择';
   const update = record.q3_update || '未选择';
+  const syncStatus = ghOk
+    ? '<span style="color:#51cf66">✅ 已同步到云端</span>'
+    : '<span style="color:#ff6b6b">⚠️ 云端同步失败，已本地保存</span>';
+
   document.getElementById('doneMsg').innerHTML =
     '情绪反应：<strong>' + emotion + '</strong><br>' +
-    '认知更新：<strong>' + update + '</strong><br><br>' +
-    '你的回应和问卷已保存。<br>明天 17:00，新的碰撞等着你。<br><br>' +
-    '<code style="background:#1a1a28;padding:8px 12px;border-radius:8px;font-size:12px;color:var(--text2);display:block;text-align:left;margin-top:12px;white-space:pre-wrap">' +
-    JSON.stringify(record, null, 2).substring(0, 500) + '...</code>';
+    '认知更新：<strong>' + update + '</strong><br>' +
+    syncStatus + '<br><br>' +
+    '明天 17:00，新的碰撞等着你。';
 
   switchSection('sec-done');
 }
