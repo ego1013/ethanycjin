@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 9 · Token 效率：Kimi 的核心押注逻辑 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 40%, #1a0a00 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--yellow-dim);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--cyan), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--cyan);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--cyan-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--cyan);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--purple); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .vs-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .vs-box .vs-side {
+    text-align: center;
+  }
+
+  .vs-box .vs-side .vs-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .vs-box .vs-side .vs-num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-family: 'SF Mono', monospace;
+  }
+
+  .vs-box .vs-side .vs-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+  }
+
+  .vs-box .vs-mid {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-dim);
+  }
+
+  .metric-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .metric-bar .mb-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .metric-bar .mb-track {
+    height: 20px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .metric-bar .mb-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #000;
+  }
+
+  .step-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .step-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    min-width: 120px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .step-item .step-num {
+    font-size: 0.7rem;
+    color: var(--cyan);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-item .step-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .step-arrow {
+    font-size: 1.2rem;
+    color: var(--border);
+    padding: 0 0.3rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .vs-box { grid-template-columns: 1fr; text-align: center; }
+    .vs-box .vs-mid { padding: 0.5rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🟡 中半衰期 · 讲透逻辑</div>
+  <h1>Day 9 · Token 效率：Kimi 的核心押注逻辑</h1>
+  <p class="subtitle">为什么「学得深」比「学得多」更重要？</p>
+  <div class="meta">
+    <span>📅 2026-04-21 Tue</span>
+    <span>📦 第一模块 · 地基篇 · Week 2</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    2024 年初，一家中国 AI 创业公司做了一件让行业侧目的事：
+  </p>
+  <p>
+    <strong>Moonshot AI（月之暗面）发布了 Kimi，支持 200 万字长文本——比 GPT-4 的上下文窗口大了近 16 倍。</strong>
+  </p>
+  <p>
+    彼时行业的主旋律是"堆参数、堆算力、堆数据"（你在 Day 8 学过的 Scale Up 路线）。Kimi 反其道而行：<span class="highlight">参数量不算最大，但在「Token 效率」上下了重注</span>。
+  </p>
+  <p>
+    创始人杨植麟说过一句话：<em>"我们不需要 10 万亿 Token 的训练数据，我们需要让每个 Token 携带更多信息。"</em>
+  </p>
+  <p>
+    这句话背后的逻辑，直接指向 Day 8 Scaling Law 三大边界中最紧迫的那一个——<strong>数据墙</strong>。如果高质量数据快用完了，那"学得深"就比"学得多"更重要。
+  </p>
+  <p>
+    今天就来拆解：<strong>Token 效率到底是什么？为什么 Kimi 把它当成了核心押注？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么"Token 效率"会成为新战场？</h2>
+  </div>
+
+  <h3>从 Day 8 的三面墙说起</h3>
+
+  <p>
+    你在 Day 8 学到了 Scaling Law 的三个边界：数据墙、算力墙、能力天花板。现在让我们聚焦到<strong>数据墙</strong>——因为这是最先被感受到的一面墙：
+  </p>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ 数据墙的现状</div>
+    <p style="margin:0">
+      互联网上的高质量文本总量约 <strong>15 万亿 Token</strong>。GPT-4 训练已经用了约 <strong>13 万亿</strong>。<br><br>
+      下一代模型如果沿着 Chinchilla 的等比原则走，需要 <strong>数十万亿 Token</strong>。<br><br>
+      <strong>但高质量的人类文本不够了。</strong> 剩下的选择是：用低质量数据凑数、用 AI 合成数据（有"模型塌缩"风险）、或者——<strong>让每个 Token 学到更多</strong>。
+    </p>
+  </div>
+
+  <p>
+    三条路各有代表：
+  </p>
+
+  <div class="three-col">
+    <div class="callout purple" style="margin:0">
+      <div class="callout-label">路线 A：找更多数据</div>
+      <p style="margin:0; font-size:0.85rem">
+        用 AI 生成合成数据<br>
+        代表：微软 Phi 系列<br>
+        <span style="color:var(--red)">风险：近亲繁殖</span>
+      </p>
+    </div>
+    <div class="callout blue" style="margin:0">
+      <div class="callout-label">路线 B：降低数据需求</div>
+      <p style="margin:0; font-size:0.85rem">
+        优化模型架构减少所需数据量<br>
+        代表：Google Gemma<br>
+        <span style="color:var(--yellow)">有效但空间有限</span>
+      </p>
+    </div>
+    <div class="callout cyan" style="margin:0">
+      <div class="callout-label">路线 C：提高学习效率</div>
+      <p style="margin:0; font-size:0.85rem">
+        让每个 Token 携带更多信息<br>
+        代表：Kimi / Moonshot<br>
+        <span style="color:var(--green)">新增长点</span>
+      </p>
+    </div>
+  </div>
+
+  <p>
+    路线 C 就是 Kimi 的核心押注：<strong>不在数据量上跟 OpenAI 硬拼，而是在"数据利用效率"上建立差异化优势。</strong>
+  </p>
+
+  <h3>类比：渠道管理中的"人效"思维</h3>
+
+  <p>
+    你在渠道管理中一定见过两种扩张策略：
+  </p>
+
+  <div class="two-col">
+    <div class="callout" style="margin:0; border-left:4px solid var(--red)">
+      <div class="callout-label" style="color:var(--red)">策略 A：堆人头</div>
+      <p style="margin:0; font-size:0.88rem">
+        "今年要新签 200 家代理商。"<br><br>
+        问题是——市场上优质代理商就那么多。数量上去了，平均质量下来了，管理成本飙升，人均产出下降。<br><br>
+        <strong>这就是 AI 行业的"堆数据"。</strong>
+      </p>
+    </div>
+    <div class="callout" style="margin:0; border-left:4px solid var(--green)">
+      <div class="callout-label" style="color:var(--green)">策略 B：提人效</div>
+      <p style="margin:0; font-size:0.88rem">
+        "现有 50 家代理商，人均产出从 40 万提到 80 万。"<br><br>
+        不增加人头，而是深耕每一个代理商——精准培训、定制化支持、优化激励体系。<br><br>
+        <strong>这就是 AI 行业的"提 Token 效率"。</strong>
+      </p>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 核心判断</div>
+    <p style="margin:0">
+      <strong>当"扩量"遇到天花板时，"提效"就变成了最理性的选择。</strong> AI 行业的数据墙 = 你的优质代理商池见顶。Kimi 的逻辑 = 与其拼命找新代理商，不如让现有的每一个产出翻倍。
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — Token 效率的本质是什么？</h2>
+  </div>
+
+  <h3>一、Token 效率的定义</h3>
+
+  <p>
+    先给一个简洁的定义：
+  </p>
+
+  <blockquote>
+    <strong>Token 效率（Token Efficiency）</strong> = 模型从同等数量的训练数据中，学到了多少"有用知识"。<br><br>
+    同样训练 1 万亿 Token，Token 效率高的模型学到了深层逻辑和泛化能力；Token 效率低的模型只学到了表面模式和统计关联。
+  </blockquote>
+
+  <p>
+    如果你把训练过程想象成一个人读书：
+  </p>
+
+  <div class="vs-box">
+    <div class="vs-side">
+      <div class="vs-label" style="color:var(--red)">Token 效率低</div>
+      <div class="vs-num" style="color:var(--red)">📚 1000 本</div>
+      <div class="vs-desc">一年读 1000 本书<br>每本翻一遍<br>记住了一堆金句<br>但讲不出背后的逻辑</div>
+    </div>
+    <div class="vs-mid">VS</div>
+    <div class="vs-side">
+      <div class="vs-label" style="color:var(--green)">Token 效率高</div>
+      <div class="vs-num" style="color:var(--green)">📖 100 本</div>
+      <div class="vs-desc">一年精读 100 本书<br>每本读三遍、做笔记<br>能举一反三<br>遇到新问题能推理出答案</div>
+    </div>
+  </div>
+
+  <p>
+    <strong>同样的"阅读量"（Token 数），产出完全不同。</strong> 差异不在量，在于<em>怎么学</em>。
+  </p>
+
+  <h3>二、提高 Token 效率的四种策略</h3>
+
+  <p>
+    行业目前提高 Token 效率的方法，可以归纳为四大策略。每一种，我都给你配一个渠道管理的对照。
+  </p>
+
+  <h4>策略 1：数据质量工程 — "精选比海选更重要"</h4>
+
+  <p>
+    最直觉的一条路：<strong>训练数据不是越多越好，是越"精"越好。</strong>
+  </p>
+
+  <table>
+    <tr>
+      <th>维度</th>
+      <th>低效做法</th>
+      <th>高效做法</th>
+    </tr>
+    <tr>
+      <td>数据筛选</td>
+      <td>爬取全网所有文本</td>
+      <td>多轮过滤，只保留高质量内容</td>
+    </tr>
+    <tr>
+      <td>去重</td>
+      <td>不去重，同一句话训练 10 次</td>
+      <td>严格去重，每条数据只出现 1-2 次</td>
+    </tr>
+    <tr>
+      <td>排序</td>
+      <td>随机打乱投喂</td>
+      <td>按难度递进排列（课程化学习）</td>
+    </tr>
+    <tr>
+      <td>配比</td>
+      <td>英语/中文/代码随机混合</td>
+      <td>按目标能力精确配比语种和领域</td>
+    </tr>
+  </table>
+
+  <div class="callout blue">
+    <div class="callout-label">📊 渠道类比</div>
+    <p style="margin:0">
+      这就像代理商招募。高效做法不是"来者不拒，先签了再说"，而是<strong>制定清晰的招募标准、分层筛选、按区域特点匹配代理商类型</strong>。100 个精选代理商的总产出，很可能超过 500 个海选代理商。
+    </p>
+  </div>
+
+  <p>
+    <strong>典型案例</strong>：微软的 Phi-3 系列。只用了 <strong>3.3 万亿 Token</strong>（GPT-4 的 1/4 不到），但通过极其精细的数据筛选和合成数据配比，在多个基准上接近 Llama-3-70B（用了 15 万亿 Token 训练）。
+  </p>
+
+  <h4>策略 2：课程化学习（Curriculum Learning）— "先学加减法，再学微积分"</h4>
+
+  <p>
+    人类学习有一个基本常识：<strong>由浅入深</strong>。先学加减法，再学乘除，最后学微积分。如果一上来就教微积分，学不进去。
+  </p>
+
+  <p>
+    AI 的训练传统上不是这样的——数据被随机打乱投喂，模型同时看到幼儿园级别的文本和博士论文。这有点像你把所有年级的教材混在一起，让学生随机翻页学习。
+  </p>
+
+  <p>
+    <strong>课程化学习</strong>的思路很朴素：把训练数据按难度分级，让模型<strong>先学简单的、再学复杂的</strong>。这样每一步学习都建立在前一步的基础上，Token 效率显著提升。
+  </p>
+
+  <div class="step-flow">
+    <div class="step-item">
+      <div class="step-num">PHASE 1</div>
+      <div class="step-text">基础语法<br>简单句式</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-num">PHASE 2</div>
+      <div class="step-text">段落逻辑<br>因果关系</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-num">PHASE 3</div>
+      <div class="step-text">复杂推理<br>跨领域迁移</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-num">PHASE 4</div>
+      <div class="step-text">专业文献<br>高阶任务</div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-label">📊 渠道类比</div>
+    <p style="margin:0">
+      这像新代理商的培训体系。<strong>不会第一天就丢给新人最复杂的项目</strong>——先学产品基础，再学销售话术，然后学方案定制，最后独立操盘。培训有"课程表"，效率远高于"扔到市场上自己悟"。
+    </p>
+  </div>
+
+  <h4>策略 3：长上下文建模 — "一页纸的信息 vs 一本书的信息"</h4>
+
+  <p>
+    这是 <strong>Kimi 最核心的押注方向</strong>。
+  </p>
+
+  <p>
+    传统模型的上下文窗口有限——GPT-3.5 是 4K Token（约 3000 字），GPT-4 初版是 8K。就像一个人只能看到面前的一页纸，每次读完一页就忘了前面的。
+  </p>
+
+  <p>
+    Kimi 的路线是：把上下文窗口做到 <strong>200 万 Token</strong>（约 150 万字 = 一本《战争与和平》的 5 倍）。这意味着模型在处理每一段文本时，都能"看到"巨量的上下文信息。
+  </p>
+
+  <p>
+    <strong>为什么这能提高 Token 效率？</strong>
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">更少的重复训练</span>
+      <div class="card-body">短上下文模型需要多次重复看同一个概念的不同表述才能学会。长上下文模型一次性看到足够多的相关信息，一遍就能学到。<strong>就像给代理商一本完整的产品手册 vs 分 50 次微信发 50 条碎片——前者效率高得多。</strong></div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">跨段落关联</span>
+      <div class="card-body">很多知识藏在"远距离关联"里——文章开头的假设和结尾的结论之间的逻辑链。短上下文模型看不到这种关联，长上下文模型能学到。<strong>信息密度更高 = Token 效率更高。</strong></div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">推理时更强的"记忆"</span>
+      <div class="card-body">训练时学会了处理长文本，推理时自然也能处理长文本。用户可以丢给 Kimi 一整份合同、一本书、一个完整的代码库——这是实打实的产品差异化。</div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 关键洞察</div>
+    <p style="margin:0">
+      <strong>长上下文不只是一个产品功能，它是一种训练策略。</strong> 它让模型在训练阶段就学习"如何从大量上下文中提取信息"的能力——这本身就是一种更深层的学习。Kimi 的逻辑是：<strong>把"阅读理解能力"本身当作核心竞争力来训练。</strong>
+    </p>
+  </div>
+
+  <h4>策略 4：知识蒸馏（Knowledge Distillation）— "师傅带徒弟"</h4>
+
+  <p>
+    最后一种策略更"取巧"：<strong>让大模型教小模型。</strong>
+  </p>
+
+  <p>
+    原理很简单：大模型已经花了巨量 Token 学会了某些能力。与其让小模型重新从零学习同样的知识，不如让大模型把"学到的精华"直接传授给小模型。
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">知识蒸馏流程</span><br><br>
+    <span class="accent-hl">Teacher（大模型，如 GPT-4）</span><br>
+    &nbsp;&nbsp;训练数据：10 万亿 Token<br>
+    &nbsp;&nbsp;参数量：1.8 万亿<br>
+    &nbsp;&nbsp;训练成本：$100M+<br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│ <span class="yellow-hl">提取核心知识</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│ （对同样的问题，输出概率分布）<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br><br>
+    <span class="ok">Student（小模型，如 Phi-3）</span><br>
+    &nbsp;&nbsp;训练数据：3 万亿 Token + Teacher 的输出<br>
+    &nbsp;&nbsp;参数量：38 亿<br>
+    &nbsp;&nbsp;训练成本：$5M<br>
+    &nbsp;&nbsp;性能：达到 Teacher 的 ~85-90%<br>
+  </div>
+
+  <p>
+    <strong>Student 模型用了不到 1/3 的 Token，达到了 Teacher 85-90% 的能力。</strong> 每个 Token 的"信息含量"被压缩了——Teacher 用 10 万亿 Token 学到的东西，浓缩后让 Student 用 3 万亿就学到了。
+  </p>
+
+  <div class="callout purple">
+    <div class="callout-label">📊 渠道类比</div>
+    <p style="margin:0">
+      这就像"老带新"。一个干了 5 年的金牌代理商把自己踩过的坑、积累的客户洞察、谈判技巧浓缩成一套 SOP，新人学完这套 SOP，3 个月就能达到老人 80% 的水平。<strong>不需要让新人自己花 5 年重新摸索——直接继承前人的"学习成果"。</strong>
+    </p>
+  </div>
+
+  <h3>三、一张图看全局</h3>
+
+  <p>
+    四种策略之间不是互斥的，是可以叠加的。Kimi 的做法其实是把多种策略组合：
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">Token 效率的四大杠杆</span><br><br>
+    ┌─────────────────────────────────────────┐<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yellow-hl">提高 Token 效率</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"用更少的数据学到更多"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    ├─────────────────────────────────────────┤<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;<span class="accent-hl">① 数据质量</span>&nbsp;&nbsp;精选 > 海选&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;<span class="accent-hl">② 课程化</span>&nbsp;&nbsp;&nbsp;&nbsp;由浅入深递进&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;<span class="accent-hl">③ 长上下文</span>&nbsp;&nbsp;一次看更多 = 学更深&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;<span class="accent-hl">④ 知识蒸馏</span>&nbsp;&nbsp;大模型教小模型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;四种策略<span class="ok">可以叠加</span>，效果是<span class="ok">乘法关系</span>&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    └─────────────────────────────────────────┘<br>
+  </div>
+
+  <h3>四、Kimi 的战略拼图</h3>
+
+  <p>
+    现在把 Kimi 的逻辑连起来看：
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">判断：数据墙会率先到来</span>
+      <div class="card-body">高质量中文数据尤其稀缺（中文互联网内容质量参差不齐）。跟 OpenAI 拼数据量是死路——你永远拼不过英语互联网的规模。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">押注：Token 效率 + 长上下文</span>
+      <div class="card-body">既然数据量拼不过，那就提高每个 Token 的学习效率。同时把长上下文能力做到极致——这既是训练策略（提高 Token 效率），也是产品差异化（200 万字上下文窗口）。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">结果：以小博大</span>
+      <div class="card-body">Kimi 的基座模型参数量估计在 200B-400B 之间（远小于 GPT-4 的 1.8T），但在中文长文本场景的表现非常有竞争力。<strong>用 Scale Smart 的路线，在 Scale Up 巨头们忽略的赛道上建立优势。</strong></div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ 但这里有一个诚实的提醒</div>
+    <p style="margin:0">
+      Kimi 的策略有明显的<strong>适用边界</strong>。Token 效率路线在"语言理解"类任务上优势明显（阅读长文档、总结、分析），但在"通用推理"和"多模态"能力上，可能仍然需要规模支撑。<br><br>
+      <strong>没有一种策略是万能的。</strong> Kimi 选择了一条差异化路线，但这条路也有自己的天花板。这是所有战略选择的本质——<strong>选择意味着放弃。</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>对 AI 行业竞争格局的影响</h3>
+
+  <p>
+    Token 效率这条路线，正在重塑 AI 行业的竞争逻辑：
+  </p>
+
+  <table>
+    <tr>
+      <th>旧逻辑</th>
+      <th>新逻辑</th>
+    </tr>
+    <tr>
+      <td>谁的 GPU 多，谁就赢</td>
+      <td>谁的数据工程好 + 训练策略巧，谁效率高</td>
+    </tr>
+    <tr>
+      <td>创业公司没希望（拼不过算力）</td>
+      <td>创业公司可以在垂直赛道"以小博大"</td>
+    </tr>
+    <tr>
+      <td>数据越多模型越好</td>
+      <td>数据质量 > 数据数量；学习方法 > 学习材料</td>
+    </tr>
+    <tr>
+      <td>AI 竞争 = 军备竞赛</td>
+      <td>AI 竞争 = 军备 + 策略 + 定位</td>
+    </tr>
+  </table>
+
+  <p>
+    <strong>这不就是市场竞争的经典命题吗？</strong> 资源有限的挑战者如何在巨头林立的市场中找到立足点？
+  </p>
+
+  <h3>对你工作的三个启示</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">AI 工具评估："效率"比"规模"更值得关注</span>
+      <div class="card-body">当你评估一个 AI 工具/产品时，不要只看"它背后是什么模型、多少参数"。<strong>更值得问的问题是：它在你的具体场景上表现如何？</strong> 一个 Token 效率高的小模型，在垂直场景上可能远胜通用大模型。Day 7 的 AI 工具评估 SOP 在这里有了更精细的判断维度。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">渠道管理的"人效"就是你的 Token 效率</span>
+      <div class="card-body">你管理的渠道团队也有"数据墙"——优质代理商的增量空间在收窄。这时候<strong>"人效"就是你的 Token 效率</strong>。怎么提高每个代理商的产出？精准培训（课程化学习）、深度运营支持（长上下文＝更多信息输入）、标杆代理商带新人（知识蒸馏）——逻辑是一样的。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">战略选择的本质："选择"就意味着"放弃"</span>
+      <div class="card-body">Kimi 选择 Token 效率路线，意味着暂时放弃在通用能力上跟 GPT-4 硬拼。<strong>这种"有所为有所不为"的战略取舍</strong>，在渠道策略中也是核心命题——你不可能每个市场都重兵投入，选择深耕哪个赛道、放弃哪个市场，决定了你的资源 ROI。</div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 一句话总结</div>
+    <p style="margin:0">
+      <strong>当资源有限时，"学得深"比"学得多"更重要——无论是训练 AI 模型，还是管理渠道团队。</strong> Token 效率不是一个技术概念，它是一种思维方式：<strong>在约束条件下最大化每一单位投入的产出。</strong>
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+
+  <p><strong>场景：你负责一个 50 人的代理商团队。今年的 KPI 是收入增长 50%，但市场上已经没什么好的新代理商可以签了（"数据墙"到了）。你会采用哪种策略？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      降低标准，大量签新代理商。数量上去了总产出自然上去。（堆数据路线）
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      不签新人，把预算全部投入现有 50 人的培训和支持。深耕存量。（纯 Token 效率路线）
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      存量提效为主（60% 预算）+ 精选少量新签（40% 预算）。现有 50 人人均产出目标提升 30%，新签 10 家精选代理商补 20% 增量。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先做数据分析：50 人中 Top 10 贡献了多少？Bottom 10 能不能淘汰换新？然后按分层结果定策略。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问（必须回答）：不管你选哪个，给一个具体数字——你预计现有 50 人的人均产出能提升多少百分比？理由是什么？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>
+    今天聊 Token 效率时提到了一个关键词——<strong>上下文窗口（Context Window）</strong>。Kimi 把它做到了 200 万 Token。
+  </p>
+  <p>
+    但这引出一个根本问题：<strong>上下文窗口为什么这么"贵"？</strong>
+  </p>
+  <p>
+    "开会人数越多越好吗？"——10 个人开会，信息共享效率尚可；100 个人开会，你知道会发生什么。Context Window 的成本和"开会"有着惊人的相似之处。
+  </p>
+  <p>
+    <strong>Day 10</strong>，我们拆解 Context Window 背后的经济学：为什么"记忆"这么贵？
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">Token 效率 = 每个 Token 能学到多少"有用知识"</span>
+    <div class="card-body">
+      同样训练 1 万亿 Token，Token 效率高的模型学到深层逻辑和泛化能力，低的只学到表面模式。差异不在量，在于怎么学。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">四大提效杠杆：数据质量 / 课程化学习 / 长上下文 / 知识蒸馏</span>
+    <div class="card-body">
+      四种策略可以叠加，效果是乘法关系。精选数据（不是越多越好）、递进训练（先易后难）、长上下文（一次看更多）、大模型教小模型（继承学习成果）。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">Kimi 的战略：数据墙前的差异化路线</span>
+    <div class="card-body">
+      判断"中文数据墙会率先到来"→ 押注 Token 效率 + 长上下文 → 以小博大，在巨头忽略的赛道上建立优势。选择意味着放弃——长文本强，但通用推理可能受限。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">竞争逻辑转变：从军备竞赛到策略+定位</span>
+    <div class="card-body">
+      旧逻辑"谁的 GPU 多谁赢" → 新逻辑"谁的数据工程好 + 训练策略巧 + 赛道定位准"。创业公司可以在垂直赛道"以小博大"。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">普适思维：约束下的效率最大化</span>
+    <div class="card-body">
+      Token 效率的思维不只适用于 AI——当资源有限时，"提效"比"扩量"更理性。渠道管理中的"人效"就是你的 Token 效率：精选代理商 > 海选代理商，深度培训 > 大水漫灌。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 2</span>
+    <span>Token 是大模型的基本计量单位——Day 2 你学了 Tokenizer 如何把文字切分成 Token。今天我们从"Token 的数量"视角切换到"Token 的质量"视角：同样的 Token 数，学到的知识可以差很多倍。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 3</span>
+    <span>Pre-train 阶段消耗的数据量最大——Day 3 讲的 Pre-train 需要海量数据。今天的 Token 效率策略，核心就是在不增加数据总量的前提下，提升 Pre-train 阶段的学习质量。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 4</span>
+    <span>知识蒸馏 vs RLHF——两者都是"用一个系统指导另一个系统"的思路。RLHF 用人类偏好指导模型行为，知识蒸馏用大模型指导小模型学习。Day 4 的 Reward Hacking 问题在蒸馏中也存在——Student 可能只学到了 Teacher 的"讨好策略"而非真正的能力。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 6</span>
+    <span>Token 效率高不代表没有幻觉——数据质量提升能减少"训练数据缺失"类幻觉，但"自回归滚雪球"类幻觉与 Token 效率无关。Day 6 的幻觉分类学在这里帮你做更精确的判断。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 8</span>
+    <span>今天是 Day 8 的直接延续。Day 8 讲了 Scaling Law 的三面墙和四维新范式，其中"Data Scaling"这条路线的核心就是 Token 效率。Kimi 的策略本质上是 Scale Smart 的具体实现。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 10</span>
+    <span>长上下文是 Token 效率的关键杠杆之一，但代价是什么？Context Window 为什么这么"贵"？Day 10 将拆解上下文窗口背后的计算成本和工程挑战。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 9 of 60 · 第一模块 · 地基篇 · Week 2
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
