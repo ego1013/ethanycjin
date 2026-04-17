@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧱 反均值认知 · Anti-Average</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d0cfc8;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0ece4;
+
+            /* 反均值：裂缝红 + 考古黄 */
+            --accent: #E94560;
+            --accent-dim: rgba(233,69,96,0.10);
+            --accent-border: rgba(233,69,96,0.25);
+
+            --shadow: #b08968;
+            --shadow-dim: rgba(176,137,104,0.10);
+            --shadow-border: rgba(176,137,104,0.25);
+
+            --main: #e2a355;
+            --main-dim: rgba(226,163,85,0.10);
+            --main-border: rgba(226,163,85,0.25);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+
+        /* ── Hero ── */
+        .hero {
+            text-align: center;
+            padding: 2.5rem 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .hero .logo {
+            font-size: 2.8rem;
+            margin-bottom: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .subtitle {
+            font-size: 0.8rem;
+            color: var(--accent);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero .tagline {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.85;
+            max-width: 520px;
+            margin: 0 auto 1.8rem;
+        }
+
+        .hero .tagline strong { color: var(--white); font-weight: 600; }
+        .hero .tagline em { color: var(--accent); font-style: normal; font-weight: 600; }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat .num {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .hero-stat .num.red { color: var(--accent); }
+        .hero-stat .num.gold { color: var(--shadow); }
+
+        .hero-stat .label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 2px;
+        }
+
+        /* ── Manifesto ── */
+        .manifesto {
+            background: linear-gradient(135deg, rgba(233,69,96,0.04), rgba(176,137,104,0.04));
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 12px;
+            padding: 1.5rem 1.75rem;
+            margin: 2rem 0 2.5rem;
+            font-size: 0.88rem;
+            line-height: 1.9;
+            color: var(--text);
+        }
+        .manifesto strong { color: var(--white); }
+        .manifesto em { color: var(--accent); font-style: normal; font-weight: 600; }
+
+        /* ── Current Push Banner ── */
+        .current-week {
+            background: linear-gradient(135deg, rgba(233,69,96,0.08), rgba(233,69,96,0.02));
+            border: 1px solid var(--accent-border);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .current-week .week-info { flex: 1; min-width: 260px; }
+        .current-week .week-label {
+            font-size: 0.65rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+        .current-week .week-book {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+        .current-week .week-role {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+        .current-week .week-btn {
+            display: inline-block;
+            padding: 0.55rem 1.2rem;
+            background: var(--accent);
+            color: #0a0a0a;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .current-week .week-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        /* ── Section Title ── */
+        .section-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            margin-bottom: 1rem;
+            margin-top: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Roles Grid ── */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 620px) {
+            .roles-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .role-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+        .role-card:hover {
+            border-color: var(--border-light);
+            background: var(--surface-2);
+        }
+        .role-card .role-emoji { font-size: 1.4rem; margin-bottom: 0.4rem; }
+        .role-card .role-day {
+            font-size: 0.65rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .role-card .role-name {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.4rem;
+        }
+        .role-card .role-desc {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        /* ── Recent pushes ── */
+        .pushes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .push-item {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        .push-item:hover {
+            border-color: var(--border-light);
+            background: var(--surface-2);
+            transform: translateX(3px);
+        }
+        .push-item.shadow { border-left: 3px solid var(--shadow); }
+        .push-item.main   { border-left: 3px solid var(--main); }
+
+        .push-date {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            width: 60px;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .push-body { flex: 1; min-width: 0; }
+        .push-title {
+            font-size: 0.88rem;
+            font-weight: 550;
+            color: var(--white);
+            margin-bottom: 0.15rem;
+        }
+        .push-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+        .push-tag {
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 5px;
+            white-space: nowrap;
+            letter-spacing: 0.05em;
+        }
+        .push-tag.shadow {
+            color: var(--shadow);
+            background: var(--shadow-dim);
+            border: 1px solid var(--shadow-border);
+        }
+        .push-tag.main {
+            color: var(--main);
+            background: var(--main-dim);
+            border: 1px solid var(--main-border);
+        }
+
+        /* ── Book-list tabs ── */
+        .tabs {
+            display: inline-flex;
+            gap: 2px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 3px;
+            margin-bottom: 1rem;
+        }
+        .tab {
+            padding: 0.4rem 0.9rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: transparent;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .tab.active { color: var(--white); background: var(--surface-2); }
+        .tab.main.active { color: var(--main); }
+        .tab.shadow.active { color: var(--shadow); }
+
+        .book-panel { display: none; }
+        .book-panel.active { display: block; }
+
+        /* ── Book items ── */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.8rem;
+            margin-top: 1.5rem;
+        }
+        .part-num {
+            font-size: 0.62rem;
+            font-weight: 700;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 3px 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            color: var(--text-dim);
+        }
+        .book-panel.main .part-num  { color: var(--main);   border-color: var(--main-border);   background: var(--main-dim); }
+        .book-panel.shadow .part-num { color: var(--shadow); border-color: var(--shadow-border); background: var(--shadow-dim); }
+
+        .part-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .books-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .book-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        .book-item:hover {
+            border-color: var(--border-light);
+            background: var(--surface-2);
+            transform: translateX(3px);
+        }
+        .book-item.active {
+            background: var(--accent-dim);
+            border-color: var(--accent-border);
+        }
+        .book-num {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .book-info { flex: 1; min-width: 0; }
+        .book-title {
+            font-size: 0.86rem;
+            font-weight: 550;
+            color: var(--white);
+            margin-bottom: 0.18rem;
+        }
+        .book-author {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .book-tag {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .book-status {
+            font-size: 0.58rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 5px;
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+        }
+        .book-status.done {
+            color: #4ade80;
+            background: rgba(74,222,128,0.08);
+            border: 1px solid rgba(74,222,128,0.2);
+        }
+        .book-status.live {
+            color: var(--accent);
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+        }
+        .book-status.upcoming {
+            color: #444;
+            background: #141414;
+            border: 1px solid #222;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../">Ethan's Lab</a>
+            <span>›</span>
+            <span>反均值认知</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="logo">🧱</div>
+            <div class="subtitle">Anti-Average · Channel B</div>
+            <h1>反均值认知</h1>
+            <p class="tagline">
+                主流商业书单是一面 <em>回音壁</em>。<br>
+                这里每本主线书旁边，都放一本 <strong>它从未预料到的对话者</strong>。<br>
+                不是否定结构，而是在结构里凿一道裂缝——<em>裂缝里才有光</em>。
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="num gold">50</div>
+                    <div class="label">主线 Main</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="num red">50</div>
+                    <div class="label">暗线 Shadow</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="num">3×50</div>
+                    <div class="label">Episodes</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="num" id="weekNow">1</div>
+                    <div class="label">Current Week</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manifesto -->
+        <div class="manifesto">
+            <strong>为什么需要这个频道？</strong><br>
+            读西方商业经典越多，盲区越固化——同一批作者、同一套语言、同一个文明的视角，反复确认同一套世界观。<br><br>
+            <em>反均值认知</em>的工作是拆墙：给《国富论》配伊本·赫勒敦，给《失控》配祖博夫，给《历史的终结》配沃勒斯坦。<br>
+            摩擦不是目的。<strong>在摩擦里看见自己原来看不见的东西</strong>，才是目的。
+        </div>
+
+        <!-- Current Push Banner -->
+        <div class="current-week">
+            <div class="week-info">
+                <div class="week-label">🔴 第 1 周 · 暗线三连推送完成</div>
+                <div class="week-book">S1《穆卡迪马》— 伊本·赫勒敦（14世纪阿拉伯）</div>
+                <div class="week-role">碰撞对象：主线《国富论》· 劳动价值论的两个起点，相差 400 年</div>
+            </div>
+            <a href="./weeks/w01-shadow-s1-d05.html" class="week-btn">今日推送 →</a>
+        </div>
+
+        <!-- Roles -->
+        <div class="section-title">五个角色 · Five Agents</div>
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-emoji">🪨</div>
+                <div class="role-day">周一 · Monday</div>
+                <div class="role-name">解构者 The Decoder</div>
+                <div class="role-desc">考古学家。地层报告：土壤·论点·激怒了谁·张力问题。</div>
+            </div>
+            <div class="role-card">
+                <div class="role-emoji">🔧</div>
+                <div class="role-day">周三 · Wednesday</div>
+                <div class="role-name">提炼者 The Distiller</div>
+                <div class="role-desc">工程师。论证链·反直觉命题·中国/职业应用。</div>
+            </div>
+            <div class="role-card">
+                <div class="role-emoji">🌉</div>
+                <div class="role-day">周五 · Friday</div>
+                <div class="role-name">摆渡人 The Bridge</div>
+                <div class="role-desc">翻译官。三场景着陆·暗线碰撞·本周金句改写。</div>
+            </div>
+            <div class="role-card">
+                <div class="role-emoji">⚔️</div>
+                <div class="role-day">月末 · Collision</div>
+                <div class="role-name">挑战者 The Challenger</div>
+                <div class="role-desc">法官。起诉书：时代局限·地理盲区·AI 时代失效检验。</div>
+            </div>
+            <div class="role-card">
+                <div class="role-emoji">🕵️</div>
+                <div class="role-day">每篇 · Suffix</div>
+                <div class="role-name">连接者 The Connector</div>
+                <div class="role-desc">侦探。发现隐藏的线索——立场对立但底层逻辑相通。</div>
+            </div>
+            <div class="role-card">
+                <div class="role-emoji">🎛</div>
+                <div class="role-day">后台 · Ops</div>
+                <div class="role-name">调度者 Orchestrator</div>
+                <div class="role-desc">总调度。节奏·状态·补盲预警·生态位报告。</div>
+            </div>
+        </div>
+
+        <!-- Recent Pushes -->
+        <div class="section-title">最近推送 · Recent</div>
+        <div class="pushes-list">
+            <a href="./weeks/w01-shadow-s1-d05.html" class="push-item shadow">
+                <div class="push-date">04·17 五</div>
+                <div class="push-body">
+                    <div class="push-title">🌉 摆渡人 + 🕵 连接者 · 《穆卡迪马》第 3 天</div>
+                    <div class="push-sub">三场景着陆 · 暗线碰撞 · 本周金句改写</div>
+                </div>
+                <span class="push-tag shadow">暗线 S1</span>
+            </a>
+            <a href="./weeks/w01-shadow-s1-d03.html" class="push-item shadow">
+                <div class="push-date">04·15 三</div>
+                <div class="push-body">
+                    <div class="push-title">🔧 提炼者 · 《穆卡迪马》第 2 天</div>
+                    <div class="push-sub">asabiyya 框架 · 三个反直觉命题 · 腾讯渠道管理应用</div>
+                </div>
+                <span class="push-tag shadow">暗线 S1</span>
+            </a>
+            <a href="./weeks/w01-shadow-s1-d01.html" class="push-item shadow">
+                <div class="push-date">04·13 一</div>
+                <div class="push-body">
+                    <div class="push-title">🪨 解构者 · 《穆卡迪马》第 1 天</div>
+                    <div class="push-sub">地层报告 · 激怒了谁 · 本周张力问题</div>
+                </div>
+                <span class="push-tag shadow">暗线 S1</span>
+            </a>
+        </div>
+
+        <!-- Book lists with tabs -->
+        <div class="section-title">书单 · Dual Booklist</div>
+        <div class="tabs" role="tablist">
+            <button class="tab shadow active" data-target="shadow">📕 暗线 · 50 本</button>
+            <button class="tab main" data-target="main">📗 主线 · 50 本</button>
+        </div>
+
+        <!-- Shadow booklist -->
+        <div class="book-panel shadow active" id="panel-shadow">
+            <div class="part-header">
+                <span class="part-num">第一部分 · S1–S8</span>
+                <span class="part-title">被遗忘的非西方经济思想</span>
+            </div>
+            <div class="books-list">
+                <a href="./weeks/w01-shadow-s1-d05.html" class="book-item">
+                    <span class="book-num">S1</span>
+                    <div class="book-info"><div class="book-title">穆卡迪马</div><div class="book-author">伊本·赫勒敦</div></div>
+                    <span class="book-tag">vs 国富论</span>
+                    <span class="book-status done">已读完</span>
+                </a>
+                <div class="book-item"><span class="book-num">S2</span><div class="book-info"><div class="book-title">实践论·矛盾论</div><div class="book-author">毛泽东</div></div><span class="book-tag">vs 西方认识论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S3</span><div class="book-info"><div class="book-title">印度经济史</div><div class="book-author">Romila Thapar</div></div><span class="book-tag">vs 枪炮病菌钢铁</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S4</span><div class="book-info"><div class="book-title">非洲为什么如此贫穷</div><div class="book-author">Leonce Ndikumana</div></div><span class="book-tag">vs 发展经济学</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S5</span><div class="book-info"><div class="book-title">白银资本</div><div class="book-author">A.G. Frank</div></div><span class="book-tag">vs 西方崛起必然论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S6</span><div class="book-info"><div class="book-title">富国と強兵</div><div class="book-author">中野剛志</div></div><span class="book-tag">vs 自由贸易论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S7</span><div class="book-info"><div class="book-title">伊斯兰经济学导论</div><div class="book-author">Chapra</div></div><span class="book-tag">vs 现代金融学</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S8</span><div class="book-info"><div class="book-title">拉丁美洲被切开的血管</div><div class="book-author">加莱亚诺</div></div><span class="book-tag">vs 全球化红利论</span><span class="book-status upcoming">待读</span></div>
+            </div>
+
+            <div class="part-header">
+                <span class="part-num">第二部分 · S9–S16</span>
+                <span class="part-title">主流商业思想的反面教材</span>
+            </div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">S9</span><div class="book-info"><div class="book-title">大停滞</div><div class="book-author">Tyler Cowen</div></div><span class="book-tag">vs 创新永续神话</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S10</span><div class="book-info"><div class="book-title">增长的极限</div><div class="book-author">罗马俱乐部</div></div><span class="book-tag">vs 经济增长主义</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S11</span><div class="book-info"><div class="book-title">反脆弱</div><div class="book-author">塔勒布</div></div><span class="book-tag">vs 专家治理</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S12</span><div class="book-info"><div class="book-title">娇惯的心灵</div><div class="book-author">海特</div></div><span class="book-tag">vs 安全文化</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S13</span><div class="book-info"><div class="book-title">官僚机器</div><div class="book-author">大卫·格雷伯</div></div><span class="book-tag">vs 组织效率论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S14</span><div class="book-info"><div class="book-title">狗屁工作</div><div class="book-author">大卫·格雷伯</div></div><span class="book-tag">vs 充分就业</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S15</span><div class="book-info"><div class="book-title">资本主义的未来</div><div class="book-author">保罗·科利尔</div></div><span class="book-tag">vs 主流经济学</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S16</span><div class="book-info"><div class="book-title">规模</div><div class="book-author">Geoffrey West</div></div><span class="book-tag">vs 管理学增长叙事</span><span class="book-status upcoming">待读</span></div>
+            </div>
+
+            <div class="part-header">
+                <span class="part-num">第三部分 · S17–S24</span>
+                <span class="part-title">被压制的历史视角</span>
+            </div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">S17</span><div class="book-info"><div class="book-title">人民的历史</div><div class="book-author">霍华德·津恩</div></div><span class="book-tag">vs 主流美国史</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S18</span><div class="book-info"><div class="book-title">东方学</div><div class="book-author">萨义德</div></div><span class="book-tag">vs 西方知识体系</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S19</span><div class="book-info"><div class="book-title">黑色雅典娜</div><div class="book-author">马丁·伯纳尔</div></div><span class="book-tag">vs 欧洲中心论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S20</span><div class="book-info"><div class="book-title">现代世界体系</div><div class="book-author">沃勒斯坦</div></div><span class="book-tag">vs 发展阶段论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S21</span><div class="book-info"><div class="book-title">被掩盖的历史</div><div class="book-author">詹姆斯·洛温</div></div><span class="book-tag">vs 官方历史</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S22</span><div class="book-info"><div class="book-title">历史研究</div><div class="book-author">汤因比</div></div><span class="book-tag">vs 国家史观</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S23</span><div class="book-info"><div class="book-title">叫魂</div><div class="book-author">孔飞力</div></div><span class="book-tag">vs 宏观叙事</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S24</span><div class="book-info"><div class="book-title">万古江河</div><div class="book-author">许倬云</div></div><span class="book-tag">vs 朝代更替史观</span><span class="book-status upcoming">待读</span></div>
+            </div>
+
+            <div class="part-header">
+                <span class="part-num">第四部分 · S25–S31</span>
+                <span class="part-title">认知与思维的异端</span>
+            </div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">S25</span><div class="book-info"><div class="book-title">具身认知</div><div class="book-author">瓦雷拉/汤普森</div></div><span class="book-tag">vs 大脑中心主义</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S26</span><div class="book-info"><div class="book-title">语言本能</div><div class="book-author">史蒂芬·平克</div></div><span class="book-tag">vs AI 语言理解</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S27</span><div class="book-info"><div class="book-title">哥德尔、艾舍尔、巴赫</div><div class="book-author">侯世达</div></div><span class="book-tag">vs AI 意识论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S28</span><div class="book-info"><div class="book-title">思维的版图</div><div class="book-author">尼斯贝特</div></div><span class="book-tag">vs 普世认知论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S29</span><div class="book-info"><div class="book-title">直觉泵</div><div class="book-author">丹尼特</div></div><span class="book-tag">vs 哲学伪问题</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S30</span><div class="book-info"><div class="book-title">技术与文明</div><div class="book-author">芒福德</div></div><span class="book-tag">vs 技术中性论</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S31</span><div class="book-info"><div class="book-title">娱乐至死（算法重读）</div><div class="book-author">波兹曼</div></div><span class="book-tag">vs 信息自由论</span><span class="book-status upcoming">待读</span></div>
+            </div>
+
+            <div class="part-header">
+                <span class="part-num">第五部分 · S32–S38</span>
+                <span class="part-title">中国本土被低估思想</span>
+            </div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">S32</span><div class="book-info"><div class="book-title">中国历代政治得失</div><div class="book-author">钱穆</div></div><span class="book-tag">vs 西方政治学套用</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S33</span><div class="book-info"><div class="book-title">乡土中国</div><div class="book-author">费孝通</div></div><span class="book-tag">vs 西方社会学</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S34</span><div class="book-info"><div class="book-title">中国哲学简史</div><div class="book-author">冯友兰</div></div><span class="book-tag">vs 西方哲学中心</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S35</span><div class="book-info"><div class="book-title">置身事内</div><div class="book-author">兰小欢</div></div><span class="book-tag">vs 西方经济学盲区</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S36</span><div class="book-info"><div class="book-title">翦商</div><div class="book-author">李硕</div></div><span class="book-tag">vs 儒家正统史观</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S37</span><div class="book-info"><div class="book-title">中国国家治理的制度逻辑</div><div class="book-author">周雪光</div></div><span class="book-tag">vs 官僚体系解释</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S38</span><div class="book-info"><div class="book-title">货币的非国家化</div><div class="book-author">哈耶克</div></div><span class="book-tag">vs 货币主权</span><span class="book-status upcoming">待读</span></div>
+            </div>
+
+            <div class="part-header">
+                <span class="part-num">第六部分 · S39–S44</span>
+                <span class="part-title">技术悲观派</span>
+            </div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">S39</span><div class="book-info"><div class="book-title">技术垄断</div><div class="book-author">尼尔·波兹曼</div></div><span class="book-tag">技术摧毁文化</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S40</span><div class="book-info"><div class="book-title">武器化的谎言</div><div class="book-author">丹尼尔·列维廷</div></div><span class="book-tag">信息时代防御</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S41</span><div class="book-info"><div class="book-title">监控资本主义时代</div><div class="book-author">肖莎娜·祖博夫</div></div><span class="book-tag">你是原材料</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S42</span><div class="book-info"><div class="book-title">被算法操控的生活</div><div class="book-author">Cathy O'Neil</div></div><span class="book-tag">算法有歧视</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S43</span><div class="book-info"><div class="book-title">数字极权</div><div class="book-author">吴修铭</div></div><span class="book-tag">注意力经济</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S44</span><div class="book-info"><div class="book-title">人类世的"资本论"</div><div class="book-author">斋藤幸平</div></div><span class="book-tag">增长本身是问题</span><span class="book-status upcoming">待读</span></div>
+            </div>
+
+            <div class="part-header">
+                <span class="part-num">第七部分 · S45–S50</span>
+                <span class="part-title">元方法论</span>
+            </div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">S45</span><div class="book-info"><div class="book-title">如何阅读一本书</div><div class="book-author">艾德勒</div></div><span class="book-tag">分析性阅读</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S46</span><div class="book-info"><div class="book-title">学会提问</div><div class="book-author">布朗/基利</div></div><span class="book-tag">批判性思维</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S47</span><div class="book-info"><div class="book-title">论证的艺术</div><div class="book-author">Anthony Weston</div></div><span class="book-tag">论证拆解</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S48</span><div class="book-info"><div class="book-title">知识的边界</div><div class="book-author">大卫·温伯格</div></div><span class="book-tag">网络时代知识</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S49</span><div class="book-info"><div class="book-title">思考，快与慢（后半）</div><div class="book-author">卡尼曼</div></div><span class="book-tag">双系统深度</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">S50</span><div class="book-info"><div class="book-title">穷查理宝典</div><div class="book-author">芒格</div></div><span class="book-tag">多元思维模型</span><span class="book-status upcoming">待读</span></div>
+            </div>
+        </div>
+
+        <!-- Main booklist -->
+        <div class="book-panel main" id="panel-main">
+            <div class="part-header"><span class="part-num">第一部分 · 第1-10周</span><span class="part-title">经济思想的骨架</span></div>
+            <div class="books-list">
+                <a href="../booklist/weeks/w01-d01.html" class="book-item"><span class="book-num">01</span><div class="book-info"><div class="book-title">国富论</div><div class="book-author">亚当·斯密</div></div><span class="book-tag">第 1 周</span><span class="book-status done">已读完</span></a>
+                <a href="./weeks/w02-main-d01.html" class="book-item active"><span class="book-num">02</span><div class="book-info"><div class="book-title">资本论</div><div class="book-author">马克思</div></div><span class="book-tag">第 2 周</span><span class="book-status live">进行中</span></a>
+                <div class="book-item"><span class="book-num">03</span><div class="book-info"><div class="book-title">新教伦理与资本主义精神</div><div class="book-author">韦伯</div></div><span class="book-tag">第 3 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">04</span><div class="book-info"><div class="book-title">就业、利息和货币通论</div><div class="book-author">凯恩斯</div></div><span class="book-tag">第 4 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">05</span><div class="book-info"><div class="book-title">通往奴役之路</div><div class="book-author">哈耶克</div></div><span class="book-tag">第 5 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">06</span><div class="book-info"><div class="book-title">自由选择</div><div class="book-author">弗里德曼</div></div><span class="book-tag">第 6 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">07</span><div class="book-info"><div class="book-title">乌合之众</div><div class="book-author">勒庞</div></div><span class="book-tag">第 7 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">08</span><div class="book-info"><div class="book-title">创新与企业家精神</div><div class="book-author">德鲁克</div></div><span class="book-tag">第 8 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">09</span><div class="book-info"><div class="book-title">竞争战略三部曲</div><div class="book-author">迈克尔·波特</div></div><span class="book-tag">第 9 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">10</span><div class="book-info"><div class="book-title">21世纪资本论</div><div class="book-author">皮凯蒂</div></div><span class="book-tag">第 10 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+            <div class="part-header"><span class="part-num">第二部分 · 第11-15周</span><span class="part-title">认知与心智</span></div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">11</span><div class="book-info"><div class="book-title">思考，快与慢</div><div class="book-author">卡尼曼</div></div><span class="book-tag">第 11 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">12</span><div class="book-info"><div class="book-title">错误的行为</div><div class="book-author">塞勒</div></div><span class="book-tag">第 12 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">13</span><div class="book-info"><div class="book-title">娱乐至死</div><div class="book-author">波兹曼</div></div><span class="book-tag">第 13 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">14</span><div class="book-info"><div class="book-title">具身认知</div><div class="book-author">莱考夫 & 约翰逊</div></div><span class="book-tag">第 14 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">15</span><div class="book-info"><div class="book-title">反脆弱</div><div class="book-author">塔勒布</div></div><span class="book-tag">第 15 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+            <div class="part-header"><span class="part-num">第三部分 · 第16-21周</span><span class="part-title">技术如何重塑世界</span></div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">16</span><div class="book-info"><div class="book-title">理解媒介</div><div class="book-author">麦克卢汉</div></div><span class="book-tag">第 16 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">17</span><div class="book-info"><div class="book-title">技术的本质</div><div class="book-author">布莱恩·阿瑟</div></div><span class="book-tag">第 17 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">18</span><div class="book-info"><div class="book-title">失控</div><div class="book-author">凯文·凯利</div></div><span class="book-tag">第 18 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">19</span><div class="book-info"><div class="book-title">复杂</div><div class="book-author">沃尔德罗普</div></div><span class="book-tag">第 19 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">20</span><div class="book-info"><div class="book-title">创新者的窘境</div><div class="book-author">克里斯坦森</div></div><span class="book-tag">第 20 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">21</span><div class="book-info"><div class="book-title">奇点临近</div><div class="book-author">库兹韦尔</div></div><span class="book-tag">第 21 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+            <div class="part-header"><span class="part-num">第四部分 · 第22-27周</span><span class="part-title">权力、制度与人性</span></div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">22</span><div class="book-info"><div class="book-title">君主论</div><div class="book-author">马基雅维利</div></div><span class="book-tag">第 22 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">23</span><div class="book-info"><div class="book-title">利维坦</div><div class="book-author">霍布斯</div></div><span class="book-tag">第 23 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">24</span><div class="book-info"><div class="book-title">论自由</div><div class="book-author">约翰·密尔</div></div><span class="book-tag">第 24 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">25</span><div class="book-info"><div class="book-title">规训与惩罚</div><div class="book-author">福柯</div></div><span class="book-tag">第 25 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">26</span><div class="book-info"><div class="book-title">旧制度与大革命</div><div class="book-author">托克维尔</div></div><span class="book-tag">第 26 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">27</span><div class="book-info"><div class="book-title">历史的终结</div><div class="book-author">福山</div></div><span class="book-tag">第 27 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+            <div class="part-header"><span class="part-num">第五部分 · 第28-34周</span><span class="part-title">文明的尺度与视野</span></div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">28</span><div class="book-info"><div class="book-title">枪炮、病菌与钢铁</div><div class="book-author">戴蒙德</div></div><span class="book-tag">第 28 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">29</span><div class="book-info"><div class="book-title">人类简史</div><div class="book-author">赫拉利</div></div><span class="book-tag">第 29 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">30</span><div class="book-info"><div class="book-title">丝绸之路</div><div class="book-author">弗兰科潘</div></div><span class="book-tag">第 30 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">31</span><div class="book-info"><div class="book-title">大国的兴衰</div><div class="book-author">保罗·肯尼迪</div></div><span class="book-tag">第 31 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">32</span><div class="book-info"><div class="book-title">文明的冲突</div><div class="book-author">亨廷顿</div></div><span class="book-tag">第 32 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">33</span><div class="book-info"><div class="book-title">大分流</div><div class="book-author">彭慕兰</div></div><span class="book-tag">第 33 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">34</span><div class="book-info"><div class="book-title">未来简史</div><div class="book-author">赫拉利</div></div><span class="book-tag">第 34 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+            <div class="part-header"><span class="part-num">第六部分 · 第35-39周</span><span class="part-title">动荡、危机与系统性风险</span></div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">35</span><div class="book-info"><div class="book-title">非理性繁荣</div><div class="book-author">席勒</div></div><span class="book-tag">第 35 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">36</span><div class="book-info"><div class="book-title">萧条经济学的回归</div><div class="book-author">克鲁格曼</div></div><span class="book-tag">第 36 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">37</span><div class="book-info"><div class="book-title">增长的极限</div><div class="book-author">梅多斯等</div></div><span class="book-tag">第 37 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">38</span><div class="book-info"><div class="book-title">寂静的春天</div><div class="book-author">蕾切尔·卡森</div></div><span class="book-tag">第 38 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">39</span><div class="book-info"><div class="book-title">第三次浪潮</div><div class="book-author">托夫勒</div></div><span class="book-tag">第 39 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+            <div class="part-header"><span class="part-num">第七部分 · 第40-45周</span><span class="part-title">中国的叙事与逻辑</span></div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">40</span><div class="book-info"><div class="book-title">江村经济</div><div class="book-author">费孝通</div></div><span class="book-tag">第 40 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">41</span><div class="book-info"><div class="book-title">美国与中国</div><div class="book-author">费正清</div></div><span class="book-tag">第 41 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">42</span><div class="book-info"><div class="book-title">万历十五年</div><div class="book-author">黄仁宇</div></div><span class="book-tag">第 42 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">43</span><div class="book-info"><div class="book-title">论中国</div><div class="book-author">基辛格</div></div><span class="book-tag">第 43 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">44</span><div class="book-info"><div class="book-title">激荡三十年</div><div class="book-author">吴晓波</div></div><span class="book-tag">第 44 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">45</span><div class="book-info"><div class="book-title">当代中国经济改革</div><div class="book-author">吴敬琏</div></div><span class="book-tag">第 45 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+            <div class="part-header"><span class="part-num">第八部分 · 第46-50周</span><span class="part-title">企业家与个体的力量</span></div>
+            <div class="books-list">
+                <div class="book-item"><span class="book-num">46</span><div class="book-info"><div class="book-title">只有偏执狂才能生存</div><div class="book-author">安迪·格鲁夫</div></div><span class="book-tag">第 46 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">47</span><div class="book-info"><div class="book-title">巴菲特致股东的信</div><div class="book-author">巴菲特</div></div><span class="book-tag">第 47 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">48</span><div class="book-info"><div class="book-title">史蒂夫·乔布斯传</div><div class="book-author">艾萨克森</div></div><span class="book-tag">第 48 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">49</span><div class="book-info"><div class="book-title">活法</div><div class="book-author">稻盛和夫</div></div><span class="book-tag">第 49 周</span><span class="book-status upcoming">待读</span></div>
+                <div class="book-item"><span class="book-num">50</span><div class="book-info"><div class="book-title">穷查理宝典</div><div class="book-author">查理·芒格</div></div><span class="book-tag">第 50 周</span><span class="book-status upcoming">待读</span></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            🧱 反均值认知 · 裂缝里才有光<br>
+            每周一/三/五 14:30 推送 · <a href="../">Ethan's Lab</a> · &copy; 2026
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.target;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.book-panel').forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-' + target).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
