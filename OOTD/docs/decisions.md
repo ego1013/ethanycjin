@@ -60,7 +60,8 @@
 
 ### 2.5 布局（Layout）
 
-- **顶部**：sticky 导航栏，**左侧** primary 链接 `← Ethan's Lab`、次级链接 `anti_average`；右侧 brand 标签。（v2 要求：统一导航格式，放顶部左侧）
+- **顶部**：sticky 导航栏，内部 wrapper `max-width: 1320px` 与下方 container 完全对齐；左侧 primary 链接 `← Ethan's Lab`，右侧 brand 标签。**不含外站跳转链接**。（v2.1 修正：去掉 anti_average 链接；nav 内容与正文左对齐）
+- **Header 操作区**：日期/天气/方向 chip 下方新增 refresh-row，含 🎯 换方向词 / 🔄 换一批图 两个按钮，点击即整页刷新瀑布流
 - **Header 区**：brand + 日期/天气/方向 chip + trigger banner
 - **Masonry**：`column-count` 响应式 3 / 2 / 1，`break-inside: avoid`
 - **底部反馈栏**：fixed 定位，分两行 —— 上行最近 5 次搜索 tag 组合、下行 5 输入框 + 搜索按钮（桌面 grid 5 列，移动降为 2/1 列）
@@ -102,6 +103,24 @@
 ---
 
 ## 3. Changelog（按时间线，越新越靠上）
+
+### 2026-04-20 · v2.1（17:13 用户反馈修正）
+
+**用户反馈（原话）**：
+1. 自动化任务应该只有一条，删除重复的
+2. 导航栏位置不对，应该和下方内容左对齐（参考 anti_average 页，但不需要 anti_average 超链接）
+3. 图片质量不 OK，需要增加两个刷新按钮：a) 方向词刷新 b) 现有图片刷新，点击后瀑布流全部刷新
+
+**落地**：
+- **自动化清理**：`ls /Users/ethanycjin/.workbuddy/automations/` 显示 4 个目录，其中 `automation-2` / `automation-3` 仅存 memory.md（旧版 skill 删除后残留的孤儿目录），已 `rm -rf` 清理。当前生效自动化仅 2 条：`otomo-weekly`（本项目）+ `perceptual-c-3`（其他项目）。ŌTOMO 实际就只有 1 条，不存在重复
+- **导航栏对齐**：`.topnav` 去掉直接 padding，改为内部 `.topnav-inner`（`max-width: 1320px; margin: 0 auto; padding: 0.7rem 1rem`），和下方 `.container` 完全一致，视觉上导航栏内容与正文左边对齐
+- **移除 anti_average 链接**：导航栏仅保留 `← Ethan's Lab` 一个链接 + 右侧 brand 标签
+- **新增两个刷新按钮**（Header 下方 `.refresh-row`）：
+  - 🎯 **换方向词**（primary 暖金描边）：从 `DIRECTION_POOL` 按当前温度分层（cold/cool/mild/warm 四档）随机抽一组新方向，避免连续重复，然后按新方向词从 catalog 模糊匹配 tags/brand/query_tag 重新召回 ≥8 张，不足则回退到整个 catalog，整页刷新
+  - 🔄 **换一批图**：方向词保持不变，整页 shuffle（Fisher-Yates）打散顺序，弹 toast 提示"已刷新全部图片顺序（N 张候选）"
+- **JS 状态**：新增全局 `currentDirection` 与 `currentShuffleSeed`；`renderLatest(opts)` 改造为支持 `{newDirection, shuffle}` 两个分支
+- **方向词池**（前端兜底，未来会让自动化写入 archive）：按温度分 4 档，每档 4 组 × 3 关键词，覆盖从重叠穿 → 夏季通风的全季候
+- **备注**：图片质量的根本性提升（真实 Lookbook / 街拍 CDN）仍在 Roadmap P0，本次改动提供用户侧"不满意就重抽"的即时逃生口
 
 ### 2026-04-20 · v2（今日）
 

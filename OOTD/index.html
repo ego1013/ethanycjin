@@ -30,19 +30,23 @@
         line-height: 1.5;
     }
 
-    /* ═══ Top Nav（固定顶部，左侧返回链接，按用户要求统一格式）═══ */
+    /* ═══ Top Nav（sticky 顶部，内容和下方 container 左对齐）═══ */
     .topnav {
         position: sticky;
         top: 0;
         z-index: 90;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.7rem 1.2rem;
         background: rgba(15,15,15,0.92);
         backdrop-filter: saturate(180%) blur(14px);
         -webkit-backdrop-filter: saturate(180%) blur(14px);
         border-bottom: 1px solid var(--border);
+    }
+    .topnav-inner {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 0.7rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
     }
     .topnav a.nav-link {
         font-size: 0.78rem;
@@ -61,6 +65,40 @@
         font-size: 0.82rem;
         color: var(--text-muted);
         letter-spacing: 0.08em;
+    }
+
+    /* ═══ Refresh Actions（方向词刷新 + 图片刷新）═══ */
+    .refresh-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    .refresh-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        background: var(--surface);
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .refresh-btn:hover {
+        color: var(--text);
+        border-color: var(--accent);
+        background: var(--accent-soft);
+    }
+    .refresh-btn .ico { font-size: 0.9rem; }
+    .refresh-btn.loading { opacity: 0.5; pointer-events: none; }
+    .refresh-btn.primary {
+        color: var(--accent);
+        border-color: rgba(217,179,122,0.35);
     }
 
     .container { max-width: 1320px; margin: 0 auto; padding: 1.5rem 1rem 0; }
@@ -321,12 +359,13 @@
 </head>
 <body>
 
-<!-- 顶部左侧导航 · 统一格式 -->
+<!-- 顶部导航 · 与下方 container 左对齐（max-width 1320px + 同样 padding）-->
 <nav class="topnav">
-    <a class="nav-link primary" href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
-    <a class="nav-link" href="https://ego1013.github.io/ethanycjin/anti_average/">anti_average</a>
-    <div class="spacer"></div>
-    <span class="nav-brand">ŌTOMO · OOTD</span>
+    <div class="topnav-inner">
+        <a class="nav-link primary" href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+        <div class="spacer"></div>
+        <span class="nav-brand">ŌTOMO · OOTD</span>
+    </div>
 </nav>
 
 <div class="container">
@@ -340,6 +379,14 @@
             <div class="chip">方向<strong id="direction"></strong></div>
         </div>
         <div class="trigger-banner"><strong id="triggerLabel">本周推送</strong> · <span id="triggerNote">基于当日天气精选</span></div>
+        <div class="refresh-row">
+            <button class="refresh-btn primary" id="refreshDirectionBtn" title="重新生成风格方向词，瀑布流全部刷新">
+                <span class="ico">🎯</span><span>换方向词</span>
+            </button>
+            <button class="refresh-btn" id="refreshImagesBtn" title="方向不变，整页重新抽取新图">
+                <span class="ico">🔄</span><span>换一批图</span>
+            </button>
+        </div>
     </div>
 
     <div class="masonry" id="masonry"></div>
@@ -383,6 +430,49 @@ const ARCHIVE_URL = './data/outfit_archive.json';
 const RECENT_KEY  = 'otomo_recent_combos_v2';
 
 let archiveData = null;
+let currentDirection = null;   // 当前使用的方向词（初始 = 最新 push 的 direction_keywords）
+let currentShuffleSeed = 0;    // 换图时递增，用于打散顺序
+
+/* ═══ 方向词池（按温度分层，前端兜底；未来会由自动化写入 archive）═══ */
+const DIRECTION_POOL = {
+    cold: [   // ≤10°C
+        ['heavy layering', 'wool overcoat', 'archive outerwear'],
+        ['chunky knit', 'relaxed trouser', 'earth tone'],
+        ['military parka', 'cargo', 'utility'],
+        ['tailored coat', 'turtleneck', 'monochrome'],
+    ],
+    cool: [   // 11-18°C
+        ['light layering', 'spring transitional', 'earth tone minimalist'],
+        ['unstructured blazer', 'wide pant', 'quiet luxury'],
+        ['workwear jacket', 'denim', 'japanese street'],
+        ['knit vest', 'oxford shirt', 'prep-ivy'],
+    ],
+    mild: [   // 19-24°C
+        ['soft tailoring', 'linen shirt', 'muted palette'],
+        ['boxy tee', 'pleated pant', 'tokyo archive'],
+        ['overshirt', 'relaxed chino', 'workwear japan'],
+        ['knit polo', 'silk trouser', 'resort smart'],
+    ],
+    warm: [   // ≥25°C
+        ['breathable linen', 'open collar', 'beach tailoring'],
+        ['short sleeve shirt', 'wide short', 'summer japan'],
+        ['mesh knit', 'drawstring trouser', 'sport luxe'],
+        ['camp collar', 'pleated short', 'riviera'],
+    ],
+};
+
+function pickDirectionByTemp(tempC) {
+    let pool;
+    if (tempC <= 10)      pool = DIRECTION_POOL.cold;
+    else if (tempC <= 18) pool = DIRECTION_POOL.cool;
+    else if (tempC <= 24) pool = DIRECTION_POOL.mild;
+    else                  pool = DIRECTION_POOL.warm;
+    // 避免连续两次同一组
+    let next;
+    do { next = pool[Math.floor(Math.random() * pool.length)]; }
+    while (currentDirection && next.join('/') === currentDirection.join('/') && pool.length > 1);
+    return next;
+}
 
 /* ─── utils ─── */
 const pad = n => String(n).padStart(2, '0');
@@ -461,15 +551,69 @@ function pickLatestPush() {
     return ps.length ? ps[ps.length - 1] : null;
 }
 
-function renderLatest() {
+function renderLatest(opts={}) {
     const push = pickLatestPush();
     if (!push) {
         document.getElementById('masonry').innerHTML = '<div class="empty">归档为空</div>';
         return;
     }
-    const items = push.items.map(id => archiveData.catalog[id]).filter(Boolean);
-    renderHeader(push);
-    renderCards(items);
+
+    // 决定当前方向词
+    if (!currentDirection || opts.newDirection) {
+        const tempC = push.weather?.temp_c ?? 20;
+        currentDirection = opts.newDirection
+            ? pickDirectionByTemp(tempC)
+            : (push.weather?.direction_keywords || pickDirectionByTemp(tempC));
+    }
+
+    // 决定图片池
+    let items = push.items.map(id => archiveData.catalog[id]).filter(Boolean);
+    const allCatalog = Object.values(archiveData.catalog || {});
+
+    // 方向词变了 → 按方向词从 catalog 重新召回（模糊匹配 tags / brand / query_tag）
+    if (opts.newDirection) {
+        const dirLower = currentDirection.map(d => d.toLowerCase());
+        const matched = allCatalog.filter(it => {
+            const hay = (
+                (it.tags||[]).join(' ') + ' ' +
+                (it.brand_or_event||'') + ' ' +
+                (it.query_tag||'') + ' ' +
+                (it.source_type||'')
+            ).toLowerCase();
+            return dirLower.some(d => hay.includes(d));
+        });
+        // 匹配不到时从整个 catalog 抽
+        items = matched.length >= 8 ? matched : allCatalog;
+    }
+
+    // 换一批图：整页 shuffle（保证和上一次顺序不同）
+    if (opts.shuffle) {
+        currentShuffleSeed++;
+        items = shuffle(items.length ? items : allCatalog);
+    }
+
+    // 总量 12-18
+    const finalItems = items.slice(0, 18);
+
+    // Header 渲染
+    const label = opts.newDirection ? '方向已换' : opts.shuffle ? '换了一批图' : (push.push_type === 'scheduled' ? '本周推送' : '手动搜索');
+    const note  = opts.newDirection ? '重新匹配瀑布流 · ' + finalItems.length + ' 张'
+               : opts.shuffle ? '顺序已打散 · ' + finalItems.length + ' 张'
+               : '基于当日天气精选';
+    renderHeader(
+        { push_type: push.push_type, weather: push.weather },
+        { triggerLabel: label, triggerNote: note, direction: currentDirection.join(' / ') }
+    );
+    renderCards(finalItems);
+}
+
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
 
 /* ─── multi-keyword search（单品模式 · 最多 5 个）─── */
@@ -588,6 +732,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (e.key === 'Enter') document.getElementById('searchBtn').click();
         });
     });
+
+    // 🎯 换方向词 · 重新采样方向 + 瀑布流全部刷新
+    document.getElementById('refreshDirectionBtn').onclick = (ev) => {
+        const btn = ev.currentTarget;
+        btn.classList.add('loading');
+        currentDirection = null; // 强制重抽
+        setTimeout(() => {
+            renderLatest({ newDirection: true });
+            btn.classList.remove('loading');
+            showToast('已更新方向词：' + currentDirection.join(' / '));
+        }, 150);
+    };
+
+    // 🔄 换一批图 · 方向不变，整页打散重抽
+    document.getElementById('refreshImagesBtn').onclick = (ev) => {
+        const btn = ev.currentTarget;
+        btn.classList.add('loading');
+        setTimeout(() => {
+            renderLatest({ shuffle: true });
+            btn.classList.remove('loading');
+            showToast('已刷新全部图片顺序（' + Object.keys(archiveData.catalog||{}).length + ' 张候选）');
+        }, 150);
+    };
 });
 </script>
 </body>
