@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 10 · Context Window：为什么「记忆」这么贵？ — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 40%, #1a0a00 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--red-dim);
+    color: var(--red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--cyan), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--cyan);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--cyan-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--cyan);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--purple); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .vs-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .vs-box .vs-side { text-align: center; }
+
+  .vs-box .vs-side .vs-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .vs-box .vs-side .vs-num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-family: 'SF Mono', monospace;
+  }
+
+  .vs-box .vs-side .vs-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+  }
+
+  .vs-box .vs-mid {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-dim);
+  }
+
+  .metric-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .metric-bar .mb-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .metric-bar .mb-track {
+    height: 20px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .metric-bar .mb-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #000;
+  }
+
+  .step-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .step-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    min-width: 120px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .step-item .step-num {
+    font-size: 0.7rem;
+    color: var(--cyan);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-item .step-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .step-arrow {
+    font-size: 1.2rem;
+    color: var(--border);
+    padding: 0 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Math formula styling ── */
+  .formula {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 1.1rem;
+    color: var(--cyan);
+    letter-spacing: 0.02em;
+  }
+
+  .formula .explain {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-top: 0.75rem;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    text-align: left;
+    line-height: 1.6;
+  }
+
+  /* ── Scale animation for cost viz ── */
+  .cost-viz {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .cost-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .cost-block .cb-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .cost-block .cb-num {
+    font-size: 1.3rem;
+    font-weight: 800;
+    font-family: 'SF Mono', monospace;
+  }
+
+  .cost-block .cb-sub {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr; }
+    .cost-viz { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .vs-box { grid-template-columns: 1fr; text-align: center; }
+    .vs-box .vs-mid { padding: 0.5rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 10</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🔴 长半衰期 · 深讲</div>
+  <h1>Day 10 · Context Window：为什么「记忆」这么贵？</h1>
+  <p class="subtitle">开会人数越多越好吗？</p>
+  <div class="meta">
+    <span>📅 2026-04-20 Mon</span>
+    <span>📦 第一模块 · 地基篇 · Week 2</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    你组织过一次 30 人的跨部门会议吗？
+  </p>
+  <p>
+    5 个人开会，讨论高效、信息流转快、每个人的发言都能被充分理解。10 个人开始有点吃力——有人没听到之前的讨论，有人重复了别人说过的话。到了 30 人——<strong>会议变成了演讲，互动基本消失，信息损耗严重，而且会议室的空调费翻了好几倍。</strong>
+  </p>
+  <p>
+    大模型的 Context Window（上下文窗口）面临的就是完全一样的问题。
+  </p>
+  <p>
+    Day 9 讲到 Kimi 把上下文窗口做到 200 万 Token——相当于把会议室从"容纳 5 人"扩到"容纳 300 人"。这当然是一个巨大的能力跃迁。
+  </p>
+  <p>
+    但问题也随之而来：<span class="highlight">扩大上下文窗口的成本，不是线性增长的，而是二次方甚至更高阶增长</span>。
+  </p>
+  <p>
+    今天我们拆解这个成本问题的底层逻辑：<strong>「记忆」为什么这么贵？以及，行业正在用什么策略来降低这个成本？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么 Context Window 是一个关键瓶颈？</h2>
+  </div>
+
+  <h3>从一个朴素的问题开始</h3>
+
+  <p>
+    你和 AI 对话时，每次发送的内容加上对话历史，<strong>全部都要"塞进"一个固定大小的窗口</strong>。这个窗口就是 Context Window。
+  </p>
+
+  <p>
+    它决定了一个核心能力：<strong>模型能"记住"多少信息来回答你的问题。</strong>
+  </p>
+
+  <div class="vs-box">
+    <div class="vs-side">
+      <div class="vs-label" style="color:var(--red)">短上下文 (4K)</div>
+      <div class="vs-num" style="color:var(--red)">~3000 字</div>
+      <div class="vs-desc">约 2 页 A4 纸<br>只能看到当前对话<br>长文档必须截断</div>
+    </div>
+    <div class="vs-mid">VS</div>
+    <div class="vs-side">
+      <div class="vs-label" style="color:var(--green)">长上下文 (2M)</div>
+      <div class="vs-num" style="color:var(--green)">~150 万字</div>
+      <div class="vs-desc">约 5 本《战争与和平》<br>整本书/整个代码库<br>完整对话历史</div>
+    </div>
+  </div>
+
+  <p>
+    直觉上你会觉得：越长越好嘛，多多益善。但现实远比这残酷。
+  </p>
+
+  <h3>为什么"记忆"这么贵？三层成本</h3>
+
+  <p>
+    把 Context Window 从 4K 扩到 2M（500 倍），成本增长了多少？不是 500 倍，是<strong>远远超过 500 倍</strong>。原因在三个层面：
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">计算成本：O(n²) 的诅咒</span>
+      <div class="card-body">
+        这是最根本的一层。Transformer 的核心机制——<strong>Self-Attention（自注意力）</strong>——要求上下文中的每一个 Token 都去"关注"其他所有 Token。<br><br>
+        5 个人开会：每人需要跟其他 4 人沟通，共 5×4 = 20 次交互。<br>
+        30 个人开会：每人需要跟其他 29 人沟通，共 30×29 = 870 次交互。<br>
+        <strong>人数增长 6 倍，交互量增长了 43 倍。</strong>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">内存成本：KV Cache 的膨胀</span>
+      <div class="card-body">
+        模型在处理过程中需要保存每个 Token 的"注意力记录"——叫做 <strong>KV Cache</strong>（Key-Value 缓存）。上下文越长，KV Cache 越大。<br><br>
+        简单说：上下文翻 10 倍，GPU 显存需求也翻 10 倍甚至更多。<strong>一块 80GB 的 A100 GPU 可能只够跑一个 128K 上下文的请求。</strong>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">延迟成本：等待时间</span>
+      <div class="card-body">
+        上下文越长，模型需要"读"完所有内容才能开始生成答案。<strong>200 万 Token 的上下文，光是"读"一遍就需要数十秒甚至几分钟。</strong><br><br>
+        用户体验直接受影响——你丢给 Kimi 一本 50 万字的书，等回复可能需要 1-2 分钟。
+      </div>
+    </div>
+  </div>
+
+  <h3>O(n²) 到底意味着什么？一张直觉图</h3>
+
+  <p>
+    Self-Attention 的计算复杂度是 <strong>O(n²)</strong>——上下文长度 n 翻倍，计算量翻 4 倍。让我们算几个数字：
+  </p>
+
+  <div class="cost-viz">
+    <div class="cost-block">
+      <div class="cb-label" style="color:var(--green)">4K Token</div>
+      <div class="cb-num" style="color:var(--green)">1x</div>
+      <div class="cb-sub">基准计算量</div>
+    </div>
+    <div class="cost-block">
+      <div class="cb-label" style="color:var(--yellow)">32K Token</div>
+      <div class="cb-num" style="color:var(--yellow)">64x</div>
+      <div class="cb-sub">长度 ×8，成本 ×64</div>
+    </div>
+    <div class="cost-block">
+      <div class="cb-label" style="color:var(--accent)">128K Token</div>
+      <div class="cb-num" style="color:var(--accent)">1024x</div>
+      <div class="cb-sub">长度 ×32，成本 ×1024</div>
+    </div>
+    <div class="cost-block">
+      <div class="cb-label" style="color:var(--red)">2M Token</div>
+      <div class="cb-num" style="color:var(--red)">250,000x</div>
+      <div class="cb-sub">长度 ×500，成本 ×250K</div>
+    </div>
+  </div>
+
+  <p>
+    <strong>上下文长度扩大 500 倍，纯 Attention 计算量扩大 25 万倍。</strong>
+  </p>
+
+  <p>
+    当然，实际工程中有各种优化手段来缓解，不会真的线性承受 25 万倍——但这个 O(n²) 的底层数学事实，是所有优化工作的出发点。
+  </p>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 类比：会议室经济学</div>
+    <p style="margin:0">
+      <strong>5 人会议室</strong>：租金便宜、沟通高效、决策快。<br>
+      <strong>300 人会议厅</strong>：租金是 5 人会议室的 100 倍、需要音响/投影/麦克风系统、沟通效率直线下降、很多人在开小会或走神。<br><br>
+      你在渠道管理中也见过：一个 5 人的核心决策小组可以在 30 分钟内达成一致；一个 50 人的全员大会可能 3 小时也讨论不出结果。<strong>参与者越多，协调成本的增速远超参与者数量的增速。</strong> 这就是 O(n²)。
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — Context Window 的底层机制</h2>
+  </div>
+
+  <h3>一、Self-Attention 为什么要 O(n²)？</h3>
+
+  <p>
+    Day 1 讲 Next Token Prediction 时，我们知道模型在生成每一个新 Token 时，需要"参考"之前所有的上下文。<strong>Self-Attention 就是这个"参考"机制的具体实现。</strong>
+  </p>
+
+  <p>
+    核心逻辑是三步：
+  </p>
+
+  <div class="step-flow">
+    <div class="step-item">
+      <div class="step-num">STEP 1</div>
+      <div class="step-text">Query<br><em style="font-size:0.75rem">"我在找什么？"</em></div>
+    </div>
+    <div class="step-arrow">×</div>
+    <div class="step-item">
+      <div class="step-num">STEP 2</div>
+      <div class="step-text">Key<br><em style="font-size:0.75rem">"我有什么？"</em></div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-num">STEP 3</div>
+      <div class="step-text">Attention Score<br><em style="font-size:0.75rem">"谁最相关？"</em></div>
+    </div>
+    <div class="step-arrow">×</div>
+    <div class="step-item">
+      <div class="step-num">STEP 4</div>
+      <div class="step-text">Value<br><em style="font-size:0.75rem">"提取信息"</em></div>
+    </div>
+  </div>
+
+  <p>
+    想象一个会议场景：
+  </p>
+
+  <blockquote>
+    你（当前 Token）是会议主持人。你要做一个决策（生成下一个 Token）。<br><br>
+    <strong>Query</strong>：你心里有一个问题——"我现在需要哪方面的信息？"<br>
+    <strong>Key</strong>：会议室里每个人（之前的 Token）手里举着一个牌子——"我有关于 X 的信息。"<br>
+    <strong>Attention Score</strong>：你扫一眼所有人的牌子，判断谁手里的信息跟你的问题最相关。<br>
+    <strong>Value</strong>：你重点听最相关的那几个人的发言，综合信息后做决策。
+  </blockquote>
+
+  <p>
+    <strong>关键在于</strong>：你作为主持人，必须扫一眼<strong>所有人</strong>的牌子，才能判断谁最相关。会议室里 10 个人，你扫 10 次；100 个人，你扫 100 次。<strong>而且不只你需要扫——每个人在"贡献信息"时，也需要知道其他所有人的信息。</strong>
+  </p>
+
+  <p>
+    所以，n 个 Token 的上下文，Attention 的计算量 = n × n = n²。
+  </p>
+
+  <div class="formula">
+    Attention(Q, K, V) = softmax(Q · K<sup>T</sup> / √d) · V
+    <div class="explain">
+      Q·K<sup>T</sup> 这一步就是 n×n 的矩阵运算。n = 上下文长度，d = 每个注意力头的维度。<br>
+      <strong>核心成本就藏在这个矩阵乘法里。</strong>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">📊 渠道类比：全员交叉沟通 vs 层级汇报</div>
+    <p style="margin:0">
+      Self-Attention 就像一个"全员交叉沟通"的组织——每个人都需要知道其他所有人在做什么。<br><br>
+      5 人的小团队，这没问题。但 50 人的渠道团队如果每个人都要跟其他 49 人对齐信息？<strong>沟通成本 = 50 × 49 = 2450 次</strong>。这就是为什么大组织需要层级汇报（中间管理层）来降低沟通成本——后面我们会看到，AI 行业也在用类似的思路来优化 Attention。
+    </p>
+  </div>
+
+  <h3>二、KV Cache：模型的"会议纪要"</h3>
+
+  <p>
+    每次模型生成一个新 Token 时，如果要重新计算所有之前 Token 的 Attention，那太浪费了。所以工程上有一个优化：<strong>把之前每个 Token 的 Key 和 Value 缓存下来</strong>，下次直接用。这就是 <strong>KV Cache</strong>。
+  </p>
+
+  <p>
+    这就像会议纪要——每个人的发言记录存档，后续讨论直接翻纪要，不用让人重说一遍。
+  </p>
+
+  <p>
+    问题是：<strong>纪要也需要存储空间。</strong>
+  </p>
+
+  <table>
+    <tr>
+      <th>模型</th>
+      <th>上下文长度</th>
+      <th>KV Cache 大小（估算）</th>
+      <th>GPU 显存占用</th>
+    </tr>
+    <tr>
+      <td>GPT-3.5 级 (7B)</td>
+      <td>4K</td>
+      <td>~0.5 GB</td>
+      <td>轻松单卡</td>
+    </tr>
+    <tr>
+      <td>GPT-4 级 (70B)</td>
+      <td>32K</td>
+      <td>~10 GB</td>
+      <td>需要多卡</td>
+    </tr>
+    <tr>
+      <td>GPT-4 级 (70B)</td>
+      <td>128K</td>
+      <td>~40 GB</td>
+      <td>一整块 A100</td>
+    </tr>
+    <tr>
+      <td>大模型 (200B+)</td>
+      <td>2M</td>
+      <td>~数百 GB</td>
+      <td>需要多节点集群</td>
+    </tr>
+  </table>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ 成本的真正杀手</div>
+    <p style="margin:0">
+      KV Cache 是一个<strong>逐用户、逐请求</strong>的资源。每个用户的每次对话都需要独立的 KV Cache。<br><br>
+      这意味着：如果你有 1000 个用户同时在用 128K 上下文的模型，你需要 1000 × 40GB = <strong>40TB</strong> 的 GPU 显存。<br><br>
+      <strong>这就是为什么长上下文的 API 价格贵得多——不只是计算量的问题，更是 GPU 内存的问题。</strong>
+    </p>
+  </div>
+
+  <h3>三、行业怎么应对？五种降成本策略</h3>
+
+  <p>
+    O(n²) 是数学事实，但工程师不会束手就擒。行业正在用多种策略来降低长上下文的成本：
+  </p>
+
+  <h4>策略 1：稀疏注意力（Sparse Attention）— "不需要所有人都参加会议"</h4>
+
+  <p>
+    标准 Attention 要求每个 Token 关注所有其他 Token。<strong>稀疏注意力</strong>的核心思路是：大多数 Token 之间的关联其实很弱，没必要全部计算。
+  </p>
+
+  <p>
+    具体做法：只让每个 Token 关注<strong>附近的 Token</strong>（局部窗口）+ <strong>少量全局 Token</strong>（关键节点）。就像大组织里，你只需要跟直接相关的同事沟通 + 定期跟领导对齐，而不需要跟每一个同事都聊。
+  </p>
+
+  <div class="callout green">
+    <div class="callout-label">📊 渠道类比</div>
+    <p style="margin:0">
+      你的渠道团队不需要"全员群聊"。<strong>按区域分组（局部窗口），每组有一个组长（全局 Token）负责跨组同步。</strong> 沟通成本从 n² 降到 n × k（k = 窗口大小 + 全局节点数，远小于 n）。
+    </p>
+  </div>
+
+  <h4>策略 2：滑动窗口注意力（Sliding Window）— "只记最近的讨论"</h4>
+
+  <p>
+    更激进的做法：只让模型关注最近的 W 个 Token，超出范围的直接丢弃。
+  </p>
+
+  <p>
+    <strong>Mistral</strong> 就是用这种思路的代表。它的每一层 Attention 只看最近 4096 个 Token，但通过多层堆叠，信息会间接传播——第 1 层看到了 Token 1-4096，第 2 层看到了第 1 层关于 Token 1-4096 的总结，间接"看到"了更远的上下文。
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">滑动窗口注意力示意</span><br><br>
+    Token 序列：&nbsp;&nbsp;[1] [2] [3] ... [4096] [4097] ... [8192]<br><br>
+    <span class="blue-hl">Layer 1</span>：Token 8192 直接看到 → [4097-8192]<br>
+    <span class="purple-hl">Layer 2</span>：Token 8192 间接看到 → [1-4096]（通过 Layer 1 的总结）<br><br>
+    <span class="ok">效果</span>：O(n²) → O(n × W)，W = 窗口大小<br>
+    <span class="error">代价</span>：远距离信息的精度下降
+  </div>
+
+  <h4>策略 3：GQA / MQA — "压缩会议纪要"</h4>
+
+  <p>
+    <strong>GQA（Grouped-Query Attention）</strong> 和 <strong>MQA（Multi-Query Attention）</strong> 的思路是压缩 KV Cache 本身。
+  </p>
+
+  <p>
+    标准 Attention 中，每个注意力头（Head）都有独立的 Key 和 Value。GQA 让多个 Head 共享同一组 Key/Value，<strong>直接把 KV Cache 大小压缩 4-8 倍</strong>。
+  </p>
+
+  <div class="two-col">
+    <div class="callout" style="margin:0; border-left:4px solid var(--blue)">
+      <div class="callout-label" style="color:var(--blue)">标准 Multi-Head Attention</div>
+      <p style="margin:0; font-size:0.85rem">
+        32 个 Head，每个都有独立 K 和 V<br>
+        KV Cache = 32 × 2 = 64 份<br>
+        <strong>存储大</strong>
+      </p>
+    </div>
+    <div class="callout" style="margin:0; border-left:4px solid var(--green)">
+      <div class="callout-label" style="color:var(--green)">GQA (Grouped-Query)</div>
+      <p style="margin:0; font-size:0.85rem">
+        32 个 Head 分成 8 组，每组共享 1 套 K/V<br>
+        KV Cache = 8 × 2 = 16 份<br>
+        <strong>存储压缩 4 倍，性能损失极小</strong>
+      </p>
+    </div>
+  </div>
+
+  <p>
+    Llama 2/3、Gemini、Mistral 等主流模型都已采用 GQA。<strong>这是目前性价比最高的优化手段之一。</strong>
+  </p>
+
+  <h4>策略 4：FlashAttention — "算法层面的极致优化"</h4>
+
+  <p>
+    <strong>FlashAttention</strong>（斯坦福 Tri Dao 团队）不改变 Attention 的数学计算，而是优化它在 GPU 上的<strong>执行方式</strong>。
+  </p>
+
+  <p>
+    核心思路：GPU 的计算速度极快，但读写显存的速度是瓶颈。FlashAttention 把大矩阵拆成小块，在 GPU 的高速缓存（SRAM）里计算完再写回，<strong>减少了显存读写次数</strong>。
+  </p>
+
+  <div class="callout purple">
+    <div class="callout-label">📊 类比：仓库物流优化</div>
+    <p style="margin:0">
+      想象一个大仓库（GPU 显存）和一个工作台（GPU 计算核心）。标准做法是：每次从仓库取一件货、在工作台加工、放回仓库、再取下一件。<strong>FlashAttention 的做法是：一次从仓库取一批货到工作台，全部加工完再一起送回。</strong> 减少"跑仓库"的次数，总时间缩短 2-4 倍。
+    </p>
+  </div>
+
+  <p>
+    <strong>效果</strong>：同样的计算量，速度快 2-4 倍，显存占用降低 5-20 倍。几乎所有主流框架（PyTorch、TensorRT）都已集成。
+  </p>
+
+  <h4>策略 5：RoPE 外推 + YaRN — "不重新训练就能扩展上下文"</h4>
+
+  <p>
+    最后一种策略解决的是另一个问题：<strong>模型训练时用的上下文长度是固定的，怎么在推理时用更长的上下文？</strong>
+  </p>
+
+  <p>
+    <strong>RoPE（旋转位置编码）</strong>用旋转的数学原理来编码每个 Token 的位置。<strong>YaRN</strong> 等外推方法可以在不重新训练的前提下，把位置编码"拉伸"到更长的范围——就像把一把 30 厘米的尺子通过光学放大来量 1 米的东西。
+  </p>
+
+  <p>
+    当然，精度会有损失，但在很多场景下够用了。<strong>Kimi 就大量使用了这类技术来支撑 200 万 Token 的上下文。</strong>
+  </p>
+
+  <h3>四、一张图：五种策略的定位</h3>
+
+  <table>
+    <tr>
+      <th>策略</th>
+      <th>优化目标</th>
+      <th>效果</th>
+      <th>代价</th>
+    </tr>
+    <tr>
+      <td>稀疏注意力</td>
+      <td>计算量</td>
+      <td>O(n²) → O(n·k)</td>
+      <td>远距离关联精度下降</td>
+    </tr>
+    <tr>
+      <td>滑动窗口</td>
+      <td>计算量 + 显存</td>
+      <td>O(n²) → O(n·W)</td>
+      <td>远距离信息间接传播</td>
+    </tr>
+    <tr>
+      <td>GQA / MQA</td>
+      <td>显存（KV Cache）</td>
+      <td>KV Cache 压缩 4-8 倍</td>
+      <td>微小的精度损失</td>
+    </tr>
+    <tr>
+      <td>FlashAttention</td>
+      <td>执行效率</td>
+      <td>速度 ×2-4，显存 ÷5-20</td>
+      <td>几乎无</td>
+    </tr>
+    <tr>
+      <td>RoPE + YaRN</td>
+      <td>上下文长度扩展</td>
+      <td>免训练扩展上下文</td>
+      <td>极远距离精度下降</td>
+    </tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 关键洞察</div>
+    <p style="margin:0">
+      <strong>没有银弹。</strong> 每种策略都在"效率"和"精度"之间做取舍。现实中的模型往往同时使用多种策略叠加——GQA 压缩显存 + FlashAttention 加速计算 + 稀疏注意力降低复杂度。<br><br>
+      这就像管理一个大型渠道网络：你不会只用一种手段，而是<strong>区域分组（稀疏注意力）+ 组长汇报制（GQA）+ 流程自动化（FlashAttention）+ 远程会议扩展覆盖（RoPE外推）</strong>组合使用。
+    </p>
+  </div>
+
+  <h3>五、"Lost in the Middle"——长上下文的隐藏陷阱</h3>
+
+  <p>
+    即使有了以上所有优化，长上下文还有一个<strong>更深层的问题</strong>——模型并不是均匀利用上下文中的所有信息的。
+  </p>
+
+  <p>
+    2023 年斯坦福和 UC Berkeley 的一项研究（<em>Lost in the Middle</em>）发现：
+  </p>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ Lost in the Middle 效应</div>
+    <p style="margin:0">
+      当信息放在长上下文的<strong>开头或结尾</strong>时，模型能很好地利用它。<br>
+      但当关键信息放在<strong>中间位置</strong>时，模型的利用率显著下降。<br><br>
+      <strong>就像 30 人的会议——你记得第一个和最后一个发言人说了什么，但中间第 15 个人说了啥？大概率没印象。</strong>
+    </p>
+  </div>
+
+  <div class="metric-bar">
+    <div class="mb-label">
+      <span style="color:var(--green)">📗 开头信息</span>
+      <span>利用率 ~90%</span>
+    </div>
+    <div class="mb-track">
+      <div class="mb-fill" style="width:90%; background:var(--green)">90%</div>
+    </div>
+  </div>
+
+  <div class="metric-bar">
+    <div class="mb-label">
+      <span style="color:var(--red)">📕 中间信息</span>
+      <span>利用率 ~50-60%</span>
+    </div>
+    <div class="mb-track">
+      <div class="mb-fill" style="width:55%; background:var(--red)">55%</div>
+    </div>
+  </div>
+
+  <div class="metric-bar">
+    <div class="mb-label">
+      <span style="color:var(--blue)">📘 结尾信息</span>
+      <span>利用率 ~85%</span>
+    </div>
+    <div class="mb-track">
+      <div class="mb-fill" style="width:85%; background:var(--blue)">85%</div>
+    </div>
+  </div>
+
+  <p>
+    这意味着：<strong>"长上下文 ≠ 好记忆"</strong>。窗口越长，中间地带的信息越容易被"淹没"。
+  </p>
+
+  <p>
+    所以当你用 Kimi 或 Claude 处理长文档时，一个实操技巧：<strong>把最关键的信息放在开头或结尾，不要埋在中间。</strong>
+  </p>
+
+  <div class="callout purple">
+    <div class="callout-label">📊 渠道类比：会议议程的"首因-近因效应"</div>
+    <p style="margin:0">
+      你开周会时一定知道：开头的议题关注度最高，收尾的行动项也有人记。但中间那段"各部门汇报"？多半被当背景音了。<br><br>
+      <strong>所以好的会议主持人会把最重要的决策放在前 10 分钟或最后 10 分钟——这和给 AI 喂长上下文的策略完全一样。</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>Context Window 的竞争格局</h3>
+
+  <p>
+    Context Window 已经成为 AI 产品差异化的关键战场：
+  </p>
+
+  <table>
+    <tr>
+      <th>模型</th>
+      <th>上下文窗口</th>
+      <th>主要策略</th>
+      <th>定位</th>
+    </tr>
+    <tr>
+      <td>GPT-4o</td>
+      <td>128K</td>
+      <td>GQA + FlashAttention</td>
+      <td>通用能力优先</td>
+    </tr>
+    <tr>
+      <td>Claude 3.5 Sonnet</td>
+      <td>200K</td>
+      <td>优化 Attention + 数据工程</td>
+      <td>长文本理解 + 安全</td>
+    </tr>
+    <tr>
+      <td>Gemini 1.5 Pro</td>
+      <td>1M → 2M</td>
+      <td>MoE + 稀疏注意力</td>
+      <td>多模态 + 超长上下文</td>
+    </tr>
+    <tr>
+      <td>Kimi</td>
+      <td>2M</td>
+      <td>RoPE 外推 + 长上下文训练</td>
+      <td>中文长文本场景</td>
+    </tr>
+  </table>
+
+  <p>
+    竞争逻辑很清晰：<strong>上下文窗口越长，模型能处理的任务类型就越多。</strong> 但成本约束也越大——谁能在"长"和"便宜"之间找到最佳平衡点，谁就有优势。
+  </p>
+
+  <h3>对你工作的三个实操启示</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">用 AI 处理长文档时：信息位置很关键</span>
+      <div class="card-body">
+        记住 Lost in the Middle 效应。当你让 AI 分析一份 50 页的报告时：<strong>把最关键的问题和最核心的段落放在 prompt 的开头或结尾</strong>，不要让它淹没在中间。这个小技巧就能显著提升回答质量。
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">选 AI 服务时：上下文长度 ≠ 实际能力</span>
+      <div class="card-body">
+        某个 AI 号称支持 200K Token 上下文，但如果它在 50K 之后的信息利用率只有 50%，那"200K"就是个营销数字。<strong>评估一个 AI 的上下文能力，要看"有效上下文长度"——它在多长范围内能保持高质量的信息利用？</strong> 这是一个比"最大上下文长度"更有意义的指标。
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">管理思维：O(n²) 是组织复杂度的通用法则</span>
+      <div class="card-body">
+        你管理的渠道网络也面临 O(n²) 问题。50 个代理商时信息还能流转，200 个代理商时沟通成本暴涨。<strong>解法跟 AI 一样——分层（稀疏注意力）、压缩（标准化流程代替逐一沟通）、聚焦（关键少数原则代替全员平均用力）。</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 一句话总结</div>
+    <p style="margin:0">
+      <strong>Context Window 的本质是"注意力的经济学"——关注范围越大，协调成本越高。</strong> 无论是 AI 模型还是组织管理，核心问题都一样：在有限的注意力预算内，如何最大化信息利用效率？答案不是"无限扩大窗口"，而是"聪明地分配注意力"。
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+
+  <p><strong>场景：你的团队要为渠道代理商搭建一个"AI 智能助手"，帮助代理商快速查阅产品手册、政策文档、历史订单。预计需要处理的文档总量约 50 万字。产品经理提了一个需求："我们要用支持 200 万 Token 上下文的模型，把所有文档一次性塞进去。"</strong></p>
+
+  <p><strong>你作为项目负责人，怎么回应？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      同意。200 万 Token 够装 50 万字了，一次性塞进去最简单，用户体验最好。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      否决。长上下文太贵了，直接用 RAG（检索增强生成）——先搜索相关段落再喂给模型，只用 4K 上下文就够了。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      折中方案：用 RAG 做初步检索缩小范围（从 50 万字缩到 5 万字），再用 128K 上下文的模型精读。兼顾成本和效果。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先追问三个问题：(1) 代理商最常查的 Top 5 问题是什么？(2) 对响应速度的要求是多少秒？(3) 每月预算上限是多少？然后根据答案选方案。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问（必须回答）：假设这个 AI 助手每天要处理 500 次代理商咨询。用 200 万上下文 vs 用 RAG+128K 方案，你预估每月的 API 成本大概差几倍？（不需要精确，给一个数量级判断就行。）</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>
+    从 Day 1 到 Day 10，我们一直在讲"文字"——Token 是文字的碎片，上下文是文字的记忆。
+  </p>
+  <p>
+    但你有没有想过：<strong>一张图片也能变成 Token 吗？一段视频呢？</strong>
+  </p>
+  <p>
+    2024 年，GPT-4V 能看图回答问题，Gemini 能理解视频，DALL-E 能从文字生成图片——<strong>这些不同"模态"的信息，是怎么被统一到同一个模型里的？</strong>
+  </p>
+  <p>
+    <strong>Day 11</strong>，我们聊多模态（Multimodal）：从文字到图像视频的统一。模态融合的本质是什么？
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">Context Window = 模型的"工作记忆"，决定了它能同时处理多少信息</span>
+    <div class="card-body">
+      就像会议室的容量——5 人小会高效聚焦，300 人大会成本暴涨、信息损耗严重。上下文越长能力越强，但成本增长是超线性的。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">Self-Attention 的 O(n²) 是核心成本来源</span>
+    <div class="card-body">
+      每个 Token 需要关注所有其他 Token（Query × Key），计算量随上下文长度的平方增长。上下文扩大 10 倍，Attention 计算量增长 100 倍。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">KV Cache 是显存的隐形杀手</span>
+    <div class="card-body">
+      每个用户的每次请求都需要独立的 KV Cache。1000 用户 × 128K 上下文 = 40TB 显存。这解释了为什么长上下文的 API 价格贵得多。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">五种优化策略：稀疏注意力 / 滑动窗口 / GQA / FlashAttention / RoPE 外推</span>
+    <div class="card-body">
+      每种策略在"效率"和"精度"之间做取舍。现实中多种策略叠加使用。没有银弹，关键是组合。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">Lost in the Middle：长上下文 ≠ 好记忆</span>
+    <div class="card-body">
+      模型对开头和结尾的信息利用率高（85-90%），中间信息利用率低（50-60%）。实操技巧：关键信息放在开头或结尾。"有效上下文长度"比"最大上下文长度"更有意义。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 1</span>
+    <span>Next Token Prediction 需要"参考"之前的上下文——Context Window 就是这个"参考范围"的大小限制。Day 1 的核心心智模型在这里有了具体的计算约束。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 2</span>
+    <span>Day 2 讲了 Token 是什么、怎么产生的。今天讲的是：把这些 Token 放在一起处理时，成本是怎么算的。从"Token 的定义"到"Token 的经济学"。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 5</span>
+    <span>Day 5 讲 Temperature/采样——这些发生在 Attention 计算之后。上下文窗口决定了 Attention 的输入规模，Temperature 决定了输出的概率分布形状。两者是生成管线的前半段和后半段。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 8</span>
+    <span>Scaling Law 告诉我们"资源投入有边际递减"。Context Window 的 O(n²) 成本曲线是这个道理的具体体现——上下文长度增长的边际成本是加速上升的。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 9</span>
+    <span>Day 9 讲 Token 效率和 Kimi 的长上下文押注——今天是它的直接续集。长上下文是提高 Token 效率的一种策略，但它自身也有巨大的成本。Kimi 需要用各种工程手段来让这个成本可控。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 11</span>
+    <span>多模态（图片/视频）进入上下文时，Token 数量会暴增——一张图片可以被编码为数百到数千个 Token。Context Window 的成本问题在多模态场景下会更加严峻。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 10 of 60 · 第一模块 · 地基篇 · Week 2
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
