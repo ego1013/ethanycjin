@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ŌTOMO · 男装穿搭灵感</title>
-<meta name="description" content="ŌTOMO — 每周一次，基于上海天气的男装穿搭灵感推送。">
+<meta name="description" content="ŌTOMO — 每周一次，基于上海天气的男装穿搭灵感推送。支持最多 5 个单品并行搜索。">
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -17,7 +17,7 @@
         --text: #f0f0f0;
         --text-dim: #9a9a9a;
         --text-muted: #5e5e5e;
-        --accent: #d9b37a; /* warm earth tone, 呼应 OOTD 调性 */
+        --accent: #d9b37a;
         --accent-soft: rgba(217,179,122,0.12);
     }
 
@@ -26,11 +26,44 @@
         background: var(--bg);
         color: var(--text);
         min-height: 100vh;
-        padding: 1.5rem 1rem 7rem; /* 底部留给固定反馈栏 */
+        padding: 0 0 11rem; /* 底部留给固定反馈栏（多行） */
         line-height: 1.5;
     }
 
-    .container { max-width: 1320px; margin: 0 auto; }
+    /* ═══ Top Nav（固定顶部，左侧返回链接，按用户要求统一格式）═══ */
+    .topnav {
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.7rem 1.2rem;
+        background: rgba(15,15,15,0.92);
+        backdrop-filter: saturate(180%) blur(14px);
+        -webkit-backdrop-filter: saturate(180%) blur(14px);
+        border-bottom: 1px solid var(--border);
+    }
+    .topnav a.nav-link {
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        text-decoration: none;
+        letter-spacing: 0.05em;
+        padding: 4px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        transition: all 0.2s;
+    }
+    .topnav a.nav-link:hover { color: var(--text); border-color: var(--border-hover); }
+    .topnav a.nav-link.primary { color: var(--accent); border-color: rgba(217,179,122,0.35); }
+    .topnav .spacer { flex: 1; }
+    .topnav .nav-brand {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+    }
+
+    .container { max-width: 1320px; margin: 0 auto; padding: 1.5rem 1rem 0; }
 
     /* ═══ Header ═══ */
     .header {
@@ -54,14 +87,6 @@
         color: var(--text);
     }
     .brand .accent { color: var(--accent); }
-
-    .back-link {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        letter-spacing: 0.05em;
-    }
-    .back-link:hover { color: var(--text-dim); }
 
     .meta-row {
         display: flex;
@@ -116,15 +141,13 @@
         background: #111;
     }
 
-    .card-meta {
-        padding: 0.7rem 0.85rem 0.85rem;
-    }
+    .card-meta { padding: 0.7rem 0.85rem 0.85rem; }
     .card-tags {
         display: flex;
         gap: 0.35rem;
         align-items: center;
         flex-wrap: wrap;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.35rem;
     }
     .source-tag {
         font-size: 0.62rem;
@@ -134,13 +157,26 @@
         font-weight: 600;
     }
     .source-Lookbook     { background: rgba(217,179,122,0.14); color: #d9b37a; border: 1px solid rgba(217,179,122,0.25); }
-    .source-时装周        { background: rgba(147,197,253,0.12); color: #93c5fd; border: 1px solid rgba(147,197,253,0.22); }
+    .source-时装周街拍    { background: rgba(147,197,253,0.12); color: #93c5fd; border: 1px solid rgba(147,197,253,0.22); }
+    .source-秀场         { background: rgba(196,181,253,0.12); color: #c4b5fd; border: 1px solid rgba(196,181,253,0.22); }
     .source-日本街拍      { background: rgba(244,114,182,0.12); color: #f472b6; border: 1px solid rgba(244,114,182,0.22); }
+    .source-时装周        { background: rgba(147,197,253,0.12); color: #93c5fd; border: 1px solid rgba(147,197,253,0.22); }
+
+    .query-tag {
+        font-size: 0.62rem;
+        padding: 2px 7px;
+        border-radius: 4px;
+        background: rgba(240,240,240,0.06);
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        letter-spacing: 0.03em;
+    }
 
     .year-tag {
         font-size: 0.62rem;
         color: var(--text-muted);
         letter-spacing: 0.05em;
+        margin-left: auto;
     }
 
     .brand-label {
@@ -149,7 +185,6 @@
         font-weight: 500;
     }
 
-    /* ═══ Empty / skeleton ═══ */
     .empty {
         text-align: center;
         padding: 3rem 1rem;
@@ -157,78 +192,100 @@
         font-size: 0.9rem;
     }
 
-    /* ═══ Feedback Bar (固定底部) ═══ */
+    /* ═══ Feedback Bar (固定底部 · 5 输入框)═══ */
     .feedback {
         position: fixed;
         bottom: 0; left: 0; right: 0;
-        background: rgba(15,15,15,0.92);
+        background: rgba(15,15,15,0.94);
         backdrop-filter: saturate(180%) blur(14px);
         -webkit-backdrop-filter: saturate(180%) blur(14px);
         border-top: 1px solid var(--border);
-        padding: 0.75rem 1rem;
+        padding: 0.65rem 1rem 0.8rem;
         z-index: 100;
     }
     .feedback-inner {
         max-width: 1320px;
         margin: 0 auto;
-        display: flex;
-        gap: 0.6rem;
-        align-items: center;
-        flex-wrap: wrap;
     }
-    .feedback input {
-        flex: 1 1 260px;
-        min-width: 0;
-        background: var(--surface-2);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 0.65rem 0.9rem;
-        color: var(--text);
-        font-size: 0.88rem;
-        outline: none;
-    }
-    .feedback input:focus { border-color: var(--accent); }
-    .feedback input::placeholder { color: var(--text-muted); }
-
-    .feedback button {
-        background: var(--accent);
-        color: #1a1a1a;
-        border: none;
-        border-radius: 8px;
-        padding: 0.65rem 1.1rem;
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-        letter-spacing: 0.03em;
-        transition: opacity 0.2s;
-    }
-    .feedback button:hover { opacity: 0.88; }
 
     .recent-row {
         display: flex;
         gap: 0.4rem;
         align-items: center;
         flex-wrap: wrap;
-        width: 100%;
-        margin-top: 0.15rem;
+        margin-bottom: 0.45rem;
     }
     .recent-row .label {
-        font-size: 0.7rem; color: var(--text-muted);
+        font-size: 0.7rem;
+        color: var(--text-muted);
         letter-spacing: 0.05em;
+        margin-right: 0.2rem;
     }
-    .recent-chip {
-        font-size: 0.72rem;
+    .recent-combo {
+        display: inline-flex;
+        gap: 3px;
         padding: 3px 8px;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 999px;
-        color: var(--text-dim);
         cursor: pointer;
         transition: all 0.2s;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
     }
-    .recent-chip:hover { color: var(--text); border-color: var(--border-hover); }
+    .recent-combo:hover { border-color: var(--border-hover); }
+    .recent-combo .item {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+    }
+    .recent-combo .item + .item::before {
+        content: ' · ';
+        color: var(--text-muted);
+        margin: 0 2px;
+    }
 
-    /* ═══ Footer ═══ */
+    .input-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr) auto;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    @media (max-width: 900px) {
+        .input-row { grid-template-columns: repeat(2, 1fr); }
+        .input-row button { grid-column: 1 / -1; }
+    }
+    @media (max-width: 500px) {
+        .input-row { grid-template-columns: 1fr; }
+    }
+    .feedback input {
+        min-width: 0;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.6rem 0.8rem;
+        color: var(--text);
+        font-size: 0.85rem;
+        outline: none;
+    }
+    .feedback input:focus { border-color: var(--accent); }
+    .feedback input::placeholder { color: var(--text-muted); font-size: 0.78rem; }
+
+    .feedback button {
+        background: var(--accent);
+        color: #1a1a1a;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+    }
+    .feedback button:hover { opacity: 0.88; }
+
     .footer {
         margin-top: 2.5rem;
         padding-top: 1rem;
@@ -242,10 +299,9 @@
         letter-spacing: 0.03em;
     }
 
-    /* modal for 单品搜索 refresh 后的提示（无真实后端时） */
     .toast {
         position: fixed;
-        top: 1rem; left: 50%;
+        top: 4rem; left: 50%;
         transform: translateX(-50%);
         background: var(--surface);
         border: 1px solid var(--accent);
@@ -264,11 +320,19 @@
 </style>
 </head>
 <body>
+
+<!-- 顶部左侧导航 · 统一格式 -->
+<nav class="topnav">
+    <a class="nav-link primary" href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <a class="nav-link" href="https://ego1013.github.io/ethanycjin/anti_average/">anti_average</a>
+    <div class="spacer"></div>
+    <span class="nav-brand">ŌTOMO · OOTD</span>
+</nav>
+
 <div class="container">
     <div class="header">
         <div class="brand-row">
-            <div class="brand">Ō<span class="accent">TOMO</span> · OOTD</div>
-            <a class="back-link" href="../">← 回到 Ethan's Lab</a>
+            <div class="brand">Ō<span class="accent">TOMO</span> · 男装穿搭灵感</div>
         </div>
         <div class="meta-row">
             <div class="chip">日期<strong id="today"></strong></div>
@@ -278,9 +342,7 @@
         <div class="trigger-banner"><strong id="triggerLabel">本周推送</strong> · <span id="triggerNote">基于当日天气精选</span></div>
     </div>
 
-    <div class="masonry" id="masonry">
-        <!-- cards injected by JS -->
-    </div>
+    <div class="masonry" id="masonry"></div>
 
     <div class="footer">
         <span>已归档 <strong id="totalCount">0</strong> 套穿搭</span>
@@ -288,43 +350,54 @@
     </div>
 </div>
 
-<!-- 固定底部反馈栏 -->
+<!-- 固定底部反馈栏 · 5 输入框 -->
 <div class="feedback">
     <div class="feedback-inner">
-        <input id="queryInput" type="text" placeholder="输入你想穿的单品，立即搜索穿搭，如：米色直筒工装裤" />
-        <button id="searchBtn">立即搜索</button>
-        <div class="recent-row" id="recentRow"><span class="label">最近搜索</span></div>
+        <div class="recent-row" id="recentRow">
+            <span class="label">最近搜索</span>
+        </div>
+        <div class="input-row">
+            <input id="q1" type="text" placeholder="单品 1，如：米色直筒工装裤" />
+            <input id="q2" type="text" placeholder="单品 2" />
+            <input id="q3" type="text" placeholder="单品 3" />
+            <input id="q4" type="text" placeholder="单品 4" />
+            <input id="q5" type="text" placeholder="单品 5" />
+            <button id="searchBtn">立即搜索</button>
+        </div>
     </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// === ŌTOMO 前端逻辑 ===
-// 数据源：同目录 data/outfit_archive.json
-// 所有图片来自 images.unsplash.com（公开 CDN），支持直嵌
+/* ═══════════════════════════════════════════════════════════════
+ * ŌTOMO Frontend Logic · v2
+ * - 5-input multi-item search (up to 5 关键词并行)
+ * - 每张卡片显示对应的触发单品 tag
+ * - 最近 5 次搜索以 tag 组合形式展示
+ * - 图片均匀穿插（同一单品连续出现不超过 2 张）
+ * - 数据源：./data/outfit_archive.json
+ * ═══════════════════════════════════════════════════════════════ */
 
 const ARCHIVE_URL = './data/outfit_archive.json';
-const RECENT_KEY = 'otomo_recent_queries';
+const RECENT_KEY  = 'otomo_recent_combos_v2';
 
 let archiveData = null;
 
-function fmtDate(d) {
-    const pad = n => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-}
-function fmtDateTime(d) {
-    const pad = n => String(n).padStart(2, '0');
-    return `${fmtDate(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
+/* ─── utils ─── */
+const pad = n => String(n).padStart(2, '0');
+const fmtDate = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fmtDateTime = d => `${fmtDate(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
-function showToast(msg, ms=2800) {
+function showToast(msg, ms=3200) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), ms);
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>t.classList.remove('show'), ms);
 }
 
+/* ─── render ─── */
 function renderCards(items) {
     const el = document.getElementById('masonry');
     el.innerHTML = '';
@@ -335,11 +408,15 @@ function renderCards(items) {
     items.forEach(it => {
         const card = document.createElement('div');
         card.className = 'card';
+        const srcClass = (it.source_type || 'Lookbook').replace(/\s/g,'');
+        const queryTag = it.query_tag
+            ? `<span class="query-tag">#${it.query_tag}</span>` : '';
         card.innerHTML = `
             <img src="${it.url}?w=700&q=80&auto=format&fit=crop" loading="lazy" alt="${it.brand_or_event}">
             <div class="card-meta">
                 <div class="card-tags">
-                    <span class="source-tag source-${it.source_type}">${it.source_type}</span>
+                    <span class="source-tag source-${srcClass}">${it.source_type}</span>
+                    ${queryTag}
                     <span class="year-tag">${it.year}</span>
                 </div>
                 <div class="brand-label">${it.brand_or_event}</div>
@@ -348,13 +425,7 @@ function renderCards(items) {
     });
 }
 
-function pickLatestPush(data) {
-    if (!data.pushes || !data.pushes.length) return null;
-    // 取最后一次推送
-    return data.pushes[data.pushes.length - 1];
-}
-
-function renderHeader(data, push, overrides) {
+function renderHeader(push, overrides) {
     const now = new Date();
     document.getElementById('today').textContent = fmtDate(now);
 
@@ -366,110 +437,156 @@ function renderHeader(data, push, overrides) {
 
     if (overrides && overrides.triggerLabel) {
         document.getElementById('triggerLabel').textContent = overrides.triggerLabel;
-        document.getElementById('triggerNote').textContent = overrides.triggerNote || '';
+        document.getElementById('triggerNote').textContent  = overrides.triggerNote || '';
     } else {
-        const label = push.push_type === 'scheduled' ? '本周推送' : `单品搜索：${push.query || ''}`;
-        document.getElementById('triggerLabel').textContent = label;
+        document.getElementById('triggerLabel').textContent =
+            push.push_type === 'scheduled' ? '本周推送' : '手动搜索';
         document.getElementById('triggerNote').textContent =
             push.push_type === 'scheduled' ? '基于当日天气精选' : '刷新全部瀑布流';
     }
 
-    // 归档总数 = catalog 全部
-    document.getElementById('totalCount').textContent = Object.keys(data.catalog || {}).length;
+    document.getElementById('totalCount').textContent =
+        Object.keys(archiveData.catalog || {}).length;
     document.getElementById('lastUpdate').textContent = fmtDateTime(now);
 }
 
+/* ─── data ─── */
 function loadArchive() {
-    return fetch(ARCHIVE_URL, {cache: 'no-store'})
+    return fetch(ARCHIVE_URL, {cache:'no-store'})
         .then(r => r.json())
         .then(d => { archiveData = d; return d; });
 }
+function pickLatestPush() {
+    const ps = archiveData.pushes || [];
+    return ps.length ? ps[ps.length - 1] : null;
+}
 
 function renderLatest() {
-    const push = pickLatestPush(archiveData);
-    if (!push) { document.getElementById('masonry').innerHTML = '<div class="empty">归档为空</div>'; return; }
+    const push = pickLatestPush();
+    if (!push) {
+        document.getElementById('masonry').innerHTML = '<div class="empty">归档为空</div>';
+        return;
+    }
     const items = push.items.map(id => archiveData.catalog[id]).filter(Boolean);
-    renderHeader(archiveData, push);
+    renderHeader(push);
     renderCards(items);
 }
 
-function searchByKeyword(kw) {
-    if (!archiveData) return;
-    const q = kw.trim().toLowerCase();
-    if (!q) { renderLatest(); return; }
+/* ─── multi-keyword search（单品模式 · 最多 5 个）─── */
+function searchByKeywords(keywords) {
+    const qs = keywords.map(k => (k||'').trim()).filter(Boolean).slice(0, 5);
+    if (!qs.length) { renderLatest(); return; }
 
-    // 在 catalog 中按 tags / brand_or_event 模糊匹配
-    // 对于没有真实后端来源的第一周版本，检索归档即 "单品模式"
     const all = Object.values(archiveData.catalog);
-    const matched = all.filter(it => {
-        const hay = (it.brand_or_event + ' ' + (it.tags||[]).join(' ')).toLowerCase();
-        return hay.includes(q);
+
+    // 每个关键词独立召回
+    const buckets = qs.map(q => {
+        const ql = q.toLowerCase();
+        const hit = all.filter(it => {
+            const hay = (
+                it.brand_or_event + ' ' +
+                (it.tags||[]).join(' ') + ' ' +
+                (it.query_tag||'')
+            ).toLowerCase();
+            return hay.includes(ql);
+        }).map(it => ({...it, query_tag: q}));
+        return { query: q, items: hit };
     });
 
-    // 无匹配时，也把 catalog 全量作为"扩展搜索"回退，保证有内容
-    const items = matched.length ? matched : all;
+    // 每个单品目标 3-4 张；不足时从 catalog 随机补
+    const TARGET = 3;
+    buckets.forEach(b => {
+        if (b.items.length < TARGET) {
+            const pool = all.filter(it => !b.items.find(x=>x.url===it.url));
+            const needed = TARGET - b.items.length;
+            const extra = pool.slice(0, needed).map(it => ({...it, query_tag: b.query}));
+            b.items = b.items.concat(extra);
+        }
+        b.items = b.items.slice(0, 4); // 最多 4 张
+    });
 
-    renderHeader(archiveData,
-        {push_type:'manual', query:kw, weather: pickLatestPush(archiveData).weather},
-        { triggerLabel: `单品搜索：${kw}`,
-          triggerNote: matched.length ? `从归档中匹配到 ${matched.length} 张` : `无精准匹配 · 展示归档全景（共 ${all.length} 张）`,
-          direction: kw });
-    renderCards(items);
+    // 均匀穿插：round-robin，避免同一单品连续出现超过 2 张
+    const interleaved = [];
+    const max = Math.max(...buckets.map(b => b.items.length));
+    for (let i = 0; i < max; i++) {
+        buckets.forEach(b => {
+            if (b.items[i]) interleaved.push(b.items[i]);
+        });
+    }
+    // 总量控制在 12-18 之间
+    const finalItems = interleaved.slice(0, 18);
 
-    pushRecentQuery(kw);
+    // Header
+    const baseWeather = pickLatestPush().weather;
+    renderHeader(
+        { push_type:'manual', weather: baseWeather },
+        { triggerLabel: `单品搜索 · ${qs.length} 个关键词`,
+          triggerNote: qs.join(' / ') + ` · 命中 ${finalItems.length} 张`,
+          direction: qs.join(' / ') }
+    );
+    renderCards(finalItems);
 
-    if (!matched.length) {
-        showToast('当前仅展示第一周归档。自动化推送会持续扩充图库，逐步覆盖更多单品。');
+    pushRecentCombo(qs);
+
+    const totalHit = buckets.reduce((s,b) => s + b.items.filter(it => !it.__extra).length, 0);
+    if (buckets.some(b => b.items.length < 3)) {
+        showToast('部分单品归档不足，已用相近风格补足。自动化推送会逐步扩充真实 Lookbook / 街拍图库。');
     }
 }
 
-// === 最近 5 次搜索 ===
+/* ─── recent combos ─── */
 function getRecent() {
     try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); }
     catch(e) { return []; }
 }
-function pushRecentQuery(q) {
-    let arr = getRecent().filter(x => x !== q);
-    arr.unshift(q);
-    arr = arr.slice(0, 5);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(arr));
+function pushRecentCombo(arr) {
+    const key = arr.join('|');
+    let list = getRecent().filter(x => x.join('|') !== key);
+    list.unshift(arr);
+    list = list.slice(0, 5);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
     renderRecent();
 }
 function renderRecent() {
     const row = document.getElementById('recentRow');
-    row.querySelectorAll('.recent-chip').forEach(n => n.remove());
-    getRecent().forEach(q => {
-        const chip = document.createElement('span');
-        chip.className = 'recent-chip';
-        chip.textContent = q;
-        chip.onclick = () => {
-            document.getElementById('queryInput').value = q;
-            searchByKeyword(q);
+    row.querySelectorAll('.recent-combo').forEach(n => n.remove());
+    getRecent().forEach(combo => {
+        const el = document.createElement('span');
+        el.className = 'recent-combo';
+        el.innerHTML = combo.map(q => `<span class="item">${q}</span>`).join('');
+        el.onclick = () => {
+            ['q1','q2','q3','q4','q5'].forEach((id,i) => {
+                document.getElementById(id).value = combo[i] || '';
+            });
+            searchByKeywords(combo);
         };
-        row.appendChild(chip);
+        row.appendChild(el);
     });
 }
 
-// === 事件 ===
+/* ─── bootstrap ─── */
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await loadArchive();
         renderLatest();
         renderRecent();
-        // 归档超 500 提示
         if (Object.keys(archiveData.catalog || {}).length > 500) {
             showToast('归档已超过 500 条，可以考虑整理历史推送。');
         }
     } catch (e) {
-        document.getElementById('masonry').innerHTML = '<div class="empty">数据加载失败：' + e.message + '</div>';
+        document.getElementById('masonry').innerHTML =
+            '<div class="empty">数据加载失败：' + e.message + '</div>';
     }
 
     document.getElementById('searchBtn').onclick = () => {
-        const v = document.getElementById('queryInput').value;
-        if (v.trim()) searchByKeyword(v);
+        const kws = ['q1','q2','q3','q4','q5']
+            .map(id => document.getElementById(id).value);
+        searchByKeywords(kws);
     };
-    document.getElementById('queryInput').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') document.getElementById('searchBtn').click();
+    ['q1','q2','q3','q4','q5'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('searchBtn').click();
+        });
     });
 });
 </script>
