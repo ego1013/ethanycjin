@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>当 AI 开始构建 AI：递归自我进化的塑造窗口正在关闭 · AI 每日洞见 #005</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* ── Header ── */
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .issue-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .issue-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+        }
+
+        .issue-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .issue-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--green-dim);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 750;
+            color: var(--white);
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .one-liner {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ── Source ── */
+        .source-box {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .source-box a { color: var(--accent); text-decoration: none; }
+        .source-box a:hover { text-decoration: underline; }
+
+        /* ── Body ── */
+        .body-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .body-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .body-section h2 .icon {
+            font-size: 1.1rem;
+        }
+
+        .body-text {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+
+        .body-text p {
+            margin-bottom: 1rem;
+        }
+
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        .body-text .highlight {
+            background: rgba(96, 165, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ── Data callout ── */
+        .data-callout {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1.25rem 0;
+        }
+
+        .data-callout .data-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .data-value.warn { color: var(--warn); }
+
+        /* ── Takeaways ── */
+        .takeaway-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .takeaway-item {
+            padding: 0.9rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .takeaway-item .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 0.6rem;
+        }
+
+        .takeaway-item strong { color: var(--white); }
+
+        /* ── Warning box ── */
+        .warning-box {
+            padding: 1rem 1.25rem;
+            background: var(--warn-dim);
+            border: 1px solid var(--warn-border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .warning-box h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* ── Further reading ── */
+        .further {
+            margin-bottom: 2.5rem;
+        }
+
+        .further h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .further-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .further-item a {
+            display: block;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .further-item a:hover {
+            border-color: var(--accent-border);
+            background: var(--surface-alt);
+        }
+
+        .further-item .label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Question ── */
+        .closing-question {
+            padding: 1.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+            border: 1px solid rgba(96,165,250,0.15);
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .closing-question .q-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .closing-question p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        /* ── Tags ── */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .container { padding: 1.25rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+            <span class="sep">/</span>
+            <a href="https://ego1013.github.io/ethanycjin/ainsight/">AI 每日洞见</a>
+            <span class="sep">/</span>
+            <span style="color:var(--text)">#005</span>
+        </nav>
+
+        <div class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#005</span>
+                <span class="issue-date">📅 2026-04-20 · 星期一</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>当 AI 开始构建 AI：递归自我进化的塑造窗口正在关闭</h1>
+
+            <div class="one-liner">
+                三大 AI 巨头同时承认：它们正在用 AI 构建下一代 AI。这不是科幻预言，是正在闭合的反馈回路。而你能影响这件事的窗口，可能比你以为的短得多。
+            </div>
+        </div>
+
+        <div class="source-box">
+            <strong>来源：</strong><br>
+            ① 36氪/神译局, <a href="https://www.36kr.com/p/3729579125063300" target="_blank">AI的递归自我进化：那个东西的轮廓正在越来越清晰</a>，2026.04.15<br>
+            ② ICLR 2026, <a href="https://hub.baai.ac.cn/view/54056" target="_blank">RSI Workshop（递归自我改进工作坊）</a>，2026.04.17 新加坡<br>
+            ③ Dario Amodei (Anthropic CEO), 2026 达沃斯发言；OpenAI Codex 发布声明；Demis Hassabis (DeepMind CEO) 公开表态
+        </div>
+
+        <!-- ── 深度解读 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🔬</span> 深度解读</h2>
+            <div class="body-text">
+                <p>
+                    先说一件刚刚发生的事。上周，全球顶级 AI 会议 ICLR 2026 在新加坡召开，其中一个最受关注的 Workshop 主题是：<span class="highlight">Recursive Self-Improvement（RSI，递归自我改进）</span>。这个曾经只存在于科幻小说和技术哲学论文里的概念，如今成了主流学术会议的正式议题。
+                </p>
+
+                <p>
+                    但真正让这件事从"学术讨论"变成"迫在眉睫"的，是<strong>三大 AI 巨头几乎在同一时间窗口的公开表态</strong>：
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">三巨头同时承认：AI 正在构建 AI</div>
+                    <div class="data-row">
+                        <span class="data-label">Anthropic · Dario Amodei</span>
+                        <span class="data-value accent">"用擅长编程的模型构建下一代模型"</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">OpenAI · Codex 发布声明</span>
+                        <span class="data-value accent">"第一个在自身创建中发挥关键作用的模型"</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Google DeepMind · Demis Hassabis</span>
+                        <span class="data-value warn">"闭合自我提升环路是所有实验室的目标"</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Anthropic 工程师现状</span>
+                        <span class="data-value down">几乎不再亲自写代码</span>
+                    </div>
+                </div>
+
+                <p>
+                    好，让我把这件事掰开了说。什么是递归自我进化？简单讲：<strong>AI 系统被用来构建更好的 AI 系统，而更好的 AI 系统又能构建更更好的 AI 系统</strong>——形成一个正反馈闭环。每一轮迭代的输出，成为下一轮迭代的输入。听起来像指数增长？没错，但比普通的指数增长更陡——因为<strong>增长速率本身也在增长</strong>。
+                </p>
+
+                <p>
+                    这为什么值得你停下来想一想？因为它彻底改变了我们对"AI 进步节奏"的心智模型。过去两年，我们已经习惯了 AI 能力的快速进步。但那种进步本质上还是<strong>人类驱动的</strong>——人类研究员想出新架构、人类工程师优化训练流程、人类标注员提供反馈数据。进步速度受限于人类的认知带宽和协作效率。
+                </p>
+
+                <p>
+                    现在，这个限制正在被移除。<strong>当 AI 开始接管 AI 研发的关键环节，进步速度不再受人类认知带宽约束。</strong>Anthropic CEO Dario Amodei 在达沃斯说得很直白：他们正在用"擅长编程和 AI 研究的模型来构建下一代模型"，目标是"加快迭代周期"。OpenAI 更是直接在 Codex 的发布声明里写下了一句意味深长的话——这是"我们第一个在自身创建过程中发挥了关键作用的模型"。
+                </p>
+
+                <p>
+                    注意用词：<strong>"在自身创建中发挥关键作用"</strong>。不是"辅助"，不是"加速"，是"关键作用"。一个模型参与创造了自己的后继者。这个反馈回路已经不是理论上的可能性了，它正在实际运转。
+                </p>
+
+                <p>
+                    36氪的深度编译文章提供了一个生动的案例：安全软件公司 StrongDM 的三人团队制定了两条激进规则——<strong>代码不得由人类编写，代码不得由人类审核</strong>。人类只负责写产品路线图，编码智能体开发软件，测试智能体在模拟环境中测试，各组智能体互相反馈循环。全程无人接触底层代码。这不是实验室里的 demo，是正在运行的生产环境。
+                </p>
+
+                <p>
+                    但这里有一个至关重要的但是：<strong>RSI 作为概念已有数十年历史，可能遇到算力瓶颈、数据瓶颈、甚至研究本身的瓶颈。</strong>大语言模型可能触及某个无法逾越的天花板。Hassabis 本人也警告"仍存在真实风险"。没有人能确定这个反馈回路会一直加速下去。
+                </p>
+
+                <p>
+                    但关键不在于 RSI 是否会一路狂飙到奇点。关键在于：<strong>我们从"与 AI 协作"的时代，进入了"管理 AI"的时代——而管理一个正在自我进化的系统，和管理一个静态工具，是完全不同的游戏。</strong>36氪原文中有一句话精准地捕捉了当下的本质："我们已经能看清这个'东西'的轮廓，但我们依然可以影响它——<strong>这个窗口期可能不会太长。</strong>"
+                </p>
+            </div>
+        </div>
+
+        <!-- ── 对你意味着什么 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>更新你对"AI 进步速度"的心智模型。</strong>过去你可以用"每年发布一个更强的模型"来粗略估算 AI 的进步节奏。现在不行了。当 AI 开始参与自身的研发，进步曲线从"人类驱动的指数增长"变成了"AI 驱动的指数增长"——后者的斜率本身也在变。你的规划周期需要缩短，你对"未来一年 AI 能做什么"的预测需要更大的不确定性区间。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>"管理 AI"将成为核心职业技能。</strong>StrongDM 的案例揭示了一个趋势：未来很多工作不是"用 AI 辅助你完成任务"，而是"你定义任务，管理一群 AI 完成它"。这需要全新的技能：任务分解能力、质量判断标准的制定能力、异常检测的直觉。你不需要会写代码，但你需要会"管理写代码的 AI"。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>塑造窗口真的存在，而且在关闭。</strong>现在既没有现成的规则，也没有可供效仿的典范。每一个正在摸索 AI 最佳实践的团队——无论是公司、开源社区还是个人——都在为其他人树立先例。如果你在工作中正在定义"AI 怎么用"的规则，你实际上在参与塑造。别等"最佳实践"出来再跟——等它出来的时候，窗口可能已经关了。
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 认知偏差提醒 ── -->
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒</h2>
+            <p>
+                <strong>线性外推偏误（Linear Extrapolation Bias）</strong>——人类天然倾向于用过去的变化速率来预测未来。但递归系统的本质是<strong>变化速率本身在加速</strong>。你可能觉得"AI 过去一年进步了 X，所以明年大概也进步 X"——这个直觉在 RSI 启动后可能严重低估实际进展。同时也要警惕<strong>叙事偏误</strong>：三巨头同时喊话，可能是真的技术突破，也可能包含竞争性吹嘘的成分。保持兴奋，但别丢掉怀疑。
+            </p>
+        </div>
+
+        <!-- ── 延伸阅读 ── -->
+        <div class="further">
+            <h2>📖 想深入了解</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://www.36kr.com/p/3729579125063300" target="_blank">
+                        36氪/神译局：AI的递归自我进化——那个东西的轮廓正在越来越清晰
+                        <br><span class="label">本期核心来源，含 StrongDM 案例与三巨头表态全文</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://hub.baai.ac.cn/view/54056" target="_blank">
+                        ICLR 2026 RSI Workshop 闭门晚宴纪要
+                        <br><span class="label">学术前沿：递归自我改进的理论框架与安全约束讨论</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://ninehills.github.io/jack-diary/articles/20260301-recursive-self-improvement.html" target="_blank">
+                        Jack's Diary：递归自进化的终局——从"脚手架"到"生命"
+                        <br><span class="label">中文深度思考，从 Voyager 到通用自我改进的路径推演</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://ai.com.tw/recursive-self-improvement-ai-rsi-2026-guide/" target="_blank">
+                        遞迴自我改進的 AI（RSI）：2026 最新整理
+                        <br><span class="label">全景式概念梳理，适合对 RSI 完全陌生的读者</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 留一个问题 ── -->
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>如果 AI 的进步速度不再受限于人类的认知带宽，<br>那"跟上 AI"这件事本身，还有意义吗？<br>也许更好的问题是：什么是只有人类能决定、AI 无法替你想清楚的？</p>
+        </div>
+
+        <!-- ── Tags ── -->
+        <div class="tags">
+            <span class="tag">Recursive Self-Improvement</span>
+            <span class="tag">RSI</span>
+            <span class="tag">ICLR 2026</span>
+            <span class="tag">Feedback Loop</span>
+            <span class="tag">AI Governance</span>
+            <span class="tag">Exponential Growth</span>
+        </div>
+
+        <a href="https://ego1013.github.io/ethanycjin/ainsight/" class="back-btn">← 返回洞见列表</a>
+
+        <div class="footer">
+            🧠 AI 每日洞见 · 信号提取，不是新闻聚合 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+        </div>
+    </div>
+</body>
+</html>
