@@ -383,8 +383,11 @@
             <button class="refresh-btn primary" id="refreshDirectionBtn" title="重新生成风格方向词，瀑布流全部刷新">
                 <span class="ico">🎯</span><span>换方向词</span>
             </button>
-            <button class="refresh-btn" id="refreshImagesBtn" title="方向不变，整页重新抽取新图">
+            <button class="refresh-btn" id="refreshImagesBtn" title="方向不变，整页重新抽取新图（离线 · 从 catalog 池）">
                 <span class="ico">🔄</span><span>换一批图</span>
+            </button>
+            <button class="refresh-btn" id="refreshOnlineBtn" title="触发 GitHub Actions 真实抓取新图 · 约 1-2 分钟">
+                <span class="ico">🛰️</span><span>在线重搜</span>
             </button>
         </div>
     </div>
@@ -428,6 +431,14 @@
 
 const ARCHIVE_URL = './data/outfit_archive.json';
 const RECENT_KEY  = 'otomo_recent_combos_v2';
+
+/* ═══ 在线重搜（A 方案）═══
+ * 部署好 Cloudflare Worker 后，把 URL 填在这里。留空 → 隐藏按钮。
+ * 详见 docs/deploy-online-refresh.md
+ */
+const WORKER_REFRESH_URL = ''; // e.g. 'https://otomo-refresh-proxy.ethanycjin.workers.dev'
+const POLL_INTERVAL_MS = 5000;
+const POLL_TIMEOUT_MS  = 3 * 60 * 1000;
 
 let archiveData = null;
 let currentDirection = null;   // 当前使用的方向词（初始 = 最新 push 的 direction_keywords）
@@ -755,7 +766,66 @@ document.addEventListener('DOMContentLoaded', async () => {
             showToast('已刷新全部图片顺序（' + Object.keys(archiveData.catalog||{}).length + ' 张候选）');
         }, 150);
     };
+
+    // 🛰️ 在线重搜 · 触发 GitHub Actions 真实抓取（A 方案）
+    const onlineBtn = document.getElementById('refreshOnlineBtn');
+    if (!WORKER_REFRESH_URL) {
+        onlineBtn.style.display = 'none';  // 未配置 Worker 时隐藏
+    } else {
+        onlineBtn.onclick = async (ev) => {
+            const btn = ev.currentTarget;
+            btn.classList.add('loading');
+            showToast('正在触发在线抓取…');
+
+            try {
+                const resp = await fetch(WORKER_REFRESH_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: 'incremental' }),
+                });
+                if (!resp.ok && resp.status !== 202) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.error || `HTTP ${resp.status}`);
+                }
+                showToast('已触发 GitHub Actions，约 1-2 分钟，正在轮询新图…', 5000);
+                await pollForNewArchive();
+            } catch (e) {
+                showToast('在线重搜失败：' + e.message, 5000);
+                btn.classList.remove('loading');
+            }
+        };
+    }
 });
+
+/* ─── 轮询 outfit_archive.json，等待 last_push_online 变化 ─── */
+async function pollForNewArchive() {
+    const btn = document.getElementById('refreshOnlineBtn');
+    const before = archiveData?.meta?.last_push_online || '';
+    const deadline = Date.now() + POLL_TIMEOUT_MS;
+
+    while (Date.now() < deadline) {
+        await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
+        try {
+            const resp = await fetch(ARCHIVE_URL + '?t=' + Date.now(), { cache: 'no-store' });
+            const fresh = await resp.json();
+            const after = fresh.meta?.last_push_online || '';
+            if (after && after !== before) {
+                archiveData = fresh;
+                const latest = fresh.pushes[fresh.pushes.length - 1];
+                const addedN = latest?.item_count || 0;
+                currentDirection = null;  // 强制下次用新 direction
+                renderLatest();
+                btn.classList.remove('loading');
+                showToast(`✨ 在线抓取完成 · 新增 ${addedN} 张 · 归档共 ${Object.keys(fresh.catalog).length} 张`, 5000);
+                return;
+            }
+        } catch (e) {
+            // 轮询期间的临时失败忽略
+        }
+    }
+    btn.classList.remove('loading');
+    showToast('在线抓取超时（3 分钟未检测到更新），请查 GitHub Actions 日志', 6000);
+}
 </script>
 </body>
 </html>

@@ -104,6 +104,52 @@
 
 ## 3. Changelog（按时间线，越新越靠上）
 
+### 2026-04-20 · v2.2（20:49 用户提问触发）
+
+**用户提问**：当前"换一批图"只是 shuffle 已归档的 28 张，并不是真在线搜索。如何实现真正的重新搜索？
+
+**决策（A + D 混合）**：
+- **A**：通过 GitHub Actions workflow_dispatch 实现 on-demand 在线抓取；Cloudflare Worker 代理隐藏 PAT；前端轮询 `meta.last_push_online` 检测更新
+- **D**：扩大前端 catalog 池（离线，立刻见效），提升"换一批图"的 shuffle 新鲜感
+
+**不选 B（前端直连 Unsplash API）** 的原因：Unsplash 没有真正的设计师 Lookbook / 街拍内容，出来是艺术摄影/生活照，与 ŌTOMO 调性不匹配。
+
+**落地清单**：
+
+| 组件 | 位置 | 作用 |
+|---|---|---|
+| `tools/expand_catalog.py` | 主仓库 | D 方案一次性扩池：本地运行，catalog 28 → 45（+17） |
+| `tools/online_refresh.py` | 主仓库 | A 方案在线脚本：Actions 里运行，每次 incremental +8-12 张 |
+| `.github/workflows/otomo-refresh.yml` | 部署仓库 | 监听 workflow_dispatch，跑 online_refresh.py，自动 git push |
+| `tools/cloudflare-worker-proxy.js` | 主仓库（代码） | 代理前端 → GitHub API，持有 PAT 的中间层 |
+| `docs/deploy-online-refresh.md` | 主仓库 | 5 步部署手册：生成 PAT → 部署 Worker → 填 URL |
+| `index.html` 🛰️ 在线重搜 | 两仓库 | 第三个按钮，调 Worker → 轮询 JSON → reload |
+
+**架构**：
+```
+前端 🛰️ ──POST──▶ Cloudflare Worker ──dispatch──▶ GitHub Actions
+  ▲                                                    │
+  │                                                    ▼
+  └──── poll meta.last_push_online ◀── push ──── online_refresh.py
+```
+
+**前端常量**（需用户部署后填写）：
+```js
+const WORKER_REFRESH_URL = ''; // 留空则隐藏按钮
+```
+
+**三按钮定位**：
+- 🎯 换方向词（即时，离线）—— 心情换，重新采样方向
+- 🔄 换一批图（即时，离线）—— 从 catalog 45 张池子 shuffle
+- 🛰️ 在线重搜（1-2 分钟，真在线）—— 触发 Actions 真抓新图
+
+**安全边界**：PAT 只存 Worker Secret，前端不可见；Worker 校验 Origin 只允许 ego1013.github.io；PAT 权限最小化（仅 Actions R/W + Contents R）。
+
+**后续 Roadmap**：
+- P0：`online_refresh.py` 的 POOL 需逐步替换为真实设计师 Lookbook CDN（目前仍是精选 Unsplash ID）
+- P1：Worker 增加调用频率限制（避免误触连刷）
+- P1：前端缓存 `last_push_online`，避免点"在线重搜"后看到同一个时间戳立即 return
+
 ### 2026-04-20 · v2.1（17:13 用户反馈修正）
 
 **用户反馈（原话）**：
@@ -149,15 +195,16 @@
 
 ## 4. 待迭代（Roadmap）
 
-| 优先级 | 事项 |
-|---|---|
-| P0 | 图源从 Unsplash 占位升级为真实 Lookbook/街拍 CDN（设计师品牌官网 Lookbook 页面解析） |
-| P0 | 单品搜索接入真实搜索后端（Google Images / Pinterest API / 自建爬虫代理） |
-| P1 | 归档 > 500 时的自动分卷（按季度或年份归档） |
-| P1 | 卡片增加 "收藏" 功能 + 我的收藏页 |
-| P1 | 天气数据源稳定性（当前依赖抓取 tianqi24，应考虑和风天气 API） |
-| P2 | 图片质量自动打分（CLIP embedding 筛选男装、全身率） |
-| P2 | 历史周回放（按 `push_id` 切换显示过往某一周的推送） |
+| 优先级 | 事项 | 状态 |
+|---|---|---|
+| P0 | 图源从 Unsplash 占位升级为真实 Lookbook/街拍 CDN | ⏳ 架构已就位（A 方案通道），待替换 `online_refresh.py` 的 POOL 为真实 Lookbook URL |
+| P0 | 单品搜索接入真实搜索后端 | ⏳ 复用 A 方案的 Worker + Actions 通道 |
+| P1 | 归档 > 500 时的自动分卷（按季度或年份归档） | |
+| P1 | 卡片增加 "收藏" 功能 + 我的收藏页 | |
+| P1 | 天气数据源稳定性（当前依赖抓取 tianqi24，应考虑和风天气 API） | |
+| P1 | Worker 增加调用频率限制 + 前端 `last_push_online` 缓存（避免误触连刷） | v2.2 新增 |
+| P2 | 图片质量自动打分（CLIP embedding 筛选男装、全身率） | |
+| P2 | 历史周回放（按 `push_id` 切换显示过往某一周的推送） | |
 
 ---
 
