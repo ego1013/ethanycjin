@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 11 · 多模态：从文字到图像视频的统一 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 40%, #1a0a00 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--yellow-dim);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--purple), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--purple);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--purple);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--purple-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--purple);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--purple);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--purple);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+
+  blockquote {
+    border-left: 3px solid var(--purple);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--purple);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--purple);
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--green);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--green); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--purple);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--purple);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--purple); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .step-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .step-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    min-width: 120px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .step-item .step-num {
+    font-size: 0.7rem;
+    color: var(--purple);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-item .step-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .step-arrow {
+    font-size: 1.2rem;
+    color: var(--border);
+    padding: 0 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Modality comparison boxes ── */
+  .modality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .modality-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .modality-box .mb-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .modality-box .mb-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .modality-box .mb-sub {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  /* ── Timeline vis ── */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin: 1.5rem 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.6rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 1.25rem;
+    padding-left: 1rem;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.6rem;
+    top: 0.5rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--purple);
+    border: 2px solid var(--bg);
+  }
+
+  .timeline-item .tl-year {
+    font-size: 0.72rem;
+    color: var(--purple);
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+
+  .timeline-item .tl-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .timeline-item .tl-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-top: 0.2rem;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr; }
+    .modality-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 11</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🟡 中半衰期 · 讲透逻辑</div>
+  <h1>Day 11 · 多模态：从文字到图像视频的统一</h1>
+  <p class="subtitle">模态融合的本质是什么？</p>
+  <div class="meta">
+    <span>📅 2026-04-21 Tue</span>
+    <span>📦 第一模块 · 地基篇 · Week 2</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    设想一个场景：你是一个渠道总监，管着全国 200 个代理商。
+  </p>
+  <p>
+    你每天收到的信息不只是文字——有人发你一张门店照片，有人发你一段促销视频，有人发你一张 Excel 报表，有人打电话用语音汇报。<strong>文字、图片、视频、音频、表格——五种完全不同的信息载体，你需要在大脑里把它们"统一理解"，然后做出一个决策。</strong>
+  </p>
+  <p>
+    你的大脑天生就是多模态的。你从来没觉得这有什么难。
+  </p>
+  <p>
+    但对 AI 来说，这曾是一个几乎不可能的任务。2022 年的 ChatGPT 只能处理文字，看不懂图片，听不了语音。到了 2024 年——<strong>GPT-4V 看图答题、Gemini 理解视频、GPT-4o 实时语音对话、DALL-E/Midjourney 从文字生成图片。</strong>
+  </p>
+  <p>
+    两年之内，AI 从"只会读文字的阅读障碍患者"变成了"五感齐全的通才"。
+  </p>
+  <p>
+    今天的核心问题：<span class="highlight">这些不同模态的信息，是怎么被"装进"同一个模型里的？模态融合的本质是什么？</span>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么多模态是一个关键跃迁？</h2>
+  </div>
+
+  <h3>从"文字专家"到"全科医生"</h3>
+
+  <p>
+    回顾我们前十天的学习：Next Token Prediction、Token 化、概率分布、Attention、Context Window……所有这些，都是在"文字"这单一模态上运作的。
+  </p>
+
+  <p>
+    但现实世界不是纯文字的。<strong>人类获取信息的 80% 来自视觉</strong>（这是认知心理学的经典数据）。一个只能读文字的 AI，就像一个只能看书面报告的管理者——他能做判断，但信息损失巨大。
+  </p>
+
+  <div class="modality-grid">
+    <div class="modality-box">
+      <div class="mb-icon">📝</div>
+      <div class="mb-label" style="color:var(--cyan)">文字</div>
+      <div class="mb-sub">逻辑、概念、指令<br>精确但信息密度低</div>
+    </div>
+    <div class="modality-box">
+      <div class="mb-icon">🖼️</div>
+      <div class="mb-label" style="color:var(--purple)">图像</div>
+      <div class="mb-sub">场景、细节、空间关系<br>一图胜千言</div>
+    </div>
+    <div class="modality-box">
+      <div class="mb-icon">🎬</div>
+      <div class="mb-label" style="color:var(--accent)">视频/音频</div>
+      <div class="mb-sub">时间序列、情感、动态<br>信息密度最高</div>
+    </div>
+  </div>
+
+  <h3>为什么这件事很难？</h3>
+
+  <p>
+    难点不在于"处理图片"本身——计算机视觉（CV）早在 2012 年的 AlexNet 就开始突破了。<strong>难的是让一个模型同时理解多种模态，并且能在模态之间建立联系。</strong>
+  </p>
+
+  <p>
+    具体来说，有三个核心挑战：
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">表征不统一</span>
+      <div class="card-body">
+        文字是离散的符号序列（Token），图像是连续的像素矩阵（RGB 值），音频是连续的波形信号。<strong>它们的"语言"完全不同</strong>，怎么让一个模型同时听懂三种语言？
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">信息密度差异巨大</span>
+      <div class="card-body">
+        一句话"一只橙色的猫趴在键盘上"= 12 个 Token。<br>但要表达同样信息的一张照片 = 数百到数千个 Token。<br>一段 10 秒的视频 = 数万个 Token。<br><strong>模态之间的"信息浓度"差了 2-3 个数量级。</strong>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">对齐（Alignment）问题</span>
+      <div class="card-body">
+        "一只猫"这三个字和一张猫的照片，在语义上是同一个东西。但在数学表示上完全不同。<strong>怎么让模型知道"这些文字"和"这个图像区域"指的是同一件事？</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 类比：跨国团队的沟通问题</div>
+    <p style="margin:0">
+      你管理一个跨国渠道网络——中国团队说中文、美国团队说英文、日本团队说日文。每个团队的汇报格式也不一样（中国用 PPT、美国用 Email、日本用 Excel）。<br><br>
+      要让这三个团队协作，你需要：<strong>(1) 一个统一的"中间语言"来翻译；(2) 一套对齐机制来确保翻译不走样；(3) 一个足够大的管理带宽来容纳不同信息量级的输入。</strong><br><br>
+      多模态模型面临的正是同样的挑战。
+    </p>
+  </div>
+
+  <h3>为什么这一步如此重要？</h3>
+
+  <p>
+    因为多模态能力直接决定了 AI 的<strong>应用边界</strong>。
+  </p>
+
+  <table>
+    <tr>
+      <th>能力</th>
+      <th>纯文字模型</th>
+      <th>多模态模型</th>
+    </tr>
+    <tr>
+      <td>分析财报</td>
+      <td>✅ 可以读文字部分</td>
+      <td>✅ 还能读图表、趋势图</td>
+    </tr>
+    <tr>
+      <td>门店巡检</td>
+      <td>❌ 无法看照片</td>
+      <td>✅ 照片直接识别陈列问题</td>
+    </tr>
+    <tr>
+      <td>用户反馈</td>
+      <td>✅ 文字评价</td>
+      <td>✅ 还能分析语气、表情</td>
+    </tr>
+    <tr>
+      <td>产品设计</td>
+      <td>❌ 无法理解设计稿</td>
+      <td>✅ 直接看 UI 稿给建议</td>
+    </tr>
+    <tr>
+      <td>培训视频</td>
+      <td>❌ 只能看字幕文本</td>
+      <td>✅ 理解视频画面+语音</td>
+    </tr>
+  </table>
+
+  <p>
+    <strong>多模态不是锦上添花，而是 AI 从"工具"变成"助手"的分水岭。</strong> 一个看不懂图片的 AI 助手，就像一个只能打字不能视频通话的沟通工具——能用，但在很多场景下差太多了。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 多模态的本质：统一表征空间</h2>
+  </div>
+
+  <h3>一、核心思想：把所有模态翻译成同一种"语言"</h3>
+
+  <p>
+    多模态模型的根本解法只有一个核心思想——
+  </p>
+
+  <blockquote>
+    <strong>不管输入是文字、图片还是音频，先把它翻译成同一种数学表示（向量），然后用同一套机制来处理。</strong>
+  </blockquote>
+
+  <p>
+    回想 Day 2：文字通过 Tokenizer 切成 Token，再通过 Embedding 变成向量。这个向量就是模型能"理解"的语言。
+  </p>
+
+  <p>
+    多模态的关键创新是：<strong>为图片和音频也找到一种方法，把它们变成和文字 Token 处于同一个向量空间的"Token"。</strong>
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">多模态统一处理流程</span><br><br>
+    <span class="purple-hl">文字输入</span>：&nbsp;"一只猫坐在..."<br>
+    &nbsp;&nbsp;&nbsp;→ Tokenizer → [Token 向量序列] ──┐<br><br>
+    <span class="accent-hl">图像输入</span>：&nbsp;🖼️ 一张猫的照片<br>
+    &nbsp;&nbsp;&nbsp;→ <span class="blue-hl">Vision Encoder</span> → [图像 Token 向量序列] ──┤<br><br>
+    <span class="yellow-hl">音频输入</span>：&nbsp;🔊 一段猫叫声<br>
+    &nbsp;&nbsp;&nbsp;→ <span class="blue-hl">Audio Encoder</span> → [音频 Token 向量序列] ──┘<br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;┌────────────────────────┐<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;<span class="ok">统一的 Transformer</span>&nbsp;&nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;(Self-Attention)&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└────────────────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">统一输出</span>（文字/图片/音频）
+  </div>
+
+  <p>
+    <strong>这就是多模态的本质：不是发明一种全新的架构，而是为不同模态找到"翻译器"（Encoder），把它们翻译成 Transformer 能理解的通用向量语言。</strong>
+  </p>
+
+  <div class="callout blue">
+    <div class="callout-label">📊 类比：跨国公司的"统一 ERP 系统"</div>
+    <p style="margin:0">
+      想象你管理的渠道网络决定上一套统一的 ERP 系统。之前各区域各有自己的数据格式——华东用 Excel、华南用自研系统、华北用纸质单据。<br><br>
+      统一的做法不是让所有人重新学一套系统，而是：<strong>每个区域保留原有的数据采集方式，但加一个"数据转换层"，把各种格式统一翻译成 ERP 的标准字段</strong>。<br><br>
+      Vision Encoder / Audio Encoder 就是这个"数据转换层"——把图片/音频"翻译"成 Transformer 能统一处理的向量格式。
+    </p>
+  </div>
+
+  <h3>二、图像是怎么变成 Token 的？—— Vision Transformer (ViT)</h3>
+
+  <p>
+    最经典的方法来自 2020 年 Google 的 <strong>ViT（Vision Transformer）</strong>。思路极其简洁：
+  </p>
+
+  <div class="step-flow">
+    <div class="step-item">
+      <div class="step-num">STEP 1</div>
+      <div class="step-text">切块<br><em style="font-size:0.75rem">16×16 像素/块</em></div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-num">STEP 2</div>
+      <div class="step-text">展平<br><em style="font-size:0.75rem">每块→一个向量</em></div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-num">STEP 3</div>
+      <div class="step-text">加位置编码<br><em style="font-size:0.75rem">知道在哪个位置</em></div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-num">STEP 4</div>
+      <div class="step-text">送入 Transformer<br><em style="font-size:0.75rem">跟文字 Token 一样处理</em></div>
+    </div>
+  </div>
+
+  <p>
+    一张 224×224 像素的图片，切成 16×16 的小块 = 14×14 = <strong>196 个 Patch</strong>。每个 Patch 就相当于一个"图像 Token"。
+  </p>
+
+  <p>
+    一张 1024×1024 的高分辨率图呢？64×64 = <strong>4096 个 Token</strong>。
+  </p>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ 联系 Day 10</div>
+    <p style="margin:0">
+      看到了吗？一张图片就是几百到几千个 Token。Day 10 讲的 Context Window 成本 O(n²)——<strong>当图片的 Token 和文字的 Token 一起塞进上下文时，n 一下就暴涨了</strong>。<br><br>
+      这就是为什么多模态模型对长上下文的需求更迫切：一段 1 分钟的视频（30fps）= 1800 帧 × 几百 Token/帧 = <strong>几十万 Token</strong>。没有 Day 10 讲的那些优化策略，根本跑不动。
+    </p>
+  </div>
+
+  <h3>三、对齐：让文字和图片"互相理解"—— CLIP 的突破</h3>
+
+  <p>
+    把图片切成 Token 只是第一步。更关键的问题是：<strong>怎么让模型知道"一只猫"这个词和一张猫的照片指的是同一个东西？</strong>
+  </p>
+
+  <p>
+    2021 年 OpenAI 的 <strong>CLIP（Contrastive Language-Image Pre-training）</strong> 给出了一个优雅的方案：
+  </p>
+
+  <blockquote>
+    <strong>用对比学习，让"一只猫"的文字向量和猫照片的图像向量在向量空间中靠得很近；让"一只猫"的文字向量和狗照片的图像向量离得很远。</strong>
+  </blockquote>
+
+  <p>
+    训练数据来自互联网上的<strong>4 亿对"图片-文字描述"配对</strong>。每一对就像一张照片和它的图注——模型通过海量配对学会了"这个视觉概念对应那个语义概念"。
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">CLIP 的对比学习</span><br><br>
+    训练数据：4 亿对 (图片, 文字描述)<br><br>
+    <span class="ok">正样本</span>：🖼️猫照片 + "一只橙色的猫" → 向量距离<span class="ok">近</span> ✓<br>
+    <span class="error">负样本</span>：🖼️猫照片 + "一辆红色汽车" → 向量距离<span class="error">远</span> ✗<br><br>
+    训练目标：调整 Encoder，让正样本对靠近，负样本对远离<br><br>
+    <span class="purple-hl">结果</span>：文字和图片被映射到<span class="purple-hl">同一个向量空间</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ 可以用文字搜图片，也可以用图片搜文字
+  </div>
+
+  <div class="callout green">
+    <div class="callout-label">💡 为什么 CLIP 是一个里程碑？</div>
+    <p style="margin:0">
+      CLIP 之前，图像模型和语言模型是两个世界：ImageNet 的分类标签是固定的 1000 个类别，无法扩展。<br><br>
+      CLIP 打通了两个世界——<strong>你可以用任意自然语言描述来"检索"图像，不再受限于预定义的标签。</strong> 这是"从封闭分类到开放理解"的跃迁。<br><br>
+      DALL-E、Stable Diffusion、GPT-4V 的图像理解能力，都建立在 CLIP 或类似的对齐技术之上。
+    </p>
+  </div>
+
+  <div class="callout purple">
+    <div class="callout-label">📊 类比：渠道信息的"统一标签体系"</div>
+    <p style="margin:0">
+      你的代理商有两种汇报方式——有人写文字月报（"本月签约 15 家"），有人发照片（签约现场照片）。之前你需要人工把照片和文字对应起来。<br><br>
+      CLIP 做的事相当于：<strong>建立了一套"通用语义坐标系"——不管信息是文字还是图片，都能自动定位到同一个语义坐标上。</strong> "签约 15 家"和签约现场的 15 张照片，在坐标系里自动靠近。
+    </p>
+  </div>
+
+  <h3>四、两条技术路线：怎么把多模态和语言模型结合？</h3>
+
+  <p>
+    有了 Encoder 和对齐技术后，行业演化出了两条主要路线：
+  </p>
+
+  <div class="two-col">
+    <div class="callout" style="margin:0; border-left:4px solid var(--blue)">
+      <div class="callout-label" style="color:var(--blue)">路线 A：模块拼接式</div>
+      <p style="margin:0; font-size:0.85rem">
+        <strong>代表</strong>：GPT-4V、LLaVA、Claude 3<br><br>
+        <strong>做法</strong>：保留独立的 Vision Encoder（如 ViT），把图像 Token 通过一个"投射层"对齐到语言模型的向量空间，然后一起喂给 LLM。<br><br>
+        <strong>优点</strong>：可以复用成熟的语言模型和视觉模型<br>
+        <strong>缺点</strong>：模态间交互不如原生深度
+      </p>
+    </div>
+    <div class="callout" style="margin:0; border-left:4px solid var(--green)">
+      <div class="callout-label" style="color:var(--green)">路线 B：原生多模态式</div>
+      <p style="margin:0; font-size:0.85rem">
+        <strong>代表</strong>：Gemini、GPT-4o<br><br>
+        <strong>做法</strong>：从训练开始就让模型同时看文字、图片、音频、视频，不做模态分离。所有模态在同一个 Transformer 内处理。<br><br>
+        <strong>优点</strong>：模态间交互最深，跨模态推理更强<br>
+        <strong>缺点</strong>：训练成本极高，数据对齐挑战大
+      </p>
+    </div>
+  </div>
+
+  <p>
+    目前的趋势：<strong>路线 B 是终局，但路线 A 是当前性价比最高的过渡方案。</strong> 大多数产品（包括 GPT-4V 的初始版本）用的是路线 A；而 GPT-4o 和 Gemini 1.5 开始切向路线 B。
+  </p>
+
+  <h3>五、生成方向：从"理解"到"创造"</h3>
+
+  <p>
+    以上讲的都是"理解"方向——模型接收图片/视频输入，理解其内容。但多模态还有另一个方向：<strong>生成</strong>——从文字生成图片/视频。
+  </p>
+
+  <p>
+    这里的技术路线完全不同：
+  </p>
+
+  <table>
+    <tr>
+      <th>方向</th>
+      <th>核心技术</th>
+      <th>代表产品</th>
+      <th>机制</th>
+    </tr>
+    <tr>
+      <td>文字→图片</td>
+      <td>Diffusion Model（扩散模型）</td>
+      <td>DALL-E 3, Midjourney, SD</td>
+      <td>从噪声逐步"去噪"生成图片</td>
+    </tr>
+    <tr>
+      <td>文字→视频</td>
+      <td>Video Diffusion / DiT</td>
+      <td>Sora, Runway, Kling</td>
+      <td>扩散模型 + 时间建模</td>
+    </tr>
+    <tr>
+      <td>统一理解+生成</td>
+      <td>Autoregressive Multimodal</td>
+      <td>GPT-4o (原生), Gemini 2</td>
+      <td>统一的 Next Token Prediction</td>
+    </tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 关键洞察：最终形态是"统一"</div>
+    <p style="margin:0">
+      当前行业正在从"理解归理解、生成归生成"走向"统一模型做所有事"。<br><br>
+      GPT-4o 的意义在于：<strong>它是第一个真正原生多模态的商用模型——输入可以是任意组合（文字+图片+音频），输出也可以是任意组合。</strong> 不再是"一个文字模型 + 一个视觉模型 + 一个音频模型"的拼装，而是一个统一的系统。<br><br>
+      这就像从"每个区域一个独立系统"进化到"统一的中台"——架构本质变了。
+    </p>
+  </div>
+
+  <h3>六、多模态能力的演进时间线</h3>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="tl-year">2020</div>
+      <div class="tl-title">ViT — 图片也能用 Transformer 处理</div>
+      <div class="tl-desc">Google 证明：把图片切成 Patch 当 Token，Transformer 一样能做图像识别，而且效果超越 CNN。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-year">2021</div>
+      <div class="tl-title">CLIP — 打通文字与图像的向量空间</div>
+      <div class="tl-desc">OpenAI 用 4 亿图文对训练对比学习，让文字和图片在同一空间中对齐。奠定了所有后续多模态工作的基础。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-year">2022</div>
+      <div class="tl-title">DALL-E 2 / Stable Diffusion — 文字生成图片</div>
+      <div class="tl-desc">Diffusion Model 爆发。"一只戴太空头盔的猫骑自行车"从文字变成逼真图片成为可能。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-year">2023</div>
+      <div class="tl-title">GPT-4V — LLM 第一次"看懂"图片</div>
+      <div class="tl-desc">GPT-4 加上视觉理解能力。标志着大语言模型正式进入多模态时代。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-year">2024</div>
+      <div class="tl-title">GPT-4o / Gemini 1.5 — 原生多模态</div>
+      <div class="tl-desc">不再是"语言模型 + 视觉插件"，而是从架构层面就统一处理文字/图片/音频/视频。延迟大幅降低，跨模态推理能力质变。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-year">2024</div>
+      <div class="tl-title">Sora — 世界模型的雏形</div>
+      <div class="tl-desc">从文字生成一致性极高的长视频。不只是"画动图"，而是展现了对物理规律的初步理解。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>对行业竞争格局的三个影响</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">多模态成为模型能力的"新标准线"</span>
+      <div class="card-body">
+        2023 年，"能不能理解图片"是差异化优势。到 2025 年，<strong>不支持多模态的模型已经不被视为主流选手。</strong> 就像手机从"能上网是加分项"到"不能上网就是残废"的转变。这是一条不可逆的能力基线上移。
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">产品设计的可能性空间炸开了</span>
+      <div class="card-body">
+        纯文字 AI 能做的事情有限（写文案、回答问题、写代码）。多模态打开了：<strong>门店巡检自动化、视觉设计助手、视频内容理解、实时语音交互、AR 导航……</strong> 之前"AI 还不行"的场景，很多是因为缺少多模态能力。
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">数据飞轮的模态扩展</span>
+      <div class="card-body">
+        纯文字模型面临"数据墙"（Day 8）——互联网上的高质量文字数据快被用完了。<strong>但图片、视频、音频的数据量是文字的 100 倍以上。</strong> 多模态训练让模型有了新的数据来源，相当于打破了数据墙的另一面。
+      </div>
+    </div>
+  </div>
+
+  <h3>对你工作的实操启示</h3>
+
+  <div class="callout green">
+    <div class="callout-label">✅ 渠道管理中的多模态应用场景</div>
+    <p style="margin:0">
+      <strong>1. 门店合规检查</strong><br>
+      代理商发来门店照片 → AI 自动识别品牌物料是否合规、陈列是否达标。从"人工审核 3 天"变成"实时自动检查"。<br><br>
+      <strong>2. 竞品监测</strong><br>
+      拍竞品广告/海报/门店 → AI 自动提取信息、对比分析、生成简报。不再需要手动录入。<br><br>
+      <strong>3. 培训内容制作</strong><br>
+      把产品知识 + 门店照片 → AI 自动生成图文并茂的培训材料、甚至短视频脚本。<br><br>
+      <strong>4. 数据报告增强</strong><br>
+      让 AI 不只分析数字，还能"看懂"报表中的图表趋势，给出可视化洞察。
+    </p>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 一句话总结</div>
+    <p style="margin:0">
+      <strong>多模态的本质是"统一表征"——用同一种数学语言描述世界上所有类型的信息。</strong> 实现手段是为每种模态配一个 Encoder（翻译器），把它翻译成 Transformer 能理解的向量语言，然后在统一的注意力机制下处理。<br><br>
+      这不是什么魔法，而是一个工程上极度困难但逻辑上极其清晰的方案：<strong>先统一语言，再统一处理。</strong>
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+
+  <p><strong>场景：你的公司正在评估一个"AI 门店巡检"产品。供应商 A 说他们的方案是"先用 OCR 把门店照片转成文字描述，再喂给大语言模型分析"。供应商 B 说"我们直接用原生多模态模型，把照片和巡检标准一起输入"。价格差不多。</strong></p>
+
+  <p><strong>你怎么选？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      选 A。OCR + LLM 是成熟方案，风险低，文字模型能力更强。图片转文字后处理也一样。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      选 B。多模态是趋势，一步到位，未来不用重构。能"看图"肯定比"读文字描述"好。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      先问供应商 B 的模型具体是哪种：如果是原生多模态（GPT-4o 级），选 B；如果只是 ViT + LLM 拼接，那和 A 差不多，选成熟度更高的。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先定义"巡检"要检查什么——如果主要是看文字信息（价格标签、品牌名），A 可能够用；如果要看空间布局、陈列效果、环境整洁度等视觉语义，A 方案在 OCR 阶段就会丢失关键信息，必须选 B。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问：一张门店照片经过 OCR 之后再喂给 LLM，和直接给多模态模型看原图，你觉得信息损失率大概是多少？给一个直觉比例（比如"损失 30%"或"损失 70%"），并说明为什么。</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>
+    今天讲了多模态——一个模型怎么理解多种类型的信息。
+  </p>
+  <p>
+    但还有一个更实际的问题：<strong>如果我已经有一个大模型，但它不了解我的业务数据——比如我的内部产品手册、我的渠道政策文档——怎么让它"变得懂我"？</strong>
+  </p>
+  <p>
+    行业有三种路径：<strong>Fine-tune（微调模型参数）</strong>、<strong>RAG（检索增强生成）</strong>、<strong>Prompt（上下文工程）</strong>。
+  </p>
+  <p>
+    这三种路径的本质区别是什么？什么时候用哪种？成本和效果怎么权衡？
+  </p>
+  <p>
+    <strong>Day 12</strong>，我们聊 Fine-tune vs RAG vs Prompt：三种"定制"路径的本质差异。
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">多模态的本质 = 统一表征空间</span>
+    <div class="card-body">
+      不管输入是文字、图片还是音频，先用专门的 Encoder 翻译成同一种向量语言，然后在统一的 Transformer 中处理。核心思想是"先统一语言，再统一处理"。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">ViT 把图片变成 Token：切块→展平→送入 Transformer</span>
+    <div class="card-body">
+      一张图片被切成 16×16 的小块（Patch），每个 Patch 对应一个"图像 Token"。224×224 的图 = 196 个 Token，1024×1024 = 4096 个 Token。图片进入上下文后 Token 数暴涨。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">CLIP 实现跨模态对齐：让文字向量和图片向量在同一空间中靠近</span>
+    <div class="card-body">
+      通过 4 亿图文对的对比学习，让"一只猫"的文字表示和猫照片的视觉表示在向量空间中距离很近。这是所有多模态理解和生成的基础。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">两条路线：模块拼接（GPT-4V）vs 原生多模态（GPT-4o/Gemini）</span>
+    <div class="card-body">
+      路线 A 复用现有模型、成本低但模态交互浅；路线 B 从头统一训练、成本高但跨模态能力强。行业趋势是从 A 向 B 演进。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">多模态打破数据墙：图片/视频数据量是文字的 100 倍以上</span>
+    <div class="card-body">
+      纯文字模型面临高质量文字数据耗尽的困境。多模态训练开辟了新的数据来源（互联网上的图片、视频、音频），为持续 Scaling 提供了燃料。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 1</span>
+    <span>Next Token Prediction 最初只是预测下一个文字 Token。多模态的终极形态是：用同一套 NTP 机制预测下一个"Token"——这个 Token 可以是文字、图像块、音频帧中的任何一种。NTP 的适用范围被极大扩展了。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 2</span>
+    <span>Day 2 讲了 Tokenizer 和 Embedding——把文字变成向量。今天讲的 Vision Encoder 做的是完全同构的事：把图片变成向量。核心方法论相同，只是"翻译"的源语言不同。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 8</span>
+    <span>Scaling Law 中的"数据墙"——多模态正是打破数据墙的关键手段之一。图片和视频的数据量远超文字，为继续 Scale 提供了新燃料。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 10</span>
+    <span>Context Window 的 O(n²) 成本在多模态场景下更加严峻——一张图片就是数百 Token，一段视频是数万 Token。Day 10 的优化策略（稀疏注意力、FlashAttention、GQA）在多模态模型中更加不可或缺。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 12</span>
+    <span>明天讲 Fine-tune vs RAG vs Prompt。多模态能力建立后，下一个问题是"怎么让模型懂我的业务"。Fine-tune 可以微调多模态能力（比如让模型认识你的产品照片），RAG 可以检索多模态知识库。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 11 of 60 · 第一模块 · 地基篇 · Week 2
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
