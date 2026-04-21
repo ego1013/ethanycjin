@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提炼者 · 信仰如何变成算法 · 新教伦理与资本主义精神</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616;
+            --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d0cfc8; --text-dim: #888; --text-muted: #555;
+            --white: #f0ece4; --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.1); --accent-border: rgba(226,163,85,0.25);
+            --warn: #f59e0b;
+            --red: #E94560; --red-dim: rgba(233,69,96,0.08); --red-border: rgba(233,69,96,0.2);
+            --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.08); --blue-border: rgba(96,165,250,0.2);
+            --green: #34d399; --green-dim: rgba(52,211,153,0.08); --green-border: rgba(52,211,153,0.2);
+            --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.08); --purple-border: rgba(167,139,250,0.2);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Serif SC', Georgia, serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.9;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+
+        /* ── Breadcrumb ── */
+        .breadcrumb-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+            background: rgba(10,10,10,.92); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            font-size: 12px; font-family: sans-serif; color: #666;
+        }
+        .breadcrumb-nav a { color: #888; text-decoration: none; }
+        .breadcrumb-nav a:hover { color: #ddd; }
+        .breadcrumb-nav .sep { color: #444; font-size: 11px; }
+        .breadcrumb-nav .current { color: #ccc; font-weight: 500; }
+        .breadcrumb-spacer { height: 40px; }
+
+        /* ── Role tag ── */
+        .role-tag {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent);
+        }
+        .day-label {
+            font-size: .72rem; color: var(--text-muted); font-family: sans-serif;
+            font-weight: 500; letter-spacing: .05em; margin-bottom: .6rem;
+        }
+        .main-title { font-size: 1.75rem; font-weight: 700; color: var(--white); line-height: 1.4; margin-bottom: .6rem; }
+        .sub-title { font-size: 1rem; color: var(--text-dim); font-weight: 400; line-height: 1.6; }
+        .role-header { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+
+        /* ── Text ── */
+        .body-text { font-size: 1rem; color: var(--text); line-height: 1.9; margin-bottom: 1.5rem; }
+        .body-text em { font-style: italic; color: var(--accent); }
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        /* ── Core claim ── */
+        .core-claim {
+            background: linear-gradient(135deg, rgba(226,163,85,.1), rgba(226,163,85,.03));
+            border: 1px solid var(--accent-border); border-radius: 12px;
+            padding: 1.4rem 1.6rem; margin: 1.5rem 0;
+        }
+        .cc-label {
+            font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+            color: var(--accent); font-family: sans-serif; margin-bottom: .6rem;
+        }
+        .cc-text { font-size: 1.1rem; font-weight: 700; color: var(--white); line-height: 1.6; }
+
+        /* ── Section title ── */
+        .section-title {
+            font-size: 1.05rem; font-weight: 700; color: var(--white);
+            margin: 2.5rem 0 1rem; padding-left: .8rem; border-left: 3px solid var(--accent);
+        }
+
+        /* ── Concept cards ── */
+        .concept-list { display: flex; flex-direction: column; gap: 1rem; margin: 1.5rem 0; }
+        .concept-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.25rem 1.4rem; display: grid; grid-template-columns: auto 1fr; gap: 0 1rem;
+        }
+        .concept-num {
+            font-size: .65rem; font-weight: 800; color: var(--accent); min-width: 24px;
+            font-family: sans-serif; padding-top: .25rem; letter-spacing: .05em;
+        }
+        .concept-title { font-size: .97rem; font-weight: 700; color: var(--white); margin-bottom: .35rem; }
+        .concept-text { font-size: .88rem; color: var(--text-dim); line-height: 1.75; }
+        .concept-text em { font-style: italic; color: var(--accent); }
+        .concept-text strong { color: var(--text); font-weight: 600; }
+        .concept-quote {
+            margin-top: .6rem; padding: .6rem .9rem;
+            background: rgba(226,163,85,.05); border-left: 2px solid var(--accent-border);
+            border-radius: 0 6px 6px 0; font-size: .83rem; color: var(--text-dim);
+            line-height: 1.7; font-style: italic;
+        }
+
+        /* ── Two column compare ── */
+        .compare-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;
+        }
+        @media (max-width: 500px) { .compare-grid { grid-template-columns: 1fr; } }
+        .compare-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+            padding: 1.1rem 1.25rem;
+        }
+        .compare-card.red { border-color: var(--red-border); background: var(--red-dim); }
+        .compare-card.blue { border-color: var(--blue-border); background: var(--blue-dim); }
+        .compare-label {
+            font-size: .6rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: .6rem;
+        }
+        .compare-card.red .compare-label { color: var(--red); }
+        .compare-card.blue .compare-label { color: var(--blue); }
+        .compare-text { font-size: .88rem; color: var(--text-dim); line-height: 1.7; }
+        .compare-text strong { color: var(--text); }
+
+        /* ── Infographic container ── */
+        .infographic {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+            padding: 1.5rem; margin: 2rem 0; overflow-x: auto;
+        }
+        .infographic-title {
+            font-size: .68rem; font-weight: 700; color: var(--accent); letter-spacing: .12em;
+            text-transform: uppercase; font-family: sans-serif; margin-bottom: 1.25rem;
+        }
+
+        /* ── Tension echo ── */
+        .tension-echo {
+            background: rgba(226,163,85,.05); border: 1px solid var(--accent-border);
+            border-radius: 12px; padding: 1.4rem 1.6rem; margin: 2.5rem 0 1rem;
+        }
+        .te-label {
+            font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+            color: var(--accent); font-family: sans-serif; margin-bottom: .6rem;
+        }
+        .te-text { font-size: .95rem; color: var(--text); line-height: 1.8; }
+        .te-text em { font-style: italic; color: var(--accent); }
+        .te-text strong { color: var(--white); font-weight: 600; }
+
+        /* ── Closing ── */
+        .closing-q {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.4rem 1.6rem; margin-top: 3rem;
+        }
+        .cq-label {
+            font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-muted); font-family: sans-serif; margin-bottom: .75rem;
+        }
+        .cq-text { font-size: 1rem; font-weight: 600; color: var(--white); line-height: 1.6; }
+
+        /* ── Footer nav ── */
+        .footer-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border); margin-top: 3rem; padding-top: 1.5rem;
+        }
+        .footer-nav a {
+            font-size: .82rem; color: var(--text-dim); text-decoration: none;
+            font-family: sans-serif; transition: color .2s;
+        }
+        .footer-nav a:hover { color: var(--accent); }
+        .footer-center { font-size: .72rem; color: var(--text-muted); font-family: sans-serif; }
+
+        /* ── Progress dots ── */
+        .week-progress {
+            display: flex; gap: 6px; align-items: center; margin-top: 1rem;
+            font-family: sans-serif;
+        }
+        .wd { width: 8px; height: 8px; border-radius: 50%; background: var(--border-light); }
+        .wd.done { background: var(--accent); }
+        .wd.today { background: var(--accent); box-shadow: 0 0 0 2px rgba(226,163,85,.3); }
+        .wd-label { font-size: .65rem; color: var(--text-muted); margin-left: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="breadcrumb-nav">
+    <a href="../../">Ethan's Lab</a>
+    <span class="sep">›</span>
+    <a href="../">书单精读</a>
+    <span class="sep">›</span>
+    <span class="current">第3周 · 提炼者</span>
+</div>
+<div class="breadcrumb-spacer"></div>
+
+<div class="container">
+
+    <!-- ── Role Header ── -->
+    <div class="role-header">
+        <div class="role-tag">🎯 The Distiller · 提炼者</div>
+        <div class="day-label">第3周 · 第2天 · 2026-04-22</div>
+        <h1 class="main-title">信仰如何变成算法</h1>
+        <p class="sub-title">韦伯五把框架刀，解剖《新教伦理》的骨架</p>
+        <div class="week-progress">
+            <div class="wd done" title="D1 叙事者"></div>
+            <div class="wd today" title="D2 提炼者（今日）"></div>
+            <div class="wd" title="D3 应用者"></div>
+            <div class="wd" title="D4 挑战者"></div>
+            <div class="wd" title="D5 摆渡人+连接者"></div>
+            <span class="wd-label">本周第2天 / 《新教伦理与资本主义精神》</span>
+        </div>
+    </div>
+
+    <!-- ── 导语 ── -->
+    <p class="body-text">
+        韦伯写这本书时正在从神经崩溃中艰难复原。他没有给出一个整洁的宏大理论，而是给了我们一把精密的解剖刀——不是要证明"宗教创造了资本主义"，而是要追问：<strong>为什么某一种特定的内心焦虑，恰好生产出了某一种特定的经济行为？</strong>
+    </p>
+    <p class="body-text">
+        提炼者的任务，是把这把刀拆解开来，看清它的五个组成部分。
+    </p>
+
+    <!-- ── 核心命题 ── -->
+    <div class="core-claim">
+        <div class="cc-label">核心命题 Core Thesis</div>
+        <div class="cc-text">
+            新教改革（尤其是加尔文主义）生产出了一种独特的心理机制：将世俗劳动升格为天职，将禁欲积累视为获救证明。这一机制在无意中孵化了现代资本主义精神——系统化、理性化、永不停歇地积累财富，同时拒绝享受财富。
+        </div>
+    </div>
+
+    <!-- ── 五把框架刀 ── -->
+    <div class="section-title">五个核心框架</div>
+
+    <div class="concept-list">
+
+        <!-- 01 -->
+        <div class="concept-card">
+            <div class="concept-num">01</div>
+            <div>
+                <div class="concept-title">天职观 <em>Beruf</em>——劳动的神圣化</div>
+                <div class="concept-text">
+                    路德将德语"职业"（<em>Beruf</em>）与"天职/召唤"赋予同一词根。这一语义革命意义深远：世俗劳动不再是堕落的惩罚或无聊的谋生手段，而是上帝对个人的特殊召唤。<strong>把本职工作做好，本身就是一种宗教义务。</strong>
+                    <br>韦伯强调，这在中世纪天主教传统中是不存在的——彼时最高德性属于修道士，而非商人。
+                </div>
+                <div class="concept-quote">
+                    "路德把世俗职业提升到了一种宗教意义上的任务。"——韦伯
+                </div>
+            </div>
+        </div>
+
+        <!-- 02 -->
+        <div class="concept-card">
+            <div class="concept-num">02</div>
+            <div>
+                <div class="concept-title">预定论 <em>Predestination</em>——焦虑的来源</div>
+                <div class="concept-text">
+                    加尔文的神学核心：上帝早已预定谁得救、谁堕落，且这一决定不可被人的行为改变。人无法通过忏悔、购买赎罪券或捐献教会来"购买"得救资格。<strong>这制造了一种前所未有的孤独焦虑：我得救了吗？</strong>
+                    <br>这个问题没有答案，却要求每天带着它活下去。
+                </div>
+                <div class="concept-quote">
+                    "在加尔文主义者的内心世界里，这种极度的非人性孤独感，最终留下了深刻的印记。"
+                </div>
+            </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="concept-card">
+            <div class="concept-num">03</div>
+            <div>
+                <div class="concept-title">入世禁欲 <em>Inner-worldly Asceticism</em>——苦行的转型</div>
+                <div class="concept-text">
+                    天主教修道士通过出世（进入修道院）来实践禁欲。加尔文主义者把这种禁欲带回了世俗世界：<strong>他们在商业和劳动中全力以赴，但拒绝享受劳动的果实。</strong>不喝酒，不浪费，不炫耀，把盈余再投入——这不是吝啬，而是神圣的纪律。
+                    <br>入世禁欲的悖论：越拼命赚钱，越不能花钱，于是财富不断积累。
+                </div>
+                <div class="concept-quote">
+                    "清教徒想要成为有天职的人；我们则被迫如此。"
+                </div>
+            </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="concept-card">
+            <div class="concept-num">04</div>
+            <div>
+                <div class="concept-title">成功即证明 <em>Proof of Grace</em>——财富的神学意义</div>
+                <div class="concept-text">
+                    面对无法确认的预定，信徒发展出了一套心理出口：如果上帝选中了我，他会在我的劳动中赐福于我；因此，<strong>世俗成功（勤劳、节俭带来的财富积累）可以被解读为得救的外在迹象</strong>——不是原因，但可以是征兆。
+                    <br>这一逻辑将经济理性化为神学任务，使得系统性的商业积累获得了道德光环。
+                </div>
+            </div>
+        </div>
+
+        <!-- 05 -->
+        <div class="concept-card">
+            <div class="concept-num">05</div>
+            <div>
+                <div class="concept-title">铁笼 <em>Iron Cage</em>——脱魅之后</div>
+                <div class="concept-text">
+                    韦伯最令人不安的洞见：这套宗教机制催生的行为模式（系统性积累、理性组织、拒绝享受）一旦被制度化，就不再需要宗教信仰来维持运转。<strong>信仰死去之后，笼子仍在。</strong>
+                    <br>现代资本主义已经成为一套自我强化的铁笼——即使完全没有宗教信仰的人，也必须在其中按同一套逻辑行事，否则就会被淘汰。
+                </div>
+                <div class="concept-quote">
+                    "胜利了的资本主义，既然它已奠基于机械的基础，就不再需要这种精神的支持了。"
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── 信息图：观念→行为→制度的因果链 ── -->
+    <div class="section-title">信息图：从神学焦虑到资本主义精神</div>
+    <div class="infographic">
+        <div class="infographic-title">观念 → 行为 → 制度 因果链（韦伯模型）</div>
+
+        <svg viewBox="0 0 620 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:620px;display:block;margin:0 auto;">
+            <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#e2a355" opacity="0.7"/>
+                </marker>
+                <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#E94560" opacity="0.7"/>
+                </marker>
+            </defs>
+
+            <!-- Background -->
+            <rect width="620" height="520" fill="#111111" rx="8"/>
+
+            <!-- === 第一层：神学前提 === -->
+            <text x="310" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="10" letter-spacing="2">THEOLOGICAL PREMISE</text>
+
+            <!-- 预定论 box -->
+            <rect x="50" y="38" width="220" height="58" rx="8" fill="#1a1a1a" stroke="#E94560" stroke-width="1" stroke-opacity="0.5"/>
+            <text x="160" y="60" text-anchor="middle" fill="#E94560" font-family="sans-serif" font-size="11" font-weight="700">加尔文主义预定论</text>
+            <text x="160" y="78" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="10">上帝早已预定，人无法改变</text>
+
+            <!-- 天职观 box -->
+            <rect x="350" y="38" width="220" height="58" rx="8" fill="#1a1a1a" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.5"/>
+            <text x="460" y="60" text-anchor="middle" fill="#60a5fa" font-family="sans-serif" font-size="11" font-weight="700">路德天职观 Beruf</text>
+            <text x="460" y="78" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="10">世俗劳动 = 神圣召唤</text>
+
+            <!-- === 箭头下行 === -->
+            <line x1="160" y1="96" x2="160" y2="128" stroke="#E94560" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#arrow-red)"/>
+            <line x1="460" y1="96" x2="460" y2="128" stroke="#60a5fa" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#arrow)"/>
+
+            <!-- === 第二层：心理机制 === -->
+            <text x="310" y="122" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="10" letter-spacing="2">PSYCHOLOGICAL MECHANISM</text>
+
+            <!-- 焦虑 box -->
+            <rect x="50" y="132" width="220" height="58" rx="8" fill="#1a1a1a" stroke="#E94560" stroke-width="1" stroke-opacity="0.4"/>
+            <text x="160" y="154" text-anchor="middle" fill="#f0cfc8" font-family="sans-serif" font-size="11" font-weight="700">得救焦虑</text>
+            <text x="160" y="172" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="10">我得救了吗？无法确认</text>
+
+            <!-- 入世禁欲 box -->
+            <rect x="350" y="132" width="220" height="58" rx="8" fill="#1a1a1a" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.4"/>
+            <text x="460" y="154" text-anchor="middle" fill="#d0e8fa" font-family="sans-serif" font-size="11" font-weight="700">入世禁欲</text>
+            <text x="460" y="172" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="10">拼命工作 + 拒绝享受</text>
+
+            <!-- 两条线汇合 -->
+            <line x1="160" y1="190" x2="160" y2="220" stroke="#555" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="460" y1="190" x2="460" y2="220" stroke="#555" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="160" y1="220" x2="460" y2="220" stroke="#555" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="310" y1="220" x2="310" y2="248" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+            <!-- === 第三层：行为输出 === -->
+            <text x="310" y="242" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="10" letter-spacing="2">BEHAVIORAL OUTPUT</text>
+
+            <!-- 成功即证明 box（中间） -->
+            <rect x="155" y="252" width="310" height="62" rx="8" fill="rgba(226,163,85,0.08)" stroke="#e2a355" stroke-width="1.5" stroke-opacity="0.6"/>
+            <text x="310" y="275" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="12" font-weight="700">成功即得救证明</text>
+            <text x="310" y="295" text-anchor="middle" fill="#b08050" font-family="sans-serif" font-size="10">财富积累 = 神圣赐福的外在征兆</text>
+
+            <line x1="310" y1="314" x2="310" y2="344" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+            <!-- === 第四层：资本主义精神 === -->
+            <text x="310" y="338" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="10" letter-spacing="2">CAPITALIST SPIRIT</text>
+
+            <rect x="80" y="348" width="460" height="66" rx="8" fill="rgba(226,163,85,0.05)" stroke="#e2a355" stroke-width="1" stroke-opacity="0.4"/>
+            <text x="310" y="372" text-anchor="middle" fill="#f0ece4" font-family="sans-serif" font-size="12" font-weight="700">资本主义精神</text>
+            <text x="310" y="392" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="10">系统化积累 · 理性组织 · 持续再投入 · 拒绝享乐</text>
+
+            <line x1="310" y1="414" x2="310" y2="442" stroke="#555" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+            <!-- === 第五层：铁笼 === -->
+            <rect x="80" y="448" width="460" height="52" rx="8" fill="#1a1a1a" stroke="#555" stroke-width="1.5" stroke-dasharray="6,3"/>
+            <text x="310" y="470" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="12" font-weight="700">铁笼 Iron Cage</text>
+            <text x="310" y="490" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="10">信仰消失之后，结构自我维持——脱魅的现代性</text>
+
+            <!-- 左侧标注 -->
+            <text x="20" y="70" fill="#E94560" font-family="sans-serif" font-size="9" opacity="0.7" transform="rotate(-90, 20, 70)">焦虑</text>
+            <text x="20" y="160" fill="#60a5fa" font-family="sans-serif" font-size="9" opacity="0.7" transform="rotate(-90, 20, 160)">驱动</text>
+        </svg>
+    </div>
+
+    <!-- ── 韦伯 vs 马克思：解释路径对比 ── -->
+    <div class="section-title">韦伯 vs 马克思：谁决定谁？</div>
+    <p class="body-text">
+        提炼者需要在这里给出一个精准的对比——两人面对同一历史现象（资本主义的崛起），采用了截然相反的解释方向：
+    </p>
+    <div class="compare-grid">
+        <div class="compare-card red">
+            <div class="compare-label">马克思 Marx</div>
+            <div class="compare-text">
+                <strong>经济基础决定上层建筑。</strong><br>
+                生产方式→社会关系→意识形态。宗教是"鸦片"，是经济矛盾的镜像折射，不是原因。
+            </div>
+        </div>
+        <div class="compare-card blue">
+            <div class="compare-label">韦伯 Weber</div>
+            <div class="compare-text">
+                <strong>观念在特定条件下可以驱动历史。</strong><br>
+                他不是颠倒马克思，而是说：物质条件是必要条件，但不够——还需要对应的精神/文化条件点火。
+            </div>
+        </div>
+    </div>
+    <p class="body-text" style="margin-top:1rem;">
+        韦伯的谨慎之处在于：他从未声称新教"导致"了资本主义。他说的是，新教提供了一种<em>选择性亲近</em>（<em>Wahlverwandtschaft</em>）——就像一把钥匙和一把锁，不是谁造了谁，而是它们恰好相互吻合。
+    </p>
+
+    <!-- ── 三个容易误读的地方 ── -->
+    <div class="section-title">提炼者注意：三处常见误读</div>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-num">⚠️</div>
+            <div>
+                <div class="concept-title">误读一："新教徒比天主教徒更能赚钱"</div>
+                <div class="concept-text">
+                    韦伯研究的不是个别人的财富，而是一种集体性的<strong>精神气质（<em>Ethos</em>）</strong>——一种对待劳动、时间和财富的系统性态度。他的问题是文化心理学的，不是人口统计学的。
+                </div>
+            </div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-num">⚠️</div>
+            <div>
+                <div class="concept-title">误读二："韦伯证明了资本主义是新教的产物"</div>
+                <div class="concept-text">
+                    韦伯本人非常谨慎——他说"选择性亲近"，不说"因果关系"。他也承认资本主义在中国、印度存在过别的萌芽，只是没有发展出同样形态。文化条件是充分条件的一部分，不是全部。
+                </div>
+            </div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-num">⚠️</div>
+            <div>
+                <div class="concept-title">误读三："铁笼是悲观主义宣言"</div>
+                <div class="concept-text">
+                    韦伯结尾时的语气是诊断性的，不是道德性的。铁笼既是对现代性自由丧失的叹息，也是对人类适应性的观察——<strong>人类总能在没有意义的结构里，重新制造意义。</strong>只是代价不同。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 张力问题回响 ── -->
+    <div class="tension-echo">
+        <div class="te-label">🔁 张力问题回响 · D2 提炼者</div>
+        <div class="te-text">
+            昨天叙事者抛出的问题：<em>宗教观念能否独立地改变经济行为？还是说，韦伯发现的只是历史巧合——某种神学恰好为本来就要来临的经济逻辑提供了心理燃料？</em>
+            <br><br>
+            提炼完五个框架之后，这个问题变得更锋利了：<strong>韦伯的整个论证结构，其实预设了"观念有独立因果力"</strong>——他花了大量篇幅证明"为什么是新教徒的焦虑，而不是别的焦虑，生产出了这种行为"。这本身就是在说：不同的精神燃料，会产生不同的火焰。
+            <br><br>
+            但框架层面的问题仍悬而未决：他描述的<em>选择性亲近</em>究竟是观念驱动经济，还是经济选择了它需要的观念，然后让它发展壮大？<strong>这把钥匙，是先于锁而存在的，还是在有了锁之后才被打磨成这个形状的？</strong>
+        </div>
+    </div>
+
+    <!-- ── 收尾提问 ── -->
+    <div class="closing-q">
+        <div class="cq-label">明天应用者将会问</div>
+        <div class="cq-text">
+            韦伯描述的那套"勤劳但不享受"的心理逻辑，在历史上真的驱动过谁的行为？中国的儒商文化和今天的腾讯"奋斗者"协议，是不是另一种版本的入世禁欲——只是把神换成了"梦想"和"结果"？
+        </div>
+    </div>
+
+    <!-- ── Footer Nav ── -->
+    <div class="footer-nav">
+        <a href="w03-d01.html">← D1 叙事者</a>
+        <span class="footer-center">第3周 · 《新教伦理与资本主义精神》</span>
+        <a href="w03-d03.html">D3 应用者 →</a>
+    </div>
+
+</div>
+
+</body>
+</html>
