@@ -100,9 +100,68 @@
 - 卡片要素：emoji 🧥 / 标题 "ŌTOMO · 男装穿搭灵感" / 标签 "每周五 · 16:30" / "天气驱动" / "第 1 周"
 - 项目计数 11 → 12
 
+### 2.12 审核环节与三轮补搜机制（v2.3）
+
+**流程位置**：在 Step 2（搜索候选）与 Step 3（去重过滤）之间插入 **Step 2.5 审核 + Step 2.6 补搜循环**。
+
+```
+Step 2 搜索 → Step 2.5 审核 PASS/REJECT → Step 2.6 不足则打回（≤3 轮） → Step 3 去重 → Step 4 渲染
+```
+
+**审核官定义 / 审核标准 / 输出 JSON 契约 / 循环规则**：完整 SOP 独立文件 `docs/reviewer-sop.md`，本节只写架构决策。
+
+| 决策点 | 取值 | 理由 |
+|---|---|---|
+| 目标数量 | 12 – 18 张 | 与 v2.1 瀑布流容量一致 |
+| 最多循环 | 3 轮 | 避免无限补搜拖垮 Actions 时限（5min 硬上限） |
+| 达标判定 | PASS 累计 ≥ 12 | 区间下限即达标，不追满 18 |
+| 三轮不达标 | 以实际数量发布 + 顶部 banner | 用户原文要求"本期图片数量有限" |
+| 实现分期 | Phase 1 规则兜底 → Phase 2 CLIP/VLM → Phase 3 驳回原因回写 | 先打通闭环再提升精度 |
+| 入口函数 | `tools/reviewer.py::review_candidates(cands, target, round_no)` | 独立模块，搜索脚本和未来的真实搜索都 import |
+| 落盘字段 | `meta.review.{enabled,last_run,rounds,total_passed,total_rejected,insufficient}` | 前端仅关心 `insufficient` 做 banner |
+| 逐期日志 | `data/review_logs/<push_id>.json`（只增不减） | 和 outfit_archive 同口径 |
+| 前端 banner | `#review-banner`，insufficient=true 时显示 | 顶部 sticky，accent 暖金描边 |
+
+**产品修改建议留档**：本次用户需求原文完整保留于 `docs/change-log-suggestions.md` §A01 条目；该文件是产品建议的永久档，与本文件（内部技术决策）职责分离。
+
 ---
 
 ## 3. Changelog（按时间线，越新越靠上）
+
+### 2026-04-22 · v2.3（22:23 用户需求触发）
+
+**触发事件**：用户要求在 Step 2 与 Step 3 之间插入"穿搭图片审核官"环节，最多 3 轮补搜。
+
+**落地清单**：
+
+| 组件 | 位置 | 作用 |
+|---|---|---|
+| `docs/reviewer-sop.md` | 主仓库 | 审核官完整 SOP（角色 / 标准 / 流程 / JSON / 循环 / 归档） |
+| `docs/change-log-suggestions.md` | 主仓库 | 产品修改建议独立留档册，A01 为本次需求 |
+| `docs/decisions.md` §2.12 | 主仓库 | 架构决策（本节） |
+| `tools/reviewer.py` | 主仓库 | 审核入口 `review_candidates()`，Phase 1 规则兜底实现 |
+| `tools/online_refresh.py` | 主仓库 | 改造为"搜索→审核→补搜→去重"循环，最多 3 轮 |
+| `data/outfit_archive.json` | 主仓库 | `meta.review` 字段就位，初始 `insufficient: false` |
+| `data/review_logs/` | 主仓库 | 审核日志目录 |
+| `index.html` `#review-banner` | 两仓库 | insufficient=true 时顶部显示"本期图片数量有限" |
+
+**硬约束**：
+- `REVIEW_MAX_ROUNDS = 3`，不可配置
+- 目标下限 12，不足 12 才算 insufficient
+- 每轮审核必须完整生成 JSON 报告并写入 review_logs，不许跳过
+
+**Phase 1 审核的规则兜底逻辑**（接入真实 VLM 前）：
+1. URL 必须 HTTP 200（继承旧 `verify()`）
+2. `year ≥ 2021`
+3. `source_type` 必须在 4 类白名单内（Lookbook / 时装周街拍 / 秀场 / 日本街拍）
+4. `brand_or_event` 非空
+5. 命中以上全部 → PASS；否则 REJECT 并给出 reason
+
+**Roadmap 新增**：
+- P0：接入真实视觉审核（CLIP embedding 男装/全身率判别 + VLM 逐项核查 5 条通过条件）
+- P1：三轮驳回原因聚类回写搜索 Agent，影响下一轮搜索词
+
+
 
 ### 2026-04-20 · v2.2（20:49 用户提问触发）
 
@@ -203,7 +262,9 @@ const WORKER_REFRESH_URL = ''; // 留空则隐藏按钮
 | P1 | 卡片增加 "收藏" 功能 + 我的收藏页 | |
 | P1 | 天气数据源稳定性（当前依赖抓取 tianqi24，应考虑和风天气 API） | |
 | P1 | Worker 增加调用频率限制 + 前端 `last_push_online` 缓存（避免误触连刷） | v2.2 新增 |
-| P2 | 图片质量自动打分（CLIP embedding 筛选男装、全身率） | |
+| P0 | 审核官接入真实视觉审核（CLIP + VLM 逐项核查 5 条通过条件） | v2.3 新增，Phase 2 |
+| P1 | 三轮驳回原因聚类回写搜索 Agent，指导下一轮搜索词 | v2.3 新增，Phase 3 |
+| P2 | 图片质量自动打分（CLIP embedding 筛选男装、全身率） | 与审核官 Phase 2 合并 |
 | P2 | 历史周回放（按 `push_id` 切换显示过往某一周的推送） | |
 
 ---

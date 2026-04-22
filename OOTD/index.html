@@ -153,6 +153,26 @@
     }
     .trigger-banner strong { color: var(--accent); letter-spacing: 0.05em; }
 
+    /* ═══ 审核不足 Banner（v2.3）═══ */
+    .review-banner {
+        margin-top: 0.6rem;
+        padding: 0.55rem 0.9rem;
+        background: rgba(217, 108, 70, 0.12);
+        border: 1px solid rgba(217, 108, 70, 0.4);
+        border-left: 3px solid #d96c46;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: #f0d3c5;
+        display: none;
+    }
+    .review-banner.show { display: block; }
+    .review-banner strong { color: #ffb395; letter-spacing: 0.03em; }
+    .review-banner .review-meta {
+        color: #c9a798;
+        font-size: 0.72rem;
+        margin-left: 0.4rem;
+    }
+
     /* ═══ Masonry ═══ */
     .masonry {
         column-count: 3;
@@ -379,6 +399,10 @@
             <div class="chip">方向<strong id="direction"></strong></div>
         </div>
         <div class="trigger-banner"><strong id="triggerLabel">本周推送</strong> · <span id="triggerNote">基于当日天气精选</span></div>
+        <div class="review-banner" id="reviewBanner">
+            ⚠️ <strong>本期图片数量有限</strong>（<span id="reviewActual">—</span>/<span id="reviewTarget">—</span> 张），审核三轮后仍不达标，下一期将补足。
+            <span class="review-meta" id="reviewMeta"></span>
+        </div>
         <div class="refresh-row">
             <button class="refresh-btn primary" id="refreshDirectionBtn" title="重新生成风格方向词，瀑布流全部刷新">
                 <span class="ico">🎯</span><span>换方向词</span>
@@ -557,6 +581,26 @@ function loadArchive() {
         .then(r => r.json())
         .then(d => { archiveData = d; return d; });
 }
+
+/* ─── v2.3 审核不足 Banner ─── */
+function renderReviewBanner() {
+    const review = archiveData?.meta?.review;
+    const banner = document.getElementById('reviewBanner');
+    if (!banner) return;
+    if (!review || !review.enabled || !review.insufficient) {
+        banner.classList.remove('show');
+        return;
+    }
+    document.getElementById('reviewActual').textContent = review.published ?? '—';
+    document.getElementById('reviewTarget').textContent = review.target ?? '—';
+    const metaParts = [];
+    if (review.rounds) metaParts.push(`审核 ${review.rounds} 轮`);
+    if (review.total_rejected) metaParts.push(`驳回 ${review.total_rejected} 张`);
+    if (review.last_run) metaParts.push(review.last_run.slice(0, 10));
+    document.getElementById('reviewMeta').textContent =
+        metaParts.length ? '· ' + metaParts.join(' · ') : '';
+    banner.classList.add('show');
+}
 function pickLatestPush() {
     const ps = archiveData.pushes || [];
     return ps.length ? ps[ps.length - 1] : null;
@@ -725,6 +769,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadArchive();
         renderLatest();
         renderRecent();
+        renderReviewBanner();
         if (Object.keys(archiveData.catalog || {}).length > 500) {
             showToast('归档已超过 500 条，可以考虑整理历史推送。');
         }
@@ -815,6 +860,7 @@ async function pollForNewArchive() {
                 const addedN = latest?.item_count || 0;
                 currentDirection = null;  // 强制下次用新 direction
                 renderLatest();
+                renderReviewBanner();
                 btn.classList.remove('loading');
                 showToast(`✨ 在线抓取完成 · 新增 ${addedN} 张 · 归档共 ${Object.keys(fresh.catalog).length} 张`, 5000);
                 return;
