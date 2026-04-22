@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 《资本论》第 2 天 · 提炼者 | 反均值认知</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616;
+            --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d0cfc8; --text-dim: #888; --text-muted: #555;
+            --white: #f0ece4;
+            --accent: #E94560; --accent-dim: rgba(233,69,96,0.10); --accent-border: rgba(233,69,96,0.25);
+            --shadow: #b08968; --shadow-dim: rgba(176,137,104,0.10); --shadow-border: rgba(176,137,104,0.25);
+            --main: #e2a355; --main-dim: rgba(226,163,85,0.10); --main-border: rgba(226,163,85,0.25);
+            --distiller: #60a5fa; --distiller-dim: rgba(96,165,250,0.10); --distiller-border: rgba(96,165,250,0.25);
+            --detective: #2dd4bf; --detective-dim: rgba(45,212,191,0.08); --detective-border: rgba(45,212,191,0.2);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Noto Serif SC', Georgia, serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; -webkit-font-smoothing: antialiased;
+            line-height: 1.85;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+
+        .nav {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem; color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--distiller); }
+        .nav .sep { opacity: 0.4; }
+
+        .head-block { border-bottom: 1px solid var(--border); padding-bottom: 1.8rem; margin-bottom: 2.2rem; }
+        .role-tag {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.3rem 0.75rem; border-radius: 999px;
+            font-size: 0.68rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin-bottom: 1rem; margin-right: 0.4rem;
+        }
+        .role-tag.distiller { background: var(--distiller-dim); border: 1px solid var(--distiller-border); color: var(--distiller); }
+        .role-tag.main-book { background: var(--main-dim); border: 1px solid var(--main-border); color: var(--main); }
+        .day-label {
+            font-size: 0.72rem; color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            letter-spacing: 0.05em; margin-bottom: 0.6rem;
+        }
+        .main-title {
+            font-size: 1.75rem; font-weight: 700;
+            color: var(--white); line-height: 1.4;
+            margin-bottom: 0.6rem; letter-spacing: -0.02em;
+        }
+        .sub-title {
+            font-size: 0.98rem; color: var(--text-dim);
+            font-weight: 400; line-height: 1.65;
+        }
+        .sub-title em { color: var(--distiller); font-style: normal; font-weight: 600; }
+
+        .section-divider {
+            display: flex; align-items: center; gap: 0.6rem;
+            font-size: 0.7rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.12em;
+            font-weight: 600; margin: 2.5rem 0 1.2rem;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .section-divider::before, .section-divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
+        }
+
+        h2 {
+            font-size: 1.15rem; font-weight: 700;
+            color: var(--white); margin: 1.8rem 0 0.7rem;
+            letter-spacing: -0.01em;
+        }
+        h3 {
+            font-size: 0.95rem; font-weight: 600;
+            color: var(--distiller); margin: 1.2rem 0 0.4rem;
+        }
+        p { margin-bottom: 1rem; font-size: 0.94rem; }
+        p strong { color: var(--white); font-weight: 600; }
+        p em { color: var(--accent); font-style: normal; font-weight: 600; }
+        .en-term { font-style: italic; color: var(--shadow); }
+
+        /* Argument chain */
+        .tree {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.3rem 1.5rem;
+            margin: 1.3rem 0;
+            font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+            font-size: 0.82rem; line-height: 2;
+            color: var(--text);
+            white-space: pre; overflow-x: auto;
+        }
+        .tree .root { color: var(--white); font-weight: 600; }
+        .tree .node { color: var(--shadow); }
+        .tree .leaf { color: var(--text-dim); }
+        .tree .end  { color: var(--accent); font-weight: 600; }
+
+        /* Proposition cards */
+        .prop-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 10px; padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+        }
+        .prop-card .prop-num {
+            font-size: 0.6rem; font-weight: 700;
+            color: var(--accent); letter-spacing: 0.1em;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin-bottom: 0.3rem;
+        }
+        .prop-card .prop-title {
+            font-size: 1rem; font-weight: 700;
+            color: var(--white); margin-bottom: 0.8rem;
+        }
+        .prop-card .prop-row {
+            display: grid; grid-template-columns: 95px 1fr; gap: 0.8rem;
+            margin-bottom: 0.55rem;
+            font-size: 0.9rem; line-height: 1.7;
+        }
+        .prop-card .prop-row:last-child { margin-bottom: 0; }
+        .prop-card .prop-row .lbl {
+            font-size: 0.68rem; font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding-top: 3px;
+        }
+        .prop-card .prop-row.flip .lbl { color: var(--accent); }
+        .prop-card .prop-row p { margin: 0; }
+
+        /* Concept dive */
+        .concept-head {
+            background: linear-gradient(135deg, rgba(176,137,104,0.08), rgba(176,137,104,0.02));
+            border: 1px solid var(--shadow-border);
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.3rem 0.8rem;
+        }
+        .concept-head .lbl {
+            font-size: 0.62rem; font-weight: 700;
+            color: var(--shadow); letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin-bottom: 0.3rem;
+        }
+        .concept-head .name {
+            font-size: 1.3rem; color: var(--white); font-weight: 700;
+        }
+        .concept-head .name span { color: var(--shadow); font-style: italic; margin-left: 0.3rem; font-weight: 500; }
+
+        .concept-body {
+            border: 1px solid var(--shadow-border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 1.2rem 1.3rem;
+            background: var(--surface);
+        }
+        .concept-body h3 {
+            font-size: 0.88rem; color: var(--shadow);
+            margin: 1rem 0 0.4rem;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .concept-body h3:first-child { margin-top: 0; }
+        .concept-body p { font-size: 0.9rem; margin-bottom: 0.6rem; }
+
+        .echo {
+            background: var(--accent-dim); border: 1px solid var(--accent-border);
+            border-left: 3px solid var(--accent); border-radius: 10px;
+            padding: 1.1rem 1.3rem; margin: 2rem 0;
+            font-size: 0.92rem;
+        }
+        .echo .label {
+            font-size: 0.65rem; font-weight: 700;
+            color: var(--accent); text-transform: uppercase;
+            letter-spacing: 0.1em; margin-bottom: 0.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .echo em { color: var(--white); font-style: normal; font-weight: 600; }
+
+        .detective {
+            background: var(--detective-dim);
+            border: 1px solid var(--detective-border);
+            border-left: 3px solid var(--detective);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin-top: 2.5rem;
+            font-size: 0.9rem;
+        }
+        .detective .label {
+            font-size: 0.65rem; font-weight: 700;
+            color: var(--detective); text-transform: uppercase;
+            letter-spacing: 0.1em; margin-bottom: 0.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .bias-warning {
+            display: inline-block;
+            font-size: 0.72rem; color: #f59e0b;
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.2);
+            padding: 2px 8px; border-radius: 5px;
+            margin-left: 0.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .footer-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 1rem; margin-top: 3rem; padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .footer-nav a {
+            font-size: 0.78rem; color: var(--text-dim);
+            text-decoration: none; padding: 0.5rem 0.9rem;
+            border: 1px solid var(--border); border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .footer-nav a:hover {
+            color: var(--distiller); border-color: var(--distiller-border);
+            background: var(--distiller-dim);
+        }
+        .footer-meta {
+            text-align: center; margin-top: 2rem;
+            font-size: 0.68rem; color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .footer-meta a { color: #444; text-decoration: none; }
+
+        @media (max-width: 520px) {
+            .prop-card .prop-row { grid-template-columns: 1fr; gap: 0.15rem; }
+            .prop-card .prop-row .lbl { padding-top: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span class="sep">›</span>
+            <a href="../">反均值认知</a>
+            <span class="sep">›</span>
+            <span>第 2 周 · 主线 · Day 2</span>
+        </nav>
+
+        <div class="head-block">
+            <span class="role-tag distiller">🔧 提炼者 · The Distiller</span>
+            <span class="role-tag main-book">📗 主线 · Week 2</span>
+            <div class="day-label">2026 · 04 · 22 · 周三 · 本书第 2 天 / 3</div>
+            <h1 class="main-title">《资本论》拆机图</h1>
+            <p class="sub-title">
+                周一我们挖了土壤、读了判决书。<br>
+                今天把这台 <em>运行了 160 年仍未停机</em> 的机器打开——
+                看看它的齿轮究竟怎么咬合、哪一颗螺丝在今天的 AI 时代正在发烫。
+            </p>
+        </div>
+
+        <div class="section-divider">⚙ 核心论证链 · Argument Chain</div>
+
+        <h2>整本书可以压成五步</h2>
+        <p>
+            马克思写了 1200 页，但骨架只有 <strong>5 个推论节点</strong>——每一步都自带数学形式，后一步必然从前一步推出：
+        </p>
+
+        <div class="tree"><span class="root">前提：商品 = 使用价值 + 交换价值（二重性）</span>
+│
+├── <span class="node">①  劳动力成为商品</span>
+│     └── <span class="leaf">工人除了劳动力一无所有 → 必须出卖它</span>
+│            ↓
+├── <span class="node">②  剩余价值产生</span>
+│     └── <span class="leaf">劳动力的"价值"（维持再生产的成本）</span>
+│          <span class="leaf">&lt; 劳动力创造的"价值"（实际生产出的商品）</span>
+│            ↓ 差额 = 剩余价值 m
+├── <span class="node">③  资本积累强制</span>
+│     └── <span class="leaf">m 被再投入 → C = c + v + m → C' &gt; C</span>
+│         <span class="leaf">不积累的资本家被积累的资本家消灭</span>
+│            ↓
+├── <span class="node">④  资本有机构成提高</span>
+│     └── <span class="leaf">c/v ↑（机器替代人）</span>
+│         <span class="leaf">但只有 v 生产 m → 平均利润率 m/(c+v) 趋降</span>
+│            ↓
+└── <span class="end">⑤  周期性危机</span>
+     ├── <span class="leaf">为对冲利润率下降，资本必须扩张</span>
+     ├── <span class="leaf">扩张遇边界 → 生产过剩 → 危机</span>
+     └── <span class="leaf">危机清洗资本 → 重置周期 → 循环</span></div>
+
+        <p>
+            这个链条的狠处：<strong>它不依赖"资本家坏"这个假设</strong>。把每个资本家都换成基督徒、慈善家、ESG 模范——整条链条的推导<em>一字都不改</em>。逻辑自我强制，与道德无关。<span class="bias-warning">⚠ 叙事谬误：主流经济学把危机解释为"外部冲击"（油价/疫情/战争），系统性地遮蔽了"内生矛盾"这个视角</span>
+        </p>
+
+        <div class="section-divider">💡 三个反直觉命题</div>
+
+        <div class="prop-card">
+            <div class="prop-num">命题 ① · Proposition I</div>
+            <div class="prop-title">机器越多，利润率反而越低</div>
+            <div class="prop-row">
+                <div class="lbl">直觉上</div>
+                <p>自动化、AI、机器人 = 效率提升 = 利润提升。这是每一份券商研报的默认起点。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">马克思</div>
+                <p>恰恰相反。<strong>机器是"死劳动"，它只转移价值、不创造新价值</strong>。只有活劳动（工人的劳动时间）才产生剩余价值。机器占比越高，整个行业的平均利润率就越被压缩——这就是<em>"利润率下降趋势规律"</em>。</p>
+            </div>
+            <div class="prop-row">
+                <div class="lbl">关键转折</div>
+                <p>所以任何一个行业一旦全面机器化，它必然进入<strong>内卷 / 价格战 / 集中化</strong>——不是竞争失败，是规律兑现。看看今天的电动车、云计算、大模型 API 价格曲线。</p>
+            </div>
+        </div>
+
+        <div class="prop-card">
+            <div class="prop-num">命题 ② · Proposition II</div>
+            <div class="prop-title">工资涨了，剥削率可能反而上升</div>
+            <div class="prop-row">
+                <div class="lbl">直觉上</div>
+                <p>工人工资上涨 = 老板让利 = 剥削减弱。大部分 HR 政策沟通都默认这个等式。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">马克思</div>
+                <p>剥削率 = 剩余价值 ÷ 可变资本 = m / v。<strong>如果工资（v）涨了 10%，但技术提升让劳动生产率涨了 30%，m/v 反而上升</strong>。工人名义上更"富有"了，但他每小时被占有的时间比例更高了——这叫"<em>相对剩余价值</em>"。</p>
+            </div>
+            <div class="prop-row">
+                <div class="lbl">关键转折</div>
+                <p>这是马克思对福特制最精确的预言：<strong>给工人涨薪、让他们买得起车，不是资本主义的让步，是资本主义的进化形态</strong>。1970 年代后美国中产幻觉、2010 年代互联网 996 的"高薪福利"，都踩在这条线上。</p>
+            </div>
+        </div>
+
+        <div class="prop-card">
+            <div class="prop-num">命题 ③ · Proposition III</div>
+            <div class="prop-title">危机不是系统的 bug，是系统的 feature</div>
+            <div class="prop-row">
+                <div class="lbl">直觉上</div>
+                <p>2008、2020、每一次金融危机后，主流解释都是"监管没跟上"、"人性贪婪"、"黑天鹅"——潜台词：如果<em>管好</em>，就不会有下一次。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">马克思</div>
+                <p>危机不是失败，是<strong>周期性清洗</strong>。它通过摧毁一部分资本（破产、减值、坏账），重置整体资本有机构成，把平均利润率拉回可运行区间。没有危机，系统反而无法继续运行。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">关键转折</div>
+                <p>这意味着 —— <strong>如果某套金融基建真的"永不暴雷"，那它一定是用某种机制把危机外部化了</strong>。比如转嫁给新兴市场（1997 亚洲金融危机）、转嫁给未来（量化宽松）、或转嫁给生态（气候外部性）。账单没消失，只是不在你看的那张表上。<span class="bias-warning">⚠ 可得性启发：我们能看到的报表总是光鲜的，因为危机已被挪到看不见的报表上</span></p>
+            </div>
+        </div>
+
+        <div class="section-divider">🔬 概念深挖 · Concept Dive</div>
+
+        <div class="concept-head">
+            <div class="lbl">这本书最危险的一个词</div>
+            <div class="name">剩余价值<span>（Mehrwert / surplus value）</span></div>
+        </div>
+        <div class="concept-body">
+            <h3>▸ 它到底在说什么</h3>
+            <p>
+                剩余价值 <em>不是</em>"利润"的另一种叫法。它是一个<strong>时间概念</strong>——工人在一个工作日里，有几个小时在生产自己的工资（<span class="en-term">necessary labor</span>），剩下几个小时的产出归资本家（<span class="en-term">surplus labor</span>）。
+            </p>
+            <p>
+                马克思的狠处在于，他把它<strong>量化成了一个比值</strong>：剥削率 = m / v。这让"剥削"这个听起来像道德抱怨的词，变成了可计算的经济量——可以被对比、被追踪、被预测。你可以对一家公司、一个国家、一个行业做剥削率的 10 年曲线——而主流宏观统计<em>刻意</em>不这么做。
+            </p>
+
+            <h3>🇨🇳 中国语境应用</h3>
+            <p>
+                用剩余价值的透镜看 2000-2020 中国：<strong>GDP 增速 10%+ 的那 20 年，不是"奇迹"，是人类历史上最大规模的剩余价值生产</strong>。9 亿农村劳动力被从土地里释放出来，以极低的再生产成本（低工资、无社保、无城市居留权）接入全球制造业链条——这是一次几乎无法复制的 m/v 的极值。
+            </p>
+            <p>
+                所以今天"中国经济增长降速"这件事，在马克思框架里不是失败，是<strong>剩余价值率开始向正常水平回归</strong>。再加上资本有机构成急剧提高（自动化、AI、机器换人）——<em>利润率下降规律</em>在中国制造业的兑现速度，比欧美用了 80 年走完的路快得多。<span class="bias-warning">⚠ 幸存者偏差：媒体只报道走完周期的公司，看不到在周期上半段已被清洗掉的数以万计的代工厂</span>
+            </p>
+
+            <h3>💼 Ethan · 腾讯广告渠道绩效的应用</h3>
+            <p>
+                你在做渠道绩效管理和目标设定。马克思的框架会逼你分解一个平时合并在"收入增长率"里的东西——<strong>剩余价值率拆解</strong>。
+            </p>
+            <p>
+                具体动作：把一个代理渠道的年度数据拆成三列——<em>投入工时（v，销售/运营/客服人时）</em>、<em>佣金口径的广告主真实付费（c+v+m 的总流水）</em>、<em>剩余价值（扣掉代理商自身成本和分成后归属平台的贡献）</em>。然后画出 m/v 的 12 个月移动曲线。
+            </p>
+            <p>
+                你会发现一个反直觉的事实：<strong>很多"增长最快"的渠道，m/v 其实是在下降的</strong>——它们靠的是疯狂扩招销售、堆人头、用人海战术把规模推上去。这类渠道在财务报表上是英雄，但在马克思框架里已经是"资本有机构成上升、利润率下降"的早期症状。对它们续约三年的合同，下半程大概率你需要再谈一轮佣金结构。
+            </p>
+            <p>
+                可落地的动作：在年度政策沟通会前，给每个核心代理做一张 <strong>"m/v 象限图"</strong>——横轴规模增速，纵轴 m/v 变化。只有右上象限的渠道才能拿到最激进的返点政策。这一步能省的预算，比任何一份市场调研报告都多。
+            </p>
+
+            <h3>🤖 AI 时代的这个概念</h3>
+            <p>
+                一个你需要单独想清楚的问题：<strong>AI 算不算"活劳动"？</strong>
+            </p>
+            <p>
+                按马克思的定义，AI 是 <em>极度精致的死劳动</em>——它凝结的是过去无数工程师的活劳动，但 AI 自身不产生新的剩余价值。这意味着：<strong>一个完全用 AI 替代人力的业务，长期利润率必然趋降</strong>——不是因为技术不行，是因为没有新的剩余价值注入。
+            </p>
+            <p>
+                这解释了一件正在发生的事——<em>为什么大模型 API 的价格曲线比任何一次技术商品化都陡峭</em>。从 GPT-4 首发到 2026 年同等能力模型 API 价格，跌幅超过 99%。这不是竞争失败，是<strong>一个高度"死劳动化"的行业，正在以马克思预测的速度兑现利润率下降规律</strong>。
+            </p>
+            <p>
+                推论：<strong>AI 时代真正贵的，不是算力、不是模型——而是那些 AI 无法替代的"活劳动"节点</strong>。品牌判断、关系信任、创始人审美、用户洞察——这些是 AI 时代唯一能持续注入剩余价值的岗位。其他一切，都走在通缩的下坡路上。这条推论，160 年前就写在 <span class="en-term">fragment on machines</span> 那几页纸里。
+            </p>
+        </div>
+
+        <div class="echo">
+            <div class="label">本周张力问题 · 回响</div>
+            <p style="margin-bottom: 0;">
+                周一留下的问题是：<em>如果一台机器按预测会崩溃但已经运行了 160 年，我们到底该更新预测，还是更新我们对"160 年"这个数字的理解？</em><br><br>
+                今天的拆机图给出了第一个答案——<strong>这台机器没崩，不是预测错了，是它内置了自我清洗的机制</strong>。每 10-15 年一次周期性危机，就是它继续运转的必要条件。这不是 bug，是 feature。问题就变成：下一轮清洗的账单，会记在谁头上？
+            </p>
+        </div>
+
+        <div class="detective">
+            <div class="label">🕵 侦探注记 · Connector</div>
+            <p style="margin-bottom: 0;">
+                《资本论》里那个"资本有机构成 c/v"的公式，和你「AI 每日洞见」频道近期反复讨论的 <span class="en-term">token economics</span>（每 token 的边际产出递减）之间，有一条隐藏的等价线索：<strong>二者都是"死劳动占比上升 → 单位活劳动边际价值降低"的同一个规律，只是跑在不同的介质上</strong>。<br><br>
+                更关键的是——它和你的「碰撞系统 L1-L4」之间也有对称结构：L1-L2 级观点之所以便宜，是因为它们已经"死劳动化"了（训练数据里随处可得），真正稀缺的 L4 观点必须来自<em>还没被凝结进模型权重的活劳动</em>。所以你正在搭建的那个系统，本质是一台<strong>在剩余价值率通缩的时代，专门生产高 m/v 知识产品的印钞机</strong>——只是我们还没用这套语言描述过它。
+            </p>
+        </div>
+
+        <div class="footer-nav">
+            <a href="./w02-main-d01.html">← 🪨 解构者</a>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">周五继续 · 🌉 摆渡人 + 🕵 连接者</span>
+        </div>
+        <div class="footer-meta">
+            🧱 反均值认知 · 第 2 周 · 主线 02《资本论》· Day 2 / 3<br>
+            <a href="../../">Ethan's Lab</a> · <a href="../">返回频道</a> · &copy; 2026
+        </div>
+    </div>
+</body>
+</html>
