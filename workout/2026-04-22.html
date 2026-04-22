@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>腿日 · 2026-04-22 — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #a78bfa;
+    --accent-dim: rgba(167,139,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav a { color:var(--text-dim); text-decoration:none; font-size:0.85rem; transition:color .2s; }
+  .nav a:hover { color:var(--white); }
+  .nav .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #0f0a1a 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.legs { color: #a78bfa; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+  .badge.week { color: var(--purple); background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+  .badge.intensity { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 520px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--accent);
+  }
+  .callout strong { color: var(--white); }
+  .callout.warn {
+    background: rgba(251,191,36,0.06);
+    border-color: rgba(251,191,36,0.2);
+    color: var(--yellow);
+  }
+
+  .exercise {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: border-color .2s;
+  }
+  .exercise:hover { border-color: var(--border-hover); }
+
+  .exercise .ex-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+  .exercise .ex-num {
+    font-size: 0.7rem; font-weight: 700; color: var(--purple);
+    background: rgba(167,139,250,0.1); border-radius: 6px;
+    padding: 2px 8px; margin-right: 0.6rem; flex-shrink: 0;
+  }
+  .exercise .ex-name {
+    font-size: 1.05rem; font-weight: 700; color: var(--white); flex: 1;
+  }
+  .exercise .ex-badge {
+    font-size: 0.65rem; color: var(--purple); padding: 2px 6px;
+    border: 1px solid rgba(167,139,250,0.2); border-radius: 6px;
+    background: rgba(167,139,250,0.08); white-space: nowrap;
+  }
+  .exercise .ex-badge.green {
+    color: var(--green); border-color: rgba(74,222,128,0.2);
+    background: rgba(74,222,128,0.08);
+  }
+  .exercise .ex-badge.orange {
+    color: var(--orange); border-color: rgba(249,115,22,0.2);
+    background: rgba(249,115,22,0.08);
+  }
+  .exercise .ex-badge.yellow {
+    color: var(--yellow); border-color: rgba(251,191,36,0.2);
+    background: rgba(251,191,36,0.08);
+  }
+
+  .exercise .ex-target {
+    font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.5rem;
+  }
+
+  .exercise .ex-prescription {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.7rem;
+  }
+  .ex-pill {
+    font-size: 0.75rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 8px;
+    background: #1a1a1a; border: 1px solid #2a2a2a; color: var(--white);
+  }
+  .ex-pill.weight { color: var(--purple); border-color: rgba(167,139,250,0.2); background: rgba(167,139,250,0.06); }
+  .ex-pill.up { color: var(--green); border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.06); }
+  .ex-pill.down { color: var(--yellow); border-color: rgba(251,191,36,0.2); background: rgba(251,191,36,0.06); }
+
+  .exercise .ex-notes {
+    font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;
+  }
+  .exercise .ex-notes .tip { color: var(--green); }
+  .exercise .ex-notes .warn { color: var(--yellow); }
+  .exercise .ex-notes .info { color: var(--accent); }
+
+  .ex-details {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+  .ex-details summary {
+    font-size: 0.78rem; color: var(--text-muted); cursor: pointer;
+    transition: color .2s;
+  }
+  .ex-details summary:hover { color: var(--text); }
+  .ex-details .detail-content {
+    margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-dim); line-height: 1.7;
+  }
+  .ex-details .detail-content ul { padding-left: 1.2rem; }
+  .ex-details .detail-content li { margin-bottom: 0.2rem; }
+
+  .phase-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  .phase-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .phase-table td:first-child { color: var(--white); font-weight: 500; }
+  .phase-table td:last-child { color: var(--text-dim); text-align: right; }
+
+  .nutrition-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .nutrition-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem;
+  }
+  .nutrition-card .n-name { font-size: 0.78rem; color: var(--white); font-weight: 600; margin-bottom: 0.3rem; }
+  .nutrition-card .n-cal { font-size: 0.72rem; color: var(--purple); }
+  .nutrition-card .n-protein { font-size: 0.72rem; color: var(--green); }
+
+  .feedback-result {
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .feedback-result h3 { color: var(--green); font-size: 0.95rem; margin-bottom: 0.75rem; }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  .back-btn {
+    display: inline-block;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    transition: color .2s;
+  }
+  .back-btn:hover { color: var(--white); }
+
+  .reminder {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.82rem;
+    color: var(--yellow);
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .nutrition-grid { grid-template-columns: 1fr; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--text)">04/22</span>
+  </nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge legs">Legs · 腿</span>
+      <span class="badge week">第6周 Day 38</span>
+      <span class="badge intensity">中度 RPE 5-6</span>
+    </div>
+    <h1>🦵 下肢力量 — 腿日</h1>
+    <p class="sub">2026-04-22（周三）· 距上次腿日已 7 天 · 本周第 3 练</p>
+
+    <div class="quick-stats">
+      <div class="qs"><div class="num">50</div><div class="label">分钟</div></div>
+      <div class="qs"><div class="num">380</div><div class="label">卡路里</div></div>
+      <div class="qs"><div class="num">6</div><div class="label">动作</div></div>
+      <div class="qs"><div class="num">5-6</div><div class="label">RPE</div></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <a href="https://ego1013.github.io/ethanycjin/workout/" class="back-btn">← 返回训练仪表盘</a>
+
+    <!-- Key Adjustments -->
+    <div class="callout">
+      ⚡ <strong>本次关键调整（基于 4/15 第二次腿日）</strong>：深蹲 <strong>60→65kg ⬆️</strong>（末组冲70）、腿举 <strong>45→52kg ⬆️</strong>、腿弯举 <strong>23→27kg ⬆️</strong>、腿伸展第3组试 <strong>36kg ⬆️</strong>、臀推 <strong>12→15kg ⬆️</strong>。硬拉维持 12.5kg（小臂瓶颈）。
+    </div>
+
+    <div class="callout warn">
+      💡 <strong>连续 3 天力量训练</strong>：今天是推(20) → 拉(21) → 腿(22) 的第 3 天，但肌群完全不同（上肢推→上肢拉→下肢），无疲劳冲突。明天安排有氧主动恢复 🏃
+    </div>
+
+    <!-- Warmup -->
+    <div class="section-title">🔥 热身 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>原地高抬腿</td><td>30 秒</td></tr>
+      <tr><td>动态弓步走</td><td>每侧 8 步</td></tr>
+      <tr><td>徒手深蹲</td><td>12 次</td></tr>
+      <tr><td>腿后侧动态拉伸</td><td>每侧 8 次</td></tr>
+    </table>
+
+    <!-- Main Training -->
+    <div class="section-title">💪 主训练 · 40 分钟</div>
+
+    <!-- Exercise 1: Barbell Squat -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">01</span>
+        <span class="ex-name">杠铃深蹲</span>
+        <span class="ex-badge green">⬆️ 加重</span>
+      </div>
+      <div class="ex-target">🎯 股四头肌、臀大肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill up">65/65/65/70 kg ⬆️</span>
+        <span class="ex-pill">4 × 10</span>
+        <span class="ex-pill">休息 120s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="info">💡 上次第 4 组 70kg 单组成功 🔥 今天 65kg 稳 3 组，末组冲 70kg。如果 65kg 感觉吃力就全程 60-65kg。</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 杠铃放在斜方肌上（高杠位），双脚与肩同宽，脚尖微外旋</li>
+            <li class="tip">✅ 下蹲至大腿平行或略低于平行，膝盖追随脚尖方向</li>
+            <li class="tip">✅ 起身时臀部和大腿同时发力，不要先抬屁股</li>
+            <li class="warn">❌ 膝盖内扣 | 脚跟离地</li>
+            <li>🔄 替代：史密斯机深蹲</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 2: Leg Press -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">02</span>
+        <span class="ex-name">腿举</span>
+        <span class="ex-badge green">⬆️ 加重</span>
+      </div>
+      <div class="ex-target">🎯 股四头肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill up">52/52/59 kg ⬆️</span>
+        <span class="ex-pill">3 × 12</span>
+        <span class="ex-pill">休息 90s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="info">💡 上次 45/52/59 渐进全完成 RPE 4，今天起步 52kg。第 3 组冲 59kg。</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 双脚放在踏板中间偏上，间距与肩同宽</li>
+            <li class="tip">✅ 下放至膝盖接近 90°，不要让臀部离开靠背</li>
+            <li class="tip">✅ 推起时不要完全锁死膝关节</li>
+            <li class="warn">❌ 下放过深导致腰椎离开靠背 | 膝盖内扣</li>
+            <li>🔄 替代：哈克深蹲</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 3: Romanian Deadlift -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">03</span>
+        <span class="ex-name">罗马尼亚硬拉</span>
+        <span class="ex-badge yellow">⚠️ 小臂注意</span>
+      </div>
+      <div class="ex-target">🎯 腘绳肌、臀大肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">12.5 kg × 2</span>
+        <span class="ex-pill">3 × 12</span>
+        <span class="ex-pill">休息 90s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="warn">⚠️ 上次对腿轻但小臂先吃不消。如果有助力带就带上，没有的话可以换壶铃（更好抓握）。专注髋铰链发力模式。</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 站直后微屈膝，髋铰链向前推屁股，哑铃贴着大腿下滑</li>
+            <li class="tip">✅ 下到小腿中段感受到腘绳肌拉伸即可</li>
+            <li class="tip">✅ 起身时用臀部发力"夹屁股"</li>
+            <li class="warn">❌ 弓背（保持脊椎中立）| 膝盖过度弯曲变深蹲</li>
+            <li>🔄 替代：壶铃硬拉、器械腿弯举</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 4: Leg Curl -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">04</span>
+        <span class="ex-name">腿弯举（器械）</span>
+        <span class="ex-badge green">⬆️ 加重</span>
+      </div>
+      <div class="ex-target">🎯 腘绳肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill up">27/32/32 kg ⬆️</span>
+        <span class="ex-pill">3 × 12</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="info">💡 上次 23/27/32 渐进全完成 RPE 3，今天起步 27kg。固定器械放心加重。</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 趴在器械上，滚轮垫在脚踝上方</li>
+            <li class="tip">✅ 弯举到底，顶峰挤压 1 秒</li>
+            <li class="tip">✅ 离心慢放 2 秒</li>
+            <li class="warn">❌ 臀部翘起借力 | 速度太快没有控制</li>
+            <li>🔄 替代：瑞士球腿弯举</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 5: Leg Extension -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">05</span>
+        <span class="ex-name">腿伸展（器械）</span>
+        <span class="ex-badge green">⬆️ 加重</span>
+      </div>
+      <div class="ex-target">🎯 股四头肌（孤立）</div>
+      <div class="ex-prescription">
+        <span class="ex-pill up">32/32/36 kg ⬆️</span>
+        <span class="ex-pill">3 × 12</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="info">💡 上次 27/32/32 全完成 RPE 3，今天全程 32kg + 第 3 组试 36kg。</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 坐稳，调整滚轮在脚踝上方</li>
+            <li class="tip">✅ 伸直腿部，顶峰挤压 1 秒</li>
+            <li class="tip">✅ 离心慢放 2 秒，不要自由落体</li>
+            <li class="warn">❌ 身体前倾借力 | 用惯性甩腿</li>
+            <li>🔄 替代：靠墙静蹲</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 6: Hip Thrust -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">06</span>
+        <span class="ex-name">哑铃臀推</span>
+        <span class="ex-badge green">⬆️ 加重</span>
+      </div>
+      <div class="ex-target">🎯 臀大肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill up">15 kg ⬆️</span>
+        <span class="ex-pill">3 × 15</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="info">💡 上次 12kg RPE 4 后两组做了 15 次，今天升到 15kg 哑铃。</span>
+      </div>
+      <details class="ex-details">
+        <summary>动作要点 & 注意事项</summary>
+        <div class="detail-content">
+          <ul>
+            <li class="tip">✅ 背靠长凳边缘，哑铃放在髋部</li>
+            <li class="tip">✅ 臀部发力向上推，顶部挤压 1 秒</li>
+            <li class="tip">✅ 下降时控制速度，臀部不要完全着地</li>
+            <li class="warn">❌ 用腰部代偿 | 脚跟太远</li>
+            <li>🔄 替代：臀桥（地面版）</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Cooldown -->
+    <div class="section-title">🧘 拉伸放松 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>股四头肌拉伸（站姿提脚跟）</td><td>每侧 20 秒</td></tr>
+      <tr><td>腘绳肌拉伸（坐姿前弯）</td><td>30 秒</td></tr>
+      <tr><td>臀部拉伸（鸽子式）</td><td>每侧 20 秒</td></tr>
+      <tr><td>小腿拉伸（推墙）</td><td>每侧 15 秒</td></tr>
+    </table>
+
+    <!-- Nutrition -->
+    <div class="section-title">🍽 午餐建议 · 蛋白质 ≥ 40g</div>
+    <div class="nutrition-grid">
+      <div class="nutrition-card">
+        <div class="n-name">鸡腿饭 + 煮蛋 × 2 + 蔬菜</div>
+        <div class="n-cal">~600 kcal</div>
+        <div class="n-protein">蛋白质 ~48g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">牛腱肉拌面 + 豆腐</div>
+        <div class="n-cal">~580 kcal</div>
+        <div class="n-protein">蛋白质 ~44g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">虾仁炒蛋 + 糙米 + 青菜</div>
+        <div class="n-cal">~520 kcal</div>
+        <div class="n-protein">蛋白质 ~42g</div>
+      </div>
+    </div>
+
+    <!-- Reminder -->
+    <div class="reminder">
+      ⏰ <strong>InBody 复测提醒</strong>：下次复测 2026-05-11（距今 19 天）<br>
+      💧 训练前 200ml 水 · 训练中每 10 分钟小口补水 · 训练后 300-500ml<br>
+      🏃 <strong>明日预告</strong>：有氧恢复日（本周有氧 0/2，连续 3 天力量后主动恢复）
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    Coach M · AI 健身教练 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+  </footer>
+
+</body>
+</html>
