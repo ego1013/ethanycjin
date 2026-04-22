@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 12 · Fine-tune vs RAG vs Prompt：三种「定制」路径 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 40%, #1a0a00 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--yellow-dim);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--cyan), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--cyan);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--cyan-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--cyan);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--green);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--green); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+  .diagram .cyan-hl { color: var(--cyan); font-weight: 600; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .step-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .step-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    min-width: 120px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .step-item .step-num {
+    font-size: 0.7rem;
+    color: var(--cyan);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-item .step-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .step-arrow {
+    font-size: 1.2rem;
+    color: var(--border);
+    padding: 0 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Comparison visual ── */
+  .vs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .vs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .vs-card .vs-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .vs-card .vs-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .vs-card .vs-sub {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── Meter bar ── */
+  .meter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.3rem 0;
+    font-size: 0.8rem;
+  }
+
+  .meter-label {
+    width: 4.5rem;
+    text-align: right;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .meter-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .meter-val {
+    width: 2rem;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+  }
+
+  /* ── Decision tree visual ── */
+  .decision-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+  }
+
+  .decision-box .q {
+    font-weight: 700;
+    color: var(--yellow);
+    margin-bottom: 0.75rem;
+    font-size: 0.92rem;
+  }
+
+  .decision-box .branch {
+    display: flex;
+    gap: 0.75rem;
+    margin: 0.4rem 0;
+    font-size: 0.85rem;
+  }
+
+  .decision-box .branch-label {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .decision-box .yes { color: var(--green); }
+  .decision-box .no { color: var(--red); }
+  .decision-box .maybe { color: var(--yellow); }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr; }
+    .vs-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 12</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🟡 中半衰期 · 讲透逻辑</div>
+  <h1>Day 12 · Fine-tune vs RAG vs Prompt：三种「定制」路径</h1>
+  <p class="subtitle">什么时候用哪种？</p>
+  <div class="meta">
+    <span>📅 2026-04-22 Wed</span>
+    <span>📦 第一模块 · 地基篇 · Week 2</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    你刚入职一家公司，公司给你配了一台崭新的 MacBook。开机第一天——它什么都不懂。不知道你的工作习惯，不知道公司的内部系统，不知道你常用的文件在哪里。
+  </p>
+  <p>
+    你有三种方式让它"变得懂你"：
+  </p>
+  <p>
+    <strong>第一种</strong>：花三个月"调教"它——安装各种软件、配置快捷键、训练输入法词库，让它从骨子里变成你的工具。费时费力，但一旦完成，它就是为你定制的。
+  </p>
+  <p>
+    <strong>第二种</strong>：不改电脑本身，而是在桌上放一个"速查手册"——每次遇到问题，先翻手册找答案。电脑没变，但你加了一层"外部知识"。
+  </p>
+  <p>
+    <strong>第三种</strong>：什么都不改，只是每次用的时候给它更清晰的指令——"打开那个在桌面第三个文件夹里的 Excel，用公式 X 算出 Y"。够细致的指令能让通用工具做出定制化的效果。
+  </p>
+  <p>
+    这三种方式，恰好对应了让大模型"变得懂你"的三条路径：<span class="highlight">Fine-tune（微调）、RAG（检索增强）、Prompt Engineering（提示工程）</span>。
+  </p>
+  <p>
+    今天的核心问题：<strong>这三种方式的本质区别是什么？什么时候用哪种？为什么大部分人一上来就想 Fine-tune，但 80% 的场景其实不需要？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么"定制"是一个必须回答的问题？</h2>
+  </div>
+
+  <h3>通用模型的根本局限</h3>
+
+  <p>
+    回顾前 11 天：我们知道大模型通过预训练学会了"世界知识"，通过 Post-train 学会了"对话礼仪"。但它学的是<strong>互联网上的公开知识</strong>，不是你公司的内部知识。
+  </p>
+
+  <p>
+    你问 GPT-4："我们公司的渠道返利政策是什么？" 它不知道——因为你的政策文档从未出现在它的训练数据里。
+  </p>
+
+  <p>
+    你问 Claude："帮我按照我们内部模板写一份代理商评估报告。" 它不知道——因为你的模板是内部文件。
+  </p>
+
+  <p>
+    <strong>通用模型就像一个通才毕业生：智商很高、什么都懂一点，但完全不了解你的业务。</strong> 要让它真正有用，你必须解决一个问题：<em>怎么把你的业务知识注入给它？</em>
+  </p>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 关键洞察</div>
+    <p style="margin:0">
+      这个问题之所以重要，是因为它决定了<strong>AI 落地的"最后一公里"</strong>。<br><br>
+      技术上的 breakthrough（NTP、Attention、Scaling Law）解决的是模型"能不能"的问题。而 Fine-tune / RAG / Prompt 解决的是模型"好不好用"的问题。<br><br>
+      大多数企业的 AI 项目不是死在模型不够强，而是死在<strong>定制路径选错了</strong>——该用 RAG 的用了 Fine-tune，该用 Prompt 的搞了一个月 Fine-tune 效果还不如好好写 Prompt。
+    </p>
+  </div>
+
+  <h3>为什么这个选择很容易做错？</h3>
+
+  <p>
+    因为三种路径的表面效果很相似——都能让模型"懂"你的业务。但它们的<strong>底层机制、成本结构、适用场景完全不同</strong>。就像解决"员工能力不足"这个问题：
+  </p>
+
+  <div class="vs-grid">
+    <div class="vs-card" style="border-top:3px solid var(--red)">
+      <div class="vs-icon">🧬</div>
+      <div class="vs-label" style="color:var(--red)">Fine-tune</div>
+      <div class="vs-sub">改基因<br>把知识写进模型参数<br>≈ 送员工去 MBA 进修</div>
+    </div>
+    <div class="vs-card" style="border-top:3px solid var(--blue)">
+      <div class="vs-icon">📚</div>
+      <div class="vs-label" style="color:var(--blue)">RAG</div>
+      <div class="vs-sub">给工具书<br>每次查完再回答<br>≈ 给员工一本操作手册</div>
+    </div>
+    <div class="vs-card" style="border-top:3px solid var(--green)">
+      <div class="vs-icon">📋</div>
+      <div class="vs-label" style="color:var(--green)">Prompt</div>
+      <div class="vs-sub">给指令<br>每次当面说清楚要什么<br>≈ 每次开会时交代清楚任务</div>
+    </div>
+  </div>
+
+  <p>
+    送 MBA 培训是好，但如果问题只是"他不知道今天的会议议程"，给他一份 agenda 就够了，没必要花三个月送他去进修。
+  </p>
+
+  <p>
+    <strong>选对路径，事半功倍；选错路径，烧钱烧时间还效果差。</strong> 这是今天最核心的判断力。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 三种路径的本质差异</h2>
+  </div>
+
+  <h3>一、Prompt Engineering：改指令，不改模型</h3>
+
+  <p>
+    最轻量的方式。模型本身一个参数都不动，你只是在每次调用时，<strong>在上下文中提供足够的信息和指令</strong>。
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">Prompt Engineering 的机制</span><br><br>
+    用户提问："我们渠道返利政策是什么？"<br><br>
+    <span class="cyan-hl">你的操作</span>：在 Prompt 中附上政策原文<br><br>
+    ┌──────────────────────────────────────────┐<br>
+    │ <span class="yellow-hl">System Prompt</span>：你是渠道管理助手。&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │ 以下是公司渠道返利政策全文：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │ [粘贴 3000 字政策文档]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │ <span class="accent-hl">User</span>：返利政策是什么？&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    └──────────────────────────────────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+    模型从<span class="ok">上下文中</span>找到答案，直接回答<br>
+    <span class="purple-hl">模型参数未改变</span>，知识来自当次输入
+  </div>
+
+  <h4>核心特征</h4>
+  <table>
+    <tr><th>维度</th><th>Prompt Engineering</th></tr>
+    <tr><td>知识存储位置</td><td><strong>上下文窗口</strong>（临时的，用完就没了）</td></tr>
+    <tr><td>成本</td><td>几乎为零（只是写好 Prompt）</td></tr>
+    <tr><td>生效时间</td><td>即时</td></tr>
+    <tr><td>知识容量</td><td>受限于 Context Window（Day 10 讲的）</td></tr>
+    <tr><td>适合场景</td><td>知识量不大、格式/风格定制、任务指令明确</td></tr>
+  </table>
+
+  <div class="callout cyan">
+    <div class="callout-label">📊 类比：每次开会交代清楚</div>
+    <p style="margin:0">
+      你有一个能力很强的下属。每次给他布置任务时，你把背景、目标、约束条件、输出格式都说清楚，他就能做得很好。<br><br>
+      你没有改变他的能力，只是<strong>给了足够好的上下文</strong>。大部分时候，这就够了。
+    </p>
+  </div>
+
+  <h3>二、RAG（Retrieval-Augmented Generation）：检索增强生成</h3>
+
+  <p>
+    Prompt 的瓶颈很明显：Context Window 有限（Day 10 讲过，128K Token 对应大约 8 万字中文）。如果你的业务知识有上千份文档、几十万字，塞不进去怎么办？
+  </p>
+
+  <p>
+    <strong>RAG 的核心思路：不把所有知识塞进上下文，而是先检索，找到最相关的片段，只把相关片段塞进上下文。</strong>
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">RAG 的完整流程</span><br><br>
+    <span class="yellow-hl">准备阶段</span>（一次性）<br>
+    1. 收集所有业务文档（政策、手册、FAQ……）<br>
+    2. 切成小段（每段 200-500 字）<br>
+    3. 每段用 Embedding 模型转成向量<br>
+    4. 存入向量数据库<br><br>
+    <span class="cyan-hl">查询阶段</span>（每次调用）<br>
+    1. 用户提问："Q4 返利政策变化是什么？"<br>
+    2. 把问题也转成向量<br>
+    3. 在向量数据库中找到<span class="ok">最相关的 3-5 个段落</span><br>
+    4. 把段落 + 问题一起放进 Prompt<br>
+    5. 模型基于检索到的内容回答<br><br>
+    <span class="purple-hl">模型参数仍未改变</span>，但知识库可以无限大
+  </div>
+
+  <h4>核心特征</h4>
+  <table>
+    <tr><th>维度</th><th>RAG</th></tr>
+    <tr><td>知识存储位置</td><td><strong>外部数据库</strong>（持久的，可随时更新）</td></tr>
+    <tr><td>成本</td><td>中等（需要搭建向量数据库 + Embedding 管线）</td></tr>
+    <tr><td>生效时间</td><td>几天到一周（搭建管线 + 灌数据）</td></tr>
+    <tr><td>知识容量</td><td>理论无上限（数据库想存多少存多少）</td></tr>
+    <tr><td>适合场景</td><td>知识量大、需要实时更新、需要引用来源</td></tr>
+  </table>
+
+  <div class="callout blue">
+    <div class="callout-label">📊 类比：给员工配一本速查手册</div>
+    <p style="margin:0">
+      你没有改变员工本人——他的技能、思维方式、判断力都没变。但你在他桌上放了一本厚厚的《渠道管理操作手册》，他遇到问题先翻手册，找到相关章节，再结合自己的判断给出回答。<br><br>
+      <strong>手册可以随时更新</strong>（换一版新的就行），<strong>员工不需要重新培训</strong>。这就是 RAG 最大的优势：知识更新成本极低。
+    </p>
+  </div>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ RAG 不是万能的：检索质量是生死线</div>
+    <p style="margin:0">
+      RAG 的效果取决于<strong>检索阶段能否找到真正相关的段落</strong>。如果检索找错了——比如用户问"Q4 返利政策"，检索系统返回的是"Q2 返利政策"——那模型会"胸有成竹地回答错误的内容"。<br><br>
+      这比模型说"我不知道"更危险。回想 Day 6 的幻觉课——<strong>RAG 没有消除幻觉风险，只是把风险从"模型不知道"转移到了"检索不准确"。</strong>
+    </p>
+  </div>
+
+  <h3>三、Fine-tune（微调）：改模型参数</h3>
+
+  <p>
+    前两种方式都不改模型本身。Fine-tune 不一样——<strong>它直接修改模型的参数（权重），让知识"写进"模型的神经网络</strong>。
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">Fine-tune 的机制</span><br><br>
+    <span class="yellow-hl">训练阶段</span>（一次性，但很贵）<br>
+    1. 准备"问-答"训练数据（数百到数千对）<br>
+    &nbsp;&nbsp;&nbsp;例："Q4 返利政策？" → "根据最新政策，Q4……"<br>
+    2. 用这些数据继续训练模型<br>
+    3. 模型参数被修改，内化了新知识<br><br>
+    <span class="cyan-hl">使用阶段</span><br>
+    用户直接问："Q4 返利政策是什么？"<br>
+    模型<span class="ok">直接从参数中</span>回答，不需要检索或提示<br><br>
+    <span class="error">模型参数已改变</span>，知识变成了"肌肉记忆"
+  </div>
+
+  <h4>核心特征</h4>
+  <table>
+    <tr><th>维度</th><th>Fine-tune</th></tr>
+    <tr><td>知识存储位置</td><td><strong>模型参数</strong>（永久的，但更新需要重新训练）</td></tr>
+    <tr><td>成本</td><td>高（GPU 算力 + 数据标注 + 训练时间）</td></tr>
+    <tr><td>生效时间</td><td>数天到数周</td></tr>
+    <tr><td>知识容量</td><td>有限（模型参数量决定了能内化多少知识）</td></tr>
+    <tr><td>适合场景</td><td>改变行为模式、特定领域深度适配、响应延迟敏感</td></tr>
+  </table>
+
+  <div class="callout purple">
+    <div class="callout-label">📊 类比：送员工去 MBA 进修</div>
+    <p style="margin:0">
+      你不只是给他一本手册，而是<strong>从根本上改变了他的知识结构和思维方式</strong>。他读了两年 MBA，学会了财务分析、战略思维、组织管理。<br><br>
+      优点：之后遇到问题不用查手册，直接就能给出高质量判断。<br>
+      缺点：<strong>花了两年时间和几十万学费</strong>。而且——如果公司业务方向变了，他的 MBA 知识不会自动更新，需要再进修。
+    </p>
+  </div>
+
+  <h3>四、三条路径的核心对比</h3>
+
+  <p>
+    把三种方式放在一起比：
+  </p>
+
+  <table>
+    <tr>
+      <th>维度</th>
+      <th style="color:var(--green)">Prompt</th>
+      <th style="color:var(--blue)">RAG</th>
+      <th style="color:var(--red)">Fine-tune</th>
+    </tr>
+    <tr>
+      <td><strong>改了什么</strong></td>
+      <td>输入</td>
+      <td>输入 + 外部知识源</td>
+      <td>模型本身</td>
+    </tr>
+    <tr>
+      <td><strong>知识更新</strong></td>
+      <td>改 Prompt 即可</td>
+      <td>更新数据库即可</td>
+      <td>需要重新训练</td>
+    </tr>
+    <tr>
+      <td><strong>前期投入</strong></td>
+      <td>几小时</td>
+      <td>几天~一周</td>
+      <td>几周~几个月</td>
+    </tr>
+    <tr>
+      <td><strong>边际成本</strong></td>
+      <td>每次调用要传长 Prompt</td>
+      <td>每次调用多一步检索</td>
+      <td>调用成本同普通模型</td>
+    </tr>
+    <tr>
+      <td><strong>知识可追溯</strong></td>
+      <td>✅ 知识在 Prompt 里</td>
+      <td>✅ 能标注来源文档</td>
+      <td>❌ 写进参数后无法追溯</td>
+    </tr>
+    <tr>
+      <td><strong>幻觉风险</strong></td>
+      <td>低（知识就在上下文中）</td>
+      <td>中（取决于检索质量）</td>
+      <td>高（可能"过拟合"训练数据）</td>
+    </tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 一句话记忆法</div>
+    <p style="margin:0">
+      <strong>Prompt = 开会交代清楚</strong>（临时、灵活、没有记忆）<br>
+      <strong>RAG = 给一本手册</strong>（持久、可更新、但要会查）<br>
+      <strong>Fine-tune = 送去进修</strong>（深刻、内化、但贵且慢）
+    </p>
+  </div>
+
+  <h3>五、核心判断框架：什么场景用什么路径？</h3>
+
+  <p>
+    不要背特征对比表，记住一个<strong>决策树</strong>：
+  </p>
+
+  <div class="decision-box">
+    <div class="q">🤔 第一个问题：你要解决的是"知识不够"还是"行为不对"？</div>
+    <div class="branch">
+      <span class="branch-label yes">知识不够</span>
+      <span>→ 模型不知道你的业务数据。走 <strong>Prompt 或 RAG</strong>。</span>
+    </div>
+    <div class="branch">
+      <span class="branch-label no">行为不对</span>
+      <span>→ 模型知道相关知识，但输出的风格、格式、推理方式不符合你的要求。走 <strong>Fine-tune</strong>。</span>
+    </div>
+  </div>
+
+  <div class="decision-box">
+    <div class="q">🤔 第二个问题（如果是"知识不够"）：知识量有多大？</div>
+    <div class="branch">
+      <span class="branch-label yes">< 5万字</span>
+      <span>→ 塞进 Prompt / System Message 就行了。<strong>用 Prompt</strong>。</span>
+    </div>
+    <div class="branch">
+      <span class="branch-label no">> 5万字</span>
+      <span>→ Context Window 放不下。<strong>用 RAG</strong>。</span>
+    </div>
+  </div>
+
+  <div class="decision-box">
+    <div class="q">🤔 第三个问题（如果是"行为不对"）：是格式问题还是推理能力问题？</div>
+    <div class="branch">
+      <span class="branch-label yes">格式/风格</span>
+      <span>→ 先试<strong>Few-shot Prompt</strong>（给几个范例），80% 能解决。</span>
+    </div>
+    <div class="branch">
+      <span class="branch-label no">推理模式</span>
+      <span>→ 模型需要学会一种新的思维方式。<strong>Fine-tune</strong>。</span>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-label">✅ 实操黄金法则</div>
+    <p style="margin:0">
+      <strong>Prompt First → RAG Second → Fine-tune Last</strong><br><br>
+      这是业界公认的最佳实践顺序。永远先尝试最轻量的方案，只有在轻量方案明确不够用时才升级。原因很简单：<br><br>
+      1. Prompt 失败了 → 几小时白费，可以接受<br>
+      2. RAG 失败了 → 几天白费，还好<br>
+      3. Fine-tune 失败了 → 几周时间 + 几万块 GPU 费用白费，很痛<br><br>
+      <strong>80% 的企业 AI 定制需求，用 Prompt + RAG 就能解决。</strong> 真正需要 Fine-tune 的场景比你想象的少得多。
+    </p>
+  </div>
+
+  <h3>六、真实案例对照</h3>
+
+  <p>
+    来看几个具体场景，验证一下决策框架：
+  </p>
+
+  <table>
+    <tr>
+      <th>场景</th>
+      <th>正确路径</th>
+      <th>为什么</th>
+    </tr>
+    <tr>
+      <td>让 AI 回答"公司 Q4 返利政策"</td>
+      <td style="color:var(--blue)"><strong>RAG</strong></td>
+      <td>知识不够 + 政策文档量大 + 会频繁更新</td>
+    </tr>
+    <tr>
+      <td>让 AI 按内部模板写代理商评估报告</td>
+      <td style="color:var(--green)"><strong>Prompt</strong></td>
+      <td>行为问题但属于格式风格 → 给几个范例即可</td>
+    </tr>
+    <tr>
+      <td>让客服模型回答时永远先共情再解决</td>
+      <td style="color:var(--red)"><strong>Fine-tune</strong></td>
+      <td>行为模式 + 需要贯穿每次对话 → 内化成习惯</td>
+    </tr>
+    <tr>
+      <td>让 AI 分析渠道数据并生成周报</td>
+      <td style="color:var(--green)"><strong>Prompt + RAG</strong></td>
+      <td>知识（数据）不够 → RAG；输出格式 → Prompt</td>
+    </tr>
+    <tr>
+      <td>让医疗 AI 按临床指南推理诊断</td>
+      <td style="color:var(--red)"><strong>Fine-tune + RAG</strong></td>
+      <td>需要新推理能力（Fine-tune）+ 最新指南知识（RAG）</td>
+    </tr>
+    <tr>
+      <td>让 AI 用粤语风格写营销文案</td>
+      <td style="color:var(--green)"><strong>Prompt</strong></td>
+      <td>风格问题 → 给几个粤语范例就能学会</td>
+    </tr>
+  </table>
+
+  <p>
+    注意最后两行——<strong>三种路径不是互斥的，复杂场景往往需要组合使用。</strong> 但组合的原则不变：先 Prompt，不够加 RAG，还不够再 Fine-tune。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>对 AI 产品策略的三个影响</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">"AI 产品"的竞争壁垒不在模型，而在定制管线</span>
+      <div class="card-body">
+        GPT-4、Claude、Gemini——基座模型大家都能调用。真正的差异化在于：<strong>你的 RAG 管线有多好？你的 Prompt 体系有多精细？你的 Fine-tune 数据有多稀缺？</strong> 定制能力就是产品壁垒。
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">"数据资产"的价值被重新定义</span>
+      <div class="card-body">
+        你的内部文档、操作手册、客户 FAQ、历史工单……这些以前是"沉睡的数据"。现在它们是 RAG 的燃料、Fine-tune 的训练集。<strong>拥有高质量的领域数据，等于拥有了 AI 时代的护城河。</strong>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">AI 项目的 ROI 计算方式变了</span>
+      <div class="card-body">
+        传统的 IT 项目：花 X 万开发，上线后每年维护 Y 万。<br>
+        AI 项目：<strong>Prompt 版 1 天上线花几千块，RAG 版一周上线花几万，Fine-tune 版一个月上线花几十万。</strong> 大多数 AI 项目应该从 Prompt 开始验证价值，而不是一上来就搞最贵的方案。
+      </div>
+    </div>
+  </div>
+
+  <h3>对你工作的实操启示</h3>
+
+  <div class="callout green">
+    <div class="callout-label">✅ 渠道管理中的定制路径选择</div>
+    <p style="margin:0">
+      <strong>场景 1：代理商常见问题自动回答</strong><br>
+      路径：RAG。把所有政策文档、FAQ 灌进向量数据库，代理商提问时自动检索相关段落回答。知识更新时只需替换文档，不用动模型。<br><br>
+      <strong>场景 2：渠道绩效周报自动撰写</strong><br>
+      路径：Prompt + 少量 RAG。用 Prompt 定义报告模板和风格，用 RAG 检索当周数据。模板在 Prompt 里，数据在 RAG 里，分工明确。<br><br>
+      <strong>场景 3：让 AI 学会"像老渠道经理一样"判断代理商风险</strong><br>
+      路径：Fine-tune。这不是知识问题（政策都知道），而是判断模式问题。需要用大量历史案例（"这种情况→高风险/低风险"）训练模型内化经验。
+    </p>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 一句话总结</div>
+    <p style="margin:0">
+      <strong>Fine-tune 改的是模型的"大脑结构"，RAG 改的是模型的"信息来源"，Prompt 改的是模型的"任务指令"。</strong><br><br>
+      三者不互斥，但有严格的优先级：Prompt First → RAG Second → Fine-tune Last。<br><br>
+      选对路径的关键判断只有两步：<strong>第一步，问题是"知识不够"还是"行为不对"？第二步，知识量能塞进上下文吗？</strong>
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+
+  <p><strong>场景：你的团队想让 AI 自动审核代理商提交的"费用报销单"——检查金额是否合规、附件是否齐全、审批流是否正确。目前人工审核每月处理 2000 单，平均每单 15 分钟。团队预算有限，老板希望一个月内上线。</strong></p>
+
+  <p><strong>你会选哪种定制路径？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      Fine-tune。用 2000 份历史报销单和审核结论训练模型，让它"学会"审核逻辑。一劳永逸，以后都不用人工了。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      RAG。把报销规则手册、合规标准、审批流程文档灌进知识库，每次审核时检索相关规则再判断。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      Prompt。把报销规则和审核 checklist 直接写进 System Prompt，配合几个审核范例（Few-shot），让模型每次对照 checklist 逐项检查。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先拆解"审核"到底包含几类判断：金额合规是规则匹配（Prompt 够用）、附件齐全需要多模态能力（看图）、审批流检查是业务逻辑（可能需要 RAG 查组织架构）。按子任务分别选路径，一个月先上最容易的部分。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问：假设你选择先上 Prompt 方案做 MVP，一个月后发现准确率是 85%。要把准确率提到 95%，你会沿着哪条路升级？升级的成本大概是多少量级（千元/万元/十万元）？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>
+    今天讲了三种"定制"路径。其中 Fine-tune 我们只讲了表面——"修改模型参数"。
+  </p>
+  <p>
+    但 Fine-tune 内部其实有一个更深层的分歧：<strong>SFT（监督微调）</strong> 和 <strong>RL（强化学习）</strong>。
+  </p>
+  <p>
+    SFT 是"照着答案学"——给它标准答案，让它模仿。<br>
+    RL 是"给奖惩信号，让它自己摸索"——不告诉它答案，只告诉它做对了还是做错了。
+  </p>
+  <p>
+    这两种训练方式，培养出来的模型"性格"完全不同。一个像<strong>流水线工人</strong>——稳定、标准、可预测；另一个像<strong>独立思考者</strong>——可能更聪明，但也可能更难控制。
+  </p>
+  <p>
+    <strong>Day 13</strong>，我们聊 SFT vs RL：特化与泛化的根本差异。
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">三种路径改的东西不同</span>
+    <div class="card-body">
+      Prompt 改输入指令（不碰模型），RAG 改信息来源（加外部知识库），Fine-tune 改模型参数（修改神经网络权重）。三者不互斥，可以组合使用。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">黄金优先级：Prompt First → RAG Second → Fine-tune Last</span>
+    <div class="card-body">
+      永远先试最轻量的方案。80% 的企业 AI 定制需求用 Prompt + RAG 就能解决。Fine-tune 是重武器，只在需要改变模型"行为模式"或"推理方式"时才动用。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">核心判断只需两步</span>
+    <div class="card-body">
+      第一步：问题是"知识不够"（→ Prompt/RAG）还是"行为不对"（→ Fine-tune/Prompt）？第二步：知识量能塞进上下文吗？能 → Prompt，不能 → RAG。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">RAG 的核心风险是检索质量</span>
+    <div class="card-body">
+      RAG 没有消除幻觉，只是将风险从"模型不知道"转移到"检索不准确"。检索阶段找错了段落，模型会"胸有成竹地回答错误内容"，比不回答更危险。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">Fine-tune 的知识不可追溯、不可即时更新</span>
+    <div class="card-body">
+      知识写进参数后，无法标注"这个回答来自哪份文档"，也无法像 RAG 那样换一份文档就更新知识。对于频繁变化的业务知识，Fine-tune 是最差选择。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 2</span>
+    <span>Day 2 讲了 Embedding——把文字变成向量。RAG 的核心管线正是建立在 Embedding 之上：文档切段 → Embedding → 存入向量数据库 → 检索时用向量相似度匹配。没有 Day 2 的 Embedding 概念，RAG 无法理解。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 3</span>
+    <span>Day 3 讲了 Pre-train vs Post-train。Fine-tune 本质上就是一次轻量级的 Post-train——在已有基座模型的基础上，用你的数据再训练一轮。它不是从零开始，而是"站在巨人肩膀上的微调"。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 6</span>
+    <span>Day 6 讲了幻觉。三种定制路径对幻觉风险的影响各不相同：Prompt 最可控（知识就在眼前），RAG 转移了风险（检索质量成为新瓶颈），Fine-tune 可能加剧幻觉（过拟合训练数据）。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 10</span>
+    <span>Day 10 讲了 Context Window 的成本。Prompt 方案的瓶颈正是 Context Window——知识量大时装不下。RAG 通过"只检索相关段落"巧妙绕过了这个限制，用检索替代了暴力填充。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 11</span>
+    <span>Day 11 讲了多模态。多模态 + 定制路径的组合正在成为新趋势：多模态 RAG（图片+文档混合检索）、多模态 Fine-tune（让模型认识你的产品照片）、多模态 Prompt（直接在上下文中放图片做 Few-shot）。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 13</span>
+    <span>明天深入 Fine-tune 内部：SFT（照着标准答案学）vs RL（自己探索得到奖惩）——两种不同的"进修方式"培养出性格迥异的模型。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 12 of 60 · 第一模块 · 地基篇 · Week 2
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
