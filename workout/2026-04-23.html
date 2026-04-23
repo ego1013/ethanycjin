@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>有氧 · 2026-04-23 — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #60a5fa;
+    --accent-dim: rgba(96,165,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav a { color:var(--text-dim); text-decoration:none; font-size:0.85rem; transition:color .2s; }
+  .nav a:hover { color:var(--white); }
+  .nav .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #0a1628 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.cardio { color: #60a5fa; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2); }
+  .badge.week { color: var(--blue); background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2); }
+  .badge.intensity { color: var(--green); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+  .badge.recovery { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 520px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--blue);
+  }
+  .callout strong { color: var(--white); }
+  .callout.warn {
+    background: rgba(251,191,36,0.06);
+    border-color: rgba(251,191,36,0.2);
+    color: var(--yellow);
+  }
+  .callout.green {
+    background: rgba(74,222,128,0.06);
+    border-color: rgba(74,222,128,0.2);
+    color: var(--green);
+  }
+
+  .phase-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  .phase-table th {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .phase-table td {
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .phase-table td:first-child { color: var(--white); font-weight: 500; }
+
+  .zone-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: .03em;
+  }
+  .zone-badge.z1 { color: #94a3b8; background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.2); }
+  .zone-badge.z2 { color: #4ade80; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+  .zone-badge.z3 { color: #fbbf24; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hr-zones {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .hr-zone-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.6rem 0.5rem;
+    text-align: center;
+  }
+  .hr-zone-card .z-name { font-size: 0.7rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .hr-zone-card .z-range { font-size: 0.72rem; color: var(--text-dim); }
+  .hr-zone-card.z1 .z-name { color: #94a3b8; }
+  .hr-zone-card.z2 .z-name { color: #4ade80; }
+  .hr-zone-card.z3 .z-name { color: #fbbf24; }
+  .hr-zone-card.z4 .z-name { color: #f97316; }
+  .hr-zone-card.z5 .z-name { color: #f87171; }
+
+  .tips-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+  }
+  .tips-list li {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+  }
+  .tips-list li:last-child { border-bottom: none; }
+  .tips-list li strong { color: var(--white); }
+
+  .nutrition-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .nutrition-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem;
+  }
+  .nutrition-card .n-name { font-size: 0.78rem; color: var(--white); font-weight: 600; margin-bottom: 0.3rem; }
+  .nutrition-card .n-cal { font-size: 0.72rem; color: var(--blue); }
+  .nutrition-card .n-protein { font-size: 0.72rem; color: var(--green); }
+
+  .feedback-result {
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .feedback-result h3 { color: var(--green); font-size: 0.95rem; margin-bottom: 0.75rem; }
+
+  .reminder {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.82rem;
+    color: var(--yellow);
+    margin-top: 1.5rem;
+  }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  .back-btn {
+    display: inline-block;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    transition: color .2s;
+  }
+  .back-btn:hover { color: var(--white); }
+
+  .warmup-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  .warmup-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .warmup-table td:first-child { color: var(--white); font-weight: 500; }
+  .warmup-table td:last-child { color: var(--text-dim); text-align: right; }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .nutrition-grid { grid-template-columns: 1fr; }
+    .hr-zones { grid-template-columns: repeat(3, 1fr); }
+    .phase-table { font-size: 0.78rem; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--text)">04/23</span>
+  </nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge cardio">Cardio · 有氧</span>
+      <span class="badge week">第6周 Day 39</span>
+      <span class="badge intensity">轻度 RPE 3-5</span>
+      <span class="badge recovery">🔄 主动恢复</span>
+    </div>
+    <h1>🏃 Zone 2 稳态有氧</h1>
+    <p class="sub">2026-04-23（周四）· 连续 3 天力量后主动恢复 · 本周第 4 练</p>
+
+    <div class="quick-stats">
+      <div class="qs"><div class="num">35</div><div class="label">分钟</div></div>
+      <div class="qs"><div class="num">280</div><div class="label">卡路里</div></div>
+      <div class="qs"><div class="num">5</div><div class="label">阶段</div></div>
+      <div class="qs"><div class="num">3-5</div><div class="label">RPE</div></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <a href="https://ego1013.github.io/ethanycjin/workout/" class="back-btn">← 返回训练仪表盘</a>
+
+    <!-- Key Info -->
+    <div class="callout">
+      🎯 <strong>今日核心任务：心率校准</strong> — 上次 4/16 发现 6.5 速度心率 156bpm = Zone 3（不是 Zone 2！）。今天降速到 5.5-6.0，找到真正的 Zone 2（120-137 bpm）对应的速度/坡度组合。
+    </div>
+
+    <div class="callout green">
+      💪 <strong>本周训练进度</strong>：推(20) ✅ → 拉(21) ✅ → 腿(22) ✅ → <strong>今天有氧 🏃</strong> → 明天有氧/休息。力量 3/3 已达标！有氧 0/2。
+    </div>
+
+    <!-- Heart Rate Zones Reference -->
+    <div class="section-title">❤️ 心率区间参考 · HRmax 183 bpm</div>
+    <div class="hr-zones">
+      <div class="hr-zone-card z1">
+        <div class="z-name">Zone 1</div>
+        <div class="z-range">≤110</div>
+      </div>
+      <div class="hr-zone-card z2">
+        <div class="z-name">Zone 2</div>
+        <div class="z-range">111-137</div>
+      </div>
+      <div class="hr-zone-card z3">
+        <div class="z-name">Zone 3</div>
+        <div class="z-range">138-155</div>
+      </div>
+      <div class="hr-zone-card z4">
+        <div class="z-name">Zone 4</div>
+        <div class="z-range">156-165</div>
+      </div>
+      <div class="hr-zone-card z5">
+        <div class="z-name">Zone 5</div>
+        <div class="z-range">166+</div>
+      </div>
+    </div>
+
+    <!-- Warmup -->
+    <div class="section-title">🔥 热身 · 5 分钟</div>
+    <table class="warmup-table">
+      <tr><td>慢走热身（速度 4.0/坡度 0）</td><td>2 分钟</td></tr>
+      <tr><td>动态弓步走</td><td>每侧 6 步</td></tr>
+      <tr><td>髋关节环绕</td><td>每侧 8 次</td></tr>
+      <tr><td>小腿提踵</td><td>12 次</td></tr>
+    </table>
+
+    <!-- Main Training -->
+    <div class="section-title">🏃 主训练 · 25 分钟 — 跑步机</div>
+
+    <table class="phase-table">
+      <thead>
+        <tr>
+          <th>阶段</th>
+          <th>速度/坡度</th>
+          <th>时间</th>
+          <th>心率区</th>
+          <th>目标心率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1️⃣ 热身走</td>
+          <td>5.0 / 坡度 1</td>
+          <td>3 min</td>
+          <td><span class="zone-badge z1">Zone 1</span></td>
+          <td style="color:var(--text-dim)">≤110 bpm</td>
+        </tr>
+        <tr>
+          <td>2️⃣ Zone 2 稳态 A</td>
+          <td><strong style="color:var(--green)">5.5 / 坡度 1</strong></td>
+          <td>8 min</td>
+          <td><span class="zone-badge z2">Zone 2</span></td>
+          <td style="color:var(--green)">120-137 bpm</td>
+        </tr>
+        <tr>
+          <td>3️⃣ Zone 2 稳态 B</td>
+          <td><strong style="color:var(--green)">6.0 / 坡度 0</strong></td>
+          <td>8 min</td>
+          <td><span class="zone-badge z2">Zone 2</span></td>
+          <td style="color:var(--green)">120-137 bpm</td>
+        </tr>
+        <tr>
+          <td>4️⃣ 轻冲刺</td>
+          <td>7.0 / 坡度 2</td>
+          <td>2 min</td>
+          <td><span class="zone-badge z3">Zone 3</span></td>
+          <td style="color:var(--yellow)">138-155 bpm</td>
+        </tr>
+        <tr>
+          <td>5️⃣ 恢复走</td>
+          <td>4.5 / 坡度 0</td>
+          <td>4 min</td>
+          <td><span class="zone-badge z1">Zone 1</span></td>
+          <td style="color:var(--text-dim)">≤110 bpm</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Key Tips -->
+    <div class="section-title">📝 今日重点</div>
+    <ul class="tips-list">
+      <li>🎯 <strong>核心目标是心率校准</strong> — 找到 Zone 2（120-137bpm）对应的最佳速度/坡度组合</li>
+      <li>📊 <strong>每阶段结束时握把手测心率</strong> — 这是今天最有价值的数据！</li>
+      <li>🔄 连续 3 天力量后有氧帮助血液流动、加速恢复、降低 DOMS</li>
+      <li>💡 不追求速度和距离，能在 Zone 2 稳定 15+ 分钟就是胜利</li>
+      <li>⚠️ 如果 5.5 已到 140+ bpm → 降到 5.0。今天目标是 Zone 2 不是拼速度</li>
+    </ul>
+
+    <!-- Cooldown -->
+    <div class="section-title">🧘 拉伸放松 · 5 分钟</div>
+    <table class="warmup-table">
+      <tr><td>股四头肌拉伸（站姿提脚跟）</td><td>每侧 20 秒</td></tr>
+      <tr><td>腘绳肌拉伸（坐姿前弯）</td><td>30 秒</td></tr>
+      <tr><td>髋屈肌拉伸（弓步伸展）</td><td>每侧 20 秒</td></tr>
+      <tr><td>小腿拉伸（推墙）</td><td>每侧 15 秒</td></tr>
+      <tr><td>上背伸展（双手交叉前推）</td><td>20 秒</td></tr>
+    </table>
+
+    <!-- Nutrition -->
+    <div class="section-title">🍽 午餐建议 · 蛋白质 ≥ 40g</div>
+    <div class="nutrition-grid">
+      <div class="nutrition-card">
+        <div class="n-name">鸡胸肉沙拉 + 全麦面包 + 煮蛋×2</div>
+        <div class="n-cal">~550 kcal</div>
+        <div class="n-protein">蛋白质 ~50g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">清蒸鱼 + 糙米 + 蔬菜</div>
+        <div class="n-cal">~500 kcal</div>
+        <div class="n-protein">蛋白质 ~42g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">牛肉粉 + 卤蛋</div>
+        <div class="n-cal">~580 kcal</div>
+        <div class="n-protein">蛋白质 ~45g</div>
+      </div>
+    </div>
+
+    <!-- Reminder -->
+    <div class="reminder">
+      ⏰ <strong>InBody 复测提醒</strong>：下次复测 2026-05-11（距今 18 天）<br>
+      💧 训练前 200ml 水 · 训练中每 5-10 分钟小口补水 · 训练后 300-500ml<br>
+      🏃 <strong>明日预告</strong>：有氧/恢复日（本周有氧 1/2 → 2/2，或周五休息）
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    Coach M · AI 健身教练 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+  </footer>
+
+</body>
+</html>
