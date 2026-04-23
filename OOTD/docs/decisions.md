@@ -273,4 +273,5 @@ const WORKER_REFRESH_URL = ''; // 留空则隐藏按钮
 
 > 格式：`- YYYY-MM-DD W## | 天气 X°C <状况> | 方向 <keywords> | 新增 N 张 | 累计 M 张`
 
+- 2026-04-22 W17 | 审核官首次扫描（存量 45 张 + R2/R3 补搜 30 张）| 目标 12-18 | 最终 published 13 张（PASS 13 / REJECT 62 / 通过率 17%）| catalog 45 → 13
 - 2026-04-20 W17 | 天气 21°C 阴（多云转雾）| 方向 light layering / spring transitional / earth tone minimalist | 新增 15 张 | 累计 28 张
