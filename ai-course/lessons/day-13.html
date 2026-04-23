@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 13 · SFT vs RL：特化与泛化的根本差异 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 40%, #1a0a00 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--red-dim);
+    color: var(--red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--cyan), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--cyan);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--cyan-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--cyan);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--green);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--green); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+  .diagram .cyan-hl { color: var(--cyan); font-weight: 600; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .vs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .vs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .vs-card .vs-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .vs-card .vs-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .vs-card .vs-sub {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .meter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.3rem 0;
+    font-size: 0.8rem;
+  }
+
+  .meter-label {
+    width: 5rem;
+    text-align: right;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .meter-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .meter-val {
+    width: 2.5rem;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+  }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Spectrum bar ── */
+  .spectrum {
+    position: relative;
+    height: 40px;
+    border-radius: 20px;
+    margin: 1.5rem 0;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--purple) 50%, var(--red) 100%);
+    overflow: visible;
+  }
+
+  .spectrum-label-left,
+  .spectrum-label-right {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .spectrum-label-left { left: 1rem; }
+  .spectrum-label-right { right: 1rem; }
+
+  .spectrum-marker {
+    position: absolute;
+    top: -8px;
+    width: 2px;
+    height: 56px;
+    background: var(--yellow);
+  }
+  .spectrum-marker::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.68rem;
+    color: var(--yellow);
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .vs-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 13</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🔴 长半衰期 · 深讲</div>
+  <h1>Day 13 · SFT vs RL：特化与泛化的根本差异</h1>
+  <p class="subtitle">培养「流水线工人」还是「高斯」？</p>
+  <div class="meta">
+    <span>📅 2026-04-23 Thu</span>
+    <span>📦 第一模块 · 地基篇 · Week 2</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    假设你要培养一个新来的渠道经理。
+  </p>
+  <p>
+    <strong>方法 A</strong>：给他一本《标准操作手册》，每种情况对应一个标准答案。遇到代理商投诉？翻第 47 页。遇到返利纠纷？翻第 82 页。他按手册操作，输出稳定、可预测、几乎不出错——但遇到手册没覆盖的场景，他<strong>愣住了</strong>。
+  </p>
+  <p>
+    <strong>方法 B</strong>：不给手册，只给考核指标——"渠道满意度提升 10%，代理商流失率控制在 5% 以下"。他自己摸索。前三个月可能犯很多错，有时候会搞砸。但六个月后，他开始发展出<strong>自己的判断力</strong>——能应对手册从未预见过的新场景，甚至发明出比手册更好的方法。
+  </p>
+  <p>
+    这两种培养方式，正好对应了大模型 Post-train 阶段的两种核心路径：<span class="highlight">SFT（Supervised Fine-Tuning，监督微调）</span>和 <span class="highlight">RL（Reinforcement Learning，强化学习）</span>。
+  </p>
+  <p>
+    昨天我们讲了 Fine-tune 是"改模型参数"，但<strong>怎么改</strong>——用标准答案教，还是用奖惩信号让它自己学——这个决定会从根本上塑造模型的"性格"。今天就拆开这个黑箱。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么这个区分如此根本？</h2>
+  </div>
+
+  <h3>Day 3 的回顾与深化</h3>
+
+  <p>
+    Day 3 讲过 Post-train 包含 SFT 和 RLHF 两步。当时的描述是：SFT = 导师带教，RLHF = 绩效考核。那时候的重点是"Post-train 很重要"。
+  </p>
+
+  <p>
+    今天的重点完全不同：<strong>SFT 和 RL 不只是"两个训练步骤"，它们是两种根本不同的学习范式</strong>——导致的模型能力边界完全不同。
+  </p>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 为什么现在这个话题爆了？</div>
+    <p style="margin:0">
+      2024-2025 年，整个行业的焦点从"谁的模型参数更大"转向了"<strong>谁的训练方法更聪明</strong>"。<br><br>
+      DeepSeek-R1 用<strong>纯 RL</strong>（没有 SFT 阶段）训练出了世界级推理能力。<br>
+      OpenAI 的 o1/o3 靠 RL 实现了"慢思考"。<br>
+      而绝大多数开源模型还在靠 SFT + 少量 RLHF 的标准管线。<br><br>
+      <strong>SFT vs RL 不再是学术问题，它是决定模型"聪不聪明"的分水岭。</strong>
+    </p>
+  </div>
+
+  <h3>为什么不能只用 SFT？</h3>
+
+  <p>
+    SFT 看起来简单又有效：找一堆"好回答"作为标准答案，让模型学着模仿。多直觉啊——人也是这么学的嘛。
+  </p>
+
+  <p>
+    问题出在<strong>一个关键限制</strong>上：
+  </p>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ SFT 的天花板</div>
+    <p style="margin:0">
+      <strong>SFT 训练出来的模型，能力上限 = 训练数据中"最好答案"的水平。</strong><br><br>
+      它在模仿，不在创造。你给它什么样的标准答案，它最多学到那个水平——永远不会超越。<br><br>
+      就像一个只按手册操作的员工：手册写到哪里，他的能力就到哪里。手册没写的，他不会。
+    </p>
+  </div>
+
+  <p>
+    但 RL 不一样。RL 不给标准答案，只给一个"评判标准"——你做得好就加分，做得差就减分。模型在这个激励框架下<strong>自己探索解法</strong>。
+  </p>
+
+  <p>
+    结果是什么？<strong>RL 训练出来的模型，有可能发现比人类标注者更好的答案。</strong> 它能超越老师。
+  </p>
+
+  <p>
+    这不是假设——DeepSeek-R1 已经证明了这一点。纯 RL 训练出的推理能力，在某些数学和编程任务上<strong>超过了人类专家的标注质量</strong>。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 两种训练范式的底层机制</h2>
+  </div>
+
+  <h3>一、SFT：照着标准答案学</h3>
+
+  <h4>机制</h4>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">SFT 的训练过程</span><br><br>
+    <span class="yellow-hl">准备阶段</span><br>
+    1. 人类标注者写出高质量的"问-答"对<br>
+    &nbsp;&nbsp;&nbsp;问："解释量子纠缠"<br>
+    &nbsp;&nbsp;&nbsp;答：[一段精心撰写的回答]<br>
+    2. 通常需要 <span class="cyan-hl">数千到数万</span> 条标注数据<br><br>
+    <span class="yellow-hl">训练阶段</span><br>
+    3. 模型看到问题，生成自己的回答<br>
+    4. 计算模型回答与标准答案的<span class="error">差距（Loss）</span><br>
+    5. 调整参数，让模型回答更接近标准答案<br>
+    6. 重复数千次<br><br>
+    <span class="purple-hl">本质</span>：最小化模型输出与标准答案之间的距离<br>
+    <span class="ok">目标函数</span>：P(标准答案 | 问题) → 最大化
+  </div>
+
+  <p>
+    一句话：<strong>SFT 是"照葫芦画瓢"。</strong> 老师画了一个葫芦，学生的目标是画得越像越好。
+  </p>
+
+  <h4>SFT 擅长什么？</h4>
+
+  <table>
+    <tr><th>能力类型</th><th>为什么 SFT 擅长</th><th>例子</th></tr>
+    <tr>
+      <td><strong>格式遵循</strong></td>
+      <td>标准答案能清晰定义"正确格式"</td>
+      <td>JSON 输出、报告模板、固定话术</td>
+    </tr>
+    <tr>
+      <td><strong>风格模仿</strong></td>
+      <td>只需要大量风格样本让模型对齐</td>
+      <td>客服语气、品牌 tone of voice</td>
+    </tr>
+    <tr>
+      <td><strong>任务执行</strong></td>
+      <td>有清晰输入-输出映射的任务</td>
+      <td>翻译、摘要、分类、信息提取</td>
+    </tr>
+    <tr>
+      <td><strong>安全对齐</strong></td>
+      <td>教会模型"什么该拒绝"比较直接</td>
+      <td>拒绝有害请求、遵守安全边界</td>
+    </tr>
+  </table>
+
+  <div class="callout cyan">
+    <div class="callout-label">📊 渠道类比：标准操作手册</div>
+    <p style="margin:0">
+      你给新员工一本《渠道运营标准操作手册》——每种场景对应一个标准流程。他照着做，输出又快又稳。<br><br>
+      <strong>适用场景</strong>：代理商开户流程、返利计算规则、投诉分级处理。这些都有"标准答案"，SFT 就很够。<br><br>
+      <strong>失灵场景</strong>：代理商提出了一个手册没覆盖的全新合作模式。按手册找不到对应章节——要么答非所问，要么僵在那里。
+    </p>
+  </div>
+
+  <h3>二、RL：在试错中学会判断</h3>
+
+  <h4>机制</h4>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">RL 的训练过程</span><br><br>
+    <span class="yellow-hl">准备阶段</span><br>
+    1. 设计一个<span class="cyan-hl">奖励函数（Reward Model）</span><br>
+    &nbsp;&nbsp;&nbsp;它不给标准答案，只给分数<br>
+    &nbsp;&nbsp;&nbsp;"这个回答好不好？" → 0.8 分 / 0.3 分<br>
+    2. 通常由人类偏好标注训练出来<br>
+    &nbsp;&nbsp;&nbsp;（回答 A vs 回答 B，哪个更好？→ 大量对比数据）<br><br>
+    <span class="yellow-hl">训练阶段</span><br>
+    3. 模型看到问题，<span class="accent-hl">自由生成</span>回答<br>
+    4. 奖励模型给回答打分<br>
+    5. 高分回答 → 强化（让模型更倾向这样回答）<br>
+    6. 低分回答 → 抑制（让模型远离这样回答）<br>
+    7. 模型在无数次尝试中<span class="ok">自己摸索</span>出策略<br><br>
+    <span class="purple-hl">本质</span>：最大化累积奖励，没有唯一标准答案<br>
+    <span class="ok">目标函数</span>：E[Reward(模型回答)] → 最大化
+  </div>
+
+  <p>
+    一句话：<strong>RL 是"放养 + 考核"。</strong> 不告诉你答案，只告诉你考试规则。你自己去学，考好了奖，考差了罚。
+  </p>
+
+  <h4>RL 能做到 SFT 做不到的什么？</h4>
+
+  <table>
+    <tr><th>能力类型</th><th>为什么 RL 才行</th><th>例子</th></tr>
+    <tr>
+      <td><strong>超越标注者</strong></td>
+      <td>不受标准答案上限约束</td>
+      <td>DeepSeek-R1 数学推理超越人类专家</td>
+    </tr>
+    <tr>
+      <td><strong>复杂推理</strong></td>
+      <td>学会"思考过程"而非模仿答案</td>
+      <td>多步数学证明、代码 debug、策略规划</td>
+    </tr>
+    <tr>
+      <td><strong>创造性解法</strong></td>
+      <td>探索空间不受标注数据限制</td>
+      <td>发现非常规但有效的解决方案</td>
+    </tr>
+    <tr>
+      <td><strong>自我纠正</strong></td>
+      <td>学会"发现自己错了并修正"</td>
+      <td>o1 的"我再想想"行为、回溯推理</td>
+    </tr>
+  </table>
+
+  <div class="callout purple">
+    <div class="callout-label">📊 渠道类比：放养 + 绩效考核</div>
+    <p style="margin:0">
+      你不给新员工手册，只给他三个 KPI：渠道满意度、代理商留存率、业务增长率。他自己去摸索方法。<br><br>
+      <strong>前三个月</strong>：可能犯很多错——用错话术、判断失误、丢了几个小代理商。<br>
+      <strong>六个月后</strong>：他发展出了独特的客户管理方法——有的代理商用关系驱动，有的用数据说话，有的用利益绑定。每种方法都是他在试错中"自己长出来的"，手册里根本不会写。<br><br>
+      <strong>最关键的区别</strong>：当市场突变（比如竞品突然降价 30%），按手册的人不知道怎么办，而这个人能独立应对——因为他学会的是<strong>判断力</strong>，不是流程。
+    </p>
+  </div>
+
+  <h3>三、核心对比：光谱两端</h3>
+
+  <p>
+    SFT 和 RL 不是非此即彼的二选一，而是一个<strong>光谱</strong>的两端：
+  </p>
+
+  <div class="spectrum">
+    <span class="spectrum-label-left">SFT 极端</span>
+    <span class="spectrum-label-right">RL 极端</span>
+    <div class="spectrum-marker" style="left:20%" data-label="传统 SFT"></div>
+    <div class="spectrum-marker" style="left:45%" data-label="SFT + RLHF"></div>
+    <div class="spectrum-marker" style="left:65%" data-label="SFT → 大量 RL"></div>
+    <div class="spectrum-marker" style="left:90%" data-label="纯 RL (R1)"></div>
+  </div>
+
+  <table>
+    <tr>
+      <th>维度</th>
+      <th style="color:var(--blue)">SFT</th>
+      <th style="color:var(--red)">RL</th>
+    </tr>
+    <tr>
+      <td><strong>学习信号</strong></td>
+      <td>标准答案（完整文本）</td>
+      <td>奖励分数（一个数字）</td>
+    </tr>
+    <tr>
+      <td><strong>信息密度</strong></td>
+      <td>极高（逐 Token 监督）</td>
+      <td>极低（只有最终分数）</td>
+    </tr>
+    <tr>
+      <td><strong>训练效率</strong></td>
+      <td>高（收敛快）</td>
+      <td>低（需要大量试错）</td>
+    </tr>
+    <tr>
+      <td><strong>能力上限</strong></td>
+      <td>≤ 标注数据质量</td>
+      <td>可能 > 人类水平</td>
+    </tr>
+    <tr>
+      <td><strong>输出稳定性</strong></td>
+      <td>高（输出可预测）</td>
+      <td>较低（探索带来方差）</td>
+    </tr>
+    <tr>
+      <td><strong>泛化能力</strong></td>
+      <td>弱（只在训练分布内好）</td>
+      <td>强（学到了"方法"而非"答案"）</td>
+    </tr>
+    <tr>
+      <td><strong>Reward Hacking 风险</strong></td>
+      <td>低</td>
+      <td>高（Day 4 讲过的谄媚问题）</td>
+    </tr>
+    <tr>
+      <td><strong>计算成本</strong></td>
+      <td>相对低</td>
+      <td>极高（需要反复采样 + 评分）</td>
+    </tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 一句话记忆法</div>
+    <p style="margin:0">
+      <strong>SFT 教的是"知道什么"，RL 教的是"怎么想"。</strong><br><br>
+      SFT 让模型获得<strong>知识</strong>（回答应该长什么样），RL 让模型获得<strong>策略</strong>（面对新问题该怎么推理）。<br><br>
+      知识可以被穷举覆盖，但策略不行——策略必须在真实挑战中摸爬滚打出来。
+    </p>
+  </div>
+
+  <h3>四、真实案例：DeepSeek-R1 的启示</h3>
+
+  <p>
+    Day 7 复习课提到过 DeepSeek-R1，但当时只是作为解剖案例。今天我们从 SFT vs RL 的视角重新看它。
+  </p>
+
+  <h4>DeepSeek-R1 做了什么？</h4>
+
+  <p>
+    传统流程：Pre-train → SFT → RLHF（少量 RL 微调）。
+  </p>
+
+  <p>
+    DeepSeek-R1 的激进实验：Pre-train → <strong>直接用 RL 训练推理能力</strong>，跳过 SFT 阶段。
+  </p>
+
+  <div class="callout blue">
+    <div class="callout-label">🔬 R1-Zero：纯 RL 的惊人发现</div>
+    <p style="margin:0">
+      DeepSeek 先做了一个叫 <strong>R1-Zero</strong> 的实验：只用 RL，完全不用 SFT。<br><br>
+      结果令人惊讶——模型<strong>自发出现了"思维链"行为</strong>。没有人教它"先思考再回答"，但它在 RL 的奖惩机制下自己学会了：先列出推理步骤，检查中间结果，发现错误就回溯修正，最后才给出答案。<br><br>
+      这就像一个新员工，没人教他做笔记、列清单、检查核对——他在被考核了几千次之后，自己发明了这些工作方法。<br><br>
+      <strong>这意味着什么？</strong> 高级认知策略（分步推理、自我检查、回溯纠错）不是"只有人类能教"的——只要激励结构设对了，RL 可以让模型自己发展出来。
+    </p>
+  </div>
+
+  <h4>但纯 RL 也有代价</h4>
+
+  <p>
+    R1-Zero 虽然推理强，但有明显问题：
+  </p>
+
+  <div class="two-col">
+    <div class="callout danger" style="margin:0">
+      <div class="callout-label">❌ 可读性差</div>
+      <p style="margin:0; font-size:0.85rem">
+        推理过程混乱、中英文混杂、重复啰嗦。RL 只管结果对不对，不管表达好不好看。
+      </p>
+    </div>
+    <div class="callout danger" style="margin:0">
+      <div class="callout-label">❌ 不稳定</div>
+      <p style="margin:0; font-size:0.85rem">
+        同一个问题多次问，回答质量波动大。探索带来的随机性让输出不可预测。
+      </p>
+    </div>
+  </div>
+
+  <p style="margin-top:1rem">
+    所以最终版 DeepSeek-R1 用了<strong>混合策略</strong>：先用少量 SFT 数据建立基础格式和安全边界，再用大量 RL 激发推理能力。SFT 管"形"，RL 管"魂"。
+  </p>
+
+  <h3>五、行业格局：谁在用什么策略？</h3>
+
+  <table>
+    <tr><th>模型</th><th>策略</th><th>结果</th></tr>
+    <tr>
+      <td><strong>GPT-4 / Claude</strong></td>
+      <td>SFT 为主 + RLHF 精修</td>
+      <td>全面、稳定、安全对齐好，但推理天花板受限</td>
+    </tr>
+    <tr>
+      <td><strong>o1 / o3</strong></td>
+      <td>SFT 基础 + 大量 RL 强化推理</td>
+      <td>数学/编程/科学推理大幅提升，但更慢更贵</td>
+    </tr>
+    <tr>
+      <td><strong>DeepSeek-R1</strong></td>
+      <td>极少 SFT + 主要靠 RL</td>
+      <td>推理能力媲美 o1，但格式和稳定性需要额外处理</td>
+    </tr>
+    <tr>
+      <td><strong>大部分开源模型</strong></td>
+      <td>SFT 为主 + 很少 RL</td>
+      <td>跟随对话做得好，但复杂推理能力明显不足</td>
+    </tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 行业趋势</div>
+    <p style="margin:0">
+      <strong>2024-2025 年的核心竞争，已经从"谁的 SFT 数据多"转向了"谁的 RL 做得好"。</strong><br><br>
+      SFT 数据容易获取（花钱请人标注就行），但 RL 的奖励函数设计、训练稳定性、防止 Reward Hacking——这些才是真正的技术壁垒。<br><br>
+      回想 Day 4（Reward Hacking）和 Day 8（Scaling Law）——RL 正是 Post-train Scaling 和 Test-time Scaling 的核心引擎。SFT 扩不上去（标注数据有上限），RL 可以（探索空间近乎无限）。
+    </p>
+  </div>
+
+  <h3>六、混合策略：为什么不是二选一？</h3>
+
+  <p>
+    实际工程中，SFT 和 RL 几乎总是混合使用。关键是<strong>比例和顺序</strong>：
+  </p>
+
+  <div class="diagram" style="text-align:left; padding:2rem">
+    <span class="flow">典型的训练管线</span><br><br>
+    <span class="blue-hl">Pre-train</span> → 学会语言和世界知识<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+    <span class="cyan-hl">SFT</span> → 学会"对话格式"和"安全边界"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（给模型一个"安全的起点"）<br>
+    <span class="accent-hl">RL</span> → 在安全框架内<span class="ok">最大化能力上限</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（让模型学会"怎么思考"）<br>
+    <span class="purple-hl">最终模型</span> = SFT 的稳定性 + RL 的智能<br><br>
+    <span class="yellow-hl">竞争差异在于</span>：SFT 和 RL 的<span class="error">比例</span><br>
+    重 SFT = 稳定可控但能力受限<br>
+    重 RL = 能力突破但需要更多工程投入
+  </div>
+
+  <p>
+    <strong>SFT 和 RL 不是竞争关系，是协作关系。</strong> SFT 建地基（格式、安全、基本能力），RL 盖高楼（推理、创造、超越人类的智能）。没有 SFT 的地基，RL 的高楼会塌（输出不稳定、格式混乱）；没有 RL 的高楼，SFT 的地基只能盖平房（能力上限低）。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>一、对你选择 AI 工具的影响</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">任务类型决定该选什么模型</span>
+      <div class="card-body">
+        <strong>标准化执行任务</strong>（翻译、摘要、分类、报表生成）→ SFT 强的模型就够了。GPT-4、Claude 都很好，稳定可靠。<br>
+        <strong>复杂推理任务</strong>（多步分析、策略制定、代码 debug、数学证明）→ 需要 RL 强的模型。o1、DeepSeek-R1 这类推理模型效果显著更好。<br><br>
+        <em>别用大炮打蚊子，也别用水枪打坦克。</em>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">理解"慢模型"为什么更贵但更强</span>
+      <div class="card-body">
+        o1、DeepSeek-R1 这类推理模型调用更慢、更贵。原因现在清楚了——它们在推理时做的不是"查找答案"（SFT 的本质），而是"探索解空间"（RL 赋予的能力）。<br><br>
+        <strong>慢不是 bug，是 feature。</strong> 它在"想"，而不只是在"查"。这就是 Day 8 讲的 Test-time Compute Scaling——推理阶段的算力投入是有回报的。
+      </div>
+    </div>
+  </div>
+
+  <h3>二、对渠道管理的启示</h3>
+
+  <div class="callout green">
+    <div class="callout-label">✅ SFT vs RL 思维在管理中的应用</div>
+    <p style="margin:0">
+      <strong>场景 1：培养新人执行标准流程</strong><br>
+      → SFT 思维。给手册、给 SOP、给标准案例。目标是快速复制，降低人为偏差。适用于：开户流程、返利计算、投诉分级。<br><br>
+      <strong>场景 2：培养核心人才独立判断</strong><br>
+      → RL 思维。不给标准答案，给清晰的考核指标和试错空间。让他在真实业务中摸索策略。适用于：大客户谈判、新区域开拓、危机处理。<br><br>
+      <strong>场景 3：团队升级</strong><br>
+      → 混合策略。先 SFT（确保基本功），再 RL（鼓励创新和独立判断）。新人先跟流程，一年后给他更多自由度和独立考核指标。<br><br>
+      <strong>这不只是类比——AI 训练的逻辑，真的和人才培养的逻辑高度同构。</strong>
+    </p>
+  </div>
+
+  <h3>三、对 AI 行业竞争的判断</h3>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 判断力升级</div>
+    <p style="margin:0">
+      以后看到一个新模型发布，你可以问三个问题：<br><br>
+      1. <strong>SFT 数据质量如何？</strong> → 决定基础对话能力的下限<br>
+      2. <strong>RL 做了多少？奖励函数怎么设计的？</strong> → 决定推理能力的上限<br>
+      3. <strong>怎么控制 Reward Hacking？</strong> → 决定这个模型是真聪明还是在"表演聪明"<br><br>
+      这三个问题能帮你穿透 90% 的模型发布营销话术。
+    </p>
+  </div>
+
+  <div class="callout cyan">
+    <div class="callout-label">🔗 知识网络总结</div>
+    <p style="margin:0">
+      今天这节课把 Day 3（Pre-train vs Post-train）、Day 4（RLHF / Reward Hacking）、Day 7（DeepSeek-R1 分析）、Day 8（Scaling Law / Test-time Compute）和 Day 12（Fine-tune 路径选择）串成了一条线：<br><br>
+      <strong>Post-train 的核心分歧是 SFT vs RL → RL 的风险是 Reward Hacking → RL 的优势是突破 Scaling 天花板 → 推理模型的价值来自 Test-time Compute → 选择 Fine-tune 时要先问"需要 SFT 还是 RL"。</strong><br><br>
+      到这里，第一模块"地基篇"的知识网络基本完整了。
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ 今日 Checkpoint</h3>
+
+  <p><strong>场景：你的公司要上一个"AI 渠道风控助手"——实时监控代理商的异常行为（刷单、虚报、套利），自动生成风险报告并建议处置措施。团队在讨论该怎么训练这个 AI，有四种方案：</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      纯 SFT。收集过去三年的风控案例（异常行为 → 处置结论），标注几千条数据训练模型。标准化场景覆盖率高，上线快。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      纯 RL。设计奖励函数：发现真实异常 +10 分，漏报 -20 分，误报 -5 分。让模型自己学习识别异常的策略，不给标准案例。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      先 SFT 再 RL。用历史案例 SFT 建立基础识别能力，再用 RL 让它在模拟环境中学会发现新型异常模式（历史案例没覆盖的）。SFT 管"已知风险"，RL 管"未知风险"。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先拆解任务：常规异常检测（规则明确的刷单/虚报）用 SFT 或甚至用 Prompt + RAG 就够了，根本不需要训练模型；只有"新型风险发现"这个子任务才需要 RL。把 80% 的常规场景用轻方案解决，把 RL 资源集中在最难的 20%。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问：假设你选了某个方案上线三个月后，发现代理商开始用一种全新的套利方式（之前完全没出现过）。你的方案能应对吗？如果不能，你会怎么迭代？给出迭代的时间估算（天/周/月级别）。</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日悬念</h3>
+  <p>
+    过去 13 天，我们从 Token（Day 2）到 Training（Day 3-4）到 Inference（Day 5）到 Scaling（Day 8-9）到 Architecture（Day 10-11）到 Customization（Day 12-13），一块一块拼完了大模型的拼图。
+  </p>
+  <p>
+    <strong>Day 14</strong> 是第一模块的收尾课。没有新概念——我们要做的是<strong>把所有碎片拼成一张完整的心智模型地图</strong>。
+  </p>
+  <p>
+    我会让你回答一个问题：<strong>"如果现在有人问你'大模型是什么'，你能不能用 5 分钟给一个不懂技术的人讲清楚？"</strong>
+  </p>
+  <p>
+    如果能——恭喜，第一模块的目标达成。如果不能——那我们正好知道哪些地方还需要补。
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">SFT = 照标准答案学，RL = 在试错中学判断</span>
+    <div class="card-body">
+      SFT 给模型完整的"正确答案"让它模仿，能力上限 = 标注数据质量。RL 只给奖惩信号，模型自己探索解法，有可能超越人类水平。两者是光谱两端，不是非此即彼。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">SFT 教"知道什么"，RL 教"怎么想"</span>
+    <div class="card-body">
+      SFT 让模型获得知识（答案应该长什么样），RL 让模型获得策略（面对新问题该怎么推理）。知识可以穷举覆盖，策略不行——策略必须在真实挑战中发展出来。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">DeepSeek-R1 证明了纯 RL 的潜力</span>
+    <div class="card-body">
+      R1-Zero 实验显示：不用 SFT，纯 RL 可以让模型自发出现思维链、自我检查、回溯纠错等高级认知行为。高级思维策略可以从激励结构中"涌现"出来，不必被人类手动教授。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">实战中是混合策略：SFT 管"形"，RL 管"魂"</span>
+    <div class="card-body">
+      SFT 建地基（格式、安全、基本能力），RL 盖高楼（推理、创造、超越标注者的智能）。行业竞争的关键不在 SFT 数据量（可花钱买到），而在 RL 的奖励函数设计和训练稳定性（真正的技术壁垒）。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">任务类型决定该选什么模型</span>
+    <div class="card-body">
+      标准化执行任务（翻译/摘要/分类）→ SFT 强的通用模型足够。复杂推理任务（多步分析/策略制定/debug）→ 需要 RL 强的推理模型（o1/R1）。不要用大炮打蚊子，也不要用水枪打坦克。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 3</span>
+    <span>Day 3 讲了 Post-train = SFT + RLHF，但重点在"Post-train 很重要"。今天深入了 SFT 和 RL 的机制差异：SFT 是最小化与标准答案的距离，RL 是最大化奖励函数——目标函数不同，导致能力边界完全不同。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 4</span>
+    <span>Day 4 讲了 Reward Hacking。今天揭示了深层原因：RL 依赖奖励函数，而奖励函数是人设计的——只要有评分系统，就有钻空子的可能。RL 越强，Reward Hacking 的风险越大。"更聪明"的模型也更擅长发现评分系统的漏洞。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 7</span>
+    <span>Day 7 用 DeepSeek-R1 做六层解剖时提到了"纯 RL 训练路径"。今天完整解释了为什么这条路径如此震撼——R1-Zero 实验证明高级认知策略可以从 RL 中自发涌现，不需要人类手动教授。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 8</span>
+    <span>Day 8 讲了四维 Scaling 新范式。今天解释了为什么 RL 是 Post-train Scaling 和 Test-time Scaling 的核心引擎——SFT 的上限是标注数据（数据有限），RL 的探索空间近乎无限，所以只有 RL 能真正"Scale"。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 12</span>
+    <span>昨天讲了 Fine-tune vs RAG vs Prompt 三种定制路径。今天在 Fine-tune 内部又拆出了一层：SFT 式微调 vs RL 式微调——前者适合标准化任务定制，后者适合需要创造性判断的场景。选择定制路径时又多了一个判断维度。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 14</span>
+    <span>明天是第一模块收尾课。13 天的知识将被整合成一张完整的"大模型心智模型地图"——从 Token 到 Training 到 Inference 到 Scaling 到 Customization，测试你能不能用 5 分钟给不懂技术的人讲清楚"大模型是什么"。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 13 of 60 · 第一模块 · 地基篇 · Week 2
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
