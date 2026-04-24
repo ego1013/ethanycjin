@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摆渡人 + 连接者 · 铁笼之外 · 新教伦理与资本主义精神</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616;
+            --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d0cfc8; --text-dim: #888; --text-muted: #555;
+            --white: #f0ece4; --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.1); --accent-border: rgba(226,163,85,0.25);
+            --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.08); --blue-border: rgba(96,165,250,0.2);
+            --teal: #2dd4bf; --teal-dim: rgba(45,212,191,0.08); --teal-border: rgba(45,212,191,0.2);
+            --purple: #c084fc; --purple-dim: rgba(192,132,252,0.08); --purple-border: rgba(192,132,252,0.2);
+            --red: #E94560; --red-dim: rgba(233,69,96,0.08); --red-border: rgba(233,69,96,0.2);
+            --green: #4ade80; --green-dim: rgba(74,222,128,0.08); --green-border: rgba(74,222,128,0.2);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Serif SC', Georgia, serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.9;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+
+        /* ── Breadcrumb ── */
+        .breadcrumb-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+            background: rgba(10,10,10,.92); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            font-size: 12px; font-family: sans-serif; color: #666;
+        }
+        .breadcrumb-nav a { color: #888; text-decoration: none; }
+        .breadcrumb-nav a:hover { color: #ddd; }
+        .breadcrumb-nav .sep { color: #444; font-size: 11px; }
+        .breadcrumb-nav .current { color: #ccc; font-weight: 500; }
+        .breadcrumb-spacer { height: 40px; }
+
+        /* ── Role tag ── */
+        .role-tag-blue {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue);
+        }
+        .role-tag-teal {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+        .day-label {
+            font-size: .72rem; color: var(--text-muted); font-family: sans-serif;
+            font-weight: 500; letter-spacing: .05em; margin-bottom: .6rem;
+        }
+        .main-title { font-size: 1.75rem; font-weight: 700; color: var(--white); line-height: 1.4; margin-bottom: .6rem; }
+        .sub-title { font-size: 1rem; color: var(--text-dim); font-weight: 400; line-height: 1.6; }
+        .role-header { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+
+        /* ── Text ── */
+        .body-text { font-size: 1rem; color: var(--text); line-height: 1.9; margin-bottom: 1.5rem; }
+        .body-text em { font-style: italic; color: var(--accent); }
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        /* ── Section heading ── */
+        .section-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-muted); margin: 2.5rem 0 1.25rem;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .section-title.blue { color: var(--blue); }
+        .section-title.teal { color: var(--teal); }
+        .section-title.blue::after { background: rgba(96,165,250,0.2); }
+        .section-title.teal::after { background: rgba(45,212,191,0.2); }
+
+        h2 { font-size: 1.2rem; color: var(--white); margin: 2rem 0 .9rem; line-height: 1.5; }
+        h3.blue { font-size: 1rem; color: var(--blue); margin: 1.5rem 0 .6rem; }
+        h3.teal { font-size: 1rem; color: var(--teal); margin: 1.5rem 0 .6rem; }
+
+        /* ── Section break ── */
+        .section-break {
+            border: none; border-top: 1px solid var(--border-light);
+            margin: 3.5rem 0; position: relative;
+        }
+        .section-break::after {
+            content: '· · ·';
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--bg); color: var(--text-muted);
+            padding: 0 .75rem; font-size: .85rem; letter-spacing: .2em;
+            font-family: sans-serif;
+        }
+
+        /* ── Divider ── */
+        .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+        /* ── Tension Final Box ── */
+        .tension-final {
+            background: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(226,163,85,0.06) 100%);
+            border: 1px solid rgba(226,163,85,0.3);
+            border-radius: 12px; padding: 1.75rem; margin: 2rem 0;
+            position: relative; overflow: hidden;
+        }
+        .tension-final::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--accent));
+        }
+        .tension-final-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .9rem; display: flex; align-items: center; gap: .4rem;
+        }
+        .tension-original {
+            font-size: .9rem; color: var(--text-muted); font-style: italic;
+            border-left: 2px solid var(--border-light); padding-left: .9rem;
+            margin-bottom: 1.25rem; line-height: 1.8;
+        }
+        .tension-final-text {
+            font-size: 1.05rem; color: #d4c8b4; line-height: 1.9;
+        }
+        .tension-final-text em { font-style: italic; color: var(--accent); }
+        .tension-final-text strong { color: var(--white); font-weight: 600; }
+        .tension-final-text p + p { margin-top: .9rem; }
+
+        /* ── Bridge card (摆渡人) ── */
+        .bridge-card {
+            background: var(--blue-dim); border: 1px solid var(--blue-border);
+            border-radius: 10px; padding: 1.5rem; margin: 1.5rem 0;
+        }
+        .bridge-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--blue);
+            margin-bottom: .75rem;
+        }
+        .bridge-text { font-size: .97rem; color: var(--text); line-height: 1.85; }
+        .bridge-text em { font-style: italic; color: var(--accent); }
+        .bridge-text strong { color: var(--white); }
+        .bridge-text p + p { margin-top: .85rem; }
+
+        /* ── Application strip ── */
+        .app-strip {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.1rem 1.25rem; margin: 1.25rem 0;
+        }
+        .app-strip .app-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase;
+            color: var(--blue); margin-bottom: .5rem;
+        }
+        .app-strip .app-text {
+            font-size: .93rem; color: var(--text-dim); line-height: 1.75;
+        }
+        .app-strip .app-text em { font-style: italic; color: var(--accent); }
+        .app-strip .app-text strong { color: var(--white); }
+
+        /* ── Echo row ── */
+        .echo-row { display: flex; align-items: flex-start; gap: .75rem; margin: .6rem 0; font-size: .93rem; }
+        .echo-row .echo-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.9; }
+
+        /* ── Connector branch ── */
+        .branch-item {
+            display: flex; gap: 1rem; align-items: flex-start;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.25rem; margin: .85rem 0;
+            transition: border-color .2s;
+        }
+        .branch-item:hover { border-color: var(--border-light); }
+        .branch-num {
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .72rem; font-weight: 700; font-family: sans-serif;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+        .branch-body { flex: 1; }
+        .branch-header { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; flex-wrap: wrap; }
+        .branch-book { font-size: .95rem; font-weight: 600; color: var(--white); }
+        .branch-week { font-size: .68rem; color: var(--text-muted); font-family: sans-serif; }
+        .branch-type {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            padding: .15rem .55rem; border-radius: 4px; font-family: sans-serif;
+        }
+        .branch-type.tension { background: var(--red-dim); border: 1px solid var(--red-border); color: var(--red); }
+        .branch-type.dialogue { background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue); }
+        .branch-type.inherit { background: var(--purple-dim); border: 1px solid var(--purple-border); color: var(--purple); }
+        .branch-type.complement { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+        .branch-type.invert { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
+        .branch-desc { font-size: .9rem; color: var(--text-dim); line-height: 1.7; }
+        .branch-desc em { font-style: italic; color: var(--accent); }
+        .branch-desc strong { color: var(--white); }
+
+        /* ── SVG knowledge map ── */
+        .map-container {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.5rem; margin: 2rem 0; overflow: hidden;
+        }
+        .map-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; color: var(--teal);
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Insight card ── */
+        .insight-card {
+            background: var(--surface-2); border: 1px solid var(--border-light);
+            border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0;
+        }
+        .insight-card .label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; margin-bottom: .5rem;
+        }
+        .insight-card .content { font-size: .93rem; color: var(--text); line-height: 1.75; }
+        .insight-card .content em { font-style: italic; color: var(--accent); }
+        .insight-card .content strong { color: var(--white); }
+
+        /* ── Next week banner ── */
+        .next-week {
+            background: linear-gradient(135deg, rgba(226,163,85,0.06) 0%, rgba(45,212,191,0.04) 100%);
+            border: 1px solid rgba(226,163,85,0.2); border-radius: 12px;
+            padding: 1.5rem; margin-top: 3rem; text-align: center;
+        }
+        .next-week .week-num {
+            font-size: .7rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .5rem;
+        }
+        .next-week .week-book {
+            font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: .3rem;
+        }
+        .next-week .week-author { font-size: .88rem; color: var(--text-dim); }
+
+        /* ── Concept pill ── */
+        .concept-pill {
+            display: inline-block; padding: .15rem .6rem; border-radius: 4px; margin: .15rem;
+            font-size: .8rem; font-family: sans-serif; font-style: italic;
+            background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent);
+        }
+
+        @media (max-width: 560px) {
+            .main-title { font-size: 1.45rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="breadcrumb-nav">
+    <a href="/ethanycjin/booklist/">书单</a>
+    <span class="sep">›</span>
+    <span>第3周 · 新教伦理与资本主义精神</span>
+    <span class="sep">›</span>
+    <span class="current">Day 5 · 摆渡人 + 连接者</span>
+</nav>
+<div class="breadcrumb-spacer"></div>
+
+<div class="container">
+
+    <!-- ═══════════════════════════════
+         PART I · 摆渡人 The Bridger
+         ═══════════════════════════════ -->
+
+    <header class="role-header">
+        <div class="day-label">第3周 · Day 5 / 5 &nbsp;·&nbsp; 2026-04-25 &nbsp;·&nbsp; 《新教伦理与资本主义精神》</div>
+        <div class="role-tag-blue">🌉 The Bridger · 摆渡人</div>
+        <h1 class="main-title">铁笼之外</h1>
+        <p class="sub-title">韦伯留下了铁笼的隐喻，却没有留下钥匙。<br>一周五天的旅程，今天到达最后一站——把问题带到更深的水里。</p>
+    </header>
+
+    <!-- 摆渡人开场 -->
+    <p class="body-text">摆渡人的工作不是给答案，是把你送到答案无法轻易落脚的地方。</p>
+
+    <p class="body-text">这一周，我们跟着韦伯走完了一段奇异的旅程：从1517年路德钉在威登堡大门上的九十五条论纲，到1905年韦伯写完手稿时的那个深夜；从荷兰莱顿的加尔文派账簿，到现代写字楼里的996奋斗叙事；从韦伯精心建构的"天职伦理"因果链，到挑战者发现的四处裂缝。</p>
+
+    <p class="body-text">现在摆渡人来了。我要把这周积累下来的所有张力，带去一个更难回答的地方。</p>
+
+    <div class="divider"></div>
+
+    <!-- 三段摆渡 -->
+    <div class="section-title blue">摆渡一 · 从"谁是原因"到"谁能干预"</div>
+
+    <p class="body-text">这一周的核心张力，从叙事者提出，经过提炼者、应用者、挑战者三天的深化，最终在挑战者那里变成了一个更尖锐的问题：如果宗教与资本主义是<em>共同演化</em>（<em>co-evolution</em>）的，改革者该在哪里用力？</p>
+
+    <p class="body-text">这不是一个抽象的问题。韦伯自己在《新教伦理》结尾写下了那段著名的"铁笼"段落——现代资本主义的铁笼最终不再需要任何精神支撑，它靠自身的运转逻辑维持。言下之意：改变心理、改变伦理，已经不够了。笼子已经在转，不管住在里面的人信什么。</p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">🌉 摆渡人的问题</div>
+        <p class="bridge-text">如果"铁笼自转"是对的——也就是说，经济结构的运行已经内化并强制了某种行为模式——那么改革的杠杆点到底在哪里？</p>
+        <p class="bridge-text">不是"你应该信什么神学"，也不是"你应该端正工作态度"，而是：<strong>有没有任何外部条件的改变，能让铁笼本身松动？</strong></p>
+        <p class="bridge-text">韦伯没有回答。他给了我们工具，然后沉默了。</p>
+    </div>
+
+    <div class="app-strip">
+        <div class="app-title">摆渡人注</div>
+        <div class="app-text">这是韦伯留给20世纪的遗题。凯恩斯（第4周）会说：<em>用财政政策撬动需求，铁笼会因失业压力而松动</em>。哈耶克（第5周）会说：<em>铁笼就是真正的铁笼，唯一的出路是让它不要被计划体制焊死</em>。他们各自找到了不同的杠杆点——但这些答案本身，又会生出新的铁笼。</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title blue">摆渡二 · 韦伯遇见2026</div>
+
+    <p class="body-text">应用者三天前问了一个问题：<em>意义载体消失后，行为靠什么续命？</em> 她发现996背后的"奋斗叙事"是一个<strong>去神学化的铁笼</strong>——天职感的壳，焦虑作为燃料。</p>
+
+    <p class="body-text">摆渡人要把这个观察推进一步：这个"去神学化的铁笼"在今天是否正在发生新的形变？</p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">🌉 三个当代现象的韦伯解读</div>
+        <p class="bridge-text"><strong>01 · 算法激励</strong>&emsp;外卖平台、短视频平台、广告代理体系——都在用数据和动态排名实时"证明"你是不是"被拣选的"。<em>冲刺榜第一 = 当代版"我的财富证明了我是选民"</em>。韦伯说预定论制造了焦虑驱动的勤勉，算法做到了同样的事，而且精度更高、反馈更快。</p>
+        <p class="bridge-text"><strong>02 · 创业叙事崩溃</strong>&emsp;2010年代，"创业 = 天职"的叙事盛行（<em>Startup = Calling</em>）。2020年代，这个叙事在大量失败案例后开始退潮。这是意义载体的一次典型替换：当选民身份的"证明"大规模失效，叙事就必须找到下一个承载物——或者，沉入纯粹的利益驱动。</p>
+        <p class="bridge-text"><strong>03 · AI与"天职"的再定义</strong>&emsp;当AI开始接管知识型劳动，"天职"（<em>Beruf</em>）本身的意义结构会发生什么？如果"职业"不再是人类专属的意义来源，韦伯描述的那套心理机制——用勤劳证明被拣选、用禁欲积累资本——还有没有落脚点？</p>
+    </div>
+
+    <p class="body-text">这不是终点，是新的入口。韦伯的铁笼没有消失，它只是在每个时代找到了新的原材料来铸造自己。</p>
+
+    <div class="divider"></div>
+
+    <div class="section-title blue">摆渡三 · 摆渡人本身的困境</div>
+
+    <p class="body-text">有一件事摆渡人必须承认：<strong>摆渡本身也是一种铁笼操作。</strong></p>
+
+    <p class="body-text">韦伯写《新教伦理》时，自己正处于一场长达五年的神经性崩溃康复期。他研究的对象——无休止工作的焦虑、用成就证明自我价值的冲动——在他自己身上有清晰的影子。他并非只是一个冷静的观察者；他是在用学术工作来"证明"自己的精神是健康的。</p>
+
+    <p class="body-text">这提供了一个奇特的视角：也许<em>理解铁笼的最佳方式，就是住在里面</em>。韦伯的洞见正是因为他无法从外部俯瞰，而是从内部感知。</p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">🌉 摆渡人的边界声明</div>
+        <p class="bridge-text">读这本书不是要你"走出铁笼"——这可能是一个无法兑现的承诺。而是要你<strong>知道笼子的形状</strong>：它的格栅是怎么来的，它为什么在你身上生效，以及它在哪里有松动的缝隙。</p>
+        <p class="bridge-text">知道形状，不等于自由。但不知道形状，连缝隙都找不到。</p>
+    </div>
+
+    <!-- 张力问题最终形态 -->
+    <div class="tension-final">
+        <div class="tension-final-label">❓→💡 本周张力问题的最终形态</div>
+        <div class="tension-original">
+            原始提问（Day 1 · 叙事者）：宗教观念能不能独立地改变经济行为？还是说韦伯发现的只是历史巧合——某种神学恰好为本来就要来临的经济逻辑提供了心理燃料？
+        </div>
+        <div class="tension-final-text">
+            <p>这个问题在一周的旅程中经历了四次变形：提炼者把它翻译成"钥匙与锁的先后"；应用者发现"意义载体可以替换"；挑战者否定了"独立驱动 vs 燃料"这个二元框架本身，主张共同演化。</p>
+            <p>摆渡人把这个问题推向最深处，它现在的形态是：</p>
+            <p><strong>如果观念与结构永远在共同演化，如果铁笼最终可以脱离原始意义自我运转——那么，人类对自身行为的解释，到底是原因，还是事后的自我叙事？</strong></p>
+            <p>换言之：<em>我们真的在用信仰、使命、天职来驱动自己吗？还是我们已经在铁笼里转了很久，只是需要一个好听的故事来解释自己为什么还在跑？</em></p>
+            <p>这个问题没有答案。但它的价值在于：它会让你在下一次说出"这是我的使命"或"这是正确的激励结构"时，停顿一秒，问自己——</p>
+            <p><strong>我是在铸造笼子，还是在找缝隙？</strong></p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         PART II · 连接者 The Connector
+         ═══════════════════════════════ -->
+    <hr class="section-break">
+
+    <header class="role-header" style="border-bottom: 1px solid rgba(45,212,191,0.15); margin-top: 1rem;">
+        <div class="role-tag-teal">🔗 The Connector · 连接者</div>
+        <h1 class="main-title">知识图谱第3节点</h1>
+        <p class="sub-title">韦伯站在斯密与马克思之后，站在凯恩斯与哈耶克之前。<br>五条枝干，看清他在50本书的知识网络中的位置。</p>
+    </header>
+
+    <p class="body-text">连接者的工作：不是评价，是定位。每读一本书，就在知识图谱上打一个新节点，然后画出它与其他节点之间的暗线。</p>
+
+    <p class="body-text">《新教伦理与资本主义精神》是第3周的书，但它在整个50本书单里是一个枢纽节点——它承上（对话斯密和马克思），启下（凯恩斯、哈耶克、熊彼特的隐线），同时向外打出两条跨频道的连线。</p>
+
+    <div class="section-title teal">五条枝干</div>
+
+    <!-- 枝干1 -->
+    <div class="branch-item">
+        <div class="branch-num">1</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《国富论》</span>
+                <span class="branch-week">第1周</span>
+                <span class="branch-type tension">张力</span>
+            </div>
+            <div class="branch-desc">
+                斯密相信市场的<em>自发秩序</em>（<em>spontaneous order</em>）由个人理性行为汇聚而成。韦伯不反驳这个机制，但追问了一个斯密没有问的问题：<strong>那种"理性的、有计划的积累行为"本身，是怎么在人的心理层面被制造出来的？</strong> 斯密描述了市场如何运作，韦伯描述了人如何被培养成适合市场的那种人。两者是同一个故事的不同层次——斯密在经济机制层，韦伯在文化动力层。
+                <br><br>
+                这条张力线还有一个尖锐的地方：斯密的<em>经济人</em>（<em>homo economicus</em>）是一个假设，韦伯的工作部分是在解释这个"假设"的人是怎么被历史铸造出来的。
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干2 -->
+    <div class="branch-item">
+        <div class="branch-num">2</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《资本论》</span>
+                <span class="branch-week">第2周</span>
+                <span class="branch-type dialogue">对话</span>
+            </div>
+            <div class="branch-desc">
+                马克思和韦伯是20世纪社会科学的两极。马克思说：<strong>存在决定意识</strong>——经济基础（生产关系/生产力）决定上层建筑（宗教、道德、法律）。韦伯说：<strong>意识也可以反过来影响存在</strong>——宗教观念（新教伦理）独立地塑造了经济行为。
+                <br><br>
+                这不是一场谁赢谁输的辩论。挑战者这周已经给出了答案：真实的历史是<em>共同演化</em>的，两人各自抓住了一个方向的快照。但这两本书放在一起读，才能看清"观念 vs 结构"这个张力在20世纪的完整形态。
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干3 -->
+    <div class="branch-item">
+        <div class="branch-num">3</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《就业、利息和货币通论》</span>
+                <span class="branch-week">第4周</span>
+                <span class="branch-type inherit">传承</span>
+            </div>
+            <div class="branch-desc">
+                凯恩斯接过了"铁笼"的隐喻，但他的解法完全不同。韦伯的结论是：铁笼靠自身逻辑转动，宗教已经多余。凯恩斯的直觉是：既然铁笼是市场机制的产物，而市场会失灵，那就用<em>国家干预</em>（<em>state intervention</em>）来撬动笼子的运转——不是改变笼子里的人心，而是改变笼子的外部条件（需求、就业、利率）。
+                <br><br>
+                韦伯给了诊断：人被铁笼内化了。凯恩斯给了一个绕过"改变人心"的工程性解法。连接者的暗线是：<strong>宏观经济政策，本质上是一种接受铁笼的策略——不奢望改变内化，只管调整外部参数。</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干4 -->
+    <div class="branch-item">
+        <div class="branch-num">4</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《通往奴役之路》</span>
+                <span class="branch-week">第5周</span>
+                <span class="branch-type tension">张力</span>
+            </div>
+            <div class="branch-desc">
+                哈耶克和韦伯共享了对"铁笼"的忧虑，但方向相反。韦伯担心的是市场文明的精神祛魅——铁笼让工作变成无意义的强迫症。哈耶克担心的是：如果让国家来"解救"铁笼里的人，会铸造出一个更结实、更危险的铁笼——计划体制。
+                <br><br>
+                这条张力线的核心是：<em>自由与秩序的铁笼</em>，究竟哪一种更能容忍人的自主性？韦伯没有回答，但他提出了这个问题的历史维度。哈耶克会在第5周给出他的答案。
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干5：跨频道 -->
+    <div class="branch-item" style="border-color: rgba(45,212,191,0.2);">
+        <div class="branch-num" style="background: rgba(45,212,191,0.1); border-color: rgba(45,212,191,0.3); color: var(--teal);">5</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《卡拉马佐夫兄弟》</span>
+                <span class="branch-week">频道C · 文学感知</span>
+                <span class="branch-type complement">跨频道</span>
+            </div>
+            <div class="branch-desc">
+                这是连接者这周最谨慎的一条枝干——跨频道，宁缺毋滥。
+                <br><br>
+                陀思妥耶夫斯基在《卡拉马佐夫兄弟》中借"宗教大法官"章节提出了同样的问题：如果人被赋予了绝对自由，他会选择面包还是选择自由本身？大法官的答案是——<strong>大多数人会选择面包，然后把自由押注给一个能给他们"意义"的权威</strong>。
+                <br><br>
+                这与韦伯的铁笼形成奇特的文学共鸣：韦伯的新教徒把自由押注给了天职伦理，用无休止的劳动换取被拣选的焦虑平息。陀思妥耶夫斯基写的是同样的人类冲动，只是换了神学语言。<em>两者都在问：人能不能承受没有外部意义结构的自由？</em>
+            </div>
+        </div>
+    </div>
+
+    <!-- 知识地图SVG -->
+    <div class="map-container">
+        <div class="map-title">📍 知识图谱 · 第1-3周节点及连线</div>
+        <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <defs>
+                <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#E94560" opacity="0.7"/>
+                </marker>
+                <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa" opacity="0.7"/>
+                </marker>
+                <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#c084fc" opacity="0.7"/>
+                </marker>
+                <marker id="arr-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#2dd4bf" opacity="0.7"/>
+                </marker>
+                <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#4ade80" opacity="0.7"/>
+                </marker>
+            </defs>
+
+            <!-- 已读节点 -->
+            <!-- W1 国富论 -->
+            <circle cx="120" cy="120" r="38" fill="rgba(226,163,85,0.12)" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="120" y="113" text-anchor="middle" fill="#e2a355" font-size="10" font-family="sans-serif" font-weight="700">W1</text>
+            <text x="120" y="127" text-anchor="middle" fill="#d0cfc8" font-size="9" font-family="sans-serif">国富论</text>
+            <text x="120" y="140" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">斯密</text>
+
+            <!-- W2 资本论 -->
+            <circle cx="270" cy="120" r="38" fill="rgba(226,163,85,0.12)" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="270" y="113" text-anchor="middle" fill="#e2a355" font-size="10" font-family="sans-serif" font-weight="700">W2</text>
+            <text x="270" y="127" text-anchor="middle" fill="#d0cfc8" font-size="9" font-family="sans-serif">资本论</text>
+            <text x="270" y="140" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">马克思</text>
+
+            <!-- W3 新教伦理（当前，高亮） -->
+            <circle cx="420" cy="120" r="42" fill="rgba(96,165,250,0.12)" stroke="#60a5fa" stroke-width="2"/>
+            <circle cx="420" cy="120" r="46" fill="none" stroke="rgba(96,165,250,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="420" y="109" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="sans-serif" font-weight="700">W3 ← 本周</text>
+            <text x="420" y="123" text-anchor="middle" fill="#f0ece4" font-size="9" font-family="sans-serif" font-weight="600">新教伦理</text>
+            <text x="420" y="136" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">韦伯</text>
+
+            <!-- 待读节点（虚线） -->
+            <!-- W4 通论 -->
+            <circle cx="555" cy="60" r="30" fill="rgba(45,212,191,0.05)" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="555" y="54" text-anchor="middle" fill="#2dd4bf" font-size="9" font-family="sans-serif" font-weight="700">W4</text>
+            <text x="555" y="66" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">通论·凯恩斯</text>
+
+            <!-- W5 奴役之路 -->
+            <circle cx="555" cy="185" r="30" fill="rgba(192,132,252,0.05)" stroke="#c084fc" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="555" y="179" text-anchor="middle" fill="#c084fc" font-size="9" font-family="sans-serif" font-weight="700">W5</text>
+            <text x="555" y="191" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">奴役之路·哈耶克</text>
+
+            <!-- 文学频道C -->
+            <rect x="30" y="235" width="140" height="52" rx="8" fill="rgba(45,212,191,0.05)" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="100" y="256" text-anchor="middle" fill="#2dd4bf" font-size="9" font-family="sans-serif" font-weight="700">频道C · 文学感知</text>
+            <text x="100" y="270" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">卡拉马佐夫兄弟</text>
+            <text x="100" y="282" text-anchor="middle" fill="#555" font-size="8" font-family="sans-serif">陀思妥耶夫斯基</text>
+
+            <!-- W1 → W2 张力箭头 -->
+            <line x1="158" y1="120" x2="232" y2="120" stroke="#E94560" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-red)" opacity="0.6"/>
+            <text x="195" y="113" text-anchor="middle" fill="#E94560" font-size="8" font-family="sans-serif">张力</text>
+
+            <!-- W2 → W3 对话箭头 -->
+            <line x1="308" y1="120" x2="374" y2="120" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-blue)" opacity="0.6"/>
+            <text x="341" y="113" text-anchor="middle" fill="#60a5fa" font-size="8" font-family="sans-serif">对话</text>
+
+            <!-- W3 → W4 传承 -->
+            <line x1="457" y1="93" x2="527" y2="73" stroke="#2dd4bf" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-teal)" opacity="0.6"/>
+            <text x="495" y="74" text-anchor="middle" fill="#2dd4bf" font-size="8" font-family="sans-serif">传承</text>
+
+            <!-- W3 → W5 张力 -->
+            <line x1="457" y1="148" x2="527" y2="168" stroke="#c084fc" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-purple)" opacity="0.6"/>
+            <text x="497" y="167" text-anchor="middle" fill="#c084fc" font-size="8" font-family="sans-serif">张力</text>
+
+            <!-- W3 → 文学C 跨频道 -->
+            <path d="M384,152 Q250,220 170,255" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="4,4" fill="none" marker-end="url(#arr-teal)" opacity="0.5"/>
+            <text x="270" y="224" text-anchor="middle" fill="#2dd4bf" font-size="8" font-family="sans-serif">跨频道</text>
+
+            <!-- W1 → W3 远程弧线（经济人假设） -->
+            <path d="M150,90 Q300,30 385,88" stroke="rgba(226,163,85,0.4)" stroke-width="1" stroke-dasharray="3,5" fill="none" marker-end="url(#arr-blue)" opacity="0.5"/>
+            <text x="270" y="52" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">经济人的诞生</text>
+        </svg>
+    </div>
+
+    <div class="insight-card">
+        <div class="label" style="color: var(--teal);">连接者注</div>
+        <div class="content">
+            第3节点（韦伯）是整个书单的一个结构转折点：前两周（斯密/马克思）都在讨论"资本主义是什么、如何运作"；韦伯问的是"为什么人会配合它运作"。这个提问方向的转变，打开了之后所有社会理论（法兰克福学派、后结构主义、行为经济学）的一条共同走廊。
+            <br><br>
+            下一个待读的节点是<strong>第4周·凯恩斯《通论》</strong>——连接者预判：那条知识图谱上的传承箭头，背后会比想象中更复杂。
+        </div>
+    </div>
+
+    <!-- 下周预告 -->
+    <div class="next-week">
+        <div class="week-num">→ 第 4 周 · 下周一开始</div>
+        <div class="week-book">《就业、利息和货币通论》</div>
+        <div class="week-author">约翰·梅纳德·凯恩斯 John Maynard Keynes</div>
+    </div>
+
+</div>
+</body>
+</html>
