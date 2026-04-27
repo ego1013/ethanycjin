@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 15 · Prompt 工程的本质：不是「咒语」是「规格说明书」 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #001a0a 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--green-dim);
+    color: var(--green);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--green), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--green);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--green);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--green-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--purple); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+
+  /* ── Five Pillars ── */
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+  }
+
+  .pillar .pillar-num {
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    background: var(--bg);
+    padding: 0 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .pillar.p1 { border-left: 4px solid var(--blue); }
+  .pillar.p1 .pillar-num { color: var(--blue); }
+  .pillar.p2 { border-left: 4px solid var(--purple); }
+  .pillar.p2 .pillar-num { color: var(--purple); }
+  .pillar.p3 { border-left: 4px solid var(--accent); }
+  .pillar.p3 .pillar-num { color: var(--accent); }
+  .pillar.p4 { border-left: 4px solid var(--green); }
+  .pillar.p4 .pillar-num { color: var(--green); }
+  .pillar.p5 { border-left: 4px solid var(--cyan); }
+  .pillar.p5 .pillar-num { color: var(--cyan); }
+
+  .pillar h4 { margin-top: 0.25rem; }
+
+  .pillar p {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── VS Comparison ── */
+  .vs-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    margin: 1.5rem 0;
+  }
+
+  .vs-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .vs-box.bad { border-top: 3px solid var(--red); }
+  .vs-box.good { border-top: 3px solid var(--green); }
+
+  .vs-box .vs-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .vs-box.bad .vs-label { color: var(--red); }
+  .vs-box.good .vs-label { color: var(--green); }
+
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--border);
+    padding-top: 2rem;
+  }
+
+  .vs-box pre {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Module Intro ── */
+  .module-intro {
+    background: linear-gradient(135deg, #001a0a 0%, var(--surface) 100%);
+    border: 2px solid var(--green);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .module-intro .m-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .module-intro h3 { color: var(--green); font-size: 1.2rem; margin-top: 0; margin-bottom: 0.5rem; }
+  .module-intro p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0; }
+
+  @media (max-width: 600px) {
+    .vs-container { grid-template-columns: 1fr; }
+    .vs-divider { padding-top: 0; transform: rotate(90deg); }
+    .hero h1 { font-size: 1.4rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 15</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🚀 第二模块 · 应用篇 · 开篇</div>
+  <h1>Day 15 · Prompt 工程的本质：不是「咒语」是「规格说明书」</h1>
+  <p class="subtitle">为什么好的 Prompt 像好的需求文档？</p>
+  <div class="meta">
+    <span>📅 2026-04-27 Mon</span>
+    <span>📦 第二模块 · 应用篇 · Week 3</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ MODULE INTRO ═══════════════════════════ -->
+<div class="module-intro">
+  <div class="m-icon">🔧</div>
+  <h3>欢迎进入第二模块 · 应用篇</h3>
+  <p>
+    第一模块回答了"大模型<strong style="color:var(--text)">是什么</strong>"。<br>
+    第二模块要回答"大模型<strong style="color:var(--text)">怎么用</strong>"。<br><br>
+    从今天开始，每一课都会回答一个实操问题——<br>
+    你学到的不只是知识，还是可以立即带回工位的技能。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    你有没有遇到过这种情况——
+  </p>
+  <p>
+    你在 ChatGPT 里输入"帮我写个渠道分析报告"，回来的东西泛泛而谈、不痛不痒，全是正确的废话。
+  </p>
+  <p>
+    然后你看到网上有人用同一个模型，输出了一份结构清晰、数据详实、角度犀利的分析。你的第一反应是什么？<strong>"这人用了什么咒语？"</strong>
+  </p>
+  <p>
+    但这里有个反直觉的事实：<span class="highlight">Prompt 工程不是「咒语学」，是「需求规格说明书的写法」</span>。你在工作中天天做的事情——写需求、给下属派任务、向老板汇报——本质上和写 Prompt 是同一件事。
+  </p>
+  <p>
+    今天这节课会告诉你：为什么这个类比成立，以及怎么把你已有的管理技能直接迁移到 AI 协作中。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么 Prompt 是一切应用的起点？</h2>
+  </div>
+
+  <h3>回到 Day 1：模型只看到你给的上下文</h3>
+
+  <p>
+    还记得 Day 1 的核心心智模型吗？大模型做的事情只有一件：<strong>基于上下文，预测下一个 Token 的概率分布</strong>。
+  </p>
+
+  <p>
+    这意味着一件至关重要的事——
+  </p>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 核心洞察</div>
+    <p style="margin:0">
+      <strong>模型输出的质量上限，取决于你输入的质量。</strong><br><br>
+      大模型不会"猜"你想要什么。它没有读心术。它只能从你给的文字中提取所有可用信息，然后在概率空间里找到"最可能的续写"。<br><br>
+      你给它"帮我写个报告"，它的概率空间里全是泛泛的报告模板。<br>
+      你给它"你是一个有 10 年渠道管理经验的分析师，请针对华东区代理商 Q1 出货量下降 15% 的现象，从市场环境、代理商能力、竞品动作三个维度分析根因，用数据说话"——它的概率空间被大幅收窄到了一个专业领域，输出质量会截然不同。
+    </p>
+  </div>
+
+  <p>
+    这不是"模型变聪明了"——它还是同一个模型。<strong>是你的输入质量改变了它的概率分布形状。</strong>
+  </p>
+
+  <h3>类比：给新来的实习生派活</h3>
+
+  <p>
+    你刚招了一个实习生。高材生，聪明，学习能力强——但他对你的业务一无所知。
+  </p>
+
+  <p>
+    你有两种派活方式：
+  </p>
+
+  <div class="vs-container">
+    <div class="vs-box bad">
+      <div class="vs-label">❌ 模糊派活</div>
+      <pre>"帮我看看华东区的数据，
+整理一下。"</pre>
+      <p style="font-size:0.82rem;color:var(--red);margin-top:0.75rem">
+        实习生会怎样？→ 漫无目的地翻数据，产出一堆你不想看的东西，还花了两天时间。
+      </p>
+    </div>
+    <div class="vs-divider">⚡</div>
+    <div class="vs-box good">
+      <div class="vs-label">✅ 精确派活</div>
+      <pre>"请分析华东区 Q1 出货量同比
+下降 15% 的原因。
+- 维度：市场/代理商/竞品
+- 数据源：SAP 出货表 + 月报
+- 产出：1 页 PPT + 3 条建议
+- 今天下午 4 点前给我初稿"</pre>
+      <p style="font-size:0.82rem;color:var(--green);margin-top:0.75rem">
+        实习生会怎样？→ 方向明确，效率高，产出接近你的预期。
+      </p>
+    </div>
+  </div>
+
+  <p>
+    <strong>大模型就是那个实习生。</strong> 它能力很强（相当于同时精通所有领域的多面手），但它对你此时此刻的具体需求一无所知。你不说清楚，它就只能给你一个"平均数"般的通用回答。
+  </p>
+
+  <div class="callout gold">
+    <div class="callout-label">🔑 这个类比的关键</div>
+    <p style="margin:0">
+      你不会觉得给实习生写清晰的任务说明是"念咒语"。你知道那是<strong>管理者的基本功</strong>——越精确的指令，越高效的产出。<br><br>
+      Prompt 工程是完全同样的事。你在管理一个"超级实习生"——能力极强但零上下文。<strong>你的管理能力，直接等于你的 Prompt 能力。</strong>
+    </p>
+  </div>
+
+  <h3>为什么这个技能的半衰期是 🟡 中？</h3>
+
+  <p>
+    坦率说，Prompt 工程的<em>具体技巧</em>（比如什么格式效果好、加不加分隔符之类）会随着模型升级而变化——GPT-5 可能不需要你费力解释的东西，GPT-3.5 必须手把手教。
+  </p>
+
+  <p>
+    但 Prompt 工程的<em>底层逻辑</em>——<strong>如何把模糊需求转化为精确规格</strong>——这是一个永不过时的元能力。它和你写需求文档、设计 KPI、给团队开任务会的能力是同构的。
+  </p>
+
+  <p>
+    所以今天我们重点讲<strong>逻辑</strong>，不死记技巧。技巧会过时，逻辑不会。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — Prompt 工程的底层逻辑与五要素框架</h2>
+  </div>
+
+  <h3>第一层理解：Prompt 在做什么？</h3>
+
+  <p>
+    从 Day 2 的知识出发，我们知道模型的输出是从一个<em>概率分布</em>中采样得到的。Prompt 的作用是什么？
+  </p>
+
+  <div class="diagram">
+    <span class="flow">【没有 Prompt 约束】</span><br>
+    模型面对的概率空间：<span class="error">100% 开放</span> → 所有可能的续写都有概率<br>
+    ↓ 输出质量 ≈ "互联网平均水平"<br><br>
+    <span class="flow">【精确 Prompt】</span><br>
+    模型面对的概率空间：<span class="ok">被约束到特定领域 + 特定格式 + 特定角色</span><br>
+    ↓ 输出质量 ≈ "该领域专家的合格产出"
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-label">📐 Prompt 的数学直觉</div>
+    <p style="margin:0">
+      你可以把 Prompt 理解为一个<strong>概率空间的过滤器</strong>。<br><br>
+      没有 Prompt → 模型在所有可能的回答中做均匀采样 → 大概率出来一个"平庸但安全"的回答。<br><br>
+      有精确 Prompt → 模型的概率分布被<strong>大幅重塑</strong>——不相关的 Token 概率趋近于零，相关的 Token 概率被放大 → 输出集中在你想要的范围里。<br><br>
+      这和 Day 5 的 Temperature 不同——Temperature 调的是"分布的尖锐程度"，Prompt 调的是<strong>"分布本身的形状"</strong>。一个是调旋钮，一个是换赛道。
+    </p>
+  </div>
+
+  <h3>第二层理解：五要素框架（CRISP）</h3>
+
+  <p>
+    好的 Prompt 和好的需求文档有完全相同的结构。我把它总结为 <strong>CRISP</strong> 五要素——每一个你在工作中都用过：
+  </p>
+
+  <div class="pillar-grid">
+
+    <div class="pillar p1">
+      <span class="pillar-num">C · CONTEXT</span>
+      <h4>① 上下文：你是谁？我是谁？场景是什么？</h4>
+      <p>
+        <strong>工作类比</strong>：你给新来的人派活，第一件事是什么？——介绍情况。"我们部门管华东区 200 家代理商，上季度出货量掉了 15%，老板要我们出分析报告。"
+      </p>
+      <p>
+        <strong>Prompt 等价物</strong>：<code>你是一位有 10 年经验的渠道管理分析师。背景：我们负责华东区 200 家代理商的绩效管理，Q1 出货量同比下降 15%。</code>
+      </p>
+      <p>
+        <strong>为什么重要</strong>：上下文决定了模型"以谁的身份"来输出。没有上下文的模型就是一个没有背景知识的通才——它什么都知道一点，什么都不精。给了角色和场景，它的概率分布就被锚定到了那个领域的专业语料上。
+      </p>
+    </div>
+
+    <div class="pillar p2">
+      <span class="pillar-num">R · ROLE & RULES</span>
+      <h4>② 角色与规则：期望什么行为标准？</h4>
+      <p>
+        <strong>工作类比</strong>：你不只告诉实习生"去分析"，你还会说"数据要注明来源，不确定的结论用'可能'措辞，不要给没有依据的建议。"
+      </p>
+      <p>
+        <strong>Prompt 等价物</strong>：<code>要求：所有数据点必须标注来源；不确定的推断需明确标注"假设"；只给可执行的建议，不给空泛的方向。</code>
+      </p>
+      <p>
+        <strong>为什么重要</strong>：这是在设置<strong>行为边界</strong>——告诉模型"什么该做、什么不该做"。没有规则的模型会倾向于"过度满足"（Day 4 的 Reward Hacking 遗产），给你一堆看起来漂亮但实际空洞的内容。明确的规则让它知道"在哪里说不"。
+      </p>
+    </div>
+
+    <div class="pillar p3">
+      <span class="pillar-num">I · INPUT</span>
+      <h4>③ 输入素材：给它什么信息来工作？</h4>
+      <p>
+        <strong>工作类比</strong>：你不会让实习生自己去找数据。你会说"SAP 出货表在共享盘 XX 路径，月报在 YY，竞品情报在 ZZ。"
+      </p>
+      <p>
+        <strong>Prompt 等价物</strong>：直接把关键数据贴进 Prompt，或者指定信息来源。<code>以下是华东区 Q1 的出货数据：[表格]</code>
+      </p>
+      <p>
+        <strong>为什么重要</strong>：这和 Day 12 的 RAG 概念直接相关——模型自己"记忆"的知识可能不够新、不够准，但你在 Prompt 里提供的信息它能<strong>100% 看到</strong>。把关键数据喂进去，是最简单直接的"注入知识"方式。
+      </p>
+    </div>
+
+    <div class="pillar p4">
+      <span class="pillar-num">S · SPECIFICATION</span>
+      <h4>④ 输出规格：要什么格式、什么长度、什么结构？</h4>
+      <p>
+        <strong>工作类比</strong>：你一定对实习生说过——"不要给我 10 页 Word，给我 1 页 PPT，三条核心结论加数据支撑。"
+      </p>
+      <p>
+        <strong>Prompt 等价物</strong>：<code>输出格式：先给 3 条核心结论（各一句话），再给每条结论的数据支撑（不超过 3 个数据点），最后给 2 条可执行建议。总计不超过 500 字。</code>
+      </p>
+      <p>
+        <strong>为什么重要</strong>：大模型的默认行为是"尽可能面面俱到"——这是 RLHF 训练的结果（Day 4），用户偏好详细的回答，模型就学会了"宁可多说不可少说"。明确的格式约束是对抗这种倾向的最有效武器。
+      </p>
+    </div>
+
+    <div class="pillar p5">
+      <span class="pillar-num">P · PERSONA CHECK</span>
+      <h4>⑤ 验收标准：怎么判断产出合格？</h4>
+      <p>
+        <strong>工作类比</strong>：你收到实习生的初稿，你会用什么标准判断？——"数据对不对、逻辑通不通、建议能不能落地、老板看了会不会满意。"
+      </p>
+      <p>
+        <strong>Prompt 等价物</strong>：<code>请在给出回答后，自查以下三点：(1) 所有数据点是否有来源？ (2) 结论和数据之间是否有因果关系？ (3) 建议是否具体到可以直接执行？如果不满足，请自行修正。</code>
+      </p>
+      <p>
+        <strong>为什么重要</strong>：这是<strong>自检机制</strong>——让模型在输出前对自己做一次"质量审计"。这个方法效果远超你的直觉。原因在于：模型在生成"自检回答"时，相当于在做一次<strong>二次推理</strong>——它的上下文里多了自己之前的输出，可以用它来"回头看"是否自洽。
+      </p>
+    </div>
+
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 CRISP 框架与需求文档的对照</div>
+    <p style="margin:0">
+      <strong>C</strong>ontext（上下文）→ 项目背景<br>
+      <strong>R</strong>ole & Rules（角色与规则）→ 验收标准与约束条件<br>
+      <strong>I</strong>nput（输入素材）→ 参考资料与数据来源<br>
+      <strong>S</strong>pecification（输出规格）→ 交付物定义<br>
+      <strong>P</strong>ersona Check（验收标准）→ QA 自检清单<br><br>
+      你写过多少份需求文档？——<strong>你就有多少年的 Prompt 工程经验。</strong>
+    </p>
+  </div>
+
+  <h3>第三层理解：一个真实的对比实验</h3>
+
+  <p>
+    让我们拿一个你工作中的真实场景来做对比——<strong>"代理商绩效下滑分析"</strong>：
+  </p>
+
+  <div class="vs-container">
+    <div class="vs-box bad">
+      <div class="vs-label">❌ 新手 Prompt</div>
+      <pre>帮我分析一下代理商
+绩效下滑的原因。</pre>
+    </div>
+    <div class="vs-divider">→</div>
+    <div class="vs-box good">
+      <div class="vs-label">✅ CRISP Prompt</div>
+      <pre><span style="color:#3b82f6">【C·上下文】</span>
+你是一位渠道管理高级分析师。
+我负责华东区 200 家代理商的
+绩效管理。
+
+<span style="color:#a855f7">【R·角色与规则】</span>
+分析必须数据驱动，每条结论
+引用至少 1 个数据点。
+不给空泛建议，只给可执行动作。
+
+<span style="color:#f97316">【I·输入素材】</span>
+Q1 数据：出货量同比-15%，
+其中 Top 20 客户-8%，
+腰部客户-22%，尾部客户-5%。
+行业大盘同比-3%。
+
+<span style="color:#22c55e">【S·输出规格】</span>
+产出：3 条核心发现 + 2 条建议，
+各配 1 行数据支撑。
+总计 300 字以内。
+
+<span style="color:#06b6d4">【P·自检】</span>
+输出后自查：结论和数据是否
+一一对应？建议是否可直接执行？</pre>
+    </div>
+  </div>
+
+  <p>
+    右边这个 Prompt 看起来长了很多——但它<strong>做的事情和你给下属写任务说明完全一样</strong>。区别只是对象从人变成了模型。
+  </p>
+
+  <p>
+    实际效果差异有多大？
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>新手 Prompt</th>
+        <th>CRISP Prompt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>输出长度</td>
+        <td>800-1200 字（多数是废话）</td>
+        <td>250-350 字（精准命中）</td>
+      </tr>
+      <tr>
+        <td>数据引用</td>
+        <td>通用统计，没有具体数字</td>
+        <td>直接引用你给的数据</td>
+      </tr>
+      <tr>
+        <td>建议质量</td>
+        <td>"建议加强沟通" 级别</td>
+        <td>"腰部客户需专项拜访计划" 级别</td>
+      </tr>
+      <tr>
+        <td>可用性</td>
+        <td>需要大幅改写才能用</td>
+        <td>稍作调整即可汇报</td>
+      </tr>
+      <tr>
+        <td>耗时</td>
+        <td>写 Prompt 10 秒 + 改输出 30 分钟</td>
+        <td>写 Prompt 3 分钟 + 微调 5 分钟</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ 常见误区</div>
+    <p style="margin:0">
+      <strong>"Prompt 越长越好？"</strong> —— 不是。长度不重要，<strong>信息密度</strong>才重要。一个 30 字的精确 Prompt 可以好过一个 500 字的啰嗦 Prompt。关键是：你给的每一句话都在缩窄模型的概率空间——如果一句话不能帮模型"排除错误方向"，那它就是噪音。<br><br>
+      <strong>"要背 Prompt 模板？"</strong> —— 不需要。模板会过时，原理不会。你只需要内化 CRISP 五要素的思维方式，具体表达可以根据场景灵活调整。就像你不需要背"任务分配模板"来给下属派活——你知道该说什么，自然就说出来了。
+    </p>
+  </div>
+
+  <h3>第四层理解：Prompt 工程的进阶技巧（Three Big Levers）</h3>
+
+  <p>
+    CRISP 是基本功，在此之上有三个进阶杠杆：
+  </p>
+
+  <h4>杠杆 1：Few-shot Examples（范例学习）</h4>
+
+  <p>
+    你给实习生派活的时候，如果任务复杂，你会怎么做？——<strong>给一个好的样例</strong>。"上次张三做的那个报告，你参考那个格式。"
+  </p>
+
+  <p>
+    对模型也一样。在 Prompt 里给 1-3 个期望输出的范例，模型会强烈"模仿"你的格式和风格。这比用文字描述格式高效得多——因为<strong>模型在训练时就被优化成了一个强大的模式模仿器</strong>（Day 1 的 NTP 本质）。
+  </p>
+
+  <h4>杠杆 2：Step-by-step（分步拆解）</h4>
+
+  <p>
+    复杂任务不要让模型一步到位。你不会让实习生"直接给我一份完美的分析报告"——你会说"先梳理数据，再找异常点，最后写结论"。
+  </p>
+
+  <p>
+    在 Prompt 里给出明确的步骤，模型会<strong>按步骤逐步推理</strong>，而不是跳到结论。这和明天要讲的<em>思维链（CoT）</em>直接相关——本质上你在帮模型构建一条更高质量的推理路径。
+  </p>
+
+  <h4>杠杆 3：Negative Prompting（负面约束）</h4>
+
+  <p>
+    告诉模型<strong>不要做什么</strong>，有时候比告诉它要做什么更有效。"不要用模糊措辞""不要给超过 3 条建议""不要编造数据"。
+  </p>
+
+  <p>
+    原理也回到了 Day 4——RLHF 训练让模型有"讨好用户"的倾向，负面约束是显式地告诉它"在这些方向上不需要讨好我"。
+  </p>
+
+  <div class="callout purple">
+    <div class="callout-label">🧰 三个杠杆的成本-收益排序</div>
+    <p style="margin:0">
+      <strong>投入产出比最高 → 最低：</strong><br><br>
+      ① <strong>Negative Prompting</strong>（加一句话就能避免最常见的问题）<br>
+      ② <strong>Step-by-step</strong>（分 3 步能让复杂任务质量提升 30-50%）<br>
+      ③ <strong>Few-shot Examples</strong>（效果最强但准备成本最高——你得先有好样例）<br><br>
+      和管理一样：<strong>先画红线，再定流程，最后给模板。</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>一、你已经是 Prompt 工程师了</h3>
+
+  <p>
+    如果你在工作中做过以下任何一件事，你就已经在做 Prompt 工程：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>你的工作场景</th>
+        <th>等价的 Prompt 技能</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>给新员工写入职说明</td>
+        <td>Context + Role 设定</td>
+      </tr>
+      <tr>
+        <td>给下属写绩效考核标准</td>
+        <td>Rules + Specification</td>
+      </tr>
+      <tr>
+        <td>把客户需求转化为产品 PRD</td>
+        <td>把模糊意图转化为精确 Prompt</td>
+      </tr>
+      <tr>
+        <td>给实习生一个参考报告的样例</td>
+        <td>Few-shot Examples</td>
+      </tr>
+      <tr>
+        <td>对外包团队说"不要做 XX"</td>
+        <td>Negative Prompting</td>
+      </tr>
+      <tr>
+        <td>把大项目拆成周计划</td>
+        <td>Step-by-step 分步拆解</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    认识到这一点很重要——因为<strong>你不需要"从零学起"</strong>。你只需要把已有的管理能力"翻译"一下，应用到人机协作的新场景里。
+  </p>
+
+  <h3>二、对渠道管理工作的直接影响</h3>
+
+  <p>
+    几个你下午就可以试的 CRISP 应用场景：
+  </p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">代理商月报自动分析</span>
+      <div class="card-body">
+        把代理商的月报原文贴进 Prompt（I · 输入），设定分析维度和输出格式（S · 规格），加上"不要编造没有出现在原文中的数据"（Negative Prompting）。<br><br>
+        <strong>预期效果</strong>：原本需要 30 分钟手工梳理的月报，5 分钟出初稿。你只需要做最终判断和修正——把时间花在"判断"而非"整理"上。
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">渠道政策 FAQ 自动回复草稿</span>
+      <div class="card-body">
+        给模型你们的渠道政策文档（I · 输入），设定角色为"渠道支持专员"（C · 上下文），规则是"只回答文档中有明确依据的内容，没有把握的说'请联系渠道经理确认'"（R · 规则）。<br><br>
+        <strong>预期效果</strong>：这就是 Day 12 讲的 Prompt + RAG 的最简版本。不需要任何技术搭建，直接在 Chat 界面就能用。
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">竞品情报结构化整理</span>
+      <div class="card-body">
+        把收集到的竞品碎片信息贴进去，用 Step-by-step 让模型"先分类 → 再比较 → 最后给出差异化分析"。加一个 Few-shot（给一个你认为好的竞品分析范例）。<br><br>
+        <strong>预期效果</strong>：从"信息散点"到"结构化洞察"的转化效率提升 5-10 倍。
+      </div>
+    </div>
+  </div>
+
+  <h3>三、更深一层的思考</h3>
+
+  <div class="callout cyan">
+    <div class="callout-label">🔭 Prompt 工程的未来</div>
+    <p style="margin:0">
+      现在的 Prompt 工程还比较"手工"——你需要自己想清楚五个要素然后写出来。<br><br>
+      但趋势很明确：<strong>模型正在变得越来越会"追问"</strong>。Claude、GPT-4o 已经会在你给出模糊指令时主动问你"你想要什么格式？""受众是谁？"——它们在用自己的能力<strong>帮你补全 CRISP 框架的缺失部分</strong>。<br><br>
+      这意味着：未来你不需要写完美的 Prompt——但你需要<strong>能判断模型的追问是否在点子上</strong>。这又回到了管理能力：好的管理者不一定亲自写需求文档，但他一眼就能看出需求文档哪里不对。<br><br>
+      <strong>Prompt 工程的终极形态不是"写 Prompt"，而是"管理 AI 的工作质量"。</strong>
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ Checkpoint · Day 15</h3>
+
+  <p><strong>场景：你需要让 AI 帮你准备明天向老板汇报的"Q1 华东区代理商绩效下滑分析"。以下哪种做法最有效？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      直接说"帮我分析华东区代理商绩效下滑"，然后对输出不满意的部分再追问修改，通过多轮对话逐步逼近想要的结果。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      从网上找一个"最强分析 Prompt 模板"，填入自己的数据，直接发给 AI。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      用 CRISP 框架：设定角色（渠道分析师）、给规则（数据驱动）、贴数据、定格式（3 条核心发现 + 2 条建议）、加自检。一次发出，获得高质量初稿。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先花 5 分钟想清楚"老板最关心什么"——是整体数据、还是头部客户风险、还是竞品威胁？然后针对老板的关注点用 CRISP 框架写 Prompt，而不是泛泛分析。最后让 AI 自检"如果我是一个关注 XX 的老板，这个分析是否回答了我的核心疑问"。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问：如果你选了 C 或 D，请估算一下——用 CRISP 框架写 Prompt 大概需要几分钟？和你直接自己写这份分析相比，总耗时（写 Prompt + 审核修改输出）大概能节省多少？给一个百分比。</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日预告：Day 16 · 思维链（CoT）与推理增强</h3>
+  <p>
+    今天你学会了怎么给 AI"派活"——告诉它做什么、怎么做。
+  </p>
+  <p>
+    但有一类问题，光给指令不够——你需要让 AI <strong>"想清楚再说"</strong>。
+  </p>
+  <p>
+    比如：一个代理商的返利政策涉及 5 个条件的组合判断，模型直接给答案经常出错。但如果你让它"先列出所有条件 → 逐一判断是否满足 → 再给结论"——准确率能从 60% 飙升到 90%。
+  </p>
+  <p>
+    这就是<em>思维链（Chain of Thought）</em>。它不是让模型"更聪明"，而是让模型<strong>把推理过程展开</strong>——像你要求下属"别直接告诉我结论，先把推导过程写出来"。
+  </p>
+  <p>
+    Day 16 将揭示：为什么"展开推理步骤"能大幅提升准确率，以及这对模型的概率分布意味着什么。
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">Prompt = 概率空间的过滤器</span>
+    <div class="card-body">
+      Prompt 不是"咒语"，是<strong>对模型概率空间的约束和重塑</strong>。精确的 Prompt 把不相关的 Token 概率压趋于零，让模型的输出集中在你需要的范围内。Temperature 调的是分布的尖锐程度，Prompt 调的是分布本身的形状。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">CRISP 五要素 = 需求文档结构</span>
+    <div class="card-body">
+      <strong>C</strong>ontext（上下文/项目背景）→ <strong>R</strong>ole & Rules（角色与规则/约束条件）→ <strong>I</strong>nput（输入素材/参考资料）→ <strong>S</strong>pecification（输出规格/交付物定义）→ <strong>P</strong>ersona Check（验收标准/QA 自检）。你写过需求文档，就会写 Prompt。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">三大进阶杠杆：红线 → 流程 → 模板</span>
+    <div class="card-body">
+      ① Negative Prompting（画红线，投入产出比最高）→ ② Step-by-step（定流程，复杂任务必备）→ ③ Few-shot Examples（给模板，效果最强但准备成本最高）。顺序和管理一样：先画红线，再定流程，最后给模板。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">管理能力 = Prompt 能力</span>
+    <div class="card-body">
+      好的管理者给下属的任务说明精确、有约束、有验收标准。好的 Prompt 工程师给模型的指令精确、有约束、有自检清单。两者是同构的。你不需要"从零学起"Prompt 工程——你只需要把已有的管理技能迁移到人机协作场景。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">Prompt 工程的终极形态：不是写 Prompt，是管理 AI 工作质量</span>
+    <div class="card-body">
+      模型正在变得越来越会"追问"和"自补全"——你不需要写完美的 Prompt，但你需要<strong>能判断 AI 的理解是否准确、输出是否达标</strong>。这是从"操作者"到"管理者"的跃迁，和你管理团队的能力完全一致。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 1</span>
+    <span>NTP 的核心心智模型直接解释了 Prompt 为什么有效——模型只从上下文中采样，你的 Prompt 就是它的全部上下文。输入质量 = 输出质量的上限。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 2</span>
+    <span>概率分布和采样的知识让你理解"Prompt 是概率空间的过滤器"——它改变的是 Token 概率分布的形状本身，而非采样的尖锐程度（那是 Temperature 的事）。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 4</span>
+    <span>RLHF 训练的"讨好用户"倾向（Reward Hacking）解释了为什么模型默认产出冗长废话——明确的格式约束和 Negative Prompting 是对抗这种倾向的武器。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 5</span>
+    <span>Temperature 调的是分布的尖锐度，Prompt 调的是分布的形状——两者是不同维度的控制手段。好的 Prompt + 合适的 Temperature = 最优输出。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 12</span>
+    <span>"黄金优先级"中的 Prompt First 原则——今天你学到了如何把 Prompt 的效能最大化。先穷尽 Prompt 能力，确认不够再考虑 RAG 和 Fine-tune。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 14</span>
+    <span>六层心智模型的第 6 层"应用判断"——Prompt 工程是你把底层知识转化为实际生产力的第一步。从今天起，你从"理解者"开始升级为"驾驭者"。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 16</span>
+    <span>Step-by-step 杠杆的深化版——思维链（CoT）。今天只提了"分步拆解"，明天将深入解释为什么"让模型展开推理步骤"能从概率层面大幅提升准确率。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 15 of 60 · 第二模块 · 应用篇 · Week 3
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
