@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W04·D01 · 叙事者 · 书单精读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.78rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.02em;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+
+        /* Scene opening */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.5rem 1.75rem;
+            margin: 2rem 0;
+            border-radius: 0 6px 6px 0;
+            font-style: italic;
+            font-size: 1rem;
+            color: #bbb;
+            line-height: 1.85;
+        }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Bias note */
+        .bias-note {
+            display: inline;
+            background: rgba(233,69,96,0.12);
+            border: 1px solid rgba(233,69,96,0.25);
+            color: #e97088;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            white-space: nowrap;
+            margin-left: 0.3rem;
+        }
+
+        /* Key fact card */
+        .fact-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            margin: 1.75rem 0;
+        }
+
+        .fact-card .fact-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .fact-card .fact-content {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.75;
+        }
+
+        .fact-card .fact-content strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Timeline */
+        .timeline {
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 8px;
+            bottom: 8px;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .timeline-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+            margin-top: 0.35rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-dot.dim {
+            background: var(--border-light);
+        }
+
+        .timeline-year {
+            font-size: 0.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            color: var(--accent);
+            font-weight: 600;
+            min-width: 36px;
+            margin-top: 0.05rem;
+        }
+
+        .timeline-text {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        /* Contrast box */
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-note {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Footer nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../index.html">书单精读</a>
+        <span>›</span>
+        <span>第 4 周</span>
+        <span>›</span>
+        <span>Day 1 · 叙事者</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🎭 叙事者 The Storyteller · W04-D01</div>
+        <div class="meta">
+            <span>📅 2026-04-27</span>
+            <span>📖 第 4 周 · Day 1 / 5</span>
+            <span>🔢 《就业、利息和货币通论》</span>
+        </div>
+        <h1>晴天的地图，遇见了下雨天</h1>
+        <div class="subtitle">凯恩斯在剑桥等候室写下了什么——一本改写政府角色的书，是怎么诞生在一场大萧条里的</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <!-- Opening scene -->
+        <div class="scene-block">
+            1930年冬，伦敦。失业率越过了15%，还在攀升。<br><br>
+            一位经济学家坐在国王十字车站的咖啡馆里，面前摆着一份财政部的备忘录草稿。他已经告诉首相麦克唐纳——削减政府开支只会让衰退更深。没有人听他的。<br><br>
+            他叫约翰·梅纳德·凯恩斯。他决定写一本书，彻底改写经济学的语言。
+        </div>
+
+        <p>
+            但在走进这本书之前，我们需要先明白：凯恩斯不是在晴天写出《通论》的。他是在雨里，找了一把晴天根本没人想到要造的伞。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">人物</div>
+
+        <h2>一个不像经济学家的经济学家</h2>
+
+        <p>
+            约翰·梅纳德·凯恩斯（<em>John Maynard Keynes</em>，1883—1946）生于剑桥一个学术家庭。他的父亲内维尔·凯恩斯是剑桥大学的逻辑学讲师，母亲是剑桥市第一位女市长。他从小的问题不是能不能读书，而是读什么都太快——伊顿公学第一，剑桥国王学院第一，后来在印度事务部当公务员，三年就不想干了，觉得太无聊，回来教书。
+        </p>
+
+        <p>
+            他是一个收藏绘画的人，是布鲁姆斯伯里文化圈（<em>Bloomsbury Group</em>）的核心成员——和弗吉尼亚·伍尔夫、里顿·斯特雷奇一起喝茶，谈灵魂、谈美、谈为什么过好生活比赚钱更重要。他是一个芭蕾迷，后来娶了俄国芭蕾舞演员莉迪亚·洛博科娃为妻。<span class="bias-note">⚠️ 天才光环效应：天才的非专业生活往往被后人浪漫化，但凯恩斯的文艺背景确实影响了他的写作风格——他相信观念是可以说服人的。</span>
+        </p>
+
+        <p>
+            这一切，和经济学有什么关系？
+        </p>
+
+        <p>
+            答案是：他从来不觉得经济学是一门只关心数字的学科。他在1930年的文章《我们后代的经济可能性》里预测，到2030年人类的生产力足够发达，每周工作15小时就够了。问题不是如何生产更多，而是如何学会使用闲暇。这个人，骨子里是个道德哲学家，偶尔附身在经济学家的皮囊里。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">时代背景</div>
+
+        <h2>古典经济学遇见了一件它没准备好的事</h2>
+
+        <p>
+            1929年，华尔街崩盘。1930年代，大萧条席卷全球。
+        </p>
+
+        <p>
+            这本来不应该发生的。按照当时主流经济学的逻辑——萨伊定律（<em>Say's Law</em>）——"供给创造自己的需求"，市场有自我修复机制，价格会调整，工资会降低，劳动力会重新被吸收，均衡会自动恢复。只要政府不乱插手，市场就能自愈。
+        </p>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">古典学派的信仰</div>
+                <div class="col-name col-accent">市场自愈论</div>
+                <div class="col-text">工资下降 → 雇主重新招人 → 就业恢复 → 需求回升。政府只需等待，市场会找到新均衡。长期来看，一切都会好的。</div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">凯恩斯的反驳</div>
+                <div class="col-name" style="color:#4a9eff;">现实困境</div>
+                <div class="col-text">工人失业 → 不敢消费 → 企业销售下降 → 继续裁员 → 需求进一步萎缩。这是一个螺旋，不是钟摆。<span style="color:#e97088">长期？"长期我们都死了。"</span></div>
+            </div>
+        </div>
+
+        <p>
+            凯恩斯最著名的那句话——<em>"In the long run we are all dead."</em>（长期我们都死了）——不是玩笑，是政策主张。他的意思是：经济学如果只会告诉人们"等着，最终会好的"，那就跟告诉一个溺水的人"潮水最终会退"一样无用。<span class="bias-note">⚠️ 断章取义风险：这句话常被误用为"只管短期、不顾长期"，但凯恩斯的原意是批评古典理论无视紧急情况的不作为。</span>
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">书的诞生</div>
+
+        <h2>五年，一场论争，一个新的词汇表</h2>
+
+        <p>
+            《通论》从构思到出版，横跨了大萧条最深的五年：1931年到1936年。
+        </p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1930</div>
+                <div class="timeline-text">发表《货币论》（<em>A Treatise on Money</em>），批评通货紧缩政策，但理论工具还不够彻底——他仍然无法解释为何就业会持续萎缩。</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1931</div>
+                <div class="timeline-text">与哈耶克（<em>Hayek</em>）在《经济学家》杂志上展开著名论战。哈耶克相信萧条是必要的清算；凯恩斯认为清算论是残忍的谬误。两人从此成为20世纪经济学两极。</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot dim"></div>
+                <div class="timeline-year">1932</div>
+                <div class="timeline-text">在剑桥讲授新的宏观经济学课程，学生们开始感受到一套全新的思考框架正在成形——"有效需求"（<em>effective demand</em>）这个概念开始出现在他的讲义里。</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1935</div>
+                <div class="timeline-text">写信给萧伯纳："我相信我正在写一本将从根本上改变世界对经济问题看法的书——不是马上，而是在未来十年。"这种自信，只属于真正看见了某样东西的人。</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1936</div>
+                <div class="timeline-text">《就业、利息和货币通论》（<em>The General Theory of Employment, Interest and Money</em>）正式出版。定价5先令。首版两周内售罄。</div>
+            </div>
+        </div>
+
+        <p>
+            书名里的"通论"（<em>General Theory</em>）是刻意对标爱因斯坦的"广义相对论"（<em>General Theory of Relativity</em>）——凯恩斯不谦虚。他在序言里直接说，古典经济学只是他这套新体系的特殊情形，就像牛顿力学是相对论的特殊情形一样。<span class="bias-note">⚠️ 英雄叙事偏差：科学类比是一种修辞策略，《通论》的数学化程度远不及物理学，这个类比更多是宣示一种革命性意图，而非严格的方法论对应。</span>
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">核心洞见预览</div>
+
+        <h2>他重新发明了政府这个角色</h2>
+
+        <p>
+            在亚当·斯密的世界里，政府是守夜人，别打扰市场就好。在马克思的世界里，政府是资本的工具，需要被打倒。凯恩斯给出了第三种答案：
+        </p>
+
+        <div class="fact-card">
+            <div class="fact-label">凯恩斯的核心命题</div>
+            <div class="fact-content">
+                当私人需求不足时，<strong>政府支出可以（而且应该）充当"最后买家"</strong>，通过财政赤字注入需求，打破螺旋式衰退。<br><br>
+                市场不总是自我修复的。储蓄不自动转化为投资。充分就业不是常态，而是<strong>需要主动维护的例外状态</strong>。
+            </div>
+        </div>
+
+        <p>
+            他发明了一套新词汇：有效需求（<em>effective demand</em>）、流动性偏好（<em>liquidity preference</em>）、乘数效应（<em>multiplier effect</em>）、动物精神（<em>animal spirits</em>）。这些词，在1936年之前的经济学字典里不存在。
+        </p>
+
+        <div class="pullquote">
+            "实践者自以为摆脱了任何知识影响，其实往往还是某个已故经济学家的奴隶。"<br>
+            — 约翰·梅纳德·凯恩斯，《通论》结语
+        </div>
+
+        <p>
+            这句话是《通论》结尾最被引用的段落，但它其实是一把双刃剑：它说明了观念的力量，也暗示了观念被滥用的可能。凯恩斯的政策处方，在二战后的二十年里成为全球主流，然后在1970年代的滞胀中遭遇了它自己的大萧条时刻。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">悬念</div>
+
+        <h2>一个没有被解决的问题</h2>
+
+        <p>
+            凯恩斯在1946年去世，比《通论》出版晚了整整十年。他没能看到布雷顿森林体系（<em>Bretton Woods</em>的崩溃，也没能看到1970年代弗里德曼（<em>Friedman</em>）用货币主义重新击败了他的继承者。
+        </p>
+
+        <p>
+            但《通论》留下了一个比任何政策处方都更深刻的问题：如果私人市场无法自我修复，谁来决定政府该往哪里花钱？谁有足够的信息？谁能保证干预者不会犯下自己的错误？凯恩斯信任的是"训练有素的精英官僚"——就像他自己。但这个信任，是有前提条件的。
+        </p>
+
+        <!-- Tension question -->
+        <div class="tension-box">
+            <div class="tension-label">❓ 本周核心张力问题</div>
+            <div class="tension-q">
+                当市场失灵时，政府干预是解药还是另一种病？凯恩斯的处方有效——但有效的前提是什么？如果那个前提本身靠不住，我们该信任什么？
+            </div>
+            <div class="tension-note">这个问题将在本周五天中被叙事者→提炼者→应用者→挑战者→摆渡人逐层回响，周五不给答案，只推进到更深的地方。</div>
+        </div>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">上一篇</div>
+            <a href="./w03-d05.html">← 摆渡人 · 铁笼之外（第3周）</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w04-d02.html">提炼者 · 待更新 →</a>
+        </div>
+    </nav>
+
+</div>
+</body>
+</html>
