@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W04·D02 · 提炼者 · 书单精读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.78rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.02em;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Framework card */
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        /* SVG info container */
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Contrast box */
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        /* Pullquote */
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        /* Misread block */
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        /* Footer nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../index.html">书单精读</a>
+        <span>›</span>
+        <span>第 4 周</span>
+        <span>›</span>
+        <span>Day 2 · 提炼者</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W04-D02</div>
+        <div class="meta">
+            <span>📅 2026-04-28</span>
+            <span>📖 第 4 周 · Day 2 / 5</span>
+            <span>🔢 《就业、利息和货币通论》</span>
+        </div>
+        <h1>需求不会自动降落</h1>
+        <div class="subtitle">凯恩斯用五把概念刀，解剖了"市场自愈"这个体面的谎言——每一刀都切在古典经济学最不想被碰的地方</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <p>
+            提炼者做的事情，不是复述。是把一本书里散落在各处的概念，拼成一张地图。《通论》原著晦涩难读——凯恩斯自己也承认，他写这本书首先是要说服经济学同行，不是写给大众的。今天我们来拆它，五把刀，把结构打开。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <!-- Knife 1: Effective Demand -->
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title">有效需求 · <em>Effective Demand</em></div>
+            <div class="card-body">
+                古典经济学认为：只要生产了，就会有人买——萨伊定律（<em>Say's Law</em>）的核心命题是"供给创造自己的需求"。凯恩斯说：这个逻辑在满足基本需求之后就失效了。<br><br>
+                人们手里有钱，不代表他们会花出去。如果对未来感到不确定——失业担忧、市场恐慌——人们会选择存钱而不是消费。存起来的钱，并不自动变成别人的收入。<br><br>
+                所以凯恩斯引入"有效需求"：<strong>实际被花出去的那部分购买力，才是推动就业的真正引擎。</strong>不是潜在的购买力，是已经落地的需求。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>充分就业不是均衡常态，而是需要有效需求维持的例外状态。有效需求不足，就业就会低于潜在水平——无论价格和工资如何调整。
+            </div>
+        </div>
+
+        <!-- Knife 2: Liquidity Preference -->
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">流动性偏好 · <em>Liquidity Preference</em></div>
+            <div class="card-body">
+                为什么人们不把钱全部投出去？古典经济学的答案是：利率会调节——利率降低，借贷成本低，投资增加，储蓄减少。均衡自动恢复。<br><br>
+                凯恩斯拆开了这个机制。他说：人们持有货币，不只是为了交易，还有一个心理动机——<em>流动性偏好</em>。在不确定的世界里，手持现金本身是一种保险，哪怕利率再低，人们也可能宁愿握着现金，也不愿意投入未知的资产。<br><br>
+                这引出了一个反直觉的结论：<strong>利率降低，有时候根本无法刺激投资，因为流动性陷阱（<em>Liquidity Trap</em>）会让货币政策失效。</strong>
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>货币政策有其边界。当利率已接近零、公众仍不愿借贷时，仅靠降息无法走出衰退。财政政策才是这时唯一的出路。
+            </div>
+        </div>
+
+        <!-- Knife 3: Multiplier -->
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">乘数效应 · <em>Multiplier Effect</em></div>
+            <div class="card-body">
+                这是凯恩斯提供的政策杠杆。政府花1块钱，不只是产生1块钱的需求。这1块钱变成某个工人的工资，工人会把其中一部分再花出去，那笔钱又变成另一个人的收入……一笔支出，沿着链条，产生倍数效应。<br><br>
+                乘数的大小取决于"边际消费倾向"（<em>Marginal Propensity to Consume, MPC</em>）——人们收到额外收入后，愿意花出去的比例。MPC越高，乘数越大；MPC越低（比如高度不确定时期，人们倾向储蓄），乘数越小。<br><br>
+                这套逻辑给了政府干预一个理论依据：<strong>财政刺激不只是花钱，是用杠杆放大需求。</strong>政府替代了失去信心的私人投资，维持了需求链条。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>政府赤字支出在衰退期具有正当性。问题不是"能不能花这笔钱"，而是"乘数够不够大，链条会不会断"。
+            </div>
+        </div>
+
+        <!-- Knife 4: Animal Spirits -->
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">动物精神 · <em>Animal Spirits</em></div>
+            <div class="card-body">
+                这是凯恩斯最异类的贡献——他把心理学引入了经济学核心。<br><br>
+                古典经济学假设人是理性的——投资决策基于预期回报的理性计算。凯恩斯说：不对。大多数长期投资，其收益极难预测，理性计算根本算不出来。真正驱动投资的，是一种自发的乐观冲动，他叫它"<em>animal spirits</em>"——直译是"动物精神"，更准确地说是<strong>本能性的行动意志</strong>。<br><br>
+                当"动物精神"高涨时，企业家信心爆棚，投资扩张；当它崩溃时，哪怕利率为零、政策宽松，投资也照样冻结。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>市场不只是冷静的计算机，也是情绪的放大器。预期和信心本身就是经济变量——这比任何公式都更真实。（80年后，行为经济学从这里重新出发。）
+            </div>
+        </div>
+
+        <!-- Knife 5: Fiscal Policy as Stabilizer -->
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">政府作为稳定器 · <em>Fiscal Stabilization</em></div>
+            <div class="card-body">
+                把前四把刀合在一起，凯恩斯得出的政策结论是：政府不是"守夜人"（亚当·斯密），也不是"压迫工具"（马克思）。政府是<strong>经济系统的稳定器和最后买家</strong>。<br><br>
+                在私人需求不足时，政府通过财政赤字（举债支出）注入有效需求；通过基础设施、失业救济、公共工程等方式，把钱直接送到消费能力最强的人手中；让乘数效应启动，直到私人信心恢复，市场重新接手。<br><br>
+                这个逻辑在1930年代是革命性的。它颠覆了"平衡预算"的道德叙事——凯恩斯说：衰退时削减支出，就像在最需要雨水的时候拆掉水库。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>反周期财政政策（<em>Countercyclical Fiscal Policy</em>）是现代宏观政策的基础框架。衰退期扩张、过热期收缩——政府预算不是家庭账本，不能用同一套道德标准衡量。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 凯恩斯五把刀的逻辑链</div>
+
+        <!-- SVG Infographic -->
+        <div class="svg-container">
+            <div class="svg-label">从"市场失灵"到"政府干预"的完整因果路径</div>
+            <svg viewBox="0 0 640 580" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:640px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                </defs>
+
+                <!-- Background -->
+                <rect width="640" height="580" fill="#111" rx="8"/>
+
+                <!-- Title -->
+                <text x="320" y="32" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2" text-transform="uppercase">凯恩斯框架逻辑链</text>
+
+                <!-- ── Row 1: 触发条件 ── -->
+                <!-- Box: 市场失灵 -->
+                <rect x="220" y="52" width="200" height="52" rx="6" fill="#1a1a1a" stroke="#E94560" stroke-width="1.5"/>
+                <text x="320" y="74" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="13" font-weight="700">市场失灵</text>
+                <text x="320" y="92" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="10">私人需求不足 · 衰退螺旋启动</text>
+
+                <!-- Arrow down -->
+                <line x1="320" y1="104" x2="320" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- ── Row 2: 两个诊断 ── -->
+                <!-- Box: 有效需求不足 -->
+                <rect x="60" y="132" width="176" height="52" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="148" y="153" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" font-weight="600">刀 #1</text>
+                <text x="148" y="171" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="12">有效需求不足</text>
+
+                <!-- Box: 流动性偏好高 -->
+                <rect x="404" y="132" width="176" height="52" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="492" y="153" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" font-weight="600">刀 #2</text>
+                <text x="492" y="171" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="12">流动性偏好高涨</text>
+
+                <!-- Lines from 市场失灵 to both boxes -->
+                <line x1="260" y1="118" x2="195" y2="132" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="380" y1="118" x2="445" y2="132" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- ── Row 3: 后果 ── -->
+                <!-- Box: 就业低迷 -->
+                <rect x="60" y="228" width="176" height="52" rx="6" fill="#1a1007" stroke="rgba(226,163,85,0.2)" stroke-width="1"/>
+                <text x="148" y="252" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="10">后果</text>
+                <text x="148" y="268" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="12">就业持续低迷</text>
+
+                <!-- Box: 货币政策失效 -->
+                <rect x="404" y="228" width="176" height="52" rx="6" fill="#1a0710" stroke="rgba(233,69,96,0.2)" stroke-width="1"/>
+                <text x="492" y="252" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="10">后果</text>
+                <text x="492" y="268" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="12">货币政策边界</text>
+
+                <!-- Arrows row 2 → row 3 -->
+                <line x1="148" y1="184" x2="148" y2="228" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="492" y1="184" x2="492" y2="228" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- ── Row 3b: 动物精神 (side) ── -->
+                <rect x="234" y="228" width="172" height="52" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="320" y="249" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" font-weight="600">刀 #4</text>
+                <text x="320" y="267" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="12">动物精神崩溃</text>
+
+                <!-- Arrow from market failure to animal spirits -->
+                <line x1="320" y1="128" x2="320" y2="228" stroke="#555" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+                <!-- ── Row 4: 汇聚 ── -->
+                <!-- Arrow from all three to convergence -->
+                <line x1="148" y1="280" x2="260" y2="320" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="320" y1="280" x2="320" y2="320" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="492" y1="280" x2="380" y2="320" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box: 财政政策入场 -->
+                <rect x="184" y="324" width="272" height="56" rx="6" fill="#1a1200" stroke="rgba(226,163,85,0.4)" stroke-width="1.5"/>
+                <text x="320" y="347" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1">刀 #5 · 政府介入</text>
+                <text x="320" y="366" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="13" font-weight="700">财政政策：赤字支出</text>
+
+                <!-- Arrow down -->
+                <line x1="320" y1="380" x2="320" y2="408" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- ── Row 5: 乘数 ── -->
+                <rect x="184" y="412" width="272" height="52" rx="6" fill="#131508" stroke="rgba(108,191,115,0.3)" stroke-width="1"/>
+                <text x="320" y="433" text-anchor="middle" fill="#6cbf73" font-family="system-ui,sans-serif" font-size="10" font-weight="600">刀 #3</text>
+                <text x="320" y="451" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="12">乘数效应放大需求</text>
+
+                <!-- Arrow down -->
+                <line x1="320" y1="464" x2="320" y2="492" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- ── Row 6: 结果 ── -->
+                <rect x="184" y="496" width="272" height="52" rx="6" fill="#1a1200" stroke="rgba(226,163,85,0.5)" stroke-width="2"/>
+                <text x="320" y="517" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" letter-spacing="1">输出</text>
+                <text x="320" y="535" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="13" font-weight="700">需求恢复 · 就业趋于充分</text>
+
+                <!-- Side label: 前提条件 -->
+                <rect x="10" y="412" width="130" height="52" rx="4" fill="transparent" stroke="rgba(233,69,96,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+                <text x="75" y="433" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">前提条件</text>
+                <text x="75" y="448" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9">MPC足够高</text>
+                <text x="75" y="461" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9">政府精准有效</text>
+                <line x1="140" y1="438" x2="184" y2="438" stroke="rgba(233,69,96,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+            </svg>
+        </div>
+
+        <p>
+            这张图有一个红色虚线框值得你盯住：<strong>乘数效应能否成立，取决于两个前提</strong>——边际消费倾向足够高、政府支出精准有效。如果这两个前提不成立，整条逻辑链就会断。昨天叙事者提出的张力问题，就藏在这里。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条解释路径对比</div>
+
+        <h2>古典 vs 凯恩斯：同一个病，两种诊断</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">古典经济学</div>
+                <div class="col-name col-accent">自愈论</div>
+                <div class="col-text">
+                    工资下降 → 雇用成本低 → 投资复苏<br><br>
+                    利率调节 → 储蓄=投资<br><br>
+                    价格灵活 → 市场出清<br><br>
+                    <span style="color:#555;font-size:0.83rem">政策建议：什么都不要做，等待。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">凯恩斯</div>
+                <div class="col-name" style="color:#4a9eff;">干预论</div>
+                <div class="col-text">
+                    需求不足 → 工资下降 → 消费更少<br><br>
+                    流动性陷阱 → 储蓄≠投资<br><br>
+                    价格粘性 → 市场无法自清<br><br>
+                    <span style="color:#6cbf73;font-size:0.83rem">政策建议：政府赤字支出，替代失去信心的私人部门。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种诊断的根本分歧，不只是技术性的，而是关于<em>人性假设</em>的：古典经济学假设人是理性的、市场是完全信息的；凯恩斯说，人有流动性偏好、有动物精神，市场有时候是集体恐慌的放大器，而不是理性的均衡机器。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：凯恩斯主张永久赤字，政府越大越好</strong>
+                    <span>凯恩斯的财政扩张是反周期的（<em>countercyclical</em>）——衰退时扩张、过热时收缩。他从没说政府应该永远扩张。1942年他就提出"充分就业后应该减少干预"。</span>
+                    <div class="misread-correction">✓ 准确理解：政府是调节器，不是永久引擎。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：凯恩斯主义就是"大政府"</strong>
+                    <span>凯恩斯本人并不反对市场，他认为市场是资源配置的最佳机制——只是在需求不足的危机时刻，市场需要帮手。他区分了"非自愿性失业"（市场失灵造成的）和"摩擦性失业"（正常流动造成的）。</span>
+                    <div class="misread-correction">✓ 准确理解：凯恩斯是市场机制的修补者，不是反对者。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：乘数效应必然有效</strong>
+                    <span>乘数大小取决于边际消费倾向（MPC）。如果刺激资金流向高储蓄群体，或政府支出效率低下，乘数可能小于1——政府花1块钱，总需求增加不到1块钱，甚至"挤出"（<em>crowding out</em>）了私人投资。</span>
+                    <div class="misread-correction">✓ 准确理解：乘数是有条件的放大器，不是无条件的魔法棒。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <!-- Tension echo -->
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                当市场失灵时，政府干预是解药还是另一种病？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，凯恩斯的逻辑链在结构上是闭合的——<strong>除了那个红色虚线框</strong>。乘数能否成立，政策能否精准，取决于两个凯恩斯本人无法控制的变量：<em>人们实际愿意消费多少</em>，以及<em>政府是否真的有那种"训练有素的精英官僚"</em>。<br><br>
+                这不是凯恩斯没看到的漏洞——他看到了，只是选择了乐观假设。问题是：<strong>这个乐观假设是条件性的，还是必然成立的？</strong><br><br>
+                钥匙是凯恩斯设计的，但锁孔是历史的形状。处方能否落地，不只看处方本身，更看执行者——这是今天这把解剖刀最终没能解决的问题，也是本周张力的真正入口。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "实践者自以为摆脱了任何知识影响，其实往往还是某个已故经济学家的奴隶。"<br>
+            — 凯恩斯，《通论》结语
+        </div>
+
+        <p>
+            这句话今天用来提醒提炼者本身：我们在提炼凯恩斯的框架，但我们自己也可能正在用某个"已故框架"看待它。明天，应用者会把这五把刀拿进三个真实场景，看看它们在现实中会切到什么、又会卡在哪里。
+        </p>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w04-d01.html">← 叙事者 · 晴天的地图，遇见了下雨天</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w04-d03.html">应用者 · 待更新 →</a>
+        </div>
+    </nav>
+
+</div>
+</body>
+</html>
