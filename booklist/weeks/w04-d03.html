@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W04·D3 应用者 — 处方落地的三道墙 | 书单精读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.22);
+            --applier: #6eb5c0;
+            --applier-dim: rgba(110,181,192,0.08);
+            --applier-border: rgba(110,181,192,0.22);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+
+        /* ── Role Badge ── */
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--applier-dim);
+            border: 1px solid var(--applier-border);
+            color: var(--applier);
+            font-size: 0.72rem;
+            font-weight: 600;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1.2rem;
+        }
+
+        /* ── Header ── */
+        .article-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .week-tag {
+            font-size: 0.72rem;
+            font-family: -apple-system, sans-serif;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.8rem;
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 1.2rem;
+        }
+
+        .meta {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            font-size: 0.76rem;
+            font-family: -apple-system, sans-serif;
+            color: var(--text-muted);
+        }
+        .meta .book-ref {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ── Body ── */
+        p {
+            margin-bottom: 1.4rem;
+            font-size: 1.01rem;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--applier);
+            margin: 1.8rem 0 0.75rem;
+            font-family: -apple-system, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { color: var(--accent); font-style: italic; }
+
+        strong { color: var(--white); font-weight: 700; }
+
+        /* ── Tension Echo ── */
+        .tension-echo {
+            background: var(--applier-dim);
+            border: 1px solid var(--applier-border);
+            border-left: 3px solid var(--applier);
+            border-radius: 8px;
+            padding: 1.2rem 1.4rem;
+            margin: 2rem 0;
+            font-size: 0.93rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            font-family: -apple-system, sans-serif;
+        }
+        .tension-echo .label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--applier);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .tension-echo .quote {
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.97rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ── Scene Card ── */
+        .scene-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.6rem 1.8rem;
+            margin: 2rem 0;
+        }
+
+        .scene-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .scene-num {
+            font-size: 0.68rem;
+            font-weight: 800;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--applier);
+            background: var(--applier-dim);
+            border: 1px solid var(--applier-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            margin-top: 0.15rem;
+        }
+
+        .scene-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, sans-serif;
+            line-height: 1.4;
+        }
+
+        .scene-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        .scene-card p {
+            font-size: 0.97rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+        .scene-card p:last-child { margin-bottom: 0; }
+
+        /* ── Insight Box ── */
+        .insight-box {
+            background: rgba(226,163,85,0.05);
+            border: 1px solid var(--accent-border);
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            padding: 0.9rem 1.1rem;
+            margin: 1.2rem 0 0;
+            font-size: 0.88rem;
+            font-family: -apple-system, sans-serif;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+        .insight-box .ins-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        /* ── Condition Table ── */
+        .condition-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem 0;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.86rem;
+        }
+        .cg-cell {
+            background: var(--surface);
+            padding: 0.9rem 1rem;
+        }
+        .cg-cell.header {
+            background: var(--surface-2);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .cg-cell.green { border-left: 3px solid #5cb85c; }
+        .cg-cell.red { border-left: 3px solid #E94560; }
+        .cg-cell .cg-title {
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+        .cg-cell .cg-desc { color: var(--text-dim); line-height: 1.6; }
+
+        /* ── Career Box ── */
+        .career-box {
+            background: linear-gradient(135deg, rgba(110,181,192,0.06), rgba(110,181,192,0.02));
+            border: 1px solid var(--applier-border);
+            border-radius: 12px;
+            padding: 1.6rem 1.8rem;
+            margin: 2rem 0;
+        }
+        .career-box .career-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--applier);
+            margin-bottom: 0.8rem;
+        }
+        .career-box h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, sans-serif;
+            margin-bottom: 0.6rem;
+        }
+        .career-box p {
+            font-size: 0.95rem;
+            margin-bottom: 0.9rem;
+        }
+        .career-box p:last-child { margin-bottom: 0; }
+
+        /* ── Closing Tension ── */
+        .closing-tension {
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
+            border-top: 3px solid var(--applier);
+            border-radius: 10px;
+            padding: 1.4rem 1.6rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, sans-serif;
+        }
+        .closing-tension .ct-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--applier);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+        .closing-tension .ct-text {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+        .closing-tension .ct-text strong { color: var(--white); }
+
+        /* ── Next Day ── */
+        .next-day {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 1.4rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: border-color 0.2s, background 0.2s;
+            font-family: -apple-system, sans-serif;
+            margin-top: 3rem;
+        }
+        .next-day:hover { border-color: var(--accent); background: var(--accent-dim); }
+        .next-day .nd-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.2rem;
+        }
+        .next-day .nd-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .next-day .nd-arrow { color: var(--accent); font-size: 1.2rem; }
+
+        /* ── Back Nav ── */
+        .back-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0 2rem;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.82rem;
+        }
+        .back-nav a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .back-nav a:hover { color: var(--accent); }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* ── Bias Tag ── */
+        .bias {
+            display: inline-block;
+            background: rgba(233,69,96,0.1);
+            border: 1px solid rgba(233,69,96,0.25);
+            color: #E94560;
+            font-size: 0.72rem;
+            font-family: -apple-system, sans-serif;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.3rem;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">← 主页</a>
+        <span>·</span>
+        <a href="../index.html">书单精读</a>
+        <span>·</span>
+        <span>第4周·D3</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="article-header">
+        <div class="role-badge">🙋 应用者 The Applier · Week 04 Day 3</div>
+        <div class="week-tag">第4周 · 《就业、利息和货币通论》— 约翰·梅纳德·凯恩斯 · 2026-04-29</div>
+        <h1>处方落地的三道墙</h1>
+        <p class="subtitle">当凯恩斯的框架离开经济学教室，它在历史上撞过什么？在中国的土地上变形了多少？在你管辖的激励系统里，它是不是一直在悄悄失效？</p>
+        <div class="meta">
+            <span class="book-ref">📖 《通论》第4周</span>
+            <span>·</span>
+            <span>应用者三场景·历史/当下/职业</span>
+        </div>
+    </header>
+
+    <!-- Tension Echo -->
+    <div class="tension-echo">
+        <div class="label">🔁 张力问题回响</div>
+        <div class="quote">当市场失灵时，政府干预是解药还是另一种病？凯恩斯的处方有效——但有效的前提是什么？</div>
+        <p>提炼者昨天画出了那条<em>红色虚线框</em>：乘数效应成立需要两个前提——消费倾向足够高，政府干预足够精准。凯恩斯选择了乐观假设，因为1930年代的历史处境让乐观看起来是唯一理性的选择。但应用者今天要做的，是把这两个前提带到真实的历史场景、真实的中国语境、真实的职场决策里——看看每一次，<strong>"处方"遇见了什么样的病人</strong>。</p>
+    </div>
+
+    <!-- Opening -->
+    <p>经济学史上有一个残酷的规律：<strong>理论在教室里越完美，在地面上越容易摔碎。</strong></p>
+
+    <p>不是因为理论错了，而是因为理论的成立依赖一组<em>前提条件（preconditions）</em>，而现实世界几乎从不把这组前提整齐地摆好等着你。凯恩斯不是例外。他给了我们一套在"特定历史窗口"里极度有效的工具——有效需求、乘数效应、财政稳定器。但当这套工具被移植到不同的土壤，它生长的方向就开始偏移，有时面目全非。</p>
+
+    <p>今天，应用者要做的，就是把凯恩斯的处方带去三个不同的诊室：一个已经发生的历史实验室，一个正在运转的当代中国，一个你每天要做决策的激励管理系统。</p>
+
+    <hr class="divider">
+
+    <!-- Scene 1 -->
+    <h2>场景一：历史实验室</h2>
+    <h3>罗斯福的新政 vs 安倍的三支箭 — 同一张处方，两种结局</h3>
+
+    <div class="scene-card">
+        <div class="scene-header">
+            <span class="scene-num">场景 01</span>
+            <div>
+                <div class="scene-title">历史案例：凯恩斯主义的两次大型临床试验</div>
+                <div class="scene-subtitle">1933年美国新政 vs 2013年日本安倍经济学</div>
+            </div>
+        </div>
+
+        <p><strong>第一次试验：罗斯福新政（1933—1938）</strong><br>
+        大萧条最深处，美国失业率高达25%。<em>有效需求（Effective Demand）</em>近乎归零，民间投资冻结，储蓄回路短路。罗斯福的处方完全符合凯恩斯设计：政府直接成为"最后买家"——兴建胡佛水坝、跨州公路、公共建筑，同时扩大失业救济，以财政赤字为代价向市场注入需求。</p>
+
+        <p>结果：1933—1937年GDP年均增长近9%，失业率从25%降到14%。<strong>凯恩斯的处方奏效了——因为前提恰好都在：</strong>民众消费意愿强烈（只要有收入就花），政府支出精准（直接雇人建基础设施），流动性陷阱压力巨大（所以利率政策已经失效，财政政策成为唯一工具）。</p>
+
+        <p><strong>第二次试验：安倍经济学（2013—2019）</strong><br>
+        日本失落二十年后，安倍晋三祭出"三支箭"：货币宽松、财政刺激、结构改革。其中财政刺激完全是凯恩斯主义剧本。然而结果令人困惑：<em>乘数效应（Multiplier Effect）</em>几乎没有出现——钱注入了，GDP却反应迟钝，通货紧缩顽固地持续，企业拿到便宜资本却选择囤积而非投资。</p>
+
+        <p>为什么？<strong>因为日本社会的消费倾向已经根本性地改变了</strong>：老龄化人口储蓄意愿极强，即便拿到收入也不花；企业对未来增长极度悲观，即便利率降到负数也不借钱投资。凯恩斯的处方设计时假设的"消费倾向足够高"这个前提，在老龄化日本已经失效。<span class="bias">⚠️ 幸存者偏差</span> 新政成功的故事掩盖了"凯恩斯主义只在特定人口结构和预期结构下才工作"这个更难接受的结论。</p>
+
+        <div class="insight-box">
+            <div class="ins-label">🎯 应用者洞察</div>
+            历史给了我们两个清晰的变量：<strong>当消费倾向高 + 政府执行精准，凯恩斯处方有效；当消费倾向低（老龄化/悲观预期）+ 结构改革失位，乘数近乎为零。</strong> 这不是凯恩斯理论错了，是"前提条件"这个变量在不同历史土壤里取了不同的值。处方医生和处方本身，要分开评价。
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Scene 2 -->
+    <h2>场景二：中国当下</h2>
+    <h3>"四万亿"的教训 vs 当前消费刺激的困境 — 前提条件变了吗？</h3>
+
+    <div class="scene-card">
+        <div class="scene-header">
+            <span class="scene-num">场景 02</span>
+            <div>
+                <div class="scene-title">中国当下：凯恩斯主义工具被反复使用，效力在衰减</div>
+                <div class="scene-subtitle">2008年四万亿刺激 → 2020年后的消费困境</div>
+            </div>
+        </div>
+
+        <p><strong>成功的那次：2008年四万亿</strong><br>
+        金融危机爆发后，中国推出四万亿财政刺激，方向直接：基础设施——高铁、高速、城镇化。结果是2009年GDP增速保住8%，全球羡慕。凯恩斯式逻辑在中国2008年的土壤上成立：<em>消费倾向</em>尚高（大量农村转城镇人口，消费潜力巨大）；基础设施存在真实缺口（修路修桥确实是有效需求）；政府执行能力强（指令性经济的速度优势）。</p>
+
+        <p><strong>效力递减的今天</strong><br>
+        但同样的工具在2021年后遭遇了结构性阻力。地方政府债务高企，基建空间收窄——很多地方已经无路可修、无桥可建，"投资"方向变成了勉强维持的低回报项目。与此同时，<strong>居民消费意愿持续低迷</strong>：房价下行带来的负财富效应、青年失业率高企、社会保障体系不完善导致的预防性储蓄——这些因素共同压低了边际消费倾向<em>（Marginal Propensity to Consume）</em>。<span class="bias">⚠️ 线性外推偏差</span> 假设"之前能用，现在也能用"——这是最常见的政策错误。</p>
+
+        <p>凯恩斯在1936年写的是应对"需求不足"的工具，但他没有为"信心长期坍塌"开处方。<em>动物精神（Animal Spirits）</em>是他承认的不可量化的变量——而当社会整体对未来预期趋于保守，<strong>政府注入再多的资金，也可能流进储蓄池而非消费池</strong>。这是今天中国宏观政策面临的真实困境：凯恩斯的诊断是对的（需求不足），但他给的工具在当前前提条件下，乘数已经大幅收窄。</p>
+
+        <div class="insight-box">
+            <div class="ins-label">🎯 应用者洞察</div>
+            中国的案例揭示了凯恩斯主义的时间窗口效应：<strong>它在高速增长期（有真实的基础设施缺口 + 高消费倾向）是放大器；在成熟期（缺口填满 + 预期转悲观）是漏水桶。</strong> 识别自己处于哪个阶段，比照搬工具更重要。
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Scene 3 -->
+    <h2>场景三：Ethan 的职业应用</h2>
+    <h3>激励系统里的"乘数失效"时刻 — 代理商政策设计的前提检查</h3>
+
+    <div class="career-box">
+        <div class="career-label">🏢 腾讯广告 · 渠道绩效管理 · 代理商政策设计</div>
+        <h4>你的代理商激励系统，有没有一个「红色虚线框」？</h4>
+
+        <p>凯恩斯设计财政刺激时埋了两个前提——<em>MPC足够高</em>和<em>政府精准执行</em>。你设计代理商激励政策时，其实也有类似的隐含前提，而这两个前提是否成立，决定了政策的"乘数"是放大器还是漏水桶。</p>
+
+        <p><strong>前提一：代理商有足够的"响应弹性"</strong><br>
+        在凯恩斯模型里，MPC高的消费者，注入一块钱能带动多倍消费。在你的系统里，对应的是：<strong>代理商在收到阶梯返点或绩效奖励后，会把这个激励转化为真实投入（更大的采购量、更积极的拓量动作）吗？</strong> 如果代理商已经进入"存量维护"心态——就像老龄化日本消费者一样——再高的返点也只是落进他们的毛利池，不会转化成增量行动。识别哪类代理商处于"高弹性"状态，哪类已经在防御性储蓄，是政策设计的第一步。</p>
+
+        <p><strong>前提二：激励信号足够精准</strong><br>
+        罗斯福新政直接雇人建基础设施，避免了资金被中间层截留。你的政策里，激励信号从总部到一线代理商，中间经过多少层级？每经过一层，<em>乘数（Multiplier）</em>就会有损耗：分公司的诠释偏差、中间商的利润截留、传导时间差造成的行为与激励脱钩。<strong>政策的精准度不是看设计，是看最后落到一线时信号有没有失真。</strong></p>
+
+        <p><strong>一个实操建议</strong><br>
+        在下一轮代理商政策设计时，可以做一个"前提检查表"：这批代理商当前处于增长期还是存量期？我们的激励信号传导链路有几层？每层的损耗率是否可测量？如果两个前提都不成立，加大激励力度只会提高成本，不会提高乘数。这时候，<strong>也许凯恩斯需要的不是更多财政刺激，而是"动物精神"的修复</strong>——也就是，<em>预期管理</em>优先于资源投入。</p>
+    </div>
+
+    <!-- Condition Grid -->
+    <h2>三场景的共同结构：凯恩斯处方的前提检查清单</h2>
+
+    <div class="condition-grid">
+        <div class="cg-cell header">前提条件</div>
+        <div class="cg-cell header">失效时的症状</div>
+        <div class="cg-cell green">
+            <div class="cg-title">① 响应弹性足够高</div>
+            <div class="cg-desc">MPC高 / 代理商增长意愿强 / 消费者储蓄倾向低</div>
+        </div>
+        <div class="cg-cell red">
+            <div class="cg-title">乘数坍缩</div>
+            <div class="cg-desc">钱注入了，行为没有变化；刺激变补贴，补贴变常规成本</div>
+        </div>
+        <div class="cg-cell green">
+            <div class="cg-title">② 执行精准 / 信号无损传导</div>
+            <div class="cg-desc">政府直接投放 / 激励到达一线不失真</div>
+        </div>
+        <div class="cg-cell red">
+            <div class="cg-title">中间层截留</div>
+            <div class="cg-desc">激励被中间层消化；政策目标与一线行为完全脱钩</div>
+        </div>
+        <div class="cg-cell green">
+            <div class="cg-title">③ 预期稳定或向上</div>
+            <div class="cg-desc">动物精神活跃；代理商/消费者对未来有信心</div>
+        </div>
+        <div class="cg-cell red">
+            <div class="cg-title">流动性陷阱</div>
+            <div class="cg-desc">即便有资源也不行动；资金流向安全区而非增长区</div>
+        </div>
+    </div>
+
+    <p>应用者的结论不是"凯恩斯对还是错"，而是：<strong>在使用任何处方之前，先做前提检查。</strong>不做前提检查就直接开药，是政策设计和激励管理里最昂贵的错误。</p>
+
+    <hr class="divider">
+
+    <!-- Closing Tension -->
+    <div class="closing-tension">
+        <div class="ct-label">🔁 应用者对本周张力问题的回响</div>
+        <div class="ct-text">
+            <p>「当市场失灵时，政府干预是解药还是另一种病？」——应用者今天的答案是：<strong>这是个错误的问法</strong>。正确的问法是：<em>在这个特定的时间窗口里，前提条件是否成立？</em></p>
+            <p style="margin-top: 0.8rem;">罗斯福的1933年，前提成立，处方有效。安倍的2013年，前提部分失效，乘数收窄。中国的2024年，前提正在经历结构性漂移。你的代理商激励系统，前提还在吗？</p>
+            <p style="margin-top: 0.8rem;"><strong>凯恩斯给了我们一张处方，却没有给我们一个诊断系统。真正的问题不是"该不该干预"，而是"干预的土壤准备好了吗"——如果土壤没准备好，处方再精准，也只是在沙地上浇水。</strong></p>
+        </div>
+    </div>
+
+    <!-- Next Day -->
+    <a href="./w04-d04.html" class="next-day">
+        <div>
+            <div class="nd-label">明日推送 · 周四 · 挑战者</div>
+            <div class="nd-title">⚔️ 挑战凯恩斯：处方的断层线在哪里？</div>
+        </div>
+        <div class="nd-arrow">→</div>
+    </a>
+
+    <!-- Back Nav -->
+    <div class="back-nav">
+        <a href="./w04-d02.html">← 昨日：提炼者·需求不会自动降落</a>
+        <a href="../index.html">书单首页 →</a>
+    </div>
+
+</div>
+</body>
+</html>
