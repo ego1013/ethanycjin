@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 18 · Agent 的工具调用与记忆机制 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #001a0a 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--accent-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  pre {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 1rem 0;
+  }
+
+  pre .comment { color: #6a9955; }
+  pre .keyword { color: var(--purple); font-weight: 600; }
+  pre .string { color: var(--green); }
+  pre .func { color: var(--yellow); }
+  pre .param { color: var(--cyan); }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--purple); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+
+  .vs-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    margin: 1.5rem 0;
+  }
+
+  .vs-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .vs-box.bad { border-top: 3px solid var(--red); }
+  .vs-box.good { border-top: 3px solid var(--green); }
+
+  .vs-box .vs-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .vs-box.bad .vs-label { color: var(--red); }
+  .vs-box.good .vs-label { color: var(--green); }
+
+  .vs-box pre {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--border);
+    padding-top: 2rem;
+  }
+
+  .step-flow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 1.5rem 0;
+  }
+
+  .step-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    position: relative;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-item::after {
+    content: '\2193';
+    display: block;
+    text-align: center;
+    color: var(--border);
+    font-size: 1rem;
+    padding: 0.15rem 0;
+  }
+
+  .step-item:last-child::after { display: none; }
+
+  .step-item .step-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .step-item .step-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .step-item .step-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Three column layout ── */
+  .tri-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .tri-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem;
+  }
+
+  .tri-box .tri-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .tri-box .tri-body {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .tri-box.level-1 { border-top: 3px solid var(--blue); }
+  .tri-box.level-1 .tri-label { color: var(--blue); }
+  .tri-box.level-2 { border-top: 3px solid var(--accent); }
+  .tri-box.level-2 .tri-label { color: var(--accent); }
+  .tri-box.level-3 { border-top: 3px solid var(--green); }
+  .tri-box.level-3 .tri-label { color: var(--green); }
+
+  @media (max-width: 600px) {
+    .vs-container { grid-template-columns: 1fr; }
+    .vs-divider { padding-top: 0; transform: rotate(90deg); }
+    .tri-container { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.4rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 18</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🔴 长半衰期 · 深讲</div>
+  <h1>Day 18 · Agent 的工具调用与记忆机制</h1>
+  <p class="subtitle">AI 怎么「记住」你？</p>
+  <div class="meta">
+    <span>📅 2026-04-30 Thu</span>
+    <span>📦 第二模块 · 应用篇 · Week 4</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    你今天正在使用的这套课程系统——Coach M——它是怎么做到"记得你上节课学了什么""知道你偏好选择题""还能每天上午 10:30 准时推送"的？
+  </p>
+  <p>
+    答案是：它不是一个"更聪明的 ChatGPT"，它是一个 <strong>Agent</strong>。
+  </p>
+  <p>
+    每天早上它醒来时，第一件事是<strong>读取记忆文件</strong>——读你的学习档案、读上一课的内容、读反馈日志。然后它<strong>调用工具</strong>——写 HTML 文件、更新大纲、执行部署脚本。最后它把课程推送给你。
+  </p>
+  <p>
+    昨天我们讲了 Agent 的"是什么"——四个组件（大脑+手脚+记忆+规划）。今天我们要<strong>打开其中两个组件的黑箱</strong>：
+  </p>
+  <p>
+    <span class="highlight">工具调用到底是怎么实现的？</span> 模型一个只会预测下一个 Token 的概率机器（Day 1 的心智模型），它是怎么"调用数据库"的？
+  </p>
+  <p>
+    <span class="highlight">记忆到底是怎么存的？</span> Context Window 有上限（Day 10），对话结束后上下文就消失了——那 Agent 怎么做到"认识你"？
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么「怎么调用工具」和「怎么记忆」是 Agent 的两个关键瓶颈？</h2>
+  </div>
+
+  <h3>从 Day 17 的四组件回顾说起</h3>
+
+  <p>
+    昨天我们说 Agent = 大脑 + 手脚 + 记忆 + 规划。你可以把这四个组件的"成熟度"做一个排序：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>组件</th>
+        <th>当前成熟度</th>
+        <th>原因</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>大脑</strong>（LLM 推理）</td>
+        <td>★★★★☆</td>
+        <td>GPT-4/Claude/o1 推理能力已经很强</td>
+      </tr>
+      <tr>
+        <td><strong>规划</strong>（任务拆解）</td>
+        <td>★★★☆☆</td>
+        <td>CoT + 推理模型让规划更可靠，但复杂任务仍不稳定</td>
+      </tr>
+      <tr>
+        <td><strong>手脚</strong>（工具调用）</td>
+        <td>★★★☆☆</td>
+        <td>Function Calling 已标准化，但工具选择和参数填充仍有出错率</td>
+      </tr>
+      <tr>
+        <td><strong>记忆</strong>（持久化信息）</td>
+        <td>★★☆☆☆</td>
+        <td>最不成熟的环节——跨对话记忆没有统一方案，各家都在摸索</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    看到了吗？<strong>记忆是 Agent 四大组件中最不成熟的</strong>。工具调用已经有了 Function Calling 这个标准协议（等于"大家都学会用手了"），但记忆——怎么让 AI 跨对话持续认识你——至今没有一个公认的最优解。
+  </p>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 为什么这两件事值得深讲</div>
+    <p style="margin:0">
+      <strong>工具调用决定了 Agent 能做什么</strong>——能调用什么工具，就有多大的行动范围。理解 Function Calling 的工作原理，你才能判断"这个 Agent 产品的能力边界在哪里"。<br><br>
+      <strong>记忆决定了 Agent 能做多好</strong>——没有记忆的 Agent 每次都是陌生人，你得重复交代所有背景。有记忆的 Agent 越用越懂你，就像一个跟了你三年的助理。<br><br>
+      合在一起：<strong>工具让 Agent 有用，记忆让 Agent 好用</strong>。
+    </p>
+  </div>
+
+  <h3>一个来自渠道管理的直觉类比</h3>
+
+  <p>
+    想象你新招了一个渠道运营助理。两件事决定了他能不能真正上手：
+  </p>
+
+  <p>
+    <strong>第一，你给他开了哪些系统权限？</strong>（= 工具调用）<br>
+    只给 CRM 只读权限，他只能看数据；给了 CRM 写权限 + 邮箱权限 + 报表系统权限，他才能真正帮你干活。<strong>权限清单就是"工具列表"</strong>，他需要知道自己有哪些权限、每个权限怎么用。
+  </p>
+
+  <p>
+    <strong>第二，他了不了解你的工作上下文？</strong>（= 记忆）<br>
+    如果他每天来上班都不记得前一天的对话——不知道华东区哪个代理商在整改、不记得你上次让他追踪的指标——他每天都是"新员工第一天"。你得反复交代背景，效率极低。
+  </p>
+
+  <p>
+    <strong>权限 × 上下文 = 真正能干活的助理。</strong> 今天我们就来看看 Agent 是怎么解决这两件事的。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 本质是什么？</h2>
+  </div>
+
+  <h3>Part A · Function Calling：让 LLM "长出手脚" 的标准协议</h3>
+
+  <h4>最关键的一个认知：模型并不"执行"工具</h4>
+
+  <p>
+    这是初学者最常混淆的一点：<strong>大模型自己不会执行任何操作</strong>。它不会发邮件，不会查数据库，不会调 API。它唯一会做的事情——从 Day 1 你就知道了——是<strong>预测下一个 Token</strong>。
+  </p>
+
+  <p>
+    那"工具调用"到底怎么发生的？答案异常简单：
+  </p>
+
+  <div class="callout gold">
+    <div class="callout-label">📖 Function Calling 的本质</div>
+    <p style="margin:0">
+      模型不执行工具。它只是<strong>生成一段特殊格式的文本</strong>——一段"我想调用 X 工具，参数是 Y"的结构化输出。<br><br>
+      <strong>真正执行工具的是外部系统</strong>——Agent 的"运行时框架"（runtime）收到这段文本后，去调用真正的 API、数据库、邮件服务。<br><br>
+      然后把执行结果塞回给模型，让模型继续下一轮推理。
+    </p>
+  </div>
+
+  <p>
+    整个过程可以用一张图说清楚：
+  </p>
+
+  <div class="diagram">
+    <span class="flow">Function Calling 的完整生命周期</span><br><br>
+    ┌─────────────┐<br>
+    │  <span class="blue-hl">你</span> (用户)      │  "帮我查华东区代理商出货数据"<br>
+    └──────┬──────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ Prompt + 工具清单<br>
+    ┌─────────────┐<br>
+    │  <span class="accent-hl">LLM</span> (大脑)   │  "我需要调用 query_database"<br>
+    │              │  → 输出：<span class="yellow-hl">{ "tool": "query_database", "args": {...} }</span><br>
+    └──────┬──────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 结构化 JSON（不是人类文字）<br>
+    ┌─────────────┐<br>
+    │  <span class="ok">运行时</span>       │  收到 JSON → 真正调用数据库 API<br>
+    │  (Runtime)   │  → 获取查询结果<br>
+    └──────┬──────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 工具执行结果（数据）<br>
+    ┌─────────────┐<br>
+    │  <span class="accent-hl">LLM</span> (大脑)   │  拿到数据 → 分析 → 决定下一步<br>
+    │              │  → 或继续调用工具，或输出最终回答<br>
+    └─────────────┘<br>
+  </div>
+
+  <p>
+    <strong>关键洞察</strong>：模型只是在 NTP 的过程中，"碰巧"预测出了一段结构化文本（JSON格式的工具调用指令）。它之所以能做到这一点，是因为训练数据中包含了大量"在什么场景下应该调用什么工具"的示例。
+  </p>
+
+  <h4>工具清单（Tool Schema）：Agent 的"权限列表"</h4>
+
+  <p>
+    在每次对话开始时，系统会把<strong>可用工具的描述</strong>塞进 Prompt（系统提示词）里。这就是告诉模型"你有哪些权限"：
+  </p>
+
+  <pre><span class="comment">// 工具清单示例（简化版）</span>
+<span class="keyword">tools</span>: [
+  {
+    <span class="param">"name"</span>: <span class="string">"query_database"</span>,
+    <span class="param">"description"</span>: <span class="string">"查询公司内部数据库，获取代理商绩效数据"</span>,
+    <span class="param">"parameters"</span>: {
+      <span class="param">"region"</span>: <span class="string">"地区筛选（如：华东/华南/华北）"</span>,
+      <span class="param">"metric"</span>: <span class="string">"指标类型（如：出货量/回款/新签）"</span>,
+      <span class="param">"period"</span>: <span class="string">"时间范围（如：2026-Q1）"</span>
+    }
+  },
+  {
+    <span class="param">"name"</span>: <span class="string">"send_email"</span>,
+    <span class="param">"description"</span>: <span class="string">"发送邮件给指定收件人"</span>,
+    <span class="param">"parameters"</span>: {
+      <span class="param">"to"</span>: <span class="string">"收件人邮箱"</span>,
+      <span class="param">"subject"</span>: <span class="string">"邮件主题"</span>,
+      <span class="param">"body"</span>: <span class="string">"邮件正文"</span>,
+      <span class="param">"attachment"</span>: <span class="string">"附件路径（可选）"</span>
+    }
+  },
+  {
+    <span class="param">"name"</span>: <span class="string">"create_report"</span>,
+    <span class="param">"description"</span>: <span class="string">"生成 Excel 报表文件"</span>,
+    <span class="param">"parameters"</span>: { ... }
+  }
+]</pre>
+
+  <p>
+    模型看到这个列表后，就"知道"自己有三个工具可用、每个工具需要什么参数。它在推理过程中，会基于用户的需求和当前状态来<strong>决定调用哪个工具、填什么参数</strong>。
+  </p>
+
+  <div class="callout blue">
+    <div class="callout-label">💭 管理者视角</div>
+    <p style="margin:0">
+      <strong>Tool Schema 本质上就是你给下属写的"系统权限说明书"</strong>：<br><br>
+      • 权限名称（name）= 他能做什么<br>
+      • 权限描述（description）= 什么时候该用<br>
+      • 参数说明（parameters）= 具体怎么操作<br><br>
+      写得越清晰，他用得越准确——<strong>Tool Schema 的质量直接决定工具调用的准确率</strong>。这就是 Day 15 CRISP 的延伸——你不只要给模型写好 Prompt（派活），还要给它写好 Tool Schema（操作手册）。
+    </p>
+  </div>
+
+  <h4>MCP：工具调用的"USB 标准"</h4>
+
+  <p>
+    2024 年底，Anthropic 提出了 <strong>MCP（Model Context Protocol）</strong>——一个标准化的工具接口协议。这是什么意思？
+  </p>
+
+  <p>
+    类比：USB 出现之前，每个设备用自己的接口——打印机一根线、键盘一根线、手机一根线，互不兼容。USB 出现后，所有设备用同一个口——即插即用。
+  </p>
+
+  <p>
+    MCP 做的是同一件事：<strong>让任何工具都能用统一的协议接入任何 Agent</strong>。不管你的 Agent 用的是 GPT-4 还是 Claude 还是 Kimi，不管你的工具是数据库还是邮箱还是 CRM——只要都遵守 MCP 协议，就能互联互通。
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>MCP 之前</th>
+        <th>MCP 之后</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>工具接入</td>
+        <td>每个 Agent 平台定义自己的工具接口格式</td>
+        <td>统一协议，一次开发到处使用</td>
+      </tr>
+      <tr>
+        <td>生态效应</td>
+        <td>工具开发者需要适配多个平台</td>
+        <td>适配一次即可，生态爆发</td>
+      </tr>
+      <tr>
+        <td>类比</td>
+        <td>各种专有接口（PS/2、串口、并口）</td>
+        <td>USB / USB-C 统一标准</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    MCP 目前还在早期采用阶段，但方向是确定的：<strong>工具调用正在从"各家私有协议"走向"行业标准化"</strong>。这意味着未来的 Agent 能接入的工具数量会指数增长——就像 USB 设备的爆发一样。
+  </p>
+
+  <h4>Function Calling 的失败模式</h4>
+
+  <p>
+    工具调用不是 100% 可靠的。三种常见失败：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>失败类型</th>
+        <th>表现</th>
+        <th>根因</th>
+        <th>类比</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>选错工具</strong></td>
+        <td>该查数据库却去搜网页</td>
+        <td>Tool Schema 描述不清或场景判断错误</td>
+        <td>下属不知道该找谁办事</td>
+      </tr>
+      <tr>
+        <td><strong>参数填错</strong></td>
+        <td>查询条件写错、时间范围错误</td>
+        <td>参数说明不够明确或模型理解偏差</td>
+        <td>下属填错了审批单</td>
+      </tr>
+      <tr>
+        <td><strong>该调不调</strong></td>
+        <td>该查数据时直接编造答案</td>
+        <td>模型"自信过头"，觉得自己知道答案</td>
+        <td>下属凭感觉报数而不查系统</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout danger">
+    <div class="callout-label">⚠️ 关键警示</div>
+    <p style="margin:0">
+      第三种失败——"该调不调"——本质上就是 <strong>Day 6 讲的幻觉</strong>在 Agent 场景下的升级版。Chatbot 编造答案只是给你一段错误文字；<strong>Agent 编造答案意味着它跳过了关键验证步骤直接行动</strong>——比如跳过数据查询直接编造分析报告。<br><br>
+      这就是为什么 Tool Schema 的 description 字段极其重要——你要在描述里明确告诉模型"<strong>当需要 X 信息时必须调用此工具，禁止凭推测回答</strong>"。
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <h3>Part B · 记忆机制：让 Agent "认识你" 的三种方式</h3>
+
+  <h4>问题的起点：为什么记忆这么难？</h4>
+
+  <p>
+    回到 Day 10 的核心认知：<strong>Context Window 是有上限的，而且很贵</strong>。
+  </p>
+
+  <p>
+    一次对话结束，上下文消失——模型回到"白板状态"。它不"知道"你是 Ethan，不"知道"你是做渠道管理的，不"知道"你上次让它分析了什么。
+  </p>
+
+  <p>
+    这就产生了一个工程问题：<strong>怎么在 Context Window 的物理约束下，让 Agent 拥有"持续记忆"的效果？</strong>
+  </p>
+
+  <p>
+    答案是三种技术方案，各有利弊——
+  </p>
+
+  <h4>方案 1：上下文注入（Context Injection）</h4>
+
+  <p>
+    <strong>最简单也最直接的方式</strong>：每次对话开始前，把相关的记忆信息<strong>直接塞进 System Prompt</strong>。
+  </p>
+
+  <div class="diagram">
+    <span class="flow">上下文注入的工作方式</span><br><br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="purple-hl">记忆存储</span>（文件/数据库）         │<br>
+    │  • 用户档案：Ethan, 渠道管理      │<br>
+    │  • 偏好：选择题 Checkpoint          │<br>
+    │  • 上次进度：Day 17 已完成          │<br>
+    └───────────────┬─────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 对话开始时读取<br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="blue-hl">System Prompt</span>                   │<br>
+    │  "你是 Coach M，学习者是 Ethan..."  │<br>
+    │  "上次学到 Day 17，主题是 Agent..." │<br>
+    │  "Ethan 偏好选择题+量化追问..."     │<br>
+    └───────────────┬─────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 塞入每次 LLM 调用<br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="accent-hl">LLM 看到的</span> = 记忆 + 当前对话    │<br>
+    │  → 模型"以为"自己一直记得你        │<br>
+    └─────────────────────────────┘<br>
+  </div>
+
+  <p>
+    <strong>你正在体验的 Coach M 课程系统就是用这种方式。</strong> 每天上课前，它读取 SYLLABUS.md、LEARNER_PROFILE.md、FEEDBACK_LOG.md，把关键信息塞进 System Prompt——然后它就"记得"你了。
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>优点</th>
+        <th>缺点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>✅ 实现简单——读文件/读数据库，塞进 Prompt</td>
+        <td>❌ 受 Context Window 大小限制——记忆太多塞不下</td>
+      </tr>
+      <tr>
+        <td>✅ 信息精确——你精心维护的记忆文件质量高</td>
+        <td>❌ 需要人工维护记忆文件（或用代码自动维护）</td>
+      </tr>
+      <tr>
+        <td>✅ 可解释——你知道 Agent 记住了什么</td>
+        <td>❌ 随着记忆增长，信息选择变成新问题</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-label">✅ 最佳适用场景</div>
+    <p style="margin:0">
+      记忆量中等（几千字以内）、信息更新频率可控、对精确度要求高。<br>
+      典型例子：个人 AI 助手的用户画像、项目 Agent 的上下文配置、今天你正在用的课程系统。
+    </p>
+  </div>
+
+  <h4>方案 2：向量检索记忆（RAG-based Memory）</h4>
+
+  <p>
+    当记忆量超出 Context Window 能承载的范围时，怎么办？<strong>Day 12 讲过的 RAG 技术派上用场了</strong>——把记忆存成向量数据库，按需检索。
+  </p>
+
+  <div class="diagram">
+    <span class="flow">RAG-based Memory 的工作方式</span><br><br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="purple-hl">记忆存储</span>（向量数据库）          │<br>
+    │  • 数百条历史对话摘要              │<br>
+    │  • 过去 6 个月的工作决策记录         │<br>
+    │  • 用户所有的偏好和习惯              │<br>
+    └───────────────┬─────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 当前对话触发"相关记忆检索"<br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="blue-hl">检索引擎</span>                         │<br>
+    │  用户问"华东区代理商" →             │<br>
+    │  检索到 5 条相关记忆                 │<br>
+    │  (上次分析结果/代理商 C 整改中/...)  │<br>
+    └───────────────┬─────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 只注入相关记忆（不是全部）<br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="accent-hl">LLM 看到的</span> = 相关记忆 + 当前对话 │<br>
+    │  → 按需召回，不浪费上下文空间        │<br>
+    └─────────────────────────────┘<br>
+  </div>
+
+  <p>
+    核心逻辑：<strong>不是把所有记忆都塞进去，而是根据当前对话内容检索最相关的记忆片段</strong>。这样即使记忆量巨大，每次实际消耗的 Context Window 空间也是可控的。
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>优点</th>
+        <th>缺点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>✅ 可扩展——记忆量不受 Context Window 限制</td>
+        <td>❌ 检索质量是瓶颈——可能召回不相关的或遗漏关键的</td>
+      </tr>
+      <tr>
+        <td>✅ 自动化——无需人工维护，对话结束自动存入</td>
+        <td>❌ "记忆衰减"——老旧记忆可能永远不被召回</td>
+      </tr>
+      <tr>
+        <td>✅ 适合长期使用——用得越久记忆越丰富</td>
+        <td>❌ 难以解释——你不知道它具体"记住了"什么</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-label">✅ 最佳适用场景</div>
+    <p style="margin:0">
+      记忆量大（数万到数十万字）、需要长期积累、对"精确召回每一条"的要求不极端高。<br>
+      典型例子：ChatGPT 的 Memory 功能、企业级客服 Agent 的客户历史记录。
+    </p>
+  </div>
+
+  <h4>方案 3：结构化摘要记忆（Summarization Memory）</h4>
+
+  <p>
+    第三种方案是一个混合策略：每次对话结束后，Agent <strong>自动生成一份对话摘要</strong>，存入结构化存储。下次对话时，把摘要注入上下文。
+  </p>
+
+  <div class="diagram">
+    <span class="flow">Summarization Memory 的工作方式</span><br><br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="blue-hl">对话结束时</span>                       │<br>
+    │  LLM 回顾整次对话 →                 │<br>
+    │  生成结构化摘要：                    │<br>
+    │  • 关键决策：选了方案 C               │<br>
+    │  • 新增信息：代理商 E 下月到期        │<br>
+    │  • 用户偏好：喜欢先看数据再看结论     │<br>
+    └───────────────┬─────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 存入记忆库<br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="purple-hl">记忆库</span>                            │<br>
+    │  按时间/主题/重要度分层存储          │<br>
+    │  定期合并压缩（旧的摘要 → 更简短）   │<br>
+    └───────────────┬─────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ 下次对话时注入<br>
+    ┌─────────────────────────────┐<br>
+    │  <span class="accent-hl">LLM 看到的</span> = 历史摘要 + 当前对话 │<br>
+    └─────────────────────────────┘<br>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>优点</th>
+        <th>缺点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>✅ 信息密度高——摘要比原始对话紧凑得多</td>
+        <td>❌ 摘要过程会丢失细节——模型决定什么"值得记住"</td>
+      </tr>
+      <tr>
+        <td>✅ 可控——可以设置摘要规则和结构</td>
+        <td>❌ 需要额外的 LLM 调用（生成摘要本身有成本）</td>
+      </tr>
+      <tr>
+        <td>✅ 随时间自然压缩——越老的记忆越精简</td>
+        <td>❌ 摘要质量取决于模型能力——可能遗漏关键信息</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-label">✅ 最佳适用场景</div>
+    <p style="margin:0">
+      对话频繁但每次核心信息有限、需要长时间跨度的记忆但不需要逐字回忆。<br>
+      典型例子：个人 AI 日记助手、心理咨询 Agent 的会谈记录、项目管理 Agent 的会议纪要。
+    </p>
+  </div>
+
+  <h4>三种方案的对照总结</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>上下文注入</th>
+        <th>向量检索</th>
+        <th>结构化摘要</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>容量</strong></td>
+        <td>受限（几千字）</td>
+        <td>无限</td>
+        <td>中等（持续压缩）</td>
+      </tr>
+      <tr>
+        <td><strong>精确度</strong></td>
+        <td>最高（你精心维护）</td>
+        <td>取决于检索质量</td>
+        <td>中等（摘要有损）</td>
+      </tr>
+      <tr>
+        <td><strong>维护成本</strong></td>
+        <td>高（需要人工/代码维护）</td>
+        <td>低（自动存入）</td>
+        <td>中（需要设计摘要规则）</td>
+      </tr>
+      <tr>
+        <td><strong>可解释性</strong></td>
+        <td>最强（你知道它记了什么）</td>
+        <td>弱（黑箱检索）</td>
+        <td>中（摘要可审阅）</td>
+      </tr>
+      <tr>
+        <td><strong>适用阶段</strong></td>
+        <td>MVP / 少量用户</td>
+        <td>大规模 / 长期</td>
+        <td>中间态 / 混合使用</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 实际中的最优解：三者混合</div>
+    <p style="margin:0">
+      现实中最好的 Agent 记忆系统通常<strong>同时使用三种方案</strong>：<br><br>
+      • <strong>核心身份信息</strong>（你是谁、你做什么工作、你的偏好）→ 上下文注入（永久在 System Prompt 里）<br>
+      • <strong>大量历史交互</strong>（过去 100 次对话的细节）→ 向量检索（按需召回）<br>
+      • <strong>中期工作上下文</strong>（最近一周的进展和决策）→ 结构化摘要（定期压缩）<br><br>
+      这就像人的记忆系统：<strong>核心身份是"自我意识"（永远在），长期经历是"长期记忆"（需要触发才想起），最近发生的事是"工作记忆"（随时可用但会衰减）。</strong>
+    </p>
+  </div>
+
+  <h4>记忆机制的失败模式</h4>
+
+  <p>
+    和工具调用一样，记忆也有失败模式：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>失败类型</th>
+        <th>表现</th>
+        <th>后果</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>遗忘</strong></td>
+        <td>该记住的没记住</td>
+        <td>"你上次不是说过了吗？" → 用户沮丧</td>
+      </tr>
+      <tr>
+        <td><strong>幻忆</strong></td>
+        <td>"记住"了不存在的事情</td>
+        <td>基于错误记忆做出错误判断</td>
+      </tr>
+      <tr>
+        <td><strong>过时</strong></td>
+        <td>记住了已过期的信息</td>
+        <td>用旧数据/旧决策指导当前行动</td>
+      </tr>
+      <tr>
+        <td><strong>泄露</strong></td>
+        <td>跨用户/跨会话记忆串扰</td>
+        <td>隐私风险——记忆了不该记的</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    "幻忆"特别值得注意——它是 <strong>Day 6 幻觉 + 记忆</strong> 的叠加产物。模型可能"记住"一条它编造的信息，然后在后续对话中把这条幻觉当作事实反复引用。<strong>错误记忆比没有记忆更危险</strong>——因为它带着"我记得上次就是这样"的权威感。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>一、评估 Agent 产品的新框架</h3>
+
+  <p>
+    从今天开始，当你评估任何 Agent 产品时，你可以问两个精确的问题：
+  </p>
+
+  <div class="callout gold">
+    <div class="callout-label">📖 Agent 产品评估双问法</div>
+    <p style="margin:0">
+      <strong>Q1：它的工具集有多宽？</strong><br>
+      它能连什么——数据库？邮箱？CRM？文件系统？浏览器？每个工具的参数定义有多精确？工具间能否组合使用？<br><br>
+      <strong>Q2：它的记忆有多深？</strong><br>
+      它用什么记忆方案？能记住多久之前的对话？会不会忘记关键信息？你能查看/修改/删除它的记忆吗？<br><br>
+      <strong>工具集 = 能力半径。记忆 = 理解深度。两者相乘 = 真实可用度。</strong>
+    </p>
+  </div>
+
+  <h3>二、渠道管理中的 Agent 设计思考</h3>
+
+  <p>
+    假设你要为渠道管理团队设计一个 Agent，用今天学到的知识来规划：
+  </p>
+
+  <h4>工具调用设计</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>工具</th>
+        <th>用途</th>
+        <th>风险等级</th>
+        <th>是否需要 Human-in-the-Loop</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>query_crm</code></td>
+        <td>查询代理商数据</td>
+        <td>🟢 低（只读）</td>
+        <td>否</td>
+      </tr>
+      <tr>
+        <td><code>generate_report</code></td>
+        <td>生成分析报表</td>
+        <td>🟢 低（只生成不发送）</td>
+        <td>否</td>
+      </tr>
+      <tr>
+        <td><code>send_notification</code></td>
+        <td>发消息给区域经理</td>
+        <td>🟡 中（对外通讯）</td>
+        <td>是——发送前让你确认内容</td>
+      </tr>
+      <tr>
+        <td><code>update_status</code></td>
+        <td>更新代理商状态标签</td>
+        <td>🟡 中（修改数据）</td>
+        <td>是——批量修改前审核列表</td>
+      </tr>
+      <tr>
+        <td><code>adjust_rebate</code></td>
+        <td>调整返利金额</td>
+        <td>🔴 高（涉及资金）</td>
+        <td>必须——每笔都需要审批</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    看到了吗？<strong>工具的风险等级直接决定了 Human-in-the-Loop 的粒度</strong>。低风险的操作（只读查询）可以放手让 Agent 自动执行；高风险的操作（涉及资金）必须每次都经过人工审批。这和你管理团队时"给不同层级的审批权限"是完全一样的逻辑。
+  </p>
+
+  <h4>记忆设计</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>记忆层</th>
+        <th>内容</th>
+        <th>方案</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>永久层</strong></td>
+        <td>团队组织架构、各区域负责人、KPI 定义、审批流程</td>
+        <td>上下文注入（System Prompt 永驻）</td>
+      </tr>
+      <tr>
+        <td><strong>中期层</strong></td>
+        <td>本季度目标、在跟进的重点代理商、上周会议决策</td>
+        <td>结构化摘要（每周自动更新）</td>
+      </tr>
+      <tr>
+        <td><strong>长期层</strong></td>
+        <td>过去 12 个月的代理商交互记录、历史分析报告</td>
+        <td>向量检索（按需召回相关历史）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>三、你正在使用的系统就是一个活案例</h3>
+
+  <p>
+    Coach M 课程系统的架构现在对你来说应该完全透明了：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Agent 组件</th>
+        <th>Coach M 的实现</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>大脑</td>
+        <td>大模型（推理+生成课程内容）</td>
+      </tr>
+      <tr>
+        <td>工具调用</td>
+        <td>读写文件（SYLLABUS.md/lessons/）、执行部署脚本、更新日志</td>
+      </tr>
+      <tr>
+        <td>记忆</td>
+        <td>上下文注入（LEARNER_PROFILE + FEEDBACK_LOG + 上节课内容）</td>
+      </tr>
+      <tr>
+        <td>规划</td>
+        <td>按大纲顺序逐课推进 + 根据反馈动态调整内容深度</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>你不只是在"学习 Agent"——你在"被一个 Agent 教"。</strong> 这可能是最好的学习方式：用 Agent 来理解 Agent。
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ Checkpoint · Day 18</h3>
+
+  <p><strong>场景：你设计了一个渠道管理 Agent，其中一个功能是"每月自动审核代理商返利资格"。审核逻辑涉及 5 个条件（和 Day 16 的场景一样）。现在你需要决定：这个 Agent 的记忆机制怎么设计？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      不需要记忆——每次审核时把 5 个条件和当月数据都传进去就行。反正每月独立审核，不需要知道历史。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      纯向量检索——把过去 12 个月所有审核记录存入向量数据库，每次审核时检索相关历史。这样它能"记住"每个代理商的历史轨迹。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      三层混合：永久层（审核规则+条件定义，上下文注入）+ 中期层（近 3 个月每个代理商的审核结果摘要）+ 长期层（超过 3 个月的记录存向量数据库按需检索）。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先问"记忆对审核结果有没有实质性影响"——如果 5 个条件全是当月客观数据（不需要历史对比），那方案 A 就够了；如果有些条件涉及"趋势判断"或"连续 N 个月表现"，才需要加记忆层。先分析哪些条件需要历史信息，再按需设计记忆方案。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问：假设 5 个返利条件中有 2 个涉及"连续 3 个月表现"（需要历史数据），另外 3 个只看当月数据——你会为这 2 个条件选择什么记忆方案？存储的信息量大约是多少（量级估算）？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日预告：Day 19 · Multi-Agent：组织化的 AI</h3>
+  <p>
+    今天你了解了一个 Agent 的内部机制——工具和记忆。但如果一个 Agent 不够用呢？
+  </p>
+  <p>
+    当任务复杂到一个 Agent 搞不定时，你需要多个 Agent 分工协作——一个负责数据分析，一个负责报告撰写，一个负责邮件沟通，一个负责协调全局。
+  </p>
+  <p>
+    这不就是……<strong>组建团队</strong>吗？
+  </p>
+  <p>
+    Day 19 我们来看 Multi-Agent 系统的架构模式：<strong>AI 的自组织现象</strong>意味着什么？当多个 Agent 协作时，它们是怎么分工的？谁来"管理"这些 Agent？（提示：答案可能让你想起自己管渠道团队的经历。）
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">Function Calling 的本质：模型不执行，只生成"调用指令"</span>
+    <div class="card-body">
+      LLM 不会查数据库、不会发邮件。它只是在 NTP 过程中生成一段结构化 JSON——"我要调用 X 工具，参数是 Y"。真正执行操作的是外部运行时系统。模型之所以能准确生成工具调用，是因为训练数据中有大量这类示例 + System Prompt 里注入了工具清单（Tool Schema）。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">Tool Schema = Agent 的"系统权限说明书"</span>
+    <div class="card-body">
+      工具清单的 name/description/parameters 三要素直接决定了 Agent 能做什么、什么时候做、怎么做。description 写得越精确，工具调用出错率越低。这和给下属写清楚的 SOP 是同一件事。MCP 协议正在推动工具接口标准化，类似从专有接口到 USB 的升级。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">Agent 记忆三方案：注入 / 向量检索 / 结构化摘要</span>
+    <div class="card-body">
+      上下文注入（精确但容量有限）、向量检索记忆（可扩展但检索质量不稳定）、结构化摘要（信息密度高但有损压缩）。现实中最好的方案是三者混合：核心身份上下文注入 + 大量历史向量检索 + 中期进展结构化摘要。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">记忆的四种失败：遗忘 / 幻忆 / 过时 / 泄露</span>
+    <div class="card-body">
+      遗忘（该记没记）导致用户反复交代；幻忆（记了不存在的事）比没有记忆更危险——错误信息带着"历史依据"的权威感被反复引用；过时（旧信息未更新）导致错误判断；泄露（跨用户串扰）引发隐私风险。设计 Agent 记忆时，"什么时候忘记/更新/删除"和"什么时候记住"同样重要。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">Agent 产品评估双问法：工具集有多宽 × 记忆有多深</span>
+    <div class="card-body">
+      工具集决定 Agent 的能力半径（它能做什么），记忆决定 Agent 的理解深度（它有多懂你）。两者相乘才是"真实可用度"。一个有 100 个工具但不记住你的 Agent，每次都是陌生人；一个记忆完美但没有工具的，还是只能给你建议。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 1</span>
+    <span>Function Calling 的底层依然是 NTP——模型"调用工具"本质上是预测出了一段特殊格式的 Token 序列（JSON 结构的工具调用指令），而不是真的在"操作"什么。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 6</span>
+    <span>幻觉在记忆场景升级为"幻忆"——模型编造的信息被存入记忆后，会在后续对话中被当作事实引用。错误记忆比没有记忆更危险。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 10</span>
+    <span>Context Window 的容量限制是记忆问题的根源——如果上下文无限大、成本为零，就不需要记忆系统了。正是因为上下文有限，才需要在"塞什么进去"上做取舍。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 12</span>
+    <span>RAG 技术直接复用为"向量检索记忆"方案——文档切段→Embedding→向量数据库→按需检索的流程，从"补充知识"变成"补充记忆"。同样面临检索质量风险。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 15</span>
+    <span>CRISP 框架和 Tool Schema 是同一种能力的不同表现——给模型写清楚"什么时候做什么、怎么做"。Prompt 工程能力在 Agent 时代延伸为"工具描述能力"。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 17</span>
+    <span>今天是 Day 17 四组件（大脑+手脚+记忆+规划）中"手脚"和"记忆"两个组件的深度拆解。打开了 Perceive-Think-Act 循环里"Act"和"记忆更新"的黑箱。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 19</span>
+    <span>当一个 Agent 的工具和记忆设计好后，如果任务还是太复杂——需要多个 Agent 协作。Multi-Agent 系统面临新的问题：Agent 之间怎么通讯？记忆是共享还是私有？</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 21</span>
+    <span>实战课将要求你完整设计一个渠道管理 Agent 的工具清单 + 记忆方案 + 审批流程。今天的知识是 Day 21 的直接输入。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 18 of 60 · 第二模块 · 应用篇 · Week 4
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
