@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethan AI System Audit — 2026 年 4 月</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #080b10;
+      --surface: #0f1319;
+      --surface2: #151c26;
+      --border: #1e2733;
+      --border2: #263040;
+      --text: #d6e0f0;
+      --text-dim: #7a8ba0;
+      --text-muted: #445060;
+      --white: #f0f6ff;
+
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.15);
+      --green-border: rgba(34,197,94,0.3);
+      --yellow: #f59e0b;
+      --yellow-dim: rgba(245,158,11,0.15);
+      --yellow-border: rgba(245,158,11,0.3);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.15);
+      --red-border: rgba(239,68,68,0.3);
+
+      --accent: #3b82f6;
+      --accent-dim: rgba(59,130,246,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'PingFang SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ─── Nav ─── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8,11,16,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-brand { font-size: 0.8rem; font-weight: 700; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+    .nav-links { display: flex; gap: 1.5rem; margin-left: auto; }
+    .nav-links a { font-size: 0.78rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; letter-spacing: 0.04em; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ─── Hero ─── */
+    .hero {
+      padding: 4rem 2rem 2.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+
+    /* ─── Container ─── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    /* ─── Section ─── */
+    .section {
+      margin-bottom: 3.5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── Dashboard ─── */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 640px) { .dashboard { grid-template-columns: 1fr; } }
+
+    .dash-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .dash-card.chart-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .chart-wrap {
+      width: 180px;
+      height: 180px;
+      position: relative;
+    }
+    .chart-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .chart-center .big { font-size: 2rem; font-weight: 800; color: var(--white); }
+    .chart-center .small { font-size: 0.7rem; color: var(--text-dim); }
+
+    .health-label {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    .stat-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      justify-content: center;
+      height: 100%;
+    }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .stat-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .stat-label { font-size: 0.82rem; color: var(--text-dim); flex: 1; }
+    .stat-count { font-size: 1.4rem; font-weight: 800; color: var(--white); }
+    .stat-pct { font-size: 0.72rem; color: var(--text-muted); margin-left: 0.25rem; }
+
+    .health-score-card {
+      grid-column: 1 / -1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .health-icon { font-size: 1.5rem; }
+    .health-text { font-size: 0.9rem; color: var(--text); line-height: 1.5; }
+    .health-text strong { color: var(--red); }
+
+    /* ─── Project Table ─── */
+    .project-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+    .project-table th {
+      text-align: left;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .project-table td {
+      padding: 0.65rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .project-table tr:last-child td { border-bottom: none; }
+    .project-table tr:hover td { background: var(--surface2); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+    .badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow-border); }
+    .badge-red { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+
+    .cat-tag {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* ─── Analysis Cards ─── */
+    .analysis-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .analysis-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .analysis-header h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .analysis-body { padding: 1.25rem; }
+    .analysis-body p { font-size: 0.88rem; color: var(--text); margin-bottom: 0.75rem; line-height: 1.7; }
+    .analysis-body p:last-child { margin-bottom: 0; }
+
+    .insight-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .insight-list li {
+      font-size: 0.85rem;
+      color: var(--text);
+      display: flex;
+      gap: 0.6rem;
+      line-height: 1.6;
+    }
+    .insight-list li::before {
+      content: '—';
+      color: var(--text-muted);
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .highlight {
+      background: var(--accent-dim);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-top: 0.75rem;
+    }
+    .highlight.warn {
+      background: var(--red-dim);
+      border-color: var(--red-border);
+    }
+    .highlight.ok {
+      background: var(--green-dim);
+      border-color: var(--green-border);
+    }
+    .highlight.caution {
+      background: var(--yellow-dim);
+      border-color: var(--yellow-border);
+    }
+
+    /* project inline card */
+    .proj-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .proj-card:last-child { margin-bottom: 0; }
+    .proj-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .proj-card-title h4 { font-size: 0.88rem; font-weight: 700; color: var(--white); }
+    .proj-card p { font-size: 0.83rem; color: var(--text-dim); line-height: 1.6; }
+    .proj-action {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .proj-action.stop { color: var(--red); }
+    .proj-action.warn { color: var(--yellow); }
+    .proj-action.go { color: var(--green); }
+
+    /* ─── Timeline ─── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .tl-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.6rem 0.8rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .tl-time {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 50px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tl-name {
+      font-size: 0.85rem;
+      color: var(--text);
+      flex: 1;
+    }
+    .tl-note {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+    }
+    .tl-row.anchor {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .tl-row.anchor .tl-name { color: var(--white); font-weight: 600; }
+    .tl-row.pass { opacity: 0.5; }
+
+    /* ─── Action List ─── */
+    .action-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .action-header {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .action-header.red { color: var(--red); background: var(--red-dim); }
+    .action-header.yellow { color: var(--yellow); background: var(--yellow-dim); }
+    .action-header.green { color: var(--green); background: var(--green-dim); }
+    .action-body { padding: 1rem 1.25rem; }
+    .action-item {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .action-item:last-child { border-bottom: none; }
+    .action-item-name { font-weight: 600; color: var(--white); min-width: 110px; }
+
+    /* ─── Goal Banner ─── */
+    .goal-banner {
+      background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04));
+      border: 1px solid rgba(59,130,246,0.35);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    .goal-banner .goal-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .goal-banner .goal-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.5;
+    }
+
+    /* ─── Reflection block ─── */
+    .reflection {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      font-size: 0.87rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .reflection strong { color: var(--white); }
+
+    /* ─── Footer ─── */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── Divider ─── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 2rem 0;
+    }
+
+    /* ─── Color bar ─── */
+    .color-bar-wrap { margin: 1.5rem 0; }
+    .color-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+    .color-bar {
+      display: flex;
+      height: 10px;
+      border-radius: 99px;
+      overflow: hidden;
+      gap: 2px;
+    }
+    .color-bar-seg { border-radius: 2px; transition: opacity 0.2s; }
+    .color-bar-seg:hover { opacity: 0.8; }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero { padding: 2.5rem 1.25rem 1.5rem; }
+      .container { padding: 0 1.25rem 3rem; }
+      .hero h1 { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <span class="nav-brand">Audit · 2026-04</span>
+  <div class="nav-links">
+    <a href="#overview">总览</a>
+    <a href="#green">绿色</a>
+    <a href="#yellow">黄色</a>
+    <a href="#red">红色</a>
+    <a href="#attention">注意力</a>
+    <a href="#reflection">反思</a>
+    <a href="#action">行动</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">AI System Audit Report</div>
+  <h1>三色系统审计<br><span style="color:var(--text-dim);font-size:0.6em;font-weight:500;">17 个项目 · 5 大领域 · 2026 年 4 月</span></h1>
+  <div class="hero-meta">
+    <span>📅 审计日期：2026-04-30</span>
+    <span>⚡ 每日自动化峰值：13 个任务</span>
+    <span>🎯 有效使用率：仅 11.8%</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══ PART 1: Overview ═══ -->
+  <section id="overview" class="section">
+    <div class="section-header">
+      <span class="section-num">Part 01</span>
+      <span class="section-title">三色分布总览</span>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <!-- Donut Chart -->
+      <div class="dash-card chart-card">
+        <div class="chart-wrap">
+          <canvas id="donutChart"></canvas>
+          <div class="chart-center">
+            <div class="big">17</div>
+            <div class="small">项目总数</div>
+          </div>
+        </div>
+        <div class="health-label">系统健康度仪表盘</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="dash-card">
+        <div class="stat-grid">
+          <div class="stat-row">
+            <div class="stat-dot" style="background:var(--green)"></div>
+            <span class="stat-label">🟢 绿色 · 主动使用</span>
+            <span>
+              <span class="stat-count" style="color:var(--green)">2</span>
+              <span class="stat-pct">11.8%</span>
+            </span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-dot" style="background:var(--yellow)"></div>
+            <span class="stat-label">🟡 黄色 · 被动知晓</span>
+            <span>
+              <span class="stat-count" style="color:var(--yellow)">5</span>
+              <span class="stat-pct">29.4%</span>
+            </span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-dot" style="background:var(--red)"></div>
+            <span class="stat-label">🔴 红色 · 名存实亡</span>
+            <span>
+              <span class="stat-count" style="color:var(--red)">10</span>
+              <span class="stat-pct">58.8%</span>
+            </span>
+          </div>
+          <div class="color-bar-wrap">
+            <div class="color-bar">
+              <div class="color-bar-seg" style="background:var(--green);flex:2"></div>
+              <div class="color-bar-seg" style="background:var(--yellow);flex:5"></div>
+              <div class="color-bar-seg" style="background:var(--red);flex:10"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Diagnosis -->
+      <div class="health-score-card">
+        <span class="health-icon">⚠️</span>
+        <div class="health-text">
+          <strong>系统处于严重过载状态</strong>：10 个项目形同虚设，占总数 58.8%。你正在用「构建的满足感」替代「使用的价值感」——系统越复杂，真实注意力越稀薄。这不是懒惰问题，是架构问题。
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <table class="project-table">
+      <thead>
+        <tr>
+          <th>项目</th>
+          <th>领域</th>
+          <th>频率</th>
+          <th>打开次数/月</th>
+          <th>颜色</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Workout / Coach M</td>
+          <td><span class="cat-tag">健康</span></td>
+          <td>工作日 11:30</td>
+          <td>4</td>
+          <td><span class="badge badge-green">🟢 绿色</span></td>
+        </tr>
+        <tr>
+          <td>Skills / Karpathy Wiki</td>
+          <td><span class="cat-tag">工具</span></td>
+          <td>Ad-hoc</td>
+          <td>3</td>
+          <td><span class="badge badge-green">🟢 绿色</span></td>
+        </tr>
+        <tr>
+          <td>Ainsight</td>
+          <td><span class="cat-tag">认知</span></td>
+          <td>工作日 09:00</td>
+          <td>~3/周</td>
+          <td><span class="badge badge-yellow">🟡 黄色</span></td>
+        </tr>
+        <tr>
+          <td>RPST</td>
+          <td><span class="cat-tag">认知</span></td>
+          <td>工作日 10:00</td>
+          <td>2</td>
+          <td><span class="badge badge-yellow">🟡 黄色</span></td>
+        </tr>
+        <tr>
+          <td>Perceptual</td>
+          <td><span class="cat-tag">阅读</span></td>
+          <td>周一/三/五 15:30</td>
+          <td>2</td>
+          <td><span class="badge badge-yellow">🟡 黄色</span></td>
+        </tr>
+        <tr>
+          <td>Gaze</td>
+          <td><span class="cat-tag">阅读</span></td>
+          <td>周二/四 15:30</td>
+          <td>2</td>
+          <td><span class="badge badge-yellow">🟡 黄色</span></td>
+        </tr>
+        <tr>
+          <td>LLM 课程</td>
+          <td><span class="cat-tag">认知</span></td>
+          <td>工作日 10:30</td>
+          <td>1</td>
+          <td><span class="badge badge-yellow">🟡 黄色</span></td>
+        </tr>
+        <tr>
+          <td>Collision</td>
+          <td><span class="cat-tag">认知</span></td>
+          <td>每日 17:00</td>
+          <td>2</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>Booklist</td>
+          <td><span class="cat-tag">阅读</span></td>
+          <td>工作日 13:00</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>Anti_average</td>
+          <td><span class="cat-tag">阅读</span></td>
+          <td>周一/三/五 14:30</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>Movies</td>
+          <td><span class="cat-tag">兴趣</span></td>
+          <td>工作日 15:00</td>
+          <td>1</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>OOTD / ŌTOMO</td>
+          <td><span class="cat-tag">兴趣</span></td>
+          <td>周五 16:30</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>Peekaboo</td>
+          <td><span class="cat-tag">育儿</span></td>
+          <td>周一/五 10:15</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>Complementary</td>
+          <td><span class="cat-tag">育儿</span></td>
+          <td>周五 07:00</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>Lunch</td>
+          <td><span class="cat-tag">健康</span></td>
+          <td>工作日 11:20</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>K1 广告分析</td>
+          <td><span class="cat-tag">工作</span></td>
+          <td>Ad-hoc</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+        <tr>
+          <td>Report 报告系统</td>
+          <td><span class="cat-tag">工作</span></td>
+          <td>Ad-hoc</td>
+          <td>0</td>
+          <td><span class="badge badge-red">🔴 红色</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══ PART 2: Green ═══ -->
+  <section id="green" class="section">
+    <div class="section-header">
+      <span class="section-num">Part 02-A</span>
+      <span class="section-title" style="color:var(--green)">🟢 绿色项目深度分析</span>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-card-title">
+        <span class="badge badge-green">🟢</span>
+        <h4>Workout / Coach M</h4>
+        <span class="cat-tag">健康</span>
+      </div>
+      <p>每月打开 4 次，且每次打开都有具体的「今日训练」上下文交互。绿色的根本原因：<strong>输入即输出</strong>——使用这个项目直接改变了当天的身体行为，反馈闭环极短（训练→感受→记录），无需意志力驱动。</p>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-card-title">
+        <span class="badge badge-green">🟢</span>
+        <h4>Skills / Karpathy Wiki</h4>
+        <span class="cat-tag">工具</span>
+      </div>
+      <p>Ad-hoc 使用，每月约 3 次。绿色原因：<strong>问题驱动</strong>——只有在真实需要时才打开，没有「应该看」的压力，是工具而非内容订阅。零维护负担。</p>
+    </div>
+
+    <div class="analysis-block" style="margin-top:1.25rem">
+      <div class="analysis-header" style="border-color:var(--green-border)">
+        <h3 style="color:var(--green)">绿色共同特征</h3>
+      </div>
+      <div class="analysis-body">
+        <ul class="insight-list">
+          <li><strong>行为联结强</strong>：绿色项目都直接驱动现实行为（训练 / 查询），而非停留在「思维层」</li>
+          <li><strong>反馈闭环短</strong>：使用后当天就能感受到结果，不需要等待「长期积累」才有价值</li>
+          <li><strong>零订阅压力</strong>：Workout 是主动触发（你去找它），Wiki 是问题驱动（有问题才开）</li>
+          <li><strong>注意力层级匹配</strong>：两者都是 Level 1（直接生产力/身体管理），没有占据认知带宽</li>
+        </ul>
+        <div class="highlight ok">
+          <strong>关键洞察：</strong>绿色项目的共同底层是「<strong>有明确的下一步行动</strong>」——打开之后知道要做什么，做完之后有可感知的变化。这是所有其他项目需要对标的基准。
+        </div>
+        <p style="margin-top:0.75rem"><strong>降频可能性：</strong>Workout 目前频率已经合理（工作日午休使用），无需调整。Wiki 本身是按需工具，无频率压力。两者均不建议降频。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PART 2: Yellow ═══ -->
+  <section id="yellow" class="section">
+    <div class="section-header">
+      <span class="section-num">Part 02-B</span>
+      <span class="section-title" style="color:var(--yellow)">🟡 黄色项目深度分析</span>
+    </div>
+
+    <!-- Ainsight -->
+    <div class="analysis-block">
+      <div class="analysis-header" style="border-color:var(--yellow-border)">
+        <span class="badge badge-yellow" style="margin-right:0.25rem">🟡</span>
+        <h3>Ainsight <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">— 每周 3 次，收获标注「Trend」</span></h3>
+      </div>
+      <div class="analysis-body">
+        <p><strong>根本原因：内容格式与实际使用场景脱节。</strong>「Trend」作为收获太宽泛——说明你打开了、扫视了，但没有真正被触动或行动化。这是典型的「消费型浏览」，不是「问题驱动学习」。</p>
+        <div class="highlight caution">
+          <strong>转绿方案：</strong>每条 Ainsight 末尾必须有「对我的 1 个行动暗示」。如果当天的洞见无法在 3 秒内想到「这和我的什么具体工作/决策相关」，则跳过不看，下周降频到 3 次/周固定日（周一/三/五）。
+        </div>
+        <p style="margin-top:0.5rem"><strong>降为红色的判断标准：</strong>若 2 周内连续无法在看完后有具体联想，降频至每周 1 次或暂停。</p>
+      </div>
+    </div>
+
+    <!-- RPST -->
+    <div class="analysis-block">
+      <div class="analysis-header" style="border-color:var(--yellow-border)">
+        <span class="badge badge-yellow" style="margin-right:0.25rem">🟡</span>
+        <h3>RPST <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">— 月均 2 次，有自我认知收获</span></h3>
+      </div>
+      <div class="analysis-body">
+        <p><strong>根本原因：高认知负荷导致使用门槛高。</strong>RPST 需要主动进入「对抗模式」，这不是一个可以在午休碎片时间触发的任务。Session #009 的元觉察突破说明当它真正被使用时价值极高——但「偶尔高价值」≠「应该高频」。</p>
+        <div class="highlight caution">
+          <strong>转绿方案：</strong>降频为「月 2 次固定预约」（比如每月第 2、4 个周三下午），从自动化推送改为日历提醒。去掉「工作日每天推送」的触发——这个项目不适合被动推送驱动，应该是「主动约谈」模式。
+        </div>
+        <p style="margin-top:0.5rem"><strong>降为红色的判断标准：</strong>若连续 6 周无法完成一次完整 Session，则暂停自动化，改为纯手动触发。</p>
+      </div>
+    </div>
+
+    <!-- Perceptual -->
+    <div class="analysis-block">
+      <div class="analysis-header" style="border-color:var(--yellow-border)">
+        <span class="badge badge-yellow" style="margin-right:0.25rem">🟡</span>
+        <h3>Perceptual <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">— 月均 2 次，无具体收获描述</span></h3>
+      </div>
+      <div class="analysis-body">
+        <p><strong>根本原因：内容与当前情绪/状态无法自然联结。</strong>文学感知类内容需要「慢读」状态，但下午 15:30 的工作日推送恰好撞上工作返场窗口，状态不匹配。打开了但「脑子进不去」。</p>
+        <div class="highlight caution">
+          <strong>转绿方案：</strong>把推送时间改到<strong>每周五下班后 18:00</strong>（或周末早晨），同时把每篇内容字数压缩到「3 分钟可读完」。若需要超过 5 分钟才能进入，这个项目就不适合工作日。
+        </div>
+        <p style="margin-top:0.5rem"><strong>降为红色的判断标准：</strong>时间改了 2 周后仍然无法描述具体收获，直接降红。</p>
+      </div>
+    </div>
+
+    <!-- Gaze -->
+    <div class="analysis-block">
+      <div class="analysis-header" style="border-color:var(--yellow-border)">
+        <span class="badge badge-yellow" style="margin-right:0.25rem">🟡</span>
+        <h3>Gaze <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">— 月均 2 次，无具体收获描述</span></h3>
+      </div>
+      <div class="analysis-body">
+        <p><strong>根本原因：与 Perceptual 几乎同质，导致注意力竞争。</strong>两个「慢内容」频道在同一周的下午时段交替推送，形成认知疲劳。它们之间没有明显差异感，打开其中一个时会觉得另一个「也差不多」。</p>
+        <div class="highlight caution">
+          <strong>转绿方案（二选一）：</strong><br>
+          A. <strong>合并</strong>：将 Gaze + Perceptual 合并为一个「感知」频道，降频至每周 2 次，每次专注一种媒介（周五文字 / 周日视觉）；<br>
+          B. <strong>差异化</strong>：Gaze 专注「极度专注者的具体工作方法」（可执行），Perceptual 专注「纯感受」，两者不再竞争。
+        </div>
+        <p style="margin-top:0.5rem"><strong>降为红色的判断标准：</strong>2 周内若仍无法说出两者的区别，直接选方案 A 合并。</p>
+      </div>
+    </div>
+
+    <!-- LLM -->
+    <div class="analysis-block">
+      <div class="analysis-header" style="border-color:var(--yellow-border)">
+        <span class="badge badge-yellow" style="margin-right:0.25rem">🟡</span>
+        <h3>LLM 课程 <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">— 月均 1 次，收获「AI 系统知识」（自评红色→修正为黄色）</span></h3>
+      </div>
+      <div class="analysis-body">
+        <p><strong>根本原因：课程设计与实际使用节奏错位。</strong>12 周结构化课程在自动化推送模式下降级为「路过看一眼」。你的自评是红色，但有 1 次实质收获——这意味着内容本身还有价值，只是触达方式不对。</p>
+        <div class="highlight caution">
+          <strong>转绿方案：</strong>暂停每日自动推送。改为<strong>每周一次主动学习 Session</strong>（例如周三 10:30，预留 30 分钟）。从「被推送」变为「主动学习」。若无法保证每周一次主动 Session，降为红色暂停。
+        </div>
+        <p style="margin-top:0.5rem"><strong>降为红色的判断标准：</strong>若 2 周内无法完成 1 次完整 Session（包括笔记），立即降红。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PART 2: Red ═══ -->
+  <section id="red" class="section">
+    <div class="section-header">
+      <span class="section-num">Part 02-C</span>
+      <span class="section-title" style="color:var(--red)">🔴 红色项目深度分析</span>
+    </div>
+
+    <div class="analysis-block">
+      <div class="analysis-header" style="border-color:var(--red-border)">
+        <h3 style="color:var(--red)">红色项目清单 · 逐一判决</h3>
+      </div>
+      <div class="analysis-body">
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Collision — 认知碰撞</h4>
+          </div>
+          <p>每天 17:00 推送，一个月只打开 2 次，且「碰撞较小」。每日推送量远超吸收能力。<br>
+          <strong>如果 Collision 消失，会主动重建吗？</strong> 答案大概率是：「有空的时候会想到」——这等于不会。</p>
+          <span class="proj-action stop">→ 建议：降频至每周 1 次（周三），内容不足时暂停，不强行生成。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Booklist — 书单精读</h4>
+          </div>
+          <p>工作日每天 13:00 推送，一个月 0 次打开。连续 30 天静默。这不是「没时间」，是<strong>根本没有触发阅读欲望</strong>的设计问题——午休时间需要 decompression，不是深度阅读。</p>
+          <p><strong>如果消失会重建？</strong> 不会。</p>
+          <span class="proj-action stop">→ 建议：立即暂停自动化。若想保留，改为「周末晨读」推送（周六 8:00），每次只推 1 本书的 1 个核心论点。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Anti_average — 反均值认知</h4>
+          </div>
+          <p>周一/三/五 14:30，一个月 0 次打开。几乎与 Ainsight 同时段竞争注意力，但连 Ainsight 都是被动扫视，Anti_average 则直接被跳过。内容定位与 Ainsight 高度重叠。</p>
+          <p><strong>如果消失会重建？</strong> 不会。它的存在主要满足了「我有一个认知系统」的感觉。</p>
+          <span class="proj-action stop">→ 建议：立即暂停。内容价值已被 Ainsight 覆盖，不需要两个同类输出。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Movies — 每日电影播报</h4>
+          </div>
+          <p>工作日 15:00 推送，月均 1 次，无收获描述。电影是「周末决策行为」，工作日下午推送与实际使用场景完全错配。</p>
+          <p><strong>如果消失会重建？</strong> 不会，真正想看电影时会直接搜。</p>
+          <span class="proj-action stop">→ 建议：立即暂停。若保留，改为「周五下班后 20:00 推送 1 部本周推荐」，不需要每日。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>OOTD / ŌTOMO — 男装穿搭</h4>
+          </div>
+          <p>周五 16:30 推送，一个月 0 次打开。深圳公司环境中穿搭决策频率极低，内容与日常摩擦力过高。</p>
+          <p><strong>如果消失会重建？</strong> 不会。</p>
+          <span class="proj-action stop">→ 建议：立即暂停。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Peekaboo — 亲子游戏</h4>
+          </div>
+          <p>周一/五 10:15 推送，一个月 0 次打开。这个项目的本质矛盾是：当你需要它的时候（陪孩子），你不会去看手机推送；你看手机的时候，你不在陪孩子。推送模式与使用场景根本不兼容。</p>
+          <p><strong>如果消失会重建？</strong> 也许会，但不会是现在这个推送形式。</p>
+          <span class="proj-action stop">→ 建议：暂停当前自动化。若重建，改为「按需查询」工具（Ethan 主动问「给我 5 岁孩子的周末活动想法」），而非定时推送。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Complementary — 婴幼儿辅食</h4>
+          </div>
+          <p>周五 7:00 推送，一个月 0 次打开。孩子当前年龄阶段可能已超出辅食阶段，或家庭决策已有固定模式，外部推送无法介入。</p>
+          <p><strong>如果消失会重建？</strong> 不会。</p>
+          <span class="proj-action stop">→ 建议：立即暂停。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Lunch — 午餐推荐</h4>
+          </div>
+          <p>工作日 11:20 推送，一个月 0 次打开。推送时间与午休准备重叠，但在深圳公司场景中，午饭决策通常是「跟同事走」或「习惯固定」，AI 推荐进不了决策链路。</p>
+          <p><strong>如果消失会重建？</strong> 不会。</p>
+          <span class="proj-action stop">→ 建议：立即暂停。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>K1 — 广告业绩分析</h4>
+          </div>
+          <p>Ad-hoc 工具，一个月 0 次使用。可能原因：工作节奏中没有建立「遇到数据问题→打开 K1」的使用习惯；或当前工作阶段不需要这类深度分析。</p>
+          <p><strong>如果消失会重建？</strong> 当真正需要时会重建，但目前不需要。</p>
+          <span class="proj-action stop">→ 建议：暂停维护。不需要定期触发，保留代码等真正需要时重新激活即可。</span>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span class="badge badge-red">🔴</span>
+            <h4>Report — 报告生成系统</h4>
+          </div>
+          <p>Ad-hoc 工具，一个月 0 次使用。同 K1，在当前工作周期中没有触发条件。</p>
+          <p><strong>如果消失会重建？</strong> 会，但现在不是时候。</p>
+          <span class="proj-action stop">→ 建议：暂停维护，保留备用。</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PART 3: Attention ═══ -->
+  <section id="attention" class="section">
+    <div class="section-header">
+      <span class="section-num">Part 03</span>
+      <span class="section-title">注意力重新分配方案</span>
+    </div>
+
+    <div class="analysis-block">
+      <div class="analysis-header">
+        <h3>三个注意力锚点（深度专注槽位）</h3>
+      </div>
+      <div class="analysis-body">
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span style="font-size:1.2rem">🔵</span>
+            <h4>锚点 1 · 身体管理 — Workout / Coach M</h4>
+          </div>
+          <p>工作日午休 11:30，15-30 分钟。这是唯一一个「使用即改变现实」的高质量注意力投入。<strong>不需要改变，保持现状。</strong></p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span style="font-size:1.2rem">🔵</span>
+            <h4>锚点 2 · 认知压力测试 — RPST</h4>
+          </div>
+          <p>每月 2 次固定预约（第 2、4 个周三下午），每次 45 分钟完整 Session。从被动推送改为主动预约，将这个项目升级为「月度仪式」而非「日常消耗」。</p>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-title">
+            <span style="font-size:1.2rem">🔵</span>
+            <h4>锚点 3 · 专业工具使用 — Wiki + Ad-hoc AI</h4>
+          </div>
+          <p>问题驱动，无固定时间。当真正有问题时查，不订阅内容。这个槽位的核心是「<strong>把 AI 当工具而非内容源</strong>」——保持问题驱动的纯净性。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-block" style="margin-top:1.25rem">
+      <div class="analysis-header">
+        <h3>降级为「经过」的项目</h3>
+      </div>
+      <div class="analysis-body">
+        <p>以下项目降级为「无需处理的背景噪音」——如果某天恰好看到且有兴趣，看；如果没时间，不看，不产生 guilt：</p>
+        <ul class="insight-list" style="margin-top:0.75rem">
+          <li><strong>Ainsight</strong>：扫视即可，不要求「有收获」</li>
+          <li><strong>Perceptual / Gaze</strong>（调整时间后）：周五傍晚随意翻阅，非义务</li>
+          <li><strong>LLM 课程</strong>：仅在主动安排学习时间时打开</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="analysis-block" style="margin-top:1.25rem">
+      <div class="analysis-header">
+        <h3>调整后每日时间轴（工作日）</h3>
+      </div>
+      <div class="analysis-body">
+        <div class="timeline">
+          <div class="tl-row">
+            <span class="tl-time">09:00</span>
+            <span class="tl-name">Ainsight 快速扫视（可选，2 分钟）</span>
+            <span class="tl-note">降级为「经过」</span>
+          </div>
+          <div class="tl-row anchor">
+            <span class="tl-time">11:30</span>
+            <span class="tl-name">🔵 Workout / Coach M — 午休训练</span>
+            <span class="tl-note">锚点 1</span>
+          </div>
+          <div class="tl-row pass">
+            <span class="tl-time">13:00+</span>
+            <span class="tl-name">— 下午无定时内容推送（静默区）</span>
+            <span class="tl-note">已清空</span>
+          </div>
+          <div class="tl-row">
+            <span class="tl-time">周五 18:00</span>
+            <span class="tl-name">Perceptual 或 Gaze（二选一，可选）</span>
+            <span class="tl-note">调整时间后的黄色项目</span>
+          </div>
+          <div class="tl-row anchor">
+            <span class="tl-time">月 2 次</span>
+            <span class="tl-name">🔵 RPST — 月度认知压力测试</span>
+            <span class="tl-note">锚点 2（主动预约）</span>
+          </div>
+          <div class="tl-row anchor">
+            <span class="tl-time">按需</span>
+            <span class="tl-name">🔵 Wiki / K1 / Report — 问题驱动工具</span>
+            <span class="tl-note">锚点 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PART 4: Reflection ═══ -->
+  <section id="reflection" class="section">
+    <div class="section-header">
+      <span class="section-num">Part 04</span>
+      <span class="section-title">系统性反思（导师视角）</span>
+    </div>
+
+    <div class="reflection">
+      <strong>红色项目的共同特征揭示了什么？</strong><br><br>
+      10 个红色项目中，有 8 个的失效原因是<strong>「推送时间与使用场景的根本错配」</strong>：Booklist 在午休（需要放空而非深读），Peekaboo 在工作时间（需要陪孩子时不看手机），Lunch 在午餐前（决策已被社会习惯锁定），Movies 在工作日（电影是周末行为）。<br><br>
+      这揭示了一个架构假设错误：<strong>你把「有好内容」等同于「会被消费」</strong>。内容质量和内容触达时机是两个独立变量，你只优化了前者。
+    </div>
+
+    <div class="reflection">
+      <strong>这次审计结果和「最优解强迫症」的关联是什么？</strong><br><br>
+      17 个项目是一个精心设计的「理想系统」——覆盖了认知/身体/育儿/工作/兴趣的所有维度，触发时间被精确编排，内容由 AI 持续生成。这个系统在设计层面接近满分。<br><br>
+      但「最优解强迫症」的陷阱恰恰在这里：<strong>构建完美系统本身成了目标，而非「真实使用带来的改变」成了目标</strong>。你在用「系统的完整性」来替代「系统被使用的现实」。10 个红色项目在系统层面都「应该有价值」，但这个「应该」是你对自己的期望投射，而非真实行为。<br><br>
+      「<em>薛定谔防御</em>」在这里体现得很典型：系统持续运行，就维持了「我有可能会用」的叠加态。一旦暂停，就意味着打开了盒子——确认了「我其实不用这个」。
+    </div>
+
+    <div class="reflection">
+      <strong>一个月后的复查标准：什么样的变化说明调整有效？</strong><br><br>
+      <strong>有效的信号（至少满足 2 条）：</strong>
+      <ul class="insight-list" style="margin-top:0.75rem">
+        <li>绿色项目数量 ≥ 3（从 2 → 3），且每个绿色项目都能在 1 句话内说出上月的具体收获</li>
+        <li>黄色项目中至少 2 个有明确「转绿或降红」的决定，不再处于观察态</li>
+        <li>Ainsight 从「扫视型」升级为至少 3 次「有具体联想」的打开记录</li>
+        <li>RPST 在 5 月完成 2 次完整 Session，且有文字记录</li>
+        <li>每日自动化任务数量从 13 降至 ≤ 6</li>
+      </ul>
+      <br>
+      <strong>无效的信号（出现任何 1 条说明调整失败）：</strong>
+      <ul class="insight-list">
+        <li>5 月底又新建了 1 个以上的新自动化项目（未暂停旧项目）</li>
+        <li>黄色项目仍然「观察中」，无明确结论</li>
+        <li>绿色数量没有增加，仍然只有 2 个</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ PART 5: Action ═══ -->
+  <section id="action" class="section">
+    <div class="section-header">
+      <span class="section-num">Part 05</span>
+      <span class="section-title">5 月行动清单</span>
+    </div>
+
+    <!-- Stop -->
+    <div class="action-section">
+      <div class="action-header red">🔴 立即暂停（7 个项目）</div>
+      <div class="action-body">
+        <div class="action-item"><span class="action-item-name">Booklist</span><span>自动化停推，内容保留备用</span></div>
+        <div class="action-item"><span class="action-item-name">Anti_average</span><span>完全暂停，内容已被 Ainsight 覆盖</span></div>
+        <div class="action-item"><span class="action-item-name">Movies</span><span>停止每日推送，若保留改为周五晚 1 条</span></div>
+        <div class="action-item"><span class="action-item-name">OOTD / ŌTOMO</span><span>完全暂停</span></div>
+        <div class="action-item"><span class="action-item-name">Peekaboo</span><span>暂停推送，改为手动按需查询</span></div>
+        <div class="action-item"><span class="action-item-name">Complementary</span><span>完全暂停</span></div>
+        <div class="action-item"><span class="action-item-name">Lunch</span><span>完全暂停</span></div>
+      </div>
+    </div>
+
+    <!-- Redesign -->
+    <div class="action-section">
+      <div class="action-header yellow">🔡 需要重设计（4 个项目）</div>
+      <div class="action-body">
+        <div class="action-item">
+          <span class="action-item-name">Collision</span>
+          <span>每日 → 每周 1 次（周三 17:00），并增加「与当前 Context 的关联度」评分字段</span>
+        </div>
+        <div class="action-item">
+          <span class="action-item-name">RPST</span>
+          <span>停止每日推送，改为月度日历预约（第 2、4 周三），Session 前必须预设具体压测域</span>
+        </div>
+        <div class="action-item">
+          <span class="action-item-name">Perceptual + Gaze</span>
+          <span>合并评估：5 月首周决定「合并」或「差异化」，无论哪种，统一改为周五 18:00 推送</span>
+        </div>
+        <div class="action-item">
+          <span class="action-item-name">LLM 课程</span>
+          <span>停止每日推送，改为每周三 10:30 主动 30 分钟 Session（写进日历），2 周未执行自动暂停</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deepen -->
+    <div class="action-section">
+      <div class="action-header green">🟢 需要加深投入（2 个项目）</div>
+      <div class="action-body">
+        <div class="action-item">
+          <span class="action-item-name">Workout / Coach M</span>
+          <span>5 月目标：体脂 25.1%→24%，每次训练后补充文字反馈（含实际重量 + 身体感受），5 月 11 日 InBody 复测作为阶段验收</span>
+        </div>
+        <div class="action-item">
+          <span class="action-item-name">Skills / Wiki</span>
+          <span>建立「每周 1 个新工具/技巧」的主动探索习惯，而非纯被动查询——每周五记录本周 Wiki 触发了哪些行动</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goal -->
+    <div class="goal-banner">
+      <div class="goal-label">5 月系统目标</div>
+      <div class="goal-text">从「运行 17 个系统」退化为「真实使用 5 个工具」——<br>用更少的自动化，换取更高的注意力质量。</div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div class="footer">
+    Ethan AI System Audit · 2026-04-30 · <span style="color:var(--accent)">Coach M</span>
+  </div>
+</div>
+
+<!-- Chart Script -->
+<script>
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['绿色', '黄色', '红色'],
+      datasets: [{
+        data: [2, 5, 10],
+        backgroundColor: [
+          'rgba(34,197,94,0.85)',
+          'rgba(245,158,11,0.85)',
+          'rgba(239,68,68,0.85)'
+        ],
+        borderColor: [
+          'rgba(34,197,94,0.3)',
+          'rgba(245,158,11,0.3)',
+          'rgba(239,68,68,0.3)'
+        ],
+        borderWidth: 2,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ${ctx.label}: ${ctx.raw} 个 (${Math.round(ctx.raw/17*100)}%)`
+          }
+        }
+      },
+      animation: {
+        animateRotate: true,
+        duration: 800
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
