@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摆渡人 + 连接者 · 不确定性之海 · 就业、利息和货币通论</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616;
+            --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d0cfc8; --text-dim: #888; --text-muted: #555;
+            --white: #f0ece4; --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.1); --accent-border: rgba(226,163,85,0.25);
+            --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.08); --blue-border: rgba(96,165,250,0.2);
+            --teal: #2dd4bf; --teal-dim: rgba(45,212,191,0.08); --teal-border: rgba(45,212,191,0.2);
+            --purple: #c084fc; --purple-dim: rgba(192,132,252,0.08); --purple-border: rgba(192,132,252,0.2);
+            --red: #E94560; --red-dim: rgba(233,69,96,0.08); --red-border: rgba(233,69,96,0.2);
+            --green: #4ade80; --green-dim: rgba(74,222,128,0.08); --green-border: rgba(74,222,128,0.2);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Serif SC', Georgia, serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.9;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+
+        /* ── Breadcrumb ── */
+        .breadcrumb-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+            background: rgba(10,10,10,.92); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            font-size: 12px; font-family: sans-serif; color: #666;
+        }
+        .breadcrumb-nav a { color: #888; text-decoration: none; }
+        .breadcrumb-nav a:hover { color: #ddd; }
+        .breadcrumb-nav .sep { color: #444; font-size: 11px; }
+        .breadcrumb-nav .current { color: #ccc; font-weight: 500; }
+        .breadcrumb-spacer { height: 40px; }
+
+        /* ── Role tag ── */
+        .role-tag-blue {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue);
+        }
+        .role-tag-teal {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+        .day-label {
+            font-size: .72rem; color: var(--text-muted); font-family: sans-serif;
+            font-weight: 500; letter-spacing: .05em; margin-bottom: .6rem;
+        }
+        .main-title { font-size: 1.75rem; font-weight: 700; color: var(--white); line-height: 1.4; margin-bottom: .6rem; }
+        .sub-title { font-size: 1rem; color: var(--text-dim); font-weight: 400; line-height: 1.6; }
+        .role-header { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+
+        /* ── Text ── */
+        .body-text { font-size: 1rem; color: var(--text); line-height: 1.9; margin-bottom: 1.5rem; }
+        .body-text em { font-style: italic; color: var(--accent); }
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        /* ── Section heading ── */
+        .section-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-muted); margin: 2.5rem 0 1.25rem;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .section-title.blue { color: var(--blue); }
+        .section-title.teal { color: var(--teal); }
+        .section-title.blue::after { background: rgba(96,165,250,0.2); }
+        .section-title.teal::after { background: rgba(45,212,191,0.2); }
+
+        h2 { font-size: 1.2rem; color: var(--white); margin: 2rem 0 .9rem; line-height: 1.5; }
+        h3.blue { font-size: 1rem; color: var(--blue); margin: 1.5rem 0 .6rem; }
+        h3.teal { font-size: 1rem; color: var(--teal); margin: 1.5rem 0 .6rem; }
+
+        /* ── Section break ── */
+        .section-break {
+            border: none; border-top: 1px solid var(--border-light);
+            margin: 3.5rem 0; position: relative;
+        }
+        .section-break::after {
+            content: '· · ·';
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--bg); color: var(--text-muted);
+            padding: 0 .75rem; font-size: .85rem; letter-spacing: .2em;
+            font-family: sans-serif;
+        }
+
+        /* ── Divider ── */
+        .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+        /* ── Tension Final Box ── */
+        .tension-final {
+            background: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(226,163,85,0.06) 100%);
+            border: 1px solid rgba(226,163,85,0.3);
+            border-radius: 12px; padding: 1.75rem; margin: 2rem 0;
+            position: relative; overflow: hidden;
+        }
+        .tension-final::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--accent));
+        }
+        .tension-final-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .9rem; display: flex; align-items: center; gap: .4rem;
+        }
+        .tension-original {
+            font-size: .9rem; color: var(--text-muted); font-style: italic;
+            border-left: 2px solid var(--border-light); padding-left: .9rem;
+            margin-bottom: 1.25rem; line-height: 1.8;
+        }
+        .tension-final-text {
+            font-size: 1.05rem; color: #d4c8b4; line-height: 1.9;
+        }
+        .tension-final-text em { font-style: italic; color: var(--accent); }
+        .tension-final-text strong { color: var(--white); font-weight: 600; }
+        .tension-final-text p + p { margin-top: .9rem; }
+
+        /* ── Bridge card (摆渡人) ── */
+        .bridge-card {
+            background: var(--blue-dim); border: 1px solid var(--blue-border);
+            border-radius: 10px; padding: 1.5rem; margin: 1.5rem 0;
+        }
+        .bridge-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--blue);
+            margin-bottom: .75rem;
+        }
+        .bridge-text { font-size: .97rem; color: var(--text); line-height: 1.85; }
+        .bridge-text em { font-style: italic; color: var(--accent); }
+        .bridge-text strong { color: var(--white); }
+        .bridge-text p + p { margin-top: .85rem; }
+
+        /* ── Application strip ── */
+        .app-strip {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.1rem 1.25rem; margin: 1.25rem 0;
+        }
+        .app-strip .app-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase;
+            color: var(--blue); margin-bottom: .5rem;
+        }
+        .app-strip .app-text {
+            font-size: .93rem; color: var(--text-dim); line-height: 1.75;
+        }
+        .app-strip .app-text em { font-style: italic; color: var(--accent); }
+        .app-strip .app-text strong { color: var(--white); }
+
+        /* ── Connector branch ── */
+        .branch-item {
+            display: flex; gap: 1rem; align-items: flex-start;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.25rem; margin: .85rem 0;
+            transition: border-color .2s;
+        }
+        .branch-item:hover { border-color: var(--border-light); }
+        .branch-num {
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .72rem; font-weight: 700; font-family: sans-serif;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+        .branch-body { flex: 1; }
+        .branch-header { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; flex-wrap: wrap; }
+        .branch-book { font-size: .95rem; font-weight: 600; color: var(--white); }
+        .branch-week { font-size: .68rem; color: var(--text-muted); font-family: sans-serif; }
+        .branch-type {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            padding: .15rem .55rem; border-radius: 4px; font-family: sans-serif;
+        }
+        .branch-type.tension { background: var(--red-dim); border: 1px solid var(--red-border); color: var(--red); }
+        .branch-type.dialogue { background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue); }
+        .branch-type.inherit { background: var(--purple-dim); border: 1px solid var(--purple-border); color: var(--purple); }
+        .branch-type.complement { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+        .branch-type.invert { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
+        .branch-type.refute { background: var(--red-dim); border: 1px solid var(--red-border); color: var(--red); }
+        .branch-desc { font-size: .9rem; color: var(--text-dim); line-height: 1.7; }
+        .branch-desc em { font-style: italic; color: var(--accent); }
+        .branch-desc strong { color: var(--white); }
+
+        /* ── SVG knowledge map ── */
+        .map-container {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.5rem; margin: 2rem 0; overflow: hidden;
+        }
+        .map-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; color: var(--teal);
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Insight card ── */
+        .insight-card {
+            background: var(--surface-2); border: 1px solid var(--border-light);
+            border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0;
+        }
+        .insight-card .label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; margin-bottom: .5rem;
+        }
+        .insight-card .content { font-size: .93rem; color: var(--text); line-height: 1.75; }
+        .insight-card .content em { font-style: italic; color: var(--accent); }
+        .insight-card .content strong { color: var(--white); }
+
+        /* ── Next week banner ── */
+        .next-week {
+            background: linear-gradient(135deg, rgba(226,163,85,0.06) 0%, rgba(45,212,191,0.04) 100%);
+            border: 1px solid rgba(226,163,85,0.2); border-radius: 12px;
+            padding: 1.5rem; margin-top: 3rem; text-align: center;
+        }
+        .next-week .week-num {
+            font-size: .7rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .5rem;
+        }
+        .next-week .week-book {
+            font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: .3rem;
+        }
+        .next-week .week-author { font-size: .88rem; color: var(--text-dim); }
+
+        /* ── Concept pill ── */
+        .concept-pill {
+            display: inline-block; padding: .15rem .6rem; border-radius: 4px; margin: .15rem;
+            font-size: .8rem; font-family: sans-serif; font-style: italic;
+            background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent);
+        }
+
+        /* ── Week complete badge ── */
+        .week-complete {
+            display: inline-flex; align-items: center; gap: .4rem;
+            background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.25);
+            color: #4ade80; border-radius: 999px;
+            padding: .3rem .9rem; font-size: .7rem; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; font-family: sans-serif;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 560px) {
+            .main-title { font-size: 1.45rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="breadcrumb-nav">
+    <a href="/ethanycjin/booklist/">书单</a>
+    <span class="sep">›</span>
+    <span>第4周 · 就业、利息和货币通论</span>
+    <span class="sep">›</span>
+    <span class="current">Day 5 · 摆渡人 + 连接者</span>
+</nav>
+<div class="breadcrumb-spacer"></div>
+
+<div class="container">
+
+    <!-- ═══════════════════════════════
+         PART I · 摆渡人 The Bridger
+         ═══════════════════════════════ -->
+
+    <header class="role-header">
+        <div class="day-label">第4周 · Day 5 / 5 &nbsp;·&nbsp; 2026-05-01 &nbsp;·&nbsp; 《就业、利息和货币通论》</div>
+        <div class="week-complete">✅ 第4周收官</div>
+        <div class="role-tag-blue">🌉 The Bridger · 摆渡人</div>
+        <h1 class="main-title">不确定性之海</h1>
+        <p class="sub-title">凯恩斯留下了处方，却没有告诉我们：当开方人自己也不确定剂量时，我们该怎么用药？<br>一周五天的旅程，今天到达最后一站。</p>
+    </header>
+
+    <!-- 摆渡人开场 -->
+    <p class="body-text">摆渡人的工作不是给答案，是把你送到答案无法轻易落脚的地方。</p>
+
+    <p class="body-text">这一周，我们跟着凯恩斯走完了一段奇异的旅程：从1930年代大萧条的寒冬，到剑桥学院里那份颠覆经济学语言的草稿；从叙事者带我们走进的那个时代困境，到提炼者拆开的五把框架刀；从应用者在三个场景里发现的"沙地浇水困境"，到挑战者揭示的四条断层线——最终我们站在了一个让人不舒服的问题面前：<strong>如果精准干预本身就是幻觉，我们还能做什么？</strong></p>
+
+    <p class="body-text">现在摆渡人来了。我要把这周积累下来的所有张力，带去一个更难回答的地方。</p>
+
+    <div class="divider"></div>
+
+    <!-- 三段摆渡 -->
+    <div class="section-title blue">摆渡一 · 从"失灵"到"无法定义正常"</div>
+
+    <p class="body-text">这一周的核心张力，从叙事者提出，经过提炼者、应用者、挑战者三天的深化，最终在挑战者那里变成了一个更尖锐的问题：不是干预本身有问题，而是"<em>相信能精准干预</em>"才是最大的认知风险——知识陷阱比流动性陷阱更难逃脱。</p>
+
+    <p class="body-text">摆渡人要把这个观察推进一步：为什么精准干预是幻觉？不只是因为哈耶克说的"知识分散"——更深的原因是，我们对"<em>市场正常运作</em>"本身没有一个独立的标准。</p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">🌉 摆渡人的问题</div>
+        <p class="bridge-text">凯恩斯的整个体系建立在一个隐含前提上：我们能够识别"市场失灵"，然后用政策纠偏，让市场回到"正常"状态。</p>
+        <p class="bridge-text">但问题是：<strong>"正常"是什么？</strong> 充分就业是正常？还是某种程度的摩擦性失业才是正常？利率的"自然水平"是多少？<em>有效需求</em>（<em>Effective Demand</em>）的"足够"是什么标准？</p>
+        <p class="bridge-text">这不是技术问题，是认识论问题。我们用来定义"失灵"的基准，本身就嵌入了某种价值判断和历史假设。凯恩斯写作的1930年代，"失灵"非常明显——25%的失业率让这个问题有了清晰的答案。但在没有大萧条的年代，干预的边界在哪里？</p>
+    </div>
+
+    <div class="app-strip">
+        <div class="app-title">摆渡人注</div>
+        <div class="app-text">韦伯（第3周）在铁笼问题上遭遇了同样的困境：他能描述铁笼的形状，却无法从外部确认铁笼是否"异常"，因为他自己也住在里面。凯恩斯遭遇的是同构的问题：他能诊断萧条是失灵，但"繁荣"是否也是某种更隐蔽的失灵，他没有一个外部视角来判断。</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title blue">摆渡二 · 凯恩斯遇见2026</div>
+
+    <p class="body-text">应用者三天前问了一个问题：<em>干预的土壤准备好了吗？</em> 她在三个场景里发现：罗斯福新政之所以有效，是因为前提刚好成立；中国四万亿之所以在2008年有效而在2021年后失效，是因为同样的处方遇上了不同的土壤。</p>
+
+    <p class="body-text">摆渡人要把这个观察推进一步：今天，"土壤"正在发生什么系统性变化？</p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">🌉 三个当代现象的凯恩斯解读</div>
+        <p class="bridge-text"><strong>01 · 财政乘数的收缩</strong>&emsp;凯恩斯设计乘数时，经济是相对封闭的——政府投入，钱留在本国，带动本国就业和消费。2026年的全球化经济里，财政刺激的一大部分会通过进口漏出，或流向金融资产而非实体需求。<em>同样的处方，今天的乘数比1936年小。这不是凯恩斯错了，而是他的处方依赖的"前提土壤"已经迁移。</em></p>
+        <p class="bridge-text"><strong>02 · 央行工具的边界</strong>&emsp;2008年后，全球央行把"凯恩斯式干预"精炼成了量化宽松（<em>QE</em>）。但十五年后，我们看到了一个凯恩斯没有预料的场景：极低利率没有带来等量的需求刺激，大量流动性沉积在资产价格里。<em>流动性偏好</em>（<em>Liquidity Preference</em>）的含义被扭曲了——人们偏好的不是流动性，而是资产增值本身。工具没有失效，但它刺激的不是凯恩斯想要的那个"有效需求"。</p>
+        <p class="bridge-text"><strong>03 · AI冲击与就业的结构性重塑</strong>&emsp;凯恩斯假设的是<em>总量性失业</em>——需求不足导致的普遍性失业，可以用总量工具纠偏。但如果失业是<em>结构性</em>的——AI替代特定技能，使得某类劳动者的就业机会不是"暂时性减少"而是"永久性消失"——那么财政刺激增加总需求，并不能解决结构错位。<em>凯恩斯的工具箱是为总量问题设计的，对结构性断层无效。</em></p>
+    </div>
+
+    <p class="body-text">这不是在否定凯恩斯，而是在更诚实地理解他：他给了我们一套在特定条件下有效的工具，而不是一套在任何条件下都有效的真理。<strong>工具的寿命取决于它依赖的前提是否仍然成立。</strong></p>
+
+    <div class="divider"></div>
+
+    <div class="section-title blue">摆渡三 · 不确定性中的负责任选择</div>
+
+    <p class="body-text">挑战者上周留下了一个预告：在不确定性框架下，如何做出相对负责任的选择？</p>
+
+    <p class="body-text">这是摆渡人的最后一段。</p>
+
+    <p class="body-text">凯恩斯自己并不回避不确定性。他在《通论》第12章里写下了关于<em>动物精神</em>（<em>Animal Spirits</em>）的那段文字，承认投资决策的基础不是理性计算，而是"自发的乐观冲动"。他知道经济系统的核心是一团无法被完全预测的人类情绪和期望。</p>
+
+    <p class="body-text">他的答案不是放弃干预，而是<strong>在承认不确定性的前提下，选择比"什么都不做"更好的行动</strong>。这是一个谦逊的立场，而不是一个全知的立场。</p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">🌉 摆渡人的边界声明</div>
+        <p class="bridge-text">读这本书不是要让你相信"政府干预总是有效的"——那是对凯恩斯的误读。也不是要让你相信"市场总能自我修复"——那是萨伊定律的幸存者叙事。</p>
+        <p class="bridge-text">而是要让你学会一种思维方式：<strong>在前提不确定的情况下，如何系统地检查"干预的土壤"，如何识别"乘数失效的信号"，如何在承认自己知识有限的同时，仍然做出比随机更负责任的判断。</strong></p>
+        <p class="bridge-text">凯恩斯没有给你答案，他给了你一套<em>在雨天开车的技术</em>——不是保证你不会出事，而是让你比不会开车的人更可能安全到达。</p>
+    </div>
+
+    <!-- 张力问题最终形态 -->
+    <div class="tension-final">
+        <div class="tension-final-label">❓→💡 本周张力问题的最终形态</div>
+        <div class="tension-original">
+            原始提问（Day 1 · 叙事者）：当市场失灵时，政府干预是解药还是另一种病？凯恩斯的处方有效——但有效的前提是什么？如果那个前提本身靠不住，我们该信任什么？
+        </div>
+        <div class="tension-final-text">
+            <p>这个问题在一周的旅程中经历了四次变形：提炼者把它翻译成"乘数成立的前提条件"——一个红色虚线框，框住了凯恩斯理论的隐含假设；应用者把红色虚线框带进三个现实场景，发现同样的处方在不同土壤上效果天差地别；挑战者进一步揭示，不是干预本身有问题，而是"相信能精准干预"是最大的认知风险——知识陷阱比流动性陷阱更难逃脱。</p>
+            <p>摆渡人把这个问题推向最深处，它现在的形态是：</p>
+            <p><strong>如果我们用来定义"失灵"的基准本身就嵌入了价值判断，如果精准干预依赖的知识永远是不完整的——那么，政策选择的真正问题从来都不是"干预还是不干预"，而是：</strong></p>
+            <p><em>在无法获得完整信息、无法排除所有前提失效风险的条件下，什么样的决策框架能让我们犯的错代价最小、纠偏最快？</em></p>
+            <p>这个问题没有教科书答案。但它的价值在于：它会让你在下一次看到"政策出台了，所以问题会解决"时，停顿一秒，问自己——</p>
+            <p><strong>这里的土壤是什么？乘数是否还在有效区间？开方人检查过前提条件了吗？</strong></p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         PART II · 连接者 The Connector
+         ═══════════════════════════════ -->
+    <hr class="section-break">
+
+    <header class="role-header" style="border-bottom: 1px solid rgba(45,212,191,0.15); margin-top: 1rem;">
+        <div class="role-tag-teal">🔗 The Connector · 连接者</div>
+        <h1 class="main-title">知识图谱第4节点</h1>
+        <p class="sub-title">凯恩斯站在斯密、马克思、韦伯之后，站在哈耶克的正面之前。<br>五条枝干，看清他在50本书的知识网络中的位置。</p>
+    </header>
+
+    <p class="body-text">连接者的工作：不是评价，是定位。每读一本书，就在知识图谱上打一个新节点，然后画出它与其他节点之间的暗线。</p>
+
+    <p class="body-text">《就业、利息和货币通论》是第4周的书，但它在整个50本书单里是一个关键转折节点——它不只是经济学理论，更是20世纪知识谱系的一次深层断裂：它正式宣告了"晴天地图可以应对雨天"这一古典信念的终结，并为此后几乎所有政策讨论设定了坐标系。</p>
+
+    <div class="section-title teal">五条枝干</div>
+
+    <!-- 枝干1 -->
+    <div class="branch-item">
+        <div class="branch-num">1</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《国富论》</span>
+                <span class="branch-week">第1周</span>
+                <span class="branch-type tension">张力</span>
+            </div>
+            <div class="branch-desc">
+                斯密相信市场有<em>自动稳定机制</em>——价格信号引导资源向效用最高处流动，供需自发趋于均衡。凯恩斯的整个《通论》是对这个信念最直接的挑战：<strong>不存在保证充分就业的自动机制，市场可以在远低于充分就业的水平上长期稳定</strong>。
+                <br><br>
+                这条张力线的核心不是"谁对谁错"，而是它们适用的时间尺度不同：斯密的自动调节在长期有一定道理（"长期我们都死了"是凯恩斯的反讽），凯恩斯在乎的是萧条期里那些在长期到来之前就已经摧毁的人的生计。<em>他们争的是"短期"这个词值不值得认真对待。</em>
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干2 -->
+    <div class="branch-item">
+        <div class="branch-num">2</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《资本论》</span>
+                <span class="branch-week">第2周</span>
+                <span class="branch-type dialogue">对话</span>
+            </div>
+            <div class="branch-desc">
+                马克思和凯恩斯都看到了资本主义的结构性不稳定——但诊断和处方完全不同。马克思认为危机是资本主义制度的内生矛盾，唯一出路是推翻生产关系。凯恩斯认为危机是可以通过政策调节的技术问题，不需要推翻制度，只需要更聪明的管理。
+                <br><br>
+                这条对话线的深层含义是：<strong>凯恩斯其实是在"拯救资本主义免于被马克思说中"</strong>。他明确地说过，如果古典经济学是对的，那么资本主义最终会因为自身矛盾崩溃——他的任务是证明聪明的管理可以避免这个命运。<em>他是市场体制的改良者，而不是它的颠覆者。</em>
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干3 -->
+    <div class="branch-item">
+        <div class="branch-num">3</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《新教伦理与资本主义精神》</span>
+                <span class="branch-week">第3周</span>
+                <span class="branch-type inherit">传承</span>
+            </div>
+            <div class="branch-desc">
+                韦伯的"铁笼"是文化与意识形态层面的束缚——现代资本主义不再需要意义支撑，它靠自身运转逻辑维持。凯恩斯的洞见是：这个铁笼的外部条件（总需求、就业水平、利率）是可以被工程性干预的。
+                <br><br>
+                这条传承线的暗线是：<strong>宏观经济政策，是对韦伯铁笼的一种工程性回应——不改变笼子里的人心，只调整笼子的运转参数。</strong> 凯恩斯相信，只要外部条件合适，铁笼里的人会自然配合运转。连接者的观察：这个相信本身，也是一种对人类<em>动物精神</em>的押注。
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干4 -->
+    <div class="branch-item">
+        <div class="branch-num">4</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《通往奴役之路》</span>
+                <span class="branch-week">第5周</span>
+                <span class="branch-type refute">正面对立</span>
+            </div>
+            <div class="branch-desc">
+                哈耶克和凯恩斯的对立是20世纪经济思想最重要的张力线。哈耶克认为：凯恩斯式的国家干预，无论出发点多好，都必然走向对个人自由的系统性侵蚀——因为中央化的经济决策必须抑制分散的个体选择。
+                <br><br>
+                这不只是政策之争，而是关于<em>知识性质</em>的哲学分歧：凯恩斯相信聪明的技术官僚可以汇聚足够的知识来做出更好的决策；哈耶克相信<strong>市场价格系统是人类唯一可靠的分布式知识处理机制</strong>，任何试图集中替代它的努力都必然失败。
+                <br><br>
+                <em>第5周，这场对话将正式开始。</em>
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干5 -->
+    <div class="branch-item">
+        <div class="branch-num">5</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《21世纪资本论》</span>
+                <span class="branch-week">第10周</span>
+                <span class="branch-type complement">数据延伸</span>
+            </div>
+            <div class="branch-desc">
+                皮凯蒂的<em>r＞g</em>（资本回报率长期高于经济增长率）为凯恩斯的论述提供了一个后视镜：凯恩斯担心的是需求不足导致的周期性危机，皮凯蒂揭示的是即便走出危机之后，分配结构仍然在系统性地向资本倾斜。
+                <br><br>
+                这条数据延伸线的含义是：<strong>凯恩斯解决了萧条问题，但没有解决繁荣期的分配问题</strong>。增长回来了，但财富积累的逻辑确保了下一次危机的土壤也在悄悄培育。皮凯蒂是在用数据追问凯恩斯没有问的问题：<em>充分就业之后，分配公平吗？</em>
+            </div>
+        </div>
+    </div>
+
+    <!-- 知识地图SVG -->
+    <div class="map-container">
+        <div class="map-title">📍 知识图谱 · 第1-4周节点及连线</div>
+        <svg viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <defs>
+                <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#E94560" opacity="0.7"/>
+                </marker>
+                <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa" opacity="0.7"/>
+                </marker>
+                <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#c084fc" opacity="0.7"/>
+                </marker>
+                <marker id="arr-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#2dd4bf" opacity="0.7"/>
+                </marker>
+                <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#4ade80" opacity="0.7"/>
+                </marker>
+                <marker id="arr-accent" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#e2a355" opacity="0.7"/>
+                </marker>
+            </defs>
+
+            <!-- 已读节点 -->
+            <!-- W1 国富论 -->
+            <circle cx="90" cy="150" r="36" fill="rgba(226,163,85,0.12)" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="90" y="143" text-anchor="middle" fill="#e2a355" font-size="10" font-family="sans-serif" font-weight="700">W1</text>
+            <text x="90" y="157" text-anchor="middle" fill="#d0cfc8" font-size="9" font-family="sans-serif">国富论</text>
+            <text x="90" y="170" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">斯密</text>
+
+            <!-- W2 资本论 -->
+            <circle cx="230" cy="150" r="36" fill="rgba(226,163,85,0.12)" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="230" y="143" text-anchor="middle" fill="#e2a355" font-size="10" font-family="sans-serif" font-weight="700">W2</text>
+            <text x="230" y="157" text-anchor="middle" fill="#d0cfc8" font-size="9" font-family="sans-serif">资本论</text>
+            <text x="230" y="170" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">马克思</text>
+
+            <!-- W3 新教伦理 -->
+            <circle cx="370" cy="150" r="36" fill="rgba(226,163,85,0.12)" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="370" y="143" text-anchor="middle" fill="#e2a355" font-size="10" font-family="sans-serif" font-weight="700">W3</text>
+            <text x="370" y="157" text-anchor="middle" fill="#d0cfc8" font-size="9" font-family="sans-serif">新教伦理</text>
+            <text x="370" y="170" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">韦伯</text>
+
+            <!-- W4 通论（当前，高亮） -->
+            <circle cx="510" cy="150" r="42" fill="rgba(96,165,250,0.12)" stroke="#60a5fa" stroke-width="2"/>
+            <circle cx="510" cy="150" r="46" fill="none" stroke="rgba(96,165,250,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="510" y="139" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="sans-serif" font-weight="700">W4 ← 本周</text>
+            <text x="510" y="153" text-anchor="middle" fill="#f0ece4" font-size="9" font-family="sans-serif" font-weight="600">通论</text>
+            <text x="510" y="166" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">凯恩斯</text>
+
+            <!-- 待读节点 -->
+            <!-- W5 奴役之路 -->
+            <circle cx="620" cy="90" r="30" fill="rgba(192,132,252,0.05)" stroke="#c084fc" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="620" y="83" text-anchor="middle" fill="#c084fc" font-size="9" font-family="sans-serif" font-weight="700">W5</text>
+            <text x="620" y="97" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">奴役之路</text>
+
+            <!-- W10 21世纪资本论 -->
+            <circle cx="620" cy="210" r="30" fill="rgba(74,222,128,0.05)" stroke="#4ade80" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="620" y="203" text-anchor="middle" fill="#4ade80" font-size="9" font-family="sans-serif" font-weight="700">W10</text>
+            <text x="620" y="217" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">21世纪资本论</text>
+
+            <!-- 频道C 文学感知 -->
+            <rect x="20" y="260" width="130" height="50" rx="8" fill="rgba(45,212,191,0.05)" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="85" y="280" text-anchor="middle" fill="#2dd4bf" font-size="9" font-family="sans-serif" font-weight="700">频道C · 文学感知</text>
+            <text x="85" y="295" text-anchor="middle" fill="#888" font-size="8" font-family="sans-serif">卡拉马佐夫兄弟</text>
+
+            <!-- 连线 -->
+            <!-- W1 → W2 张力 -->
+            <line x1="126" y1="150" x2="194" y2="150" stroke="#E94560" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-red)" opacity="0.6"/>
+            <text x="160" y="143" text-anchor="middle" fill="#E94560" font-size="8" font-family="sans-serif">张力</text>
+
+            <!-- W2 → W3 对话 -->
+            <line x1="266" y1="150" x2="334" y2="150" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-blue)" opacity="0.6"/>
+            <text x="300" y="143" text-anchor="middle" fill="#60a5fa" font-size="8" font-family="sans-serif">对话</text>
+
+            <!-- W3 → W4 传承 -->
+            <line x1="406" y1="150" x2="464" y2="150" stroke="#c084fc" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-purple)" opacity="0.6"/>
+            <text x="435" y="143" text-anchor="middle" fill="#c084fc" font-size="8" font-family="sans-serif">传承</text>
+
+            <!-- W4 → W5 正面对立 -->
+            <line x1="547" y1="120" x2="593" y2="103" stroke="#c084fc" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-purple)" opacity="0.6"/>
+            <text x="578" y="107" text-anchor="middle" fill="#c084fc" font-size="7.5" font-family="sans-serif">对立</text>
+
+            <!-- W4 → W10 数据延伸 -->
+            <line x1="547" y1="180" x2="593" y2="198" stroke="#4ade80" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr-green)" opacity="0.6"/>
+            <text x="577" y="200" text-anchor="middle" fill="#4ade80" font-size="7.5" font-family="sans-serif">延伸</text>
+
+            <!-- W2 → W4 对话(凯恩斯拯救资本主义) -->
+            <path d="M255,120 Q380,60 467,120" stroke="rgba(96,165,250,0.35)" stroke-width="1" stroke-dasharray="3,5" fill="none" marker-end="url(#arr-blue)" opacity="0.5"/>
+            <text x="360" y="75" text-anchor="middle" fill="#555" font-size="7.5" font-family="sans-serif">改良vs革命</text>
+
+            <!-- W1 → W4 远程张力 -->
+            <path d="M112,122 Q300,40 468,120" stroke="rgba(226,163,85,0.3)" stroke-width="1" stroke-dasharray="3,6" fill="none" opacity="0.5"/>
+            <text x="280" y="50" text-anchor="middle" fill="#666" font-size="7.5" font-family="sans-serif">长期vs短期</text>
+
+            <!-- W3 → 频道C 跨频道 -->
+            <path d="M346,178 Q200,240 150,262" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="4,4" fill="none" marker-end="url(#arr-teal)" opacity="0.5"/>
+            <text x="235" y="247" text-anchor="middle" fill="#2dd4bf" font-size="8" font-family="sans-serif">跨频道</text>
+
+            <!-- 图例 -->
+            <rect x="20" y="325" width="640" height="1" fill="rgba(255,255,255,0.06)"/>
+            <text x="20" y="342" fill="#555" font-size="8" font-family="sans-serif">● 实线圆 = 已读  ○ 虚线圆 = 待读</text>
+            <text x="220" y="342" fill="#60a5fa" font-size="8" font-family="sans-serif">● 蓝色高亮 = 本周</text>
+            <text x="360" y="342" fill="#555" font-size="8" font-family="sans-serif">↗ 箭头方向 = 知识影响流向</text>
+        </svg>
+    </div>
+
+    <div class="insight-card">
+        <div class="label" style="color: var(--teal);">连接者注</div>
+        <div class="content">
+            第4节点（凯恩斯）在整个书单里是一个政策思维的分水岭：前三周（斯密/马克思/韦伯）在问"资本主义是什么"和"人为什么配合它运作"；凯恩斯第一次系统地问"当它失灵时，我们能做什么"。这个从解释到干预的转向，定义了20世纪后半叶几乎所有的政策讨论。
+            <br><br>
+            下一个待读的节点是<strong>第5周·哈耶克《通往奴役之路》</strong>——连接者预判：那场凯恩斯与哈耶克的对话，是这本书单里迄今最直接的正面冲突。两人都见过大萧条，都看过彼此的著作，都是剑桥和伦敦政经学院的学者圈同仁。分歧不是因为不了解对方，而是因为他们对"人类知识的本质"有根本性的不同判断。
+        </div>
+    </div>
+
+    <!-- 下周预告 -->
+    <div class="next-week">
+        <div class="week-num">→ 第 5 周 · 下周一开始</div>
+        <div class="week-book">《通往奴役之路》</div>
+        <div class="week-author">弗里德里希·哈耶克 Friedrich Hayek</div>
+    </div>
+
+</div>
+</body>
+</html>
