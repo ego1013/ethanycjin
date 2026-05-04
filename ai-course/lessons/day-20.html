@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 20 · Verifiable Problem：如何定义 AI 能做好的任务 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #0a001a 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--yellow-dim);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--accent-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  pre {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 1rem 0;
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--green);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--green); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Spectrum bar ── */
+  .spectrum {
+    display: flex;
+    align-items: stretch;
+    margin: 1.5rem 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .spectrum-item {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    transition: transform 0.2s;
+  }
+
+  .spectrum-item:hover { transform: scale(1.02); }
+
+  .spectrum-item .spectrum-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .spectrum-item .spectrum-label {
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .spectrum-item .spectrum-desc {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .spectrum { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 20</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🟡 中半衰期 · 讲透逻辑</div>
+  <h1>Day 20 · Verifiable Problem：如何定义 AI 能做好的任务</h1>
+  <p class="subtitle">什么样的任务适合交给 AI？</p>
+  <div class="meta">
+    <span>📅 2026-05-05 Tue</span>
+    <span>📦 第二模块 · 应用篇 · Week 4</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    一个问题：
+  </p>
+  <p>
+    "让 AI 帮我写一段 Python 代码，实现快速排序算法。"<br>
+    "让 AI 帮我判断这个代理商是否值得续约。"
+  </p>
+  <p>
+    这两个任务的难度差别有多大？表面看，第二个更"高级"（涉及商业判断），第一个更"技术"。但如果你真正使用过 AI，你会发现一个反直觉的事实：
+  </p>
+  <p>
+    <span class="highlight">AI 做快速排序几乎 100% 正确。但"判断是否续约"——即使给了最完整的数据，AI 的输出你敢直接用吗？</span>
+  </p>
+  <p>
+    为什么？不是因为续约判断"更难"——而是因为快速排序有一个它没有的东西：<strong>客观的验证标准</strong>。代码跑一下就知道对不对；续约判断谁来说"对"？
+  </p>
+  <p>
+    今天要回答一个在 Day 15-19 都没有正面讨论的根本问题：<strong>在你把任何任务交给 AI 之前，第一步不是选架构、不是写 Prompt——而是判断"这件事适不适合交给 AI"。</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: WHY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么"可验证性"是第一判断维度？</h2>
+  </div>
+
+  <h3>一个容易被忽略的问题</h3>
+
+  <p>
+    在 Day 15-19，我们讲了 Prompt 怎么写、CoT 怎么用、Agent 怎么设计、Multi-Agent 怎么编排。这些都是<strong>"怎么用好 AI"的技术</strong>。
+  </p>
+
+  <p>
+    但有一个更前置的问题被跳过了：<strong>这件事该不该用 AI？</strong>
+  </p>
+
+  <p>
+    很多人（包括很多团队）的失败不是因为"Prompt 没写好"或"架构选错了"，而是因为他们一开始就把一件<strong>不适合 AI 做的事</strong>交给了 AI。然后花了大量时间调 Prompt、换模型、加 Agent——效果始终达不到预期。
+  </p>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 核心命题</div>
+    <p style="margin:0">
+      <strong>如果一个问题的答案不可被客观验证，AI 做得再好你也无法确认——这不是技术问题，是问题本身的性质。</strong><br><br>
+      这就像你让一个下属去做一件"你自己也不知道什么算做好了"的事——无论他多优秀，你都不可能满意。因为<strong>没有评判标准的任务，不存在"做对了"这个概念</strong>。
+    </p>
+  </div>
+
+  <h3>为什么"可验证"如此关键？三个层面</h3>
+
+  <p><strong>层面一：模型进化依赖反馈循环</strong></p>
+
+  <p>
+    Day 3-4 讲过：模型通过 RLHF 进步，RLHF 的核心是 Reward Signal（奖励信号）。如果一个任务的输出<strong>可以被自动验证对错</strong>（比如数学题、代码题），模型可以通过 RL 不断自我改进——因为它有明确的"做对了 +1，做错了 -1"的信号。
+  </p>
+
+  <p>
+    但如果一个任务的输出<strong>无法被自动验证</strong>（比如"这段文案写得好不好""这个策略方向对不对"），模型的进步就只能依赖人类标注——慢、贵、且不一致。
+  </p>
+
+  <p>
+    <strong>这就是为什么 AI 在数学和编程上进步神速（可自动验证），但在开放性写作和商业判断上进步缓慢（需要人类验证）。</strong>
+  </p>
+
+  <p><strong>层面二：你对 AI 输出的信任度取决于可验证性</strong></p>
+
+  <p>
+    当 AI 帮你写了一段代码，你可以跑测试确认结果——你知道它是对的。<br>
+    当 AI 帮你写了一份市场分析，你怎么确认它"对"？你必须逐条人工审查——此时 AI 的效率增益大幅缩水。
+  </p>
+
+  <p>
+    <strong>可验证性决定了你能放心把多少控制权交给 AI——也就决定了效率提升的上限。</strong>
+  </p>
+
+  <p><strong>层面三：可验证性决定了 AI 的"自主度天花板"</strong></p>
+
+  <p>
+    回到 Day 17 讲的 Agent 三级光谱：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>任务的可验证性</th>
+        <th>AI 适合扮演的角色</th>
+        <th>人的参与度</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>高可验证</strong>（代码/数据处理/格式转换）</td>
+        <td>全自动 Agent</td>
+        <td>抽查即可</td>
+      </tr>
+      <tr>
+        <td><strong>中可验证</strong>（结构化分析/规则匹配/信息提取）</td>
+        <td>Copilot（辅助+确认）</td>
+        <td>关键节点审核</td>
+      </tr>
+      <tr>
+        <td><strong>低可验证</strong>（战略判断/创意方向/人际关系评估）</td>
+        <td>Chatbot（提供视角）</td>
+        <td>人必须全程主导</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout blue">
+    <div class="callout-label">💭 Ethan 的直觉检验</div>
+    <p style="margin:0">
+      把这个逻辑套到你的工作上：<br><br>
+      • "检查代理商提交的出货数据是否符合报告格式"→ <strong>高可验证</strong>（规则明确，对错分明）→ Agent 可全自动<br>
+      • "分析华东区 Q3 代理商下滑的根因"→ <strong>中可验证</strong>（你能判断分析是否靠谱，但不能自动验证）→ Copilot 辅助你<br>
+      • "决定明年华东区是保留 3 家还是精简到 2 家"→ <strong>低可验证</strong>（这取决于战略判断，没有客观对错）→ AI 最多提供信息和视角，决定必须你来做<br><br>
+      <strong>AI 的价值上限 = 任务的可验证性 × 任务的重复频率。</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — "可验证问题"的定义与判断框架</h2>
+  </div>
+
+  <h3>严格定义：什么是 Verifiable Problem？</h3>
+
+  <div class="callout gold">
+    <div class="callout-label">📖 定义</div>
+    <p style="margin:0">
+      <strong>Verifiable Problem</strong>（可验证问题）：给定任务的输出，存在一种<strong>低成本的方法</strong>可以判断"这个输出是否正确/合格"。<br><br>
+      关键词是"低成本"。理论上，任何输出都可以由人类专家花足够时间验证——但如果验证成本等于或高于"自己做一遍"的成本，那验证就没有实际意义，AI 的效率增益为零。
+    </p>
+  </div>
+
+  <p>
+    这个定义里有两个层次：
+  </p>
+
+  <p>
+    <strong>1. 是否存在验证方法</strong>——有些问题有客观标准（数学有正确答案，代码有测试），有些没有（"这篇文章写得好不好"取决于谁来评）。
+  </p>
+
+  <p>
+    <strong>2. 验证成本有多高</strong>——即使"存在"验证方法，如果验证本身需要专家花 2 小时审查，那 AI 的效率优势就被大幅削弱。
+  </p>
+
+  <h3>可验证性光谱：从"完全可验证"到"不可验证"</h3>
+
+  <div class="spectrum">
+    <div class="spectrum-item" style="background: var(--green-dim);">
+      <div class="spectrum-icon">✅</div>
+      <div class="spectrum-label" style="color: var(--green);">完全可验证</div>
+      <div class="spectrum-desc">输出有客观对错<br>可自动判定</div>
+    </div>
+    <div class="spectrum-item" style="background: var(--blue-dim);">
+      <div class="spectrum-icon">📐</div>
+      <div class="spectrum-label" style="color: var(--blue);">规则可验证</div>
+      <div class="spectrum-desc">输出需满足规则<br>违反可自动检测</div>
+    </div>
+    <div class="spectrum-item" style="background: var(--yellow-dim);">
+      <div class="spectrum-icon">👁️</div>
+      <div class="spectrum-label" style="color: var(--yellow);">人类可验证</div>
+      <div class="spectrum-desc">专家能快速判断<br>但无法自动化</div>
+    </div>
+    <div class="spectrum-item" style="background: var(--red-dim);">
+      <div class="spectrum-icon">🌫️</div>
+      <div class="spectrum-label" style="color: var(--red);">难以验证</div>
+      <div class="spectrum-desc">主观性高<br>事后才知对错</div>
+    </div>
+  </div>
+
+  <p>让我们把这个光谱展开，对照具体的工作任务：</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>可验证等级</th>
+        <th>任务示例</th>
+        <th>验证方式</th>
+        <th>AI 适合度</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--green)"><strong>完全可验证</strong></td>
+        <td>代码实现、数学计算、数据格式转换、SQL 查询生成</td>
+        <td>运行 + 对比预期结果</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td style="color:var(--blue)"><strong>规则可验证</strong></td>
+        <td>报销单审核（是否符合政策）、合同条款检查、数据异常标记</td>
+        <td>规则引擎 + 边界 case 人审</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow)"><strong>人类可验证</strong></td>
+        <td>数据分析报告、竞对研究、用户画像总结</td>
+        <td>专家 5 分钟浏览即可判断质量</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)"><strong>难以验证</strong></td>
+        <td>明年渠道策略方向、是否续约某代理商、品牌定位调整</td>
+        <td>只有事后（3-6 个月）才知道决策对不对</td>
+        <td>⭐⭐</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>判断框架：三步法确定任务的 AI 适合度</h3>
+
+  <div class="callout green">
+    <div class="callout-label">📖 三步判断法</div>
+    <p style="margin:0">
+      <strong>Step 1：这个任务有"正确答案"吗？</strong><br>
+      → 如果有客观正确答案 → 完全可验证 → AI 可高度自主<br>
+      → 如果有明确规则（非对即错）→ 规则可验证 → AI 可辅助，人抽查<br>
+      → 如果没有唯一正确答案 → 继续 Step 2<br><br>
+      <strong>Step 2：一个领域专家看到输出，能在 5 分钟内判断质量好坏吗？</strong><br>
+      → 如果能 → 人类可验证 → AI 做初稿，人做终审<br>
+      → 如果不能（需要几个月后才知道效果）→ 继续 Step 3<br><br>
+      <strong>Step 3：这个任务可以被拆解为"可验证子任务"吗？</strong><br>
+      → 如果可以拆 → 把可验证部分交给 AI，不可验证部分留给人<br>
+      → 如果不可拆 → AI 最多提供参考视角，决策必须人来做
+    </p>
+  </div>
+
+  <h3>Step 3 的威力：把"不可验证"变成"部分可验证"</h3>
+
+  <p>
+    这是最实用的一步——大多数看似"不适合 AI"的复杂任务，其实可以拆出大量"适合 AI"的子任务。
+  </p>
+
+  <p><strong>案例：决定是否续约某代理商</strong></p>
+
+  <p>
+    整体判断 = "不可验证"（战略决策，事后才知道对不对）。但拆解后：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>子任务</th>
+        <th>可验证等级</th>
+        <th>AI 角色</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>拉取该代理商过去 4 个季度的出货/回款数据</td>
+        <td style="color:var(--green)">完全可验证</td>
+        <td>全自动</td>
+      </tr>
+      <tr>
+        <td>对比同区域其他代理商的表现百分位</td>
+        <td style="color:var(--green)">完全可验证</td>
+        <td>全自动</td>
+      </tr>
+      <tr>
+        <td>检查该代理商是否违反了合同中的哪些条款</td>
+        <td style="color:var(--blue)">规则可验证</td>
+        <td>自动标记 + 人确认</td>
+      </tr>
+      <tr>
+        <td>总结过去 6 个月的沟通记录中的关键事件</td>
+        <td style="color:var(--yellow)">人类可验证</td>
+        <td>AI 初稿 + 人快审</td>
+      </tr>
+      <tr>
+        <td>评估该区域市场未来 1 年的增长潜力</td>
+        <td style="color:var(--red)">难以验证</td>
+        <td>提供数据参考，不做结论</td>
+      </tr>
+      <tr>
+        <td><strong>最终决定：续约 / 不续约 / 调整条件</strong></td>
+        <td style="color:var(--red)"><strong>难以验证</strong></td>
+        <td><strong>人做决策</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 关键洞察</div>
+    <p style="margin:0">
+      <strong>"续约判断"整体不适合 AI 做决策，但 70% 以上的前置工作（数据拉取、规则检查、信息提取）都是高可验证任务——完全可以让 AI 完成。</strong><br><br>
+      这就是 Day 17 讲的 Copilot 模式的真正价值：不是替你做决策，而是<strong>把决策前的信息准备工作缩短 80%</strong>，让你把时间花在"只有你能做的判断"上。
+    </p>
+  </div>
+
+  <h3>真实世界的验证成本经济学</h3>
+
+  <p>
+    让我们更精确地思考"验证成本"这件事：
+  </p>
+
+  <div class="callout cyan">
+    <div class="callout-label">📊 关键公式</div>
+    <p style="margin:0">
+      <strong>AI 的净效率增益 = 节省的执行时间 − 验证成本</strong><br><br>
+      • 如果 AI 帮你 5 分钟完成一件原本需要 2 小时的事，但验证需要 1.5 小时 → 净增益只有 25 分钟<br>
+      • 如果验证成本接近于零（自动测试通过 = 对了）→ 净增益接近 100%<br><br>
+      <strong>这就是为什么"代码生成"效率飙升但"策略建议"效率提升有限——验证成本完全不同。</strong>
+    </p>
+  </div>
+
+  <p>
+    用一个你可能有感觉的对比：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>任务</th>
+        <th>AI 执行时间</th>
+        <th>人工执行时间</th>
+        <th>验证成本</th>
+        <th>净效率提升</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>写一个 SQL 查询</td>
+        <td>10 秒</td>
+        <td>15 分钟</td>
+        <td>30 秒（跑一下看结果）</td>
+        <td><strong>~97%</strong></td>
+      </tr>
+      <tr>
+        <td>生成月度数据报表</td>
+        <td>2 分钟</td>
+        <td>3 小时</td>
+        <td>10 分钟（抽查关键数字）</td>
+        <td><strong>~93%</strong></td>
+      </tr>
+      <tr>
+        <td>写一份竞对分析报告</td>
+        <td>5 分钟</td>
+        <td>1 天</td>
+        <td>1-2 小时（逐段审查准确性）</td>
+        <td><strong>~75%</strong></td>
+      </tr>
+      <tr>
+        <td>制定下季度渠道策略</td>
+        <td>3 分钟（出个初稿）</td>
+        <td>3 天</td>
+        <td>3 天（因为你必须自己重新思考）</td>
+        <td><strong>~0%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    最后一行非常关键：AI 生成的"策略建议"看起来很完整、很专业，但你无法信任它——因为验证这个策略是否正确的成本等于自己重做一遍。这就是 Day 6 讲的<strong>幻觉</strong>的放大效应：在不可验证的领域，幻觉的危害远大于可验证领域。
+  </p>
+
+  <h3>DeepSeek-R1 / o1 / o3 的"推理进步"为什么快？</h3>
+
+  <p>
+    你可能会想起 Day 7 讲的 DeepSeek-R1 和 Day 8 提到的 o1/o3 推理模型。为什么这些模型的推理能力进步如此之快？
+  </p>
+
+  <p>
+    答案正是今天的核心概念：<strong>数学和代码是完全可验证的问题</strong>。
+  </p>
+
+  <p>
+    在训练 R1 时，模型可以生成推理过程，然后自动验证最终答案是否正确——不需要人类标注。这创造了一个<strong>无限的 RL 反馈循环</strong>：
+  </p>
+
+  <div class="diagram">
+    <span class="flow">可验证问题的 RL 飞轮</span><br><br>
+    ┌────────────┐<br>
+    │ 模型生成解法 │<br>
+    └─────┬──────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+    ┌──────────────────┐<br>
+    │ <span class="ok">自动验证：对 or 错？</span> │  ← 零成本！无需人工<br>
+    └─────┬────────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+    ┌────────────────┐<br>
+    │ <span class="accent-hl">Reward：+1 / -1</span>  │<br>
+    └─────┬──────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+    ┌─────────────────┐<br>
+    │ 模型调整策略      │ ──→ 下一次生成更好的解法<br>
+    └─────────────────┘<br>
+    <br>
+    <em>↑ 这个循环可以无限运转，不需要人类介入</em><br>
+    <em>这就是为什么数学/编程能力进步最快</em>
+  </div>
+
+  <p>
+    而对于"写一份好的渠道策略"，这个飞轮<strong>不存在</strong>——因为没有自动验证的方法。模型不知道自己写的策略是好是坏，只能依赖人类反馈——速度慢了几个数量级。
+  </p>
+
+  <div class="callout purple">
+    <div class="callout-label">🔮 预判</div>
+    <p style="margin:0">
+      <strong>AI 能力的未来进步速度，和问题的可验证性高度相关。</strong><br><br>
+      • 代码/数学/科学推理 → 进步最快（可自动验证，RL 飞轮无限转）<br>
+      • 结构化分析/信息提取 → 进步中速（可用规则验证部分输出）<br>
+      • 开放性创作/战略判断 → 进步最慢（验证依赖人类，反馈稀疏）<br><br>
+      这意味着：<strong>你的判断力、品味、战略眼光——恰恰是 AI 最难替代的。</strong> 你每天做的那些"无法用规则验证"的决策——代理商去留、预算分配倾斜、团队人员调整——就是你价值的核心壁垒。
+    </p>
+  </div>
+
+  <h3>渠道管理工作的可验证性全景图</h3>
+
+  <p>
+    把你日常的渠道管理工作按可验证性排一个完整的光谱：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>可验证等级</th>
+        <th>你的工作示例</th>
+        <th>AI 策略</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--green)"><strong>⭐⭐⭐⭐⭐</strong></td>
+        <td>数据报表生成、格式检查、信息录入、邮件分类</td>
+        <td>全自动 Agent，人仅抽查</td>
+      </tr>
+      <tr>
+        <td style="color:var(--blue)"><strong>⭐⭐⭐⭐</strong></td>
+        <td>报销单审核、合同条款合规检查、异常数据标记、返利资格判断</td>
+        <td>自动执行 + 规则引擎辅助验证 + 边界 case 人审</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow)"><strong>⭐⭐⭐</strong></td>
+        <td>代理商绩效分析报告、竞对动态整理、会议纪要、周报撰写</td>
+        <td>AI 出初稿，人做终审和修改（5-10 分钟审核）</td>
+      </tr>
+      <tr>
+        <td style="color:var(--accent)"><strong>⭐⭐</strong></td>
+        <td>代理商关系管理策略、区域资源倾斜方向、人员培养计划</td>
+        <td>AI 提供数据+视角，人综合判断</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)"><strong>⭐</strong></td>
+        <td>年度渠道战略、重大代理商去留、组织架构调整</td>
+        <td>AI 仅作信息辅助，决策完全由人负责</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 策略推论</div>
+    <p style="margin:0">
+      <strong>最聪明的 AI 部署策略不是追求"让 AI 做最高级的决策"——而是把所有⭐⭐⭐⭐⭐ 和 ⭐⭐⭐⭐ 的工作尽可能自动化，解放你 60-70% 的时间，让你集中精力在 ⭐⭐ 和 ⭐ 的高价值判断上。</strong><br><br>
+      这就是 Day 17 所说的"从执行者变为管理者"的具体实现路径——不是让 AI 替你管理，而是让 AI 接管你不该花时间的执行层工作。
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: SO WHAT ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了什么？</h2>
+  </div>
+
+  <h3>一、AI 项目的第一步不是选工具，是做"可验证性审计"</h3>
+
+  <p>
+    下一次你的老板说"用 AI 提效"时，在动手之前，先做一件事：
+  </p>
+
+  <div class="callout gold">
+    <div class="callout-label">📖 AI 项目启动三问</div>
+    <p style="margin:0">
+      <strong>Q1：这件事的输出怎么判断对不对？</strong><br>
+      如果答案是"跑一下就知道"或"对照规则就能查"→ 高适合度，大胆推进<br>
+      如果答案是"需要专家审查"→ 中适合度，AI 做初稿 + 人审<br>
+      如果答案是"要等 3 个月才知道结果"→ 低适合度，别指望 AI 做决策<br><br>
+      <strong>Q2：这件事能拆解吗？哪些子任务是可验证的？</strong><br>
+      几乎所有"不适合 AI"的复杂任务都可以拆出 50-70% 的可验证子任务——自动化这些部分<br><br>
+      <strong>Q3：验证成本是多少？净效率增益是正的吗？</strong><br>
+      如果验证成本 ≥ 人工执行成本 → 不值得用 AI<br>
+      如果验证成本 < 人工执行成本的 30% → 值得投入
+    </p>
+  </div>
+
+  <h3>二、为什么有些"AI 产品"注定失败</h3>
+
+  <p>
+    你现在有了一个新的"产品审美"判断工具：
+  </p>
+
+  <p>
+    当你看到一个 AI 产品声称"自动帮你做 XXX"时，问一个问题：<strong>它做出来的东西，你怎么验证对不对？</strong>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>AI 产品</th>
+        <th>可验证性分析</th>
+        <th>预判</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GitHub Copilot（代码补全）</td>
+        <td>代码跑一下 / 测试通过 = 验证成功</td>
+        <td>✅ 持续进步，高价值</td>
+      </tr>
+      <tr>
+        <td>AI 数据分析工具（自然语言→SQL）</td>
+        <td>执行结果 vs 预期 = 秒级验证</td>
+        <td>✅ 高可验证，容易形成飞轮</td>
+      </tr>
+      <tr>
+        <td>AI 合同审查</td>
+        <td>合规条款有明确规则 = 规则可验证</td>
+        <td>✅ 好赛道，但边界 case 需人审</td>
+      </tr>
+      <tr>
+        <td>"AI 自动帮你做市场策略"</td>
+        <td>怎么验证策略是好的？→ 等 6 个月？</td>
+        <td>⚠️ 价值有限，更像 Copilot 而非 Agent</td>
+      </tr>
+      <tr>
+        <td>"AI 自动帮你管理人际关系"</td>
+        <td>什么算"管理好了"？→ 完全不可验证</td>
+        <td>❌ 大概率是噱头</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>三、你的决策力就是 AI 时代的"护城河"</h3>
+
+  <p>
+    今天的内容给了你一个<strong>反直觉的安慰</strong>：
+  </p>
+
+  <blockquote>
+    <strong>AI 越强大，"不可验证"的判断能力就越稀缺。</strong><br><br>
+    因为可验证的工作会被 AI 快速接管（飞轮效应加速进步），而不可验证的判断——战略方向、人的潜力、时机选择——AI 进步最慢。<br><br>
+    你日常做的那些"没有标准答案但必须有人拍板"的决策，就是你的不可替代性。AI 不是来抢这个位置的——它是来帮你腾出时间，让你更从容地做这些决策。
+  </blockquote>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ Checkpoint · Day 20</h3>
+
+  <p><strong>场景：老板让你用 AI 提升"代理商季度评级"的工作效率。目前这件事由你团队的一位资深渠道经理做，每季度花 3 天给 50 个代理商打评级（A/B/C/D 四档）。你的方案是什么？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      直接让 AI Agent 读取所有代理商数据后自动输出 A/B/C/D 评级。评级标准是明确的（出货量+回款率+合规情况），规则清晰，完全可以交给 AI 全自动处理。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      用 AI 做所有数据拉取和规则判断（哪些指标达标哪些不达标），输出每个代理商的"指标达标表"，最后由人来做综合评级——因为评级不仅看数字，还要看"经营意愿"等软性因素。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      让 AI 生成评级建议（含理由），人做最终确认。大部分情况下 AI 的建议应该是对的（因为规则清晰），人只需要看那些"边界 case"——比如指标刚好卡在线上的代理商。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先把"评级"这件事做可验证性拆解——哪些是纯规则判断（出货量达标=可验证），哪些是主观判断（"经营意愿"=不可验证），然后对可验证部分全自动，对不可验证部分让 AI 提供信息支持但不做结论。让渠道经理只花时间在"无法用规则判断的那 10-15 个边界 case"上。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问：如果 50 个代理商中，预估有多少个是"纯规则即可判断"的清晰 case，多少个是需要人类主观判断的"边界 case"？给一个比例。这个比例如何影响你的效率提升预期？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 明日预告：Day 21 · 【实战】为渠道绩效管理设计一个 Agent 工作流</h3>
+  <p>
+    Day 15-20 我们从 Prompt 到 CoT 到 Agent 到 Multi-Agent 到今天的"任务可验证性判断"——这是一套完整的武器库。
+  </p>
+  <p>
+    明天是第二模块的收官实战课：<strong>综合运用全部知识，为你的渠道绩效管理工作设计一个端到端的 Agent 工作流。</strong>
+  </p>
+  <p>
+    你需要：选择哪些工作交给 AI（可验证性判断）、决定用单 Agent 还是 Multi-Agent（架构选择）、设计 Prompt 和质量门（细节落地）。这是把过去 6 天的"知道"变成"做到"的关键一课。
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">Verifiable Problem = 输出可被低成本验证的问题</span>
+    <div class="card-body">
+      "可验证"不仅指"存在验证方法"，还要求验证成本足够低。如果验证一个输出的成本等于自己做一遍的成本，那 AI 的效率增益为零。AI 的净效率增益 = 节省的执行时间 − 验证成本。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">可验证性四级光谱：完全可验证 → 规则可验证 → 人类可验证 → 难以验证</span>
+    <div class="card-body">
+      从代码（跑通=对了）到策略判断（等 6 个月才知道对不对），AI 的适合度随可验证性递减。可验证性决定了 AI 的自主度天花板——高可验证允许全自动，低可验证只能做辅助。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">核心策略：把"不可验证"的任务拆成"部分可验证"的子任务</span>
+    <div class="card-body">
+      几乎所有复杂任务都可以拆出 50-70% 的可验证子任务。自动化这些部分 → 人只处理"必须主观判断"的 30%。这就是 AI 时代"效率提升"的真正路径——不是替代人的判断，而是接管人不该花时间的执行。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">AI 进步速度与可验证性正相关</span>
+    <div class="card-body">
+      数学/代码进步最快（可自动验证 → RL 飞轮无限转），开放性判断进步最慢（需人类反馈 → 反馈稀疏）。这意味着：你的不可验证判断力（战略方向、人才评估、时机把握）是 AI 时代人类价值的核心壁垒。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">AI 项目启动三问：怎么验证对错？能否拆解？净效率增益是正的吗？</span>
+    <div class="card-body">
+      在选工具、写 Prompt、设计架构之前，先做"可验证性审计"。如果一件事的输出无法低成本验证 → 别期待 AI 做决策。如果验证成本 ≥ 执行成本 → 不值得用 AI。这个判断避免你在注定失败的方向上浪费时间。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">← Day 3-4</span>
+    <span>RLHF 的核心是 Reward Signal。可验证问题的 Reward 可以自动生成（答案对 = +1），不可验证问题只能依赖人类标注——这就是为什么模型在数学/代码上进步远快于开放性任务。今天的"可验证性"概念回到了 RLHF 的第一性原理。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 6</span>
+    <span>幻觉在不可验证领域的危害远大于可验证领域——因为在可验证领域（代码），幻觉立刻被发现（测试不通过）；在不可验证领域（策略建议），幻觉可能被当作真知灼见采纳。"看起来很专业但实际是编的"在哪里最危险？答案是不可验证的领域。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 8</span>
+    <span>Scaling Law 的进步也受可验证性约束——数据量和算力的增加在可验证任务（数学推理）上的收益更大、更可测量。在不可验证任务上，即使 Scale Up 也难以确认"是否真的变聪明了"。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 15</span>
+    <span>CRISP 框架中的"Specification"越精确，任务就越趋向可验证——因为有了明确的验收标准。写好 Prompt 本质上是在定义"什么算做对了"，也就是在提升可验证性。Prompt 工程不只是给 AI 发指令，更是在创造验证条件。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 17</span>
+    <span>Agent 的"自主度天花板"取决于任务的可验证性——高可验证任务允许 Agent 全自动执行（Day 17 Level 3），低可验证任务只能停留在 Chatbot/Copilot 层（Level 1-2）。今天的框架给了 Day 17 三级光谱一个量化判据。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">← Day 19</span>
+    <span>Multi-Agent 系统中的"质量门"本质上就是验证节点——在 Agent 间设置验证步骤来阻断错误传播。越可验证的子任务，越适合完全交给 Agent；越不可验证的环节，越需要 Human-in-the-Loop。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 21</span>
+    <span>明天的实战课将综合运用今天的可验证性判断——先对渠道绩效管理工作做"可验证性审计"，再决定哪些部分自动化、用什么架构。今天的三步判断法是 Day 21 设计工作流的第一步。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 20 of 60 · 第二模块 · 应用篇 · Week 4
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
