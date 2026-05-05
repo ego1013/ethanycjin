@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 21 · 【实战】为渠道绩效管理设计一个 Agent 工作流 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0a00 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--accent-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+
+  blockquote {
+    border-left: 3px solid var(--cyan);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.88rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  pre {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 1rem 0;
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--purple); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--cyan);
+    color: #000;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .conn-tag {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    margin-top: 0.1rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .diagram .flow { color: var(--cyan); font-weight: 600; }
+  .diagram .error { color: var(--red); font-weight: 600; }
+  .diagram .ok { color: var(--green); font-weight: 600; }
+  .diagram .purple-hl { color: var(--purple); font-weight: 600; }
+  .diagram .blue-hl { color: var(--blue); font-weight: 600; }
+  .diagram .yellow-hl { color: var(--yellow); font-weight: 600; }
+  .diagram .accent-hl { color: var(--accent); font-weight: 600; }
+
+  /* ── Course Nav ── */
+  .course-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0 2rem;
+    font-size: 0.78rem;
+    color: #555;
+  }
+  .course-nav a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .course-nav a:hover { color: #60a5fa; }
+  .course-nav .sep { color: #333; }
+
+  /* ── Workflow steps ── */
+  .workflow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+
+  .workflow-step::before {
+    content: attr(data-step);
+    position: absolute;
+    top: -0.7rem;
+    left: 1.5rem;
+    background: var(--accent);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .workflow-step h4 {
+    color: var(--accent);
+    margin-top: 0.5rem;
+  }
+
+  /* ── Agent card ── */
+  .agent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin: 0.75rem 0;
+  }
+
+  .agent-card .agent-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .agent-card .agent-role {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  .agent-card table {
+    margin: 0.5rem 0 0;
+    font-size: 0.82rem;
+  }
+
+  .agent-card td { padding: 0.35rem 0.6rem; }
+  .agent-card th { padding: 0.35rem 0.6rem; font-size: 0.72rem; }
+
+  /* ── Phase indicator ── */
+  .phase {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  .phase-green { background: var(--green-dim); color: var(--green); }
+  .phase-yellow { background: var(--yellow-dim); color: var(--yellow); }
+  .phase-red { background: var(--red-dim); color: var(--red); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<div style="max-width:720px;margin:0 auto;padding:0.5rem 1.5rem 0">
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  <span style="color:#d4d4d4">Day 21</span>
+</nav>
+</div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🔥 模块收官实战</div>
+  <h1>Day 21 · 【实战】为渠道绩效管理设计一个 Agent 工作流</h1>
+  <p class="subtitle">把 Day 15-20 的所有武器组装起来，设计一个真正可落地的系统</p>
+  <div class="meta">
+    <span>📅 2026-05-06 Wed</span>
+    <span>📦 第二模块 · 应用篇 · 收官</span>
+    <span>⏱️ 预计 40 分钟</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ OPENING ═══════════════════════════ -->
+<div class="opening">
+  <div class="label">🔥 开场</div>
+  <p>
+    过去七天，你拿到了六件武器：
+  </p>
+  <p>
+    Day 15 — CRISP：怎么给 AI 清晰的任务说明<br>
+    Day 16 — CoT：怎么让 AI 展开推理<br>
+    Day 17 — Agent：怎么让 AI 从"说"变成"做"<br>
+    Day 18 — 工具 + 记忆：怎么给 Agent 配装备<br>
+    Day 19 — Multi-Agent：怎么让多个 Agent 协作<br>
+    Day 20 — Verifiable Problem：怎么判断什么适合交给 AI
+  </p>
+  <p>
+    今天只做一件事：<span class="highlight">拿这六件武器，给你的真实工作——渠道绩效管理——设计一个完整的 Agent 工作流。</span>
+  </p>
+  <p>
+    不是理论推演。是一个你下周就可以开始搭建的系统。
+  </p>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1: 任务拆解 ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">12 min</span>
+    <h2>Step 1：任务拆解 — 你的工作到底在做什么？</h2>
+  </div>
+
+  <h3>场景还原</h3>
+
+  <p>
+    假设每月月初，你需要完成一件事：<strong>全国代理商的月度绩效分析</strong>。
+  </p>
+
+  <p>
+    这件事今天你大概是怎么做的？
+  </p>
+
+  <blockquote>
+    <strong>① 数据拉取</strong>（~1天）：从系统导出各代理商上月的出货数据、回款数据、客户投诉数据、合同执行数据<br>
+    <strong>② 异常标记</strong>（~0.5天）：找出偏离目标的代理商——谁没达标？谁突然下滑？谁超额完成？<br>
+    <strong>③ 原因分析</strong>（~1.5天）：对异常代理商逐个分析原因——是季节性波动？市场环境变化？还是经营问题？<br>
+    <strong>④ 对策建议</strong>（~1天）：给每个异常代理商拟定下一步行动——沟通计划、支持方案、或预警处理<br>
+    <strong>⑤ 报告撰写</strong>（~1天）：把以上内容整合成绩效分析报告，呈送管理层<br>
+    <br>
+    <strong>总计：~5 个工作日</strong>
+  </blockquote>
+
+  <p>
+    现在，用 Day 20 的<strong>四步判断法</strong>，对每个步骤做可验证性分级：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>步骤</th>
+        <th>验收标准</th>
+        <th>验证成本</th>
+        <th>反馈回路</th>
+        <th>可验证性</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>① 数据拉取</td>
+        <td>数据完整、无缺失、格式正确</td>
+        <td>秒级自动校验（行数/列数/空值检测）</td>
+        <td>立即可见</td>
+        <td style="color:var(--green)"><strong>✅ 高</strong></td>
+      </tr>
+      <tr>
+        <td>② 异常标记</td>
+        <td>符合预设规则的异常全部标出</td>
+        <td>规则匹配，自动核验</td>
+        <td>立即可见</td>
+        <td style="color:var(--green)"><strong>✅ 高</strong></td>
+      </tr>
+      <tr>
+        <td>③ 原因分析</td>
+        <td>因素归纳合理、数据支撑到位</td>
+        <td>数据相关性可验证，归因逻辑需人判断</td>
+        <td>需人审核</td>
+        <td style="color:var(--yellow)"><strong>🟡 中</strong></td>
+      </tr>
+      <tr>
+        <td>④ 对策建议</td>
+        <td>可执行、有针对性、考虑现实约束</td>
+        <td>"可执行性"需了解团队能力和客户关系</td>
+        <td>需人判断</td>
+        <td style="color:var(--red)"><strong>🔴 低</strong></td>
+      </tr>
+      <tr>
+        <td>⑤ 报告撰写</td>
+        <td>结构清晰、数据准确、观点鲜明</td>
+        <td>数据部分可自动验证，观点部分需人把关</td>
+        <td>部分自动/部分人审</td>
+        <td style="color:var(--yellow)"><strong>🟡 中</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 关键发现</div>
+    <p style="margin:0">
+      5 个步骤，可验证性从 ✅ 到 🔴 逐级递减——<strong>越往下越需要人的判断力</strong>。<br><br>
+      这意味着：<br>
+      • 步骤 ①② 可以让 AI <strong>全自动</strong>完成（高可验证 → 出错可自动发现）<br>
+      • 步骤 ③⑤ 可以让 AI <strong>出初稿 + 人审核</strong>（中可验证 → 数据部分信任，判断部分人把关）<br>
+      • 步骤 ④ 只能让 AI <strong>提供参考选项</strong>，人做最终决策（低可验证 → 依赖关系洞察和业务直觉）<br><br>
+      <strong>先做了这一步分级，整个工作流的架构就自然浮现了。</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2: 架构设计 ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">18 min</span>
+    <h2>Step 2：架构设计 — 组装你的 Agent 系统</h2>
+  </div>
+
+  <h3>架构选择：为什么选 Orchestrator 模式？</h3>
+
+  <p>
+    回顾 Day 19 讲的四种 Multi-Agent 架构，这个场景最适合哪种？
+  </p>
+
+  <p>
+    • <strong>流水线？</strong> 步骤之间有严格顺序依赖（③ 需要 ②的结果），部分适合。但步骤之间信息粒度差异大——① 是结构化数据，④ 是自然语言建议——纯流水线容易在"格式转换"中丢失信息。
+  </p>
+  <p>
+    • <strong>Orchestrator + Workers？</strong> ✅ 最佳选择。原因——
+  </p>
+
+  <div class="callout cyan">
+    <div class="callout-label">🏗️ 为什么选 Orchestrator？</div>
+    <p style="margin:0">
+      ① 有一个"全局视角"需求——Orchestrator 能看到所有代理商数据的全貌，协调不同 Worker 的优先级<br>
+      ② 步骤之间有"条件分支"——不是所有代理商都需要走到步骤 ④，只有异常的才需要<br>
+      ③ 人介入点明确——Orchestrator 在步骤 ③→④ 的交接处暂停，等待人审核后再继续<br>
+      ④ 错误隔离——某个 Worker 出错不影响整体流程，Orchestrator 可以重试或绕过
+    </p>
+  </div>
+
+  <h3>完整架构图</h3>
+
+  <div class="diagram">
+    <span class="flow">渠道绩效管理 Agent 系统 · Orchestrator + 4 Workers</span><br><br>
+    ┌─────────────────────────────────────────────────────────────┐<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="accent-hl">🧠 Orchestrator Agent</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（全局调度 · 进度追踪 · 质量门）&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    └───────┬─────────────┬──────────────┬──────────────┬────────┘<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+    ┌───────────┐&nbsp;&nbsp;┌──────────────┐&nbsp;&nbsp;┌──────────────┐&nbsp;&nbsp;┌───────────┐<br>
+    │<span class="ok">数据拉取</span>&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;│<span class="ok">异常检测</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;│<span class="yellow-hl">归因分析</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;│<span class="yellow-hl">报告生成</span>&nbsp;&nbsp;│<br>
+    │&nbsp;Worker A&nbsp;&nbsp;│&nbsp;&nbsp;│&nbsp;Worker B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;│&nbsp;Worker C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;│&nbsp;Worker D&nbsp;│<br>
+    └───────────┘&nbsp;&nbsp;└──────────────┘&nbsp;&nbsp;└──────────────┘&nbsp;&nbsp;└───────────┘<br>
+    <span class="ok">&nbsp;&nbsp;✅ 全自动</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ok">✅ 全自动</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yellow-hl">🟡 AI+人审核</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yellow-hl">🟡 AI+人审核</span><br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⬇️ <span class="error">Human-in-the-Loop 节点</span> ⬇️<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;┌──────────────────────────────┐<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;<span class="error">👤 人工审核 + 对策决策</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;（步骤④：不可验证，人拍板）&nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──────────────────────────────┘<br>
+  </div>
+
+  <h3>逐个 Agent 的详细设计</h3>
+
+  <p>
+    接下来，对每个 Agent 做具体设计。这里用到 Day 15-18 的所有武器：
+  </p>
+
+  <!-- Worker A -->
+  <div class="agent-card">
+    <div class="agent-name">🔧 Worker A：数据拉取 Agent</div>
+    <div class="agent-role">职责：从业务系统获取结构化数据，完成清洗和标准化</div>
+    <table>
+      <tr>
+        <th>设计维度</th>
+        <th>具体方案</th>
+        <th>对应课程</th>
+      </tr>
+      <tr>
+        <td>工具配置</td>
+        <td>数据库查询 API（只读权限 🟢）、数据格式校验脚本</td>
+        <td>Day 18 工具调用</td>
+      </tr>
+      <tr>
+        <td>记忆</td>
+        <td>无需记忆——每次执行独立，数据实时拉取</td>
+        <td>Day 18 记忆方案</td>
+      </tr>
+      <tr>
+        <td>验证方式</td>
+        <td>自动校验：行数 ≥ 预期、无空值关键列、时间范围正确</td>
+        <td>Day 20 验证成本</td>
+      </tr>
+      <tr>
+        <td>失败策略</td>
+        <td>校验失败 → 重试 1 次 → 报错给 Orchestrator → 人工排查</td>
+        <td>Day 17 可靠性</td>
+      </tr>
+    </table>
+
+    <p style="margin-top:0.75rem; font-size:0.85rem; color:var(--text-dim);">
+      <strong>Prompt 设计要点（CRISP）：</strong><br>
+      <code>Context</code>：你是渠道绩效数据系统的数据提取助手<br>
+      <code>Role</code>：精确执行数据查询，不做任何推断<br>
+      <code>Input</code>：时间范围、代理商范围、指标列表<br>
+      <code>Specification</code>：输出 JSON 格式，必须包含字段 [id, name, region, metrics...]<br>
+      <code>Persona Check</code>：如果任何字段为空，标记而非填充默认值
+    </p>
+  </div>
+
+  <!-- Worker B -->
+  <div class="agent-card">
+    <div class="agent-name">🔍 Worker B：异常检测 Agent</div>
+    <div class="agent-role">职责：基于预设规则标记绩效异常的代理商</div>
+    <table>
+      <tr>
+        <th>设计维度</th>
+        <th>具体方案</th>
+        <th>对应课程</th>
+      </tr>
+      <tr>
+        <td>工具配置</td>
+        <td>统计计算函数（均值/标准差/环比）、规则引擎</td>
+        <td>Day 18</td>
+      </tr>
+      <tr>
+        <td>记忆</td>
+        <td>上下文注入：当月规则集 + 上月基线数据（~5K字，无需向量库）</td>
+        <td>Day 18 记忆方案</td>
+      </tr>
+      <tr>
+        <td>CoT 策略</td>
+        <td>逐代理商逐规则判断（Step-by-step），避免遗漏</td>
+        <td>Day 16 CoT</td>
+      </tr>
+      <tr>
+        <td>验证方式</td>
+        <td>双重校验：规则引擎独立跑一遍 vs Agent 标记结果，不一致则报警</td>
+        <td>Day 20 验证独立性</td>
+      </tr>
+      <tr>
+        <td>失败策略</td>
+        <td>不一致数 > 5% → 暂停 → 人工抽检</td>
+        <td>Day 17</td>
+      </tr>
+    </table>
+
+    <p style="margin-top:0.75rem; font-size:0.85rem; color:var(--text-dim);">
+      <strong>异常规则示例：</strong><br>
+      • 出货量环比下降 > 20%<br>
+      • 回款周期超过合同约定 > 15 天<br>
+      • 客户投诉量环比增加 > 50%<br>
+      • 连续 2 个月未达标<br>
+      <em>（规则由人定义和更新，AI 负责执行——标准制定是人的事，规则执行是 AI 的事）</em>
+    </p>
+  </div>
+
+  <!-- Worker C -->
+  <div class="agent-card">
+    <div class="agent-name">🧠 Worker C：归因分析 Agent</div>
+    <div class="agent-role">职责：对异常代理商进行原因初步排查，生成分析假设</div>
+    <table>
+      <tr>
+        <th>设计维度</th>
+        <th>具体方案</th>
+        <th>对应课程</th>
+      </tr>
+      <tr>
+        <td>工具配置</td>
+        <td>数据查询（历史趋势）、行业数据 API、市场信息检索（RAG）</td>
+        <td>Day 18</td>
+      </tr>
+      <tr>
+        <td>记忆</td>
+        <td>结构化摘要：该代理商近 6 个月变化轨迹 + 上次异常的归因结论（~300字/代理商）</td>
+        <td>Day 18 三层混合</td>
+      </tr>
+      <tr>
+        <td>CoT 策略</td>
+        <td>强制 CoT 五步推理：数据确认 → 趋势识别 → 外部因素排除 → 内因假设 → 信心度评分</td>
+        <td>Day 16 Few-shot CoT</td>
+      </tr>
+      <tr>
+        <td>验证方式</td>
+        <td>数据引用可核实（✅）+ 归因逻辑人审核（🟡）+ 信心度标注提示审核优先级</td>
+        <td>Day 20 部分可验证</td>
+      </tr>
+      <tr>
+        <td>失败策略</td>
+        <td>信心度 < 60% → 标记"需人工深入分析" → Orchestrator 跳过自动流程</td>
+        <td>Day 17 HitL</td>
+      </tr>
+    </table>
+
+    <div class="callout blue" style="margin-top:1rem">
+      <div class="callout-label">🎯 CoT Prompt 模板（Worker C 核心）</div>
+      <p style="margin:0; font-size:0.85rem;">
+        <code>你是渠道绩效分析师。请对以下异常代理商进行原因分析。</code><br><br>
+        <code>## 分析步骤（必须逐步执行）</code><br>
+        <code>1. 确认异常事实：哪个指标偏离了什么标准？偏离幅度？</code><br>
+        <code>2. 趋势分析：是突变还是渐变？近 3-6 个月的趋势如何？</code><br>
+        <code>3. 排除外因：区域整体是否都在下滑？是否有季节性因素？市场环境变化？</code><br>
+        <code>4. 归因假设：列出 2-3 个可能的内因，每个附上支撑数据点</code><br>
+        <code>5. 信心度：给出 0-100 的信心评分，说明不确定的部分是什么</code><br><br>
+        <code>## 输出格式</code><br>
+        <code>{"agent_id": "...", "anomaly": "...", "analysis_steps": [...], "hypotheses": [...], "confidence": 75, "uncertain_factors": ["..."]}</code><br><br>
+        <code>## 规则</code><br>
+        <code>- 不确定的因素必须明确标出，禁止编造数据</code><br>
+        <code>- 信心度 < 60 时，必须标记为"需人工深入分析"</code><br>
+        <code>- 所有数据引用必须注明来源（系统数据/行业报告/历史记录）</code>
+      </p>
+    </div>
+  </div>
+
+  <!-- Worker D -->
+  <div class="agent-card">
+    <div class="agent-name">📝 Worker D：报告生成 Agent</div>
+    <div class="agent-role">职责：将分析结果整合为结构化绩效报告</div>
+    <table>
+      <tr>
+        <th>设计维度</th>
+        <th>具体方案</th>
+        <th>对应课程</th>
+      </tr>
+      <tr>
+        <td>工具配置</td>
+        <td>模板渲染引擎、图表生成（趋势图/对比图）、文档输出（PDF/PPT）</td>
+        <td>Day 18</td>
+      </tr>
+      <tr>
+        <td>记忆</td>
+        <td>上下文注入：报告模板 + 上月报告结构（确保格式一致性）</td>
+        <td>Day 18</td>
+      </tr>
+      <tr>
+        <td>Prompt 策略</td>
+        <td>Negative Prompting 防止观点注入："只陈述数据和分析结果，不做战略建议"</td>
+        <td>Day 15 杠杆</td>
+      </tr>
+      <tr>
+        <td>验证方式</td>
+        <td>数据一致性自动核验（报告中的数字 vs 源数据）+ 格式完整性检查 + 人审观点</td>
+        <td>Day 20</td>
+      </tr>
+      <tr>
+        <td>失败策略</td>
+        <td>数据不一致 → 重新生成；人审不通过 → 标记修改点 → Agent 修订</td>
+        <td>Day 17</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Orchestrator -->
+  <div class="agent-card" style="border-color: var(--accent);">
+    <div class="agent-name">🧠 Orchestrator：全局调度 Agent</div>
+    <div class="agent-role">职责：协调四个 Worker 的执行顺序、处理异常、管理 Human-in-the-Loop 节点</div>
+    <table>
+      <tr>
+        <th>设计维度</th>
+        <th>具体方案</th>
+        <th>对应课程</th>
+      </tr>
+      <tr>
+        <td>执行策略</td>
+        <td>A → B → C（仅异常） → 暂停等待人审 → D</td>
+        <td>Day 19 协调</td>
+      </tr>
+      <tr>
+        <td>记忆</td>
+        <td>结构化摘要：本次执行状态、各 Worker 结果摘要、人的审核批注</td>
+        <td>Day 18</td>
+      </tr>
+      <tr>
+        <td>质量门</td>
+        <td>每个 Worker 完成后检查质量指标 → 通过则继续 → 不通过则暂停</td>
+        <td>Day 17 HitL</td>
+      </tr>
+      <tr>
+        <td>通讯</td>
+        <td>共享记忆（结构化 JSON 状态表）+ 事件驱动（Worker 完成→触发下一步）</td>
+        <td>Day 19 通讯</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>Human-in-the-Loop 设计：人在哪里介入？</h3>
+
+  <p>
+    Day 17 讲过——Agent 系统中人的位置至关重要。这个系统有<strong>两个人工审核节点</strong>：
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>节点</th>
+        <th>位置</th>
+        <th>审核内容</th>
+        <th>预计用时</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>审核点 1</strong></td>
+        <td>Worker C 完成后</td>
+        <td>归因分析是否合理？有没有遗漏的重要因素？信心度低的需要人补充分析</td>
+        <td>~30 分钟</td>
+      </tr>
+      <tr>
+        <td><strong>审核点 2</strong></td>
+        <td>Worker D 完成后</td>
+        <td>报告的观点和结论是否准确？数据呈现是否清晰？行动建议是否可行？</td>
+        <td>~20 分钟</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-label">✅ 时间效率对比</div>
+    <p style="margin:0">
+      <strong>原来（纯人工）</strong>：5 个工作日 ≈ 40 小时<br>
+      <strong>现在（AI + 人审核）</strong>：<br>
+      • Worker A + B 全自动：~5 分钟（原来 1.5 天）<br>
+      • Worker C 自动分析：~15 分钟（原来 1.5 天）<br>
+      • 人审核归因 + 补充对策：~1 小时（原来 1 天，但现在有 AI 初稿做基础）<br>
+      • Worker D 生成报告：~10 分钟（原来 1 天）<br>
+      • 人终审报告：~30 分钟<br><br>
+      <strong>总计：~2 小时</strong>（从 40 小时压缩到 2 小时，<strong>效率提升 ~20x</strong>）<br><br>
+      更重要的是——<strong>人的时间从"机械性数据处理"转移到了"判断和决策"</strong>。2 小时里你做的全是高价值的思考工作，而不是复制粘贴和格式调整。
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 3: 质量保障 ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>Step 3：质量保障 — 让系统可靠运行</h2>
+  </div>
+
+  <h3>三层防护体系</h3>
+
+  <p>
+    Day 17 告诉我们 Agent 的可靠性公式是 0.95ⁿ——每多一步出错概率就累积。5 步流程如果不加防护，整体可靠性 ≈ 0.95⁵ ≈ 77%。这远远不够。
+  </p>
+
+  <p>
+    解决方案：在每一步之间加<strong>验证门</strong>，把错误切断在传播之前。
+  </p>
+
+  <div class="workflow-step" data-step="第一层：自动验证门">
+    <h4>每个 Worker 完成后自动检查</h4>
+    <p style="font-size:0.88rem;">
+      • <strong>Worker A → 数据完整性检查</strong>：行数/列数/空值率/时间范围<br>
+      • <strong>Worker B → 规则一致性检查</strong>：Agent 标记结果 vs 规则引擎独立计算<br>
+      • <strong>Worker C → 信心度阈值检查</strong>：低于 60% 的分析自动标记待人审<br>
+      • <strong>Worker D → 数据一致性检查</strong>：报告中的数字 vs 源数据交叉验证
+    </p>
+    <p style="font-size:0.82rem; color:var(--green); margin:0.5rem 0 0;">
+      ✅ 成本：近乎为零（代码自动执行） · 覆盖：所有可验证维度
+    </p>
+  </div>
+
+  <div class="workflow-step" data-step="第二层：Human-in-the-Loop">
+    <h4>不可验证环节人工把关</h4>
+    <p style="font-size:0.88rem;">
+      • <strong>归因逻辑审核</strong>：人检查 Worker C 的推理链条是否合理<br>
+      • <strong>对策决策</strong>：人基于 AI 提供的分析做最终行动方案（这一步完全由人主导）<br>
+      • <strong>报告终审</strong>：人确认观点表述和结论准确性
+    </p>
+    <p style="font-size:0.82rem; color:var(--yellow); margin:0.5rem 0 0;">
+      🟡 成本：~1.5 小时 · 覆盖：所有不可验证维度
+    </p>
+  </div>
+
+  <div class="workflow-step" data-step="第三层：回溯机制">
+    <h4>事后可追溯</h4>
+    <p style="font-size:0.88rem;">
+      • <strong>全程日志</strong>：每个 Agent 的每次工具调用和推理过程全部记录<br>
+      • <strong>月度 Review</strong>：对比 AI 分析与实际结果（下个月回头看，上个月的归因对不对？）<br>
+      • <strong>持续优化</strong>：根据 Review 结果调整规则阈值和 Prompt——形成"AI 也在学习"的闭环
+    </p>
+    <p style="font-size:0.82rem; color:var(--blue); margin:0.5rem 0 0;">
+      🔵 成本：月度 30 分钟 · 覆盖：长期准确率持续提升
+    </p>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">💡 核心设计哲学</div>
+    <p style="margin:0">
+      <strong>不追求"完美 Agent"——追求"错了能发现、发现了能修复、修复了能记住"的系统。</strong><br><br>
+      这就是为什么 Verifiable Problem（Day 20）是整个设计的<strong>起点</strong>——只有先确认"哪些环节的错误可以被发现"，才能设计出合理的"何时信任 AI、何时请人审核"的边界。
+    </p>
+  </div>
+
+  <h3>风险预判：这个系统可能在哪里出问题？</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>风险</th>
+        <th>发生场景</th>
+        <th>应对</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>数据源变更</strong></td>
+        <td>业务系统 API 接口升级，字段名改变</td>
+        <td>Worker A 的校验会立即报错 → Orchestrator 暂停 → 通知维护</td>
+      </tr>
+      <tr>
+        <td><strong>规则过时</strong></td>
+        <td>业务调整了异常判断标准但没更新规则集</td>
+        <td>月度 Review 发现"标记为异常但实际正常"的比例升高 → 触发规则更新</td>
+      </tr>
+      <tr>
+        <td><strong>归因幻觉</strong></td>
+        <td>Worker C 给出"看起来合理但实际上错误"的归因</td>
+        <td>信心度评分 + 人审核双重保障；月度回溯验证</td>
+      </tr>
+      <tr>
+        <td><strong>审核疲劳</strong></td>
+        <td>人对 AI 输出逐渐放松审核，变成"全部通过"</td>
+        <td>随机埋入"故意错误"做审核有效性测试（来自 Day 4 Reward Hacking 防御思路）</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ SUMMARY ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">2 min</span>
+    <h2>模块总结 — 第二模块你学到了什么？</h2>
+  </div>
+
+  <p>
+    Day 15-21，七节课，你完成了从"理解 AI 是什么"到"设计 AI 怎么为你工作"的跨越。
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>课次</th>
+        <th>核心收获</th>
+        <th>实战中的角色</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Day 15</td>
+        <td>CRISP 框架——怎么精确地给 AI 派活</td>
+        <td>每个 Agent 的 Prompt 都用 CRISP 结构</td>
+      </tr>
+      <tr>
+        <td>Day 16</td>
+        <td>CoT——让 AI 展开推理过程</td>
+        <td>Worker C 的 5 步归因分析链</td>
+      </tr>
+      <tr>
+        <td>Day 17</td>
+        <td>Agent 定义——让 AI 从"说"到"做"</td>
+        <td>整个系统就是一个 Agent 工作流</td>
+      </tr>
+      <tr>
+        <td>Day 18</td>
+        <td>工具 + 记忆——给 Agent 配装备</td>
+        <td>每个 Worker 的工具集和记忆方案</td>
+      </tr>
+      <tr>
+        <td>Day 19</td>
+        <td>Multi-Agent——组织化的 AI</td>
+        <td>Orchestrator + 4 Worker 架构选择</td>
+      </tr>
+      <tr>
+        <td>Day 20</td>
+        <td>Verifiable Problem——筛选任务</td>
+        <td>Step 1 整体设计的起点和根基</td>
+      </tr>
+      <tr>
+        <td>Day 21</td>
+        <td>完整实战——三步法落地</td>
+        <td>任务拆解 → 架构设计 → 质量保障</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout gold">
+    <div class="callout-label">🎓 第二模块核心认知</div>
+    <p style="margin:0">
+      <strong>你不需要成为工程师来搭建 AI 系统。</strong><br><br>
+      你需要的核心能力是：<br>
+      ① <strong>任务拆解</strong>（哪些可验证、哪些不可验证）<br>
+      ② <strong>架构设计</strong>（谁做什么、谁和谁协作、人在哪里介入）<br>
+      ③ <strong>质量定义</strong>（什么算做对了、做错了怎么发现、怎么改进）<br><br>
+      这三件事——和你管理一个团队时做的事完全一样。<br><br>
+      <strong>管理 AI 的能力，就是管理的能力。AI 时代最值钱的人，不是会写代码的人，而是会定义"什么是好的产出"的人。</strong>
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CHECKPOINT ═══════════════════════════ -->
+<div class="checkpoint">
+  <h3>✅ Checkpoint · Day 21（模块收官）</h3>
+
+  <p><strong>场景：基于今天设计的系统，一位同事质疑你——"搞这么复杂干嘛？直接让 ChatGPT 看一遍数据出个分析报告不就行了？一个 Prompt 搞定，为什么要拆成 5 个 Agent？"</strong></p>
+
+  <p><strong>你怎么回应？</strong></p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span>
+      他说的也有道理——如果只有 10 个代理商，一个 Prompt 确实够用。现在之所以拆开，是因为代理商数量多（50+），单次 Context Window 装不下所有数据和分析。拆成多个 Agent 本质上是为了解决"信息量超过单次上下文容量"的工程问题。
+    </div>
+    <div class="option">
+      <span class="letter">B</span>
+      拆开不是为了复杂，是为了可靠。一个 Prompt 搞定意味着——出错时你不知道错在哪一步、哪个数据有问题、哪个推理不对。拆开之后每一步都有验证门，错误可以被精确定位和快速修复。"简单"和"可靠"是两回事。
+    </div>
+    <div class="option">
+      <span class="letter">C</span>
+      关键不在"几个 Agent"——关键在"哪些环节你敢全自动、哪些环节必须人审核"。一个 Prompt 搞定的方案里，所有步骤都混在一起，你无法在"归因分析"环节单独加人工审核。拆开是为了在不同可验证性等级的环节设不同的信任策略。
+    </div>
+    <div class="option">
+      <span class="letter">D</span>
+      先问他一个问题：如果 ChatGPT 给出的分析报告里有一个数据错误，你怎么发现？如果归因分析有逻辑漏洞，你怎么定位到具体是哪个推理环节出了问题？如果回答不上来——那就是为什么要拆开。拆的本质不是"让事情变复杂"，是"让错误变得可发现"。
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    ⚡ <strong>追问：如果这个系统每月执行一次，你预计运行多久后需要做第一次"规则更新"或"Prompt 调优"？为什么？</strong>
+  </p>
+</div>
+
+<!-- ═══════════════════════════ TEASER ═══════════════════════════ -->
+<div class="teaser">
+  <h3>🎯 下一站：第三模块 · 判断篇</h3>
+  <p>
+    第二模块你学会了"怎么设计 AI 协作系统"。
+  </p>
+  <p>
+    第三模块要回答一个更高层的问题：<strong>面对市场上各种 AI 产品和技术路线，你怎么判断"这个东西靠不靠谱"？</strong>
+  </p>
+  <p>
+    • Day 22：GPT 系列——OpenAI 的战略与技术路径<br>
+    • Day 23：Claude——Anthropic 的安全优先路线<br>
+    • Day 24：Gemini——Google 的多模态与搜索融合<br>
+    • Day 25：Kimi/Moonshot——长文本赛道的逻辑<br>
+    • Day 26：DeepSeek——开源路线的破局点
+  </p>
+  <p>
+    <strong>从"用 AI"升级到"判断 AI"——这是产品经理和管理者的核心竞争力。</strong>
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ KNOWLEDGE CARDS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">📌 知识卡片</h2>
+<div class="card-grid">
+  <div class="card">
+    <span class="card-num">1</span>
+    <span class="card-title">AI 工作流设计三步法：拆解 → 架构 → 质量</span>
+    <div class="card-body">
+      Step 1 用可验证性分级拆任务（Day 20）；Step 2 选 Multi-Agent 架构并设计每个 Agent（Day 15-19）；Step 3 在每个环节设验证门和 HitL 节点。三步走完就是一个可落地的方案。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">2</span>
+    <span class="card-title">Orchestrator + Workers：渠道管理最佳架构</span>
+    <div class="card-body">
+      有全局调度需求 + 步骤间有条件分支 + 人介入点明确 → Orchestrator 模式最优。避免过度拆分（协调成本）或过度合并（错误不可定位）。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">3</span>
+    <span class="card-title">Human-in-the-Loop 位置 = 可验证性边界</span>
+    <div class="card-body">
+      人审核节点应该设在"可验证→不可验证"的分界处。高可验证步骤之间不需要人（自动验证门够了），只在进入判断性决策前加人工审核。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">4</span>
+    <span class="card-title">效率提升 = 从 40 小时 → 2 小时（20x）</span>
+    <div class="card-body">
+      关键不是"AI 代替了人的全部工作"——而是"AI 做了 80% 的机械性工作，人只做 20% 的判断性工作，且这 20% 有 AI 初稿做基础"。人的角色从"执行者"变为"审核者和决策者"。
+    </div>
+  </div>
+  <div class="card">
+    <span class="card-num">5</span>
+    <span class="card-title">管理 AI 的能力 = 管理人的能力</span>
+    <div class="card-body">
+      定义产出标准、分配任务、设审核节点、处理异常——你管理 Agent 用的能力和管理团队一模一样。AI 时代最值钱的不是写代码的人，而是能定义"什么是好的产出"的人。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CONNECTIONS ═══════════════════════════ -->
+<h2 style="margin-bottom:1rem">🔗 前序知识连接</h2>
+<div class="connection-table">
+  <div class="conn-row">
+    <span class="conn-tag">Day 15</span>
+    <span>CRISP 框架在每个 Worker 的 Prompt 设计中都被使用。特别是 Worker C 的归因分析 Prompt——Context 定义角色、Rules 约束行为、Input 提供数据、Specification 定义输出格式、Persona Check 防止幻觉。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">Day 16</span>
+    <span>CoT 是 Worker C 的核心武器——强制五步推理链（数据确认→趋势识别→排除外因→内因假设→信心度），让归因过程透明可审核。如果不用 CoT，AI 直接给结论，人无法判断推理是否合理。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">Day 17</span>
+    <span>Agent 的可靠性公式（0.95ⁿ）是设计验证门的直接依据——每步之间加检查，把整体可靠性从 77%（无防护）提升到 95%+（有验证门）。Human-in-the-Loop 节点对应 Day 17 讲的"该给 Agent 多大自主权"。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">Day 18</span>
+    <span>每个 Worker 的工具集和记忆方案都来自 Day 18 的设计原则——工具权限分级（Worker A 只有只读权限）、记忆方案选择（Worker C 用结构化摘要而非全量向量检索，因为数据量 < 30K 字）。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">Day 19</span>
+    <span>选择 Orchestrator 而非流水线或 Swarm，是基于 Day 19 的架构选择原则——有条件分支 + 人介入点 + 全局视角需求 → Orchestrator 最优。通讯方式采用共享记忆 + 事件驱动。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">Day 20</span>
+    <span>整个设计的起点——先用可验证性四步判断法对 5 个步骤分级，才能决定"哪些全自动、哪些人审核、哪些人主导"。Verifiable Problem 是 Agent 工作流设计的第一原则。</span>
+  </div>
+  <div class="conn-row">
+    <span class="conn-tag">→ Day 22</span>
+    <span>第三模块开始——从"设计 AI 协作"升级到"判断 AI 产品"。Day 22 首先拆解 GPT 系列的战略路径，理解 OpenAI 的能力和局限，帮你判断"用哪家模型做这套系统的底层"。</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<div style="text-align:center; padding:2rem 0; color:var(--text-dim); font-size:0.8rem;">
+  AI & 大模型 · 12 周系统课程 · Coach M × Ethan<br>
+  Day 21 of 60 · 第二模块 · 应用篇 · 收官<br><br>
+  🏆 <strong>第二模块完成！</strong>从"理解 AI"到"设计 AI 工作流"——你已经跨越了最关键的一步。
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
