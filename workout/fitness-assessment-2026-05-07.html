@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体能评估报告 · Ethan — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-alt: #161616;
+    --border: #222;
+    --accent: #60a5fa;
+    --accent-dim: rgba(96,165,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --purple: #a78bfa;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 820px; margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    font-size: 0.85rem;
+  }
+  .nav-inner a { color:var(--text-dim); text-decoration:none; }
+  .nav-inner a:hover { color:var(--white); }
+  .nav-inner .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0a0a0a 60%, #0a1a0a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3.5rem 1.5rem 3rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.4rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.92rem; margin-bottom: 1.5rem; }
+  .hero .meta-row {
+    display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+    font-size: 0.78rem; color: var(--text-muted);
+  }
+  .hero .meta-row span { display: inline-flex; align-items: center; gap: 0.3rem; }
+
+  .main { max-width: 820px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 3rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* Profile Card */
+  .profile-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.6rem; margin-bottom: 2rem;
+  }
+  .profile-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .profile-card .val { font-size: 1.4rem; font-weight: 800; color: var(--white); }
+  .profile-card .label { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem; text-transform: uppercase; letter-spacing: .05em; }
+
+  /* Strength Level Bars */
+  .strength-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.6rem;
+  }
+  .strength-item .si-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .strength-item .si-name { font-weight: 700; color: var(--white); font-size: 0.92rem; }
+  .strength-item .si-weight { font-size: 0.82rem; color: var(--orange); font-weight: 600; }
+  .strength-item .si-bar-bg {
+    height: 8px; border-radius: 4px; background: #1a1a1a; overflow: hidden;
+    position: relative;
+  }
+  .strength-item .si-bar {
+    height: 100%; border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .strength-item .si-labels {
+    display: flex; justify-content: space-between; margin-top: 0.4rem;
+    font-size: 0.68rem; color: var(--text-muted);
+  }
+  .strength-item .si-level {
+    font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;
+    font-weight: 600;
+  }
+  .level-beginner { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+  .level-novice { color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); }
+  .level-intermediate { color: var(--green); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+
+  /* Radar / Analysis Cards */
+  .analysis-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+  }
+  .analysis-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .analysis-card h3 {
+    font-size: 0.85rem; color: var(--white); margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .analysis-card .score {
+    font-size: 2rem; font-weight: 900; margin-bottom: 0.3rem;
+  }
+  .analysis-card .score-label {
+    font-size: 0.72rem; color: var(--text-muted);
+  }
+  .analysis-card ul {
+    padding-left: 1rem; font-size: 0.82rem; color: var(--text-dim);
+  }
+  .analysis-card li { margin-bottom: 0.3rem; }
+
+  .score-green { color: var(--green); }
+  .score-yellow { color: var(--yellow); }
+  .score-red { color: var(--red); }
+  .score-orange { color: var(--orange); }
+  .score-blue { color: var(--accent); }
+
+  /* Comparison table */
+  .comp-table {
+    width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;
+  }
+  .comp-table th {
+    text-align: left; font-size: 0.72rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: .06em;
+    padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border);
+  }
+  .comp-table td {
+    padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .comp-table td:first-child { color: var(--white); font-weight: 500; }
+  .comp-table .strong { color: var(--green); font-weight: 600; }
+  .comp-table .weak { color: var(--red); font-weight: 600; }
+  .comp-table .avg { color: var(--yellow); }
+
+  /* Progress markers */
+  .progress-row {
+    display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem;
+  }
+  .progress-pill {
+    font-size: 0.72rem; padding: 3px 10px; border-radius: 8px;
+    font-weight: 600;
+  }
+  .pill-up { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); }
+  .pill-plateau { color: var(--yellow); background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); }
+  .pill-weak { color: var(--red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 0.88rem;
+    color: var(--accent);
+  }
+  .callout strong { color: var(--white); }
+  .callout.warn {
+    background: rgba(248,113,113,0.06);
+    border-color: rgba(248,113,113,0.2);
+    color: var(--red);
+  }
+  .callout.success {
+    background: rgba(74,222,128,0.06);
+    border-color: rgba(74,222,128,0.2);
+    color: var(--green);
+  }
+
+  .footer {
+    text-align:center; font-size:0.72rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border); margin-top: 3rem;
+  }
+
+  @media (max-width:640px) {
+    .hero { padding: 2rem 1rem 2rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .analysis-grid { grid-template-columns: 1fr; }
+    .profile-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--white);">体能评估</span>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1>📊 全面体能评估报告</h1>
+  <p class="sub">基于 8 周 · 19 次训练数据的综合分析</p>
+  <div class="meta-row">
+    <span>👤 Ethan · 37岁男性</span>
+    <span>📏 176cm / 78.8kg</span>
+    <span>📅 评估日期 2026-05-07</span>
+    <span>🏋️ 训练起始 2026-03-16（53天）</span>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- SECTION: Body Composition -->
+  <div class="section-title">身体组成 · InBody 2026-05-06</div>
+  <div class="profile-grid">
+    <div class="profile-card">
+      <div class="val">78.8</div>
+      <div class="label">体重 kg</div>
+    </div>
+    <div class="profile-card">
+      <div class="val" style="color:var(--orange);">25.9%</div>
+      <div class="label">体脂率</div>
+    </div>
+    <div class="profile-card">
+      <div class="val" style="color:var(--green);">33.1</div>
+      <div class="label">骨骼肌 kg</div>
+    </div>
+    <div class="profile-card">
+      <div class="val" style="color:var(--yellow);">25.4</div>
+      <div class="label">BMI</div>
+    </div>
+    <div class="profile-card">
+      <div class="val" style="color:var(--red);">0.89</div>
+      <div class="label">腰臀比</div>
+    </div>
+    <div class="profile-card">
+      <div class="val">1630</div>
+      <div class="label">基础代谢 kcal</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    💡 <strong>体脂 25.9% + BMI 25.4</strong> = 轻度超重区间。骨骼肌 33.1kg 占体重 42%，在同龄男性中属于中等偏上水平。核心矛盾：肌肉基础不错，但脂肪覆盖较多，尤其内脏脂肪（等级 8）和腰腹部。
+  </div>
+
+  <!-- SECTION: Strength Levels vs Standards -->
+  <div class="section-title">力量水平评级 · 对比同体重/年龄标准</div>
+
+  <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:1.2rem;">
+    参考标准：Strength Level 数据库（strengthlevel.com），76-80kg 男性，训练 2-3 个月。<br>
+    等级：<span class="level-beginner" style="font-size:0.68rem;">入门</span> 低于同体重未训练男性中位数 &nbsp;
+    <span class="level-novice" style="font-size:0.68rem;">新手</span> 超过未训练男性中位数 &nbsp;
+    <span class="level-intermediate" style="font-size:0.68rem;">中级</span> 超过训练 1-2 年者中位数
+  </p>
+
+  <!-- Squat -->
+  <div class="strength-item">
+    <div class="si-header">
+      <span class="si-name">杠铃深蹲</span>
+      <div>
+        <span class="si-weight">75 kg × 10</span>
+        <span class="si-level level-novice" style="margin-left:0.5rem;">新手+</span>
+      </div>
+    </div>
+    <div class="si-bar-bg">
+      <div class="si-bar" style="width:58%; background: linear-gradient(90deg, var(--orange), var(--yellow));"></div>
+    </div>
+    <div class="si-labels">
+      <span>入门 40kg</span>
+      <span>新手 65kg</span>
+      <span>中级 100kg</span>
+      <span>高级 140kg</span>
+    </div>
+  </div>
+
+  <!-- Bench Press (dumbbell converted) -->
+  <div class="strength-item">
+    <div class="si-header">
+      <span class="si-name">卧推（哑铃 20kg×2 ≈ 杠铃 50-55kg）</span>
+      <div>
+        <span class="si-weight">~52 kg 1RM估</span>
+        <span class="si-level level-beginner" style="margin-left:0.5rem;">入门+</span>
+      </div>
+    </div>
+    <div class="si-bar-bg">
+      <div class="si-bar" style="width:35%; background: linear-gradient(90deg, var(--yellow), var(--orange));"></div>
+    </div>
+    <div class="si-labels">
+      <span>入门 45kg</span>
+      <span>新手 60kg</span>
+      <span>中级 85kg</span>
+      <span>高级 115kg</span>
+    </div>
+  </div>
+
+  <!-- Lat Pulldown -->
+  <div class="strength-item">
+    <div class="si-header">
+      <span class="si-name">高位下拉</span>
+      <div>
+        <span class="si-weight">39 kg × 8</span>
+        <span class="si-level level-beginner" style="margin-left:0.5rem;">入门</span>
+      </div>
+    </div>
+    <div class="si-bar-bg">
+      <div class="si-bar" style="width:30%; background: linear-gradient(90deg, var(--red), var(--yellow));"></div>
+    </div>
+    <div class="si-labels">
+      <span>入门 35kg</span>
+      <span>新手 50kg</span>
+      <span>中级 70kg</span>
+      <span>高级 90kg</span>
+    </div>
+  </div>
+
+  <!-- Seated Row -->
+  <div class="strength-item">
+    <div class="si-header">
+      <span class="si-name">坐姿划船</span>
+      <div>
+        <span class="si-weight">32 kg × 12(掉质量)</span>
+        <span class="si-level level-beginner" style="margin-left:0.5rem;">入门</span>
+      </div>
+    </div>
+    <div class="si-bar-bg">
+      <div class="si-bar" style="width:28%; background: linear-gradient(90deg, var(--red), var(--yellow));"></div>
+    </div>
+    <div class="si-labels">
+      <span>入门 30kg</span>
+      <span>新手 50kg</span>
+      <span>中级 70kg</span>
+      <span>高级 95kg</span>
+    </div>
+  </div>
+
+  <!-- Shoulder Press -->
+  <div class="strength-item">
+    <div class="si-header">
+      <span class="si-name">坐姿推肩（哑铃）</span>
+      <div>
+        <span class="si-weight">10 kg × 12</span>
+        <span class="si-level level-beginner" style="margin-left:0.5rem;">入门</span>
+      </div>
+    </div>
+    <div class="si-bar-bg">
+      <div class="si-bar" style="width:25%; background: linear-gradient(90deg, var(--red), var(--orange));"></div>
+    </div>
+    <div class="si-labels">
+      <span>入门 8kg</span>
+      <span>新手 16kg</span>
+      <span>中级 24kg</span>
+      <span>高级 34kg</span>
+    </div>
+  </div>
+
+  <!-- Leg Press -->
+  <div class="strength-item">
+    <div class="si-header">
+      <span class="si-name">腿举</span>
+      <div>
+        <span class="si-weight">66 kg × 12</span>
+        <span class="si-level level-beginner" style="margin-left:0.5rem;">入门</span>
+      </div>
+    </div>
+    <div class="si-bar-bg">
+      <div class="si-bar" style="width:30%; background: linear-gradient(90deg, var(--yellow), var(--orange));"></div>
+    </div>
+    <div class="si-labels">
+      <span>入门 60kg</span>
+      <span>新手 120kg</span>
+      <span>中级 180kg</span>
+      <span>高级 260kg</span>
+    </div>
+  </div>
+
+  <!-- Bicep Curl -->
+  <div class="strength-item">
+    <div class="si-header">
+      <span class="si-name">哑铃弯举</span>
+      <div>
+        <span class="si-weight">6 kg × 12 (8kg×6)</span>
+        <span class="si-level level-beginner" style="margin-left:0.5rem;">入门−</span>
+      </div>
+    </div>
+    <div class="si-bar-bg">
+      <div class="si-bar" style="width:22%; background: var(--red);"></div>
+    </div>
+    <div class="si-labels">
+      <span>入门 8kg</span>
+      <span>新手 12kg</span>
+      <span>中级 18kg</span>
+      <span>高级 24kg</span>
+    </div>
+  </div>
+
+  <!-- SECTION: Dimension Analysis -->
+  <div class="section-title">多维度分析 · 强弱项评分</div>
+
+  <div class="analysis-grid">
+    <div class="analysis-card">
+      <h3>🦵 下肢力量</h3>
+      <div class="score score-green">7.5<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">你的相对最强项</div>
+      <ul>
+        <li>深蹲 75kg ≈ 体重 95%（8周达到这个数字很出色）</li>
+        <li>股四头（腿伸展 45kg）和腘绳肌（腿弯举 41kg）相对平衡</li>
+        <li>每次腿日都在加重，进步曲线最陡</li>
+        <li>瓶颈是心肺（75kg喘）而非肌力</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <h3>🫁 核心稳定</h3>
+      <div class="score score-green">7.0<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">稳步进步中</div>
+      <ul>
+        <li>平板支撑 50s × 3 ✅（从 30s 起步，+67%）</li>
+        <li>俄罗斯转体 6kg 稳定</li>
+        <li>卷腹 3×15 轻松</li>
+        <li>核心能支撑深蹲 75kg = 功能性强</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <h3>💪 胸部力量</h3>
+      <div class="score score-yellow">5.5<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">有进步但仍偏弱</div>
+      <ul>
+        <li>哑铃卧推 20kg = 杠铃约 50-55kg（体重 65%，偏低）</li>
+        <li>胸部肌肉本身不是瓶颈（"胸部轻松但手在晃"）</li>
+        <li>蝴蝶机 30kg 第3组顶峰挤压失败 = 胸肌耐力弱</li>
+        <li>实际胸肌力量被稳定性限制住了</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <h3>🔙 背部力量</h3>
+      <div class="score score-yellow">5.0<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">拉力明显弱于推力</div>
+      <ul>
+        <li>高位下拉 39kg × 8 = 体重 50%（理想应≥70%）</li>
+        <li>坐姿划船 32kg 后程崩 = 中背/菱形肌弱</li>
+        <li>垂直拉 > 水平拉（背阔优于中背）</li>
+        <li>单臂划船 12kg 第3组掉次数 = 单侧耐力不足</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <h3>🫱 肩部/三角肌</h3>
+      <div class="score score-orange">4.0<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">明显薄弱</div>
+      <ul>
+        <li>推肩 10kg 刚突破（理想同龄应 16-20kg）</li>
+        <li>侧平举 6kg（8kg 第7个就完不成）</li>
+        <li>面拉 10kg 不后仰极限 = 后束偏弱</li>
+        <li>前/中/后束均偏弱，耐力衰减快</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <h3>💪 手臂（二头/三头）</h3>
+      <div class="score score-red">3.5<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">最明显短板</div>
+      <ul>
+        <li>弯举 6kg 轻松但 8kg 只做 6 个 = 断层</li>
+        <li>三头 10kg 刚脱离借力（15kg 必须借力）</li>
+        <li>限制了所有推/拉动作的极限表现</li>
+        <li>左手尤其弱（末组微抖/硬拉快抽筋）</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <h3>🤲 握力/前臂/稳定性</h3>
+      <div class="score score-red">3.0<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">系统性瓶颈 #1</div>
+      <ul>
+        <li>硬拉 14kg 左手快抽筋 ⚠️</li>
+        <li>卧推/上斜末组手抖 = 握力耐力不足</li>
+        <li>推肩/侧平举末组晃 = 腕部稳定差</li>
+        <li>胸/背主肌有余力，被前臂/握力限制</li>
+        <li>左手明显弱于右手</li>
+      </ul>
+    </div>
+
+    <div class="analysis-card">
+      <h3>❤️ 心肺耐力</h3>
+      <div class="score score-orange">4.5<span style="font-size:0.8rem;color:var(--text-muted);">/10</span></div>
+      <div class="score-label">有氧基础偏弱</div>
+      <ul>
+        <li>Zone 2 速度仅 6.0-6.5（偏低）</li>
+        <li>深蹲 75kg 后半喘 = 心肺先于肌力疲劳</li>
+        <li>稳态 6.5 心率已达 Zone 3（156bpm）</li>
+        <li>有氧训练频次不足（总共 3-4 次有氧）</li>
+        <li>恢复能力有限（全面加重后半小时不适）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION: Strength vs Weakness Summary -->
+  <div class="section-title">强弱总览</div>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>评分</th>
+        <th>评级</th>
+        <th>关键证据</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>下肢力量</td>
+        <td class="strong">7.5</td>
+        <td class="strong">强</td>
+        <td>深蹲 95% 体重 · 腿举/弯举/伸展全线进步</td>
+      </tr>
+      <tr>
+        <td>核心稳定</td>
+        <td class="strong">7.0</td>
+        <td class="strong">强</td>
+        <td>平板 50s · 支撑 75kg 深蹲 · 稳步加时</td>
+      </tr>
+      <tr>
+        <td>胸部力量</td>
+        <td class="avg">5.5</td>
+        <td class="avg">中</td>
+        <td>卧推 20kg 刚突破 · 被稳定性制约</td>
+      </tr>
+      <tr>
+        <td>背部力量</td>
+        <td class="avg">5.0</td>
+        <td class="avg">中</td>
+        <td>下拉 39kg · 划船 32kg 后半崩</td>
+      </tr>
+      <tr>
+        <td>心肺耐力</td>
+        <td class="weak">4.5</td>
+        <td class="weak">弱</td>
+        <td>Zone2 速度低 · 深蹲喘 · 频次不足</td>
+      </tr>
+      <tr>
+        <td>肩部三角肌</td>
+        <td class="weak">4.0</td>
+        <td class="weak">弱</td>
+        <td>推肩 10kg 极限 · 侧平举 6-8 断层</td>
+      </tr>
+      <tr>
+        <td>手臂二/三头</td>
+        <td class="weak">3.5</td>
+        <td class="weak">弱</td>
+        <td>弯举 6-8 断层 · 三头 10kg 基准</td>
+      </tr>
+      <tr>
+        <td>握力/前臂/稳定</td>
+        <td class="weak">3.0</td>
+        <td class="weak">弱</td>
+        <td>左手抖/抽筋 · 系统性制约所有动作</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION: Key Patterns -->
+  <div class="section-title">关键模式识别</div>
+
+  <div class="callout warn">
+    ⚠️ <strong>系统性瓶颈：握力/前臂/稳定性</strong><br>
+    这不只是一个"弱项"——它是制约你所有上肢动作进步的<strong>天花板</strong>。<br><br>
+    证据链：<br>
+    • 卧推："胸部轻松但手在晃" → 胸肌有余力但稳定系统先疲劳<br>
+    • 推肩：首组能做 12 个 → 后续快速掉 = 稳定肌耐力差<br>
+    • 硬拉：腿/臀有力量但左手快抽筋 → 握力限制负重<br>
+    • 弯举：空手发力感强上重量后变差 → 前臂先疲劳代偿<br><br>
+    <strong>意味着：即使主肌群（胸/背/肩）有力量储备，你也无法表达出来。</strong>
+  </div>
+
+  <div class="callout success">
+    ✅ <strong>正面发现：下肢力量远超上肢</strong><br>
+    深蹲 75kg（体重 95%）vs 卧推 ~52kg（体重 66%）。<br>
+    下肢没有稳定性瓶颈（杠铃在背上不需要手部平衡），所以你的真实肌力能完全释放。<br>
+    这证明：你的神经募集和肌纤维没问题，问题确实出在"传输通道"——手臂/前臂/握力。
+  </div>
+
+  <!-- SECTION: Comparison with Norms -->
+  <div class="section-title">与同龄同体重男性对比</div>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>指标</th>
+        <th>你的数据</th>
+        <th>同龄中位数（35-40岁/~80kg/训练2月）</th>
+        <th>差距</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>深蹲</td>
+        <td>75 kg</td>
+        <td>60-70 kg</td>
+        <td class="strong">超越 +10-15%</td>
+      </tr>
+      <tr>
+        <td>卧推（换算）</td>
+        <td>~52 kg</td>
+        <td>55-65 kg</td>
+        <td class="weak">落后 -10%</td>
+      </tr>
+      <tr>
+        <td>高位下拉</td>
+        <td>39 kg × 8</td>
+        <td>45-55 kg × 10</td>
+        <td class="weak">落后 -20%</td>
+      </tr>
+      <tr>
+        <td>推肩</td>
+        <td>10 kg</td>
+        <td>14-18 kg</td>
+        <td class="weak">落后 -30%</td>
+      </tr>
+      <tr>
+        <td>弯举</td>
+        <td>6-8 kg</td>
+        <td>10-12 kg</td>
+        <td class="weak">落后 -25%</td>
+      </tr>
+      <tr>
+        <td>体脂率</td>
+        <td>25.9%</td>
+        <td>22-25%</td>
+        <td class="avg">略高</td>
+      </tr>
+      <tr>
+        <td>骨骼肌量</td>
+        <td>33.1 kg</td>
+        <td>30-33 kg</td>
+        <td class="strong">中上水平</td>
+      </tr>
+      <tr>
+        <td>核心（平板）</td>
+        <td>50s × 3</td>
+        <td>40-60s</td>
+        <td class="strong">中上水平</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION: Progress Trajectory -->
+  <div class="section-title">8 周进步轨迹</div>
+
+  <div class="progress-row">
+    <span class="progress-pill pill-up">深蹲 20→75kg ↑275%</span>
+    <span class="progress-pill pill-up">卧推 12→20kg ↑67%</span>
+    <span class="progress-pill pill-up">推肩 8→10kg ↑25%</span>
+    <span class="progress-pill pill-up">平板 30→50s ↑67%</span>
+    <span class="progress-pill pill-up">腿举 40→66kg ↑65%</span>
+  </div>
+  <div class="progress-row">
+    <span class="progress-pill pill-plateau">高位下拉 30→39kg</span>
+    <span class="progress-pill pill-plateau">划船 25→32kg</span>
+    <span class="progress-pill pill-plateau">面拉 稳在10kg</span>
+  </div>
+  <div class="progress-row">
+    <span class="progress-pill pill-weak">弯举 6-8kg 卡住</span>
+    <span class="progress-pill pill-weak">握力/前臂 未改善</span>
+    <span class="progress-pill pill-weak">有氧频次不足</span>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--text-dim); margin-top:1rem;">
+    <strong style="color:var(--white);">进步速率评价：</strong>下肢和核心的进步速率属于优秀（超过同期训练者）。上肢的进步被稳定性瓶颈限制，速率偏慢但方向正确。
+  </p>
+
+  <!-- SECTION: Root Cause -->
+  <div class="section-title">根因分析 · 为什么上肢弱于下肢？</div>
+
+  <div class="analysis-grid" style="grid-template-columns: 1fr;">
+    <div class="analysis-card" style="border-color:rgba(248,113,113,0.3);">
+      <h3 style="color:var(--red);">🔍 根本原因推断</h3>
+      <table class="comp-table" style="margin-top:0.8rem;">
+        <thead>
+          <tr><th>因素</th><th>解释</th><th>影响</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>日常活动模式</td>
+            <td>久坐办公 → 下肢日常承重（走路/爬楼），上肢几乎零负重</td>
+            <td>下肢有基础，上肢从零开始</td>
+          </tr>
+          <tr>
+            <td>训练前基础</td>
+            <td>37岁首次系统训练，上肢从未有过规律负重刺激</td>
+            <td>神经-肌肉连接需要更多时间建立</td>
+          </tr>
+          <tr>
+            <td>稳定性链短板</td>
+            <td>前臂/腕部/肩袖小肌群长期未训练，耐力极低</td>
+            <td>大肌群有力但"传输系统"弱 → 无法输出</td>
+          </tr>
+          <tr>
+            <td>左手弱势</td>
+            <td>可能长期右手主导（写字/鼠标），左手刺激更少</td>
+            <td>所有动作在左手先达极限</td>
+          </tr>
+          <tr>
+            <td>体脂分布</td>
+            <td>腰腹/内脏脂肪高 → 影响核心支撑效率和体感</td>
+            <td>重心不稳增加稳定负担</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION: Recommendations -->
+  <div class="section-title">改善优先级建议</div>
+
+  <div class="analysis-grid">
+    <div class="analysis-card" style="border-color:rgba(248,113,113,0.3);">
+      <h3>🚨 P0：握力/前臂强化</h3>
+      <ul>
+        <li>每次训练末尾加 2 分钟握力训练（农夫行走 / 哑铃静态保持）</li>
+        <li>硬拉使用助力带（让背/腿能充分训练不被手限制）</li>
+        <li>左手单独加练：捏握力器 / 腕弯举</li>
+      </ul>
+    </div>
+    <div class="analysis-card" style="border-color:rgba(249,115,22,0.3);">
+      <h3>🔶 P1：有氧频次提升</h3>
+      <ul>
+        <li>每周至少 2 次有氧（目前 14 天没练有氧了）</li>
+        <li>有氧改善心肺 → 深蹲不喘 → 力量训练质量提升</li>
+        <li>Zone 2 有氧同时帮助减脂（缩小体脂缺口）</li>
+      </ul>
+    </div>
+    <div class="analysis-card" style="border-color:rgba(251,191,36,0.3);">
+      <h3>🟡 P2：手臂专项补强</h3>
+      <ul>
+        <li>弯举：用 7kg（如有）或绳索弯举解决 6→8 断层</li>
+        <li>三头：维持 10kg 巩固不借力模式</li>
+        <li>考虑推日末尾加 1 组窄距俯卧撑</li>
+      </ul>
+    </div>
+    <div class="analysis-card" style="border-color:rgba(96,165,250,0.3);">
+      <h3>🔵 P3：维持优势</h3>
+      <ul>
+        <li>下肢：继续渐进，深蹲目标 80kg</li>
+        <li>核心：平板支撑继续加时，目标 60s</li>
+        <li>动作质量：不追求快速加重，巩固当前重量</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION: Summary Score -->
+  <div class="section-title">综合评分</div>
+
+  <div style="text-align:center; padding: 2rem 0;">
+    <div style="font-size:4rem; font-weight:900; color:var(--yellow);">5.2<span style="font-size:1.5rem; color:var(--text-muted);">/10</span></div>
+    <p style="color:var(--text-dim); font-size:0.9rem; margin-top:0.5rem;">综合体能水平 · 8 周训练后</p>
+    <p style="color:var(--text); font-size:0.85rem; margin-top:1rem; max-width:500px; margin-left:auto; margin-right:auto;">
+      对于 37 岁、首次系统训练 8 周的男性，这个分数属于<strong style="color:var(--green);">正常偏上</strong>。
+      下肢力量出色，核心稳定良好。主要拉分项是上肢稳定性/前臂和心肺耐力。
+      按当前进步速率，12 周时预计可达 6.0-6.5 分。
+    </p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>Coach M · 体能评估报告 · 生成于 2026-05-07 · 基于 19 次训练数据</p>
+  <p style="margin-top:0.5rem;">📊 数据驱动 · 科学训练 · 持续进步</p>
+</footer>
+
+</body>
+</html>
