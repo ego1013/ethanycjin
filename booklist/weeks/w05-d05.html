@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W05·D5 摆渡人 + 连接者 — 自由的边界在哪里，谁来画？ | 书单精读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616;
+            --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d0cfc8; --text-dim: #888; --text-muted: #555;
+            --white: #f0ece4; --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.1); --accent-border: rgba(226,163,85,0.25);
+            --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.08); --blue-border: rgba(96,165,250,0.2);
+            --teal: #2dd4bf; --teal-dim: rgba(45,212,191,0.08); --teal-border: rgba(45,212,191,0.2);
+            --purple: #c084fc; --purple-dim: rgba(192,132,252,0.08); --purple-border: rgba(192,132,252,0.2);
+            --red: #E94560; --red-dim: rgba(233,69,96,0.08); --red-border: rgba(233,69,96,0.2);
+            --green: #4ade80; --green-dim: rgba(74,222,128,0.08); --green-border: rgba(74,222,128,0.2);
+            --orange: #fb923c; --orange-dim: rgba(251,146,60,0.08); --orange-border: rgba(251,146,60,0.22);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Serif SC', Georgia, serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.9;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+
+        /* ── Breadcrumb ── */
+        .breadcrumb-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+            background: rgba(10,10,10,.92); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            font-size: 12px; font-family: sans-serif; color: #666;
+        }
+        .breadcrumb-nav a { color: #888; text-decoration: none; }
+        .breadcrumb-nav a:hover { color: #ddd; }
+        .breadcrumb-nav .sep { color: #444; font-size: 11px; }
+        .breadcrumb-nav .current { color: #ccc; font-weight: 500; }
+        .breadcrumb-spacer { height: 40px; }
+
+        /* ── Role tags ── */
+        .role-tag-blue {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue);
+        }
+        .role-tag-teal {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+
+        /* ── Week complete badge ── */
+        .week-complete {
+            display: inline-flex; align-items: center; gap: .4rem;
+            background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.25);
+            color: #4ade80; border-radius: 999px;
+            padding: .3rem .9rem; font-size: .7rem; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; font-family: sans-serif;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ── Header ── */
+        .role-header { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+        .day-label {
+            font-size: .72rem; color: var(--text-muted); font-family: sans-serif;
+            font-weight: 500; letter-spacing: .05em; margin-bottom: .6rem;
+        }
+        .main-title { font-size: 1.75rem; font-weight: 700; color: var(--white); line-height: 1.4; margin-bottom: .6rem; }
+        .sub-title { font-size: 1rem; color: var(--text-dim); font-weight: 400; line-height: 1.6; }
+
+        /* ── Body text ── */
+        .body-text { font-size: 1rem; color: var(--text); line-height: 1.9; margin-bottom: 1.5rem; }
+        .body-text em { font-style: italic; color: var(--accent); }
+        .body-text strong { color: var(--white); font-weight: 600; }
+        p { margin-bottom: 1.1rem; font-size: 1rem; line-height: 1.9; }
+        em { font-style: italic; color: var(--accent); }
+        strong { color: var(--white); font-weight: 600; }
+
+        /* ── Section title ── */
+        .section-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-muted); margin: 2.5rem 0 1.25rem;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .section-title.blue { color: var(--blue); }
+        .section-title.blue::after { background: var(--blue-border); }
+        .section-title.teal { color: var(--teal); }
+        .section-title.teal::after { background: var(--teal-border); }
+
+        h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin: 2.5rem 0 1rem; padding-bottom: .6rem; border-bottom: 1px solid var(--border-light); }
+        h3.blue { font-size: 1rem; color: var(--blue); margin: 1.5rem 0 .6rem; }
+        h3.teal { font-size: 1rem; color: var(--teal); margin: 1.5rem 0 .6rem; }
+
+        /* ── 张力问题引用 ── */
+        .tension-quote {
+            background: var(--red-dim); border: 1px solid var(--red-border);
+            border-left: 3px solid var(--red); border-radius: 6px;
+            padding: 1rem 1.25rem; margin-bottom: 2rem;
+            font-size: .875rem; color: #e8d5d8; line-height: 1.75;
+        }
+        .tension-quote .label {
+            font-size: .65rem; font-family: sans-serif; text-transform: uppercase;
+            letter-spacing: .1em; color: var(--red); font-weight: 700; margin-bottom: .4rem;
+        }
+
+        /* ── Section break ── */
+        .section-break {
+            border: none; border-top: 1px solid var(--border-light);
+            margin: 3.5rem 0; position: relative;
+        }
+        .section-break::after {
+            content: '· · ·';
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--bg); color: var(--text-muted);
+            padding: 0 .75rem; font-size: .85rem; letter-spacing: .2em;
+            font-family: sans-serif;
+        }
+
+        /* ── Bridge card ── */
+        .bridge-card {
+            background: var(--blue-dim); border: 1px solid var(--blue-border);
+            border-radius: 10px; padding: 1.5rem; margin: 1.5rem 0;
+        }
+        .bridge-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--blue);
+            margin-bottom: .75rem;
+        }
+        .bridge-text { font-size: .97rem; color: var(--text); line-height: 1.85; }
+        .bridge-text em { font-style: italic; color: var(--accent); }
+        .bridge-text strong { color: var(--white); }
+        .bridge-text p + p { margin-top: .85rem; }
+
+        /* ── Insight card ── */
+        .insight-card {
+            background: var(--surface-2); border: 1px solid var(--border-light);
+            border-radius: 8px; padding: 1.1rem 1.25rem; margin: 1rem 0;
+        }
+        .insight-card .label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; margin-bottom: .5rem;
+        }
+        .insight-card .label.blue { color: var(--blue); }
+        .insight-card .label.orange { color: var(--orange); }
+        .insight-card .content { font-size: .93rem; color: var(--text); line-height: 1.75; }
+        .insight-card .content em { font-style: italic; color: var(--accent); }
+        .insight-card .content strong { color: var(--white); }
+
+        /* ── 张力问题最终形态 ── */
+        .tension-final {
+            background: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(226,163,85,0.06) 100%);
+            border: 1px solid rgba(226,163,85,0.3);
+            border-radius: 12px; padding: 1.75rem; margin: 2rem 0;
+            position: relative; overflow: hidden;
+        }
+        .tension-final::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--accent));
+        }
+        .tension-final-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .9rem; display: flex; align-items: center; gap: .4rem;
+        }
+        .tension-original {
+            font-size: .9rem; color: var(--text-muted); font-style: italic;
+            border-left: 2px solid var(--border-light); padding-left: .9rem;
+            margin-bottom: 1.25rem; line-height: 1.8;
+        }
+        .tension-final-text {
+            font-size: 1.05rem; color: #d4c8b4; line-height: 1.9;
+        }
+        .tension-final-text em { font-style: italic; color: var(--accent); }
+        .tension-final-text strong { color: var(--white); font-weight: 600; }
+        .tension-final-text p + p { margin-top: .9rem; }
+
+        /* ── 落地三问 ── */
+        .landing-q {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.25rem; margin: 1.25rem 0;
+        }
+        .landing-q .lq-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .9rem;
+        }
+        .lq-item {
+            display: flex; gap: .9rem; align-items: flex-start;
+            padding: .65rem 0; border-bottom: 1px solid var(--border);
+        }
+        .lq-item:last-child { border-bottom: none; }
+        .lq-num {
+            flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .68rem; font-weight: 700; font-family: sans-serif;
+            background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent);
+        }
+        .lq-text { font-size: .9rem; color: var(--text); line-height: 1.7; }
+        .lq-text em { font-style: italic; color: var(--accent); }
+        .lq-text strong { color: var(--white); }
+
+        /* ── Connector branch ── */
+        .branch-item {
+            display: flex; gap: 1rem; align-items: flex-start;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.25rem; margin: .85rem 0;
+            transition: border-color .2s;
+        }
+        .branch-item:hover { border-color: var(--border-light); }
+        .branch-num {
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .72rem; font-weight: 700; font-family: sans-serif;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+        .branch-body { flex: 1; }
+        .branch-header { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; flex-wrap: wrap; }
+        .branch-book { font-size: .95rem; font-weight: 600; color: var(--white); }
+        .branch-week { font-size: .68rem; color: var(--text-muted); font-family: sans-serif; }
+        .branch-type {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            padding: .15rem .55rem; border-radius: 4px; font-family: sans-serif;
+        }
+        .branch-type.tension { background: var(--red-dim); border: 1px solid var(--red-border); color: var(--red); }
+        .branch-type.dialogue { background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue); }
+        .branch-type.inherit { background: var(--purple-dim); border: 1px solid var(--purple-border); color: var(--purple); }
+        .branch-type.invert { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
+        .branch-type.refute { background: var(--red-dim); border: 1px solid var(--red-border); color: var(--red); }
+        .branch-type.complement { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+        .branch-type.channel { background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal); }
+        .branch-desc { font-size: .9rem; color: var(--text-dim); line-height: 1.7; }
+        .branch-desc em { font-style: italic; color: var(--accent); }
+        .branch-desc strong { color: var(--white); }
+
+        /* ── SVG knowledge map container ── */
+        .map-container {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.5rem; margin: 2rem 0; overflow: hidden;
+        }
+        .map-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; color: var(--teal);
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Next week banner ── */
+        .next-week {
+            background: linear-gradient(135deg, rgba(226,163,85,0.06) 0%, rgba(45,212,191,0.04) 100%);
+            border: 1px solid rgba(226,163,85,0.2); border-radius: 12px;
+            padding: 1.5rem; margin-top: 3rem; text-align: center;
+        }
+        .next-week .week-num {
+            font-size: .7rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .5rem;
+        }
+        .next-week .week-book {
+            font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: .3rem;
+        }
+        .next-week .week-author { font-size: .88rem; color: var(--text-dim); }
+
+        .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+        @media (max-width: 560px) {
+            .main-title { font-size: 1.45rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="breadcrumb-nav">
+    <a href="../../index.html">Home</a>
+    <span class="sep">›</span>
+    <a href="../index.html">书单精读</a>
+    <span class="sep">›</span>
+    <span class="current">W05·D5 摆渡人 + 连接者</span>
+</nav>
+<div class="breadcrumb-spacer"></div>
+
+<div class="container">
+
+    <!-- ═══════════════════════════════
+         PART I · 摆渡人 The Bridger
+         ═══════════════════════════════ -->
+
+    <header class="role-header">
+        <div class="day-label">第5周 · Day 5 / 5 &nbsp;·&nbsp; 2026-05-08 &nbsp;·&nbsp; 《通往奴役之路》</div>
+        <div class="week-complete">✅ 第5周收官</div>
+        <div class="role-tag-blue">🌉 The Bridger · 摆渡人</div>
+        <h1 class="main-title">自由的边界在哪里，谁来画？</h1>
+        <p class="sub-title">哈耶克给了我们一张警告地图——但地图本身也是一个人画的。摆渡人想问的是：那个画地图的人，能逃脱他自己的地图吗？</p>
+    </header>
+
+    <!-- ── 本周张力问题回顾 ── -->
+    <div class="tension-quote">
+        <div class="label">❓ 本周核心张力问题（叙事者 D1 提出）</div>
+        当我们为了实现良善目标开始"暂时限制某些自由"，我们怎么知道这是必要的代价而非第一块砖？计划与自由之间是否存在可持续的分界线？
+    </div>
+
+    <p>
+        这一周，叙事者把我们带进1940年剑桥的书房，提炼者解剖了哈耶克五把框架刀，应用者在三个场景里追问计划与自由的边界，挑战者则在四条断层线上提出了质疑——最犀利的那刀是：<strong>连"定义边界"本身，也是一种权力集中。</strong>
+    </p>
+    <p>
+        挑战者留下的问题让摆渡人没有办法轻易上路。不是因为哈耶克错了，而是因为他在某种意义上太对了——对到让人无处可站。
+    </p>
+    <p>
+        摆渡人今天想做三次摆渡。
+    </p>
+
+    <!-- ══ 摆渡一 ══ -->
+    <div class="section-title blue">摆渡一：从"边界在哪里"到"谁有资格画边界"</div>
+
+    <h3 class="blue">哈耶克的问题不是答案太少，而是太多</h3>
+
+    <p>
+        读完这本书，大多数人会带着一个直觉离开：<em>计划是危险的，自由是好的，国家应该少管事。</em>这个直觉并没有错，但它跳过了哈耶克最深的那个忧虑。
+    </p>
+    <p>
+        哈耶克真正的恐惧，不是国家的存在，而是<strong>分散知识的被替代</strong>——没有任何中央机构能集合足够的信息来作出比市场更好的决策。这个认识论命题，比"自由vs计划"的政治口号要深刻得多，也更难反驳。
+    </p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">摆渡人的第一个问题</div>
+        <div class="bridge-text">
+            <p>如果没有人能集合足够的知识来规划社会——那谁来画"计划与自由"之间的那条线？</p>
+            <p>画线这件事本身，需要的知识量，丝毫不比制定计划少。边界的位置是个信息问题；维护边界需要权力；权力需要共识；共识需要沟通协商——而沟通协商本身，就是一种协调机制，和市场的运作原理惊人地相似。</p>
+            <p>换句话说：<strong>市场是哈耶克开的药，但如何服药这件事，依然需要某种集体决策机制。</strong>药和决策机制，无法互相替代。</p>
+        </div>
+    </div>
+
+    <p>
+        这不是在反驳哈耶克，而是在追问他。他的知识论武器足够锋利，锋利到可以对准他自己的处方。
+    </p>
+
+    <!-- ══ 摆渡二 ══ -->
+    <div class="section-title blue">摆渡二：哈耶克遇见2026</div>
+
+    <h3 class="blue">铁幕消失了，但笼子换了形状</h3>
+
+    <p>
+        1944年，哈耶克的目标敌人是：国家计划委员会、五年计划、苏联式的资源调配。那个威胁，至少在表面上，在1991年已经消失了大半。
+    </p>
+    <p>
+        但2026年的读者，面对的是另一种集中：<strong>不是国家权力，而是平台权力。</strong>
+    </p>
+
+    <div class="insight-card">
+        <div class="label orange">场景一：算法即计划</div>
+        <div class="content">
+            亚马逊、美团、滴滴的调度算法，每秒钟在做数以亿计的资源分配决策。这些决策不是由国家计划委员会作出的，而是由私人公司的工程师写就的代码完成的。它们高效，但不透明；它们没有强制命令，但产生了事实上的依赖。<br><br>
+            哈耶克在《通往奴役之路》里担忧的，是国家对"协调权"的垄断。但他没有预料到：市场内生的规模效应，会产生另一种事实性的协调垄断——<em>私人的、无法民主追责的计划机器。</em>
+        </div>
+    </div>
+
+    <div class="insight-card">
+        <div class="label orange">场景二：数据主权与知识集中</div>
+        <div class="content">
+            哈耶克说，价格信号是市场传递分散知识的媒介——正是因为知识分散在每个人的行动和偏好里，所以任何中央机构都无法完整获取。<br><br>
+            但当数据以前所未有的精度被平台采集、存储、分析，当AI能从数十亿用户的行为中提炼出比任何个体更精确的偏好预测，<strong>哈耶克的"知识不可集中"命题，正在被技术条件侵蚀。</strong>这不意味着计划经济已经可行，但意味着那个让市场不可替代的认识论基础，正在变得更复杂。
+        </div>
+    </div>
+
+    <div class="insight-card">
+        <div class="label orange">场景三：良善意图的加速时代</div>
+        <div class="content">
+            气候危机、AI安全、公共卫生——每一个当代紧迫议题，都在呼唤某种形式的"暂时性全球协调"。这些理由，在哈耶克的语境里，几乎都是那条奴役之路的典型铺砖材料：良善的意图，紧迫的压力，超越常规的权力授予。<br><br>
+            哈耶克的贡献在于他的警觉。他的局限在于：在真实的紧迫面前，"保持警觉"本身不构成行动方案。
+        </div>
+    </div>
+
+    <!-- ══ 摆渡三 ══ -->
+    <div class="section-title blue">摆渡三：住在地图里的摆渡人</div>
+
+    <h3 class="blue">我们都活在某种已经被规划过的自由里</h3>
+
+    <p>
+        摆渡人有一个无法回避的困境：每次试图帮人渡河，自己都已经在岸的某一边。
+    </p>
+    <p>
+        哈耶克写作《通往奴役之路》时，身处二战的阴影、法西斯的恐惧、苏联的诱惑之中。他的警告，是从那个特定的岸边发出的。我们现在读这本书，是从另一个岸边——一个市场已经深度嵌入、平台已经重塑日常的岸边——回望他的地图。
+    </p>
+    <p>
+        地图没有错。但地图的边界，是那个时代的人用那个时代的恐惧画出来的。
+    </p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">摆渡人想说的最后一件事</div>
+        <div class="bridge-text">
+            <p>哈耶克这本书的核心贡献，不是给出了一个"少政府=自由"的简单结论，而是提供了一种<em>警觉性思维</em>：每一次以良善理由对自由的限制，都值得追问那个理由是否能自我检验，那个权力是否有退出机制，那个边界是否能被重新谈判。</p>
+            <p>这种警觉，无论你站在哪个政治立场，都是有效的认知工具。但工具不是答案。</p>
+            <p><strong>当你拿起这把刀，你还需要知道，这把刀也可以对准你自己正在建造的东西。</strong></p>
+        </div>
+    </div>
+
+    <!-- ══ 张力问题最终形态 ══ -->
+    <div class="tension-final">
+        <div class="tension-final-label">❓→💡 本周张力问题的最终形态</div>
+        <div class="tension-original">
+            原始问题（D1叙事者）：当我们为了实现良善目标开始"暂时限制某些自由"，我们怎么知道这是必要的代价而非第一块砖？计划与自由之间是否存在可持续的分界线？
+        </div>
+        <div class="tension-final-text">
+            <p>经过五天的推进，摆渡人把这个问题带到了它的深层形态：</p>
+            <p><strong>问题不是"要多少自由"，而是"谁的知识、谁的恐惧，在定义那条边界？"</strong></p>
+            <p>哈耶克教会我们担心集中的权力——但他没有解决"防止集中"本身需要某种协调这一悖论。更根本的问题是：在一个知识本来就不对等、恐惧本来就不均匀分布的世界里，任何关于自由边界的讨论，都已经内嵌了某种权力关系。</p>
+            <p>所以最终的问题不再是<em>计划与自由的边界在哪里</em>，而是：<strong>谁有能力参与画那条线？那个参与过程，本身是否自由？</strong></p>
+            <p style="margin-top:1.1rem; font-size:.88rem; color: var(--text-muted);">
+                落地三问：<br>
+                ① 你现在生活或工作中，是否存在"以良善名义设置的边界"？谁画的？谁可以重新谈判？<br>
+                ② 你对哈耶克的直觉认同，是基于什么样的恐惧？那个恐惧是当下的，还是借来的？<br>
+                ③ 如果你是那个"画线的人"，你的知识基础是什么？你的利益是否嵌入在那条线里？
+            </p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         PART II · 连接者 The Connector
+         ═══════════════════════════════ -->
+
+    <hr class="section-break">
+
+    <header>
+        <div class="role-tag-teal">🔗 The Connector · 连接者</div>
+        <h1 class="main-title" style="font-size:1.5rem;">知识地图 · 第5节点：自由的认识论</h1>
+        <p class="sub-title">《通往奴役之路》在50本书的知识网络里，是一个奇特的节点——它既是终点，也是争议的起点。</p>
+    </header>
+
+    <div class="section-title teal" style="margin-top:2rem;">五条知识枝干</div>
+
+    <!-- 枝干一 -->
+    <div class="branch-item">
+        <div class="branch-num">1</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《国富论》— 亚当·斯密</span>
+                <span class="branch-week">第1周</span>
+                <span class="branch-type inherit">传承</span>
+            </div>
+            <div class="branch-desc">
+                斯密是哈耶克最重要的知识来源之一：<em>自发秩序</em>（*spontaneous order*）的前身，就是斯密笔下"看不见的手"——市场通过价格信号协调分散行动，无需中央指令。哈耶克把这个直觉从经济学升华为政治哲学，把"市场比计划聪明"转化为"任何人都不该拥有计划的权力"。传承中有一次关键的漂移：斯密描述的是<strong>市场的能力</strong>，哈耶克推导的是<strong>国家的界限</strong>。
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干二 -->
+    <div class="branch-item">
+        <div class="branch-num">2</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《资本论》— 卡尔·马克思</span>
+                <span class="branch-week">第2周</span>
+                <span class="branch-type tension">正面对立</span>
+            </div>
+            <div class="branch-desc">
+                这是整个书单中最尖锐的对峙。马克思认为资本主义的内生矛盾必然引向剥削与崩溃，解法是工人阶级掌握生产资料；哈耶克认为任何试图"纠正"市场的计划行动，都在通往奴役。两人对同一个现象（市场秩序产生的不平等）开出了方向相反的药方，背后是两套完全不同的认识论：<em>历史决定论</em>（马克思）vs <em>知识不可集中论</em>（哈耶克）。<strong>这不是一场谁对谁错的辩论，而是两种世界观的根本分歧。</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干三 -->
+    <div class="branch-item">
+        <div class="branch-num">3</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《就业、利息和货币通论》— 凯恩斯</span>
+                <span class="branch-week">第4周</span>
+                <span class="branch-type tension">知识论分水岭</span>
+            </div>
+            <div class="branch-desc">
+                凯恩斯与哈耶克，是20世纪经济学史上最著名的对决。但他们的分歧不仅是政策层面的（政府是否应该干预），更是认识论层面的：<strong>凯恩斯相信，受过良好训练的经济学家+政府，可以在关键时刻作出比市场更好的短期决策；哈耶克相信，没有任何人拥有这样的知识。</strong>两人都是信息不对称的学生，但他们得出的结论截然相反。读完这两本书，你才能理解当代宏观政策辩论的真实裂缝所在。
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干四 -->
+    <div class="branch-item">
+        <div class="branch-num">4</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《资本主义与自由》— 弥尔顿·弗里德曼</span>
+                <span class="branch-week">第6周（待读）</span>
+                <span class="branch-type complement">传承深化</span>
+            </div>
+            <div class="branch-desc">
+                弗里德曼是哈耶克的芝加哥接班人，但风格截然不同。哈耶克是哲学家，弗里德曼是实证经济学家——他不是在写警告寓言，而是在给哈耶克的框架打地基、配数据。如果说哈耶克说的是"这条路通向奴役"，弗里德曼的贡献是：<em>货币供给稳定、负所得税、教育券</em>——把自由主义从政治哲学转化为可操作的政策工具箱。传承里有修正：弗里德曼承认了有限的社会安全网的必要性，这是哈耶克晚年也让步的地方。
+            </div>
+        </div>
+    </div>
+
+    <!-- 枝干五：跨频道 -->
+    <div class="branch-item">
+        <div class="branch-num">5</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《1984》— 乔治·奥威尔</span>
+                <span class="branch-week">跨频道C · 文学感知</span>
+                <span class="branch-type channel">跨频道</span>
+            </div>
+            <div class="branch-desc">
+                奥威尔与哈耶克是同代人，《1984》写于1948年，与《通往奴役之路》几乎同期——两人都在回应极权主义的恐惧，但路径完全不同：<strong>哈耶克用认识论写政治经济学，奥威尔用感官写政治恐惧。</strong>哈耶克告诉我们"为什么那条路是危险的"，奥威尔让我们<em>感受到</em>走到那条路尽头是什么感觉。老大哥的"双重思想"（*doublethink*）、语言的改造（*Newspeak*），正是哈耶克知识扭曲理论的文学肉身。两本书放在一起，是理性与感知对同一个威胁的双重预警。
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 知识地图 SVG ── -->
+    <div class="map-container">
+        <div class="map-title">📍 知识地图 · 五周节点 + 枝干网络（更新至 W05）</div>
+        <svg viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <defs>
+                <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#2dd4bf" opacity="0.7"/>
+                </marker>
+                <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#E94560" opacity="0.7"/>
+                </marker>
+                <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa" opacity="0.7"/>
+                </marker>
+                <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#c084fc" opacity="0.7"/>
+                </marker>
+                <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#e2a355" opacity="0.7"/>
+                </marker>
+            </defs>
+
+            <!-- Background -->
+            <rect width="680" height="420" fill="#0f0f0f" rx="8"/>
+
+            <!-- ── 已读节点 ── -->
+            <!-- W1 国富论 -->
+            <circle cx="100" cy="100" r="38" fill="#1a1400" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="100" y="95" text-anchor="middle" fill="#e2a355" font-size="9" font-family="sans-serif" font-weight="700">W1</text>
+            <text x="100" y="108" text-anchor="middle" fill="#d4af70" font-size="8" font-family="sans-serif">国富论</text>
+            <text x="100" y="120" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">斯密</text>
+
+            <!-- W2 资本论 -->
+            <circle cx="260" cy="80" r="38" fill="#1a0a0d" stroke="#E94560" stroke-width="1.5"/>
+            <text x="260" y="75" text-anchor="middle" fill="#E94560" font-size="9" font-family="sans-serif" font-weight="700">W2</text>
+            <text x="260" y="88" text-anchor="middle" fill="#e8a0a8" font-size="8" font-family="sans-serif">资本论</text>
+            <text x="260" y="100" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">马克思</text>
+
+            <!-- W3 新教伦理 -->
+            <circle cx="420" cy="100" r="38" fill="#0e1218" stroke="#c084fc" stroke-width="1.5"/>
+            <text x="420" y="91" text-anchor="middle" fill="#c084fc" font-size="9" font-family="sans-serif" font-weight="700">W3</text>
+            <text x="420" y="104" text-anchor="middle" fill="#c8aaee" font-size="7.5" font-family="sans-serif">新教伦理</text>
+            <text x="420" y="116" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">韦伯</text>
+
+            <!-- W4 通论 -->
+            <circle cx="180" cy="240" r="38" fill="#080e1a" stroke="#60a5fa" stroke-width="1.5"/>
+            <text x="180" y="235" text-anchor="middle" fill="#60a5fa" font-size="9" font-family="sans-serif" font-weight="700">W4</text>
+            <text x="180" y="248" text-anchor="middle" fill="#a0bce8" font-size="8" font-family="sans-serif">通论</text>
+            <text x="180" y="260" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">凯恩斯</text>
+
+            <!-- W5 通往奴役之路 (当前，高亮) -->
+            <circle cx="360" cy="240" r="42" fill="#0f1008" stroke="#4ade80" stroke-width="2"/>
+            <circle cx="360" cy="240" r="46" fill="none" stroke="rgba(74,222,128,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="360" y="232" text-anchor="middle" fill="#4ade80" font-size="9" font-family="sans-serif" font-weight="700">W5 · 当前</text>
+            <text x="360" y="245" text-anchor="middle" fill="#a0e8a0" font-size="7.5" font-family="sans-serif">通往奴役之路</text>
+            <text x="360" y="257" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">哈耶克</text>
+
+            <!-- ── 待读节点 ── -->
+            <!-- W6 资本主义与自由 -->
+            <circle cx="520" cy="220" r="32" fill="#111" stroke="#555" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="520" y="215" text-anchor="middle" fill="#555" font-size="8" font-family="sans-serif">W6</text>
+            <text x="520" y="227" text-anchor="middle" fill="#444" font-size="7" font-family="sans-serif">资本主义</text>
+            <text x="520" y="238" text-anchor="middle" fill="#444" font-size="7" font-family="sans-serif">与自由</text>
+
+            <!-- W10 21世纪资本论 -->
+            <circle cx="560" cy="330" r="30" fill="#111" stroke="#555" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="560" y="326" text-anchor="middle" fill="#555" font-size="8" font-family="sans-serif">W10</text>
+            <text x="560" y="338" text-anchor="middle" fill="#444" font-size="7" font-family="sans-serif">21c资本论</text>
+
+            <!-- 频道C 1984 -->
+            <rect x="55" y="310" width="88" height="44" rx="6" fill="#0a1212" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="3,3"/>
+            <text x="99" y="330" text-anchor="middle" fill="#2dd4bf" font-size="8" font-family="sans-serif">频道C</text>
+            <text x="99" y="343" text-anchor="middle" fill="#60b8b0" font-size="7.5" font-family="sans-serif">1984·奥威尔</text>
+
+            <!-- ── 连接线 ── -->
+            <!-- 国富论 → 通往奴役之路 (传承) -->
+            <path d="M134,118 Q200,200 320,228" stroke="#e2a355" stroke-width="1.2" fill="none" opacity="0.5" marker-end="url(#arrow-amber)"/>
+            <text x="195" y="180" fill="#e2a355" font-size="7.5" font-family="sans-serif" opacity="0.7">传承</text>
+
+            <!-- 资本论 → 通往奴役之路 (正面对立) -->
+            <path d="M255,117 Q290,165 340,202" stroke="#E94560" stroke-width="1.2" fill="none" opacity="0.5" marker-end="url(#arrow-red)"/>
+            <text x="275" y="162" fill="#E94560" font-size="7.5" font-family="sans-serif" opacity="0.7">对立</text>
+
+            <!-- 通论 → 通往奴役之路 (知识论分水岭) -->
+            <path d="M218,241 L318,241" stroke="#60a5fa" stroke-width="1.2" fill="none" opacity="0.5" marker-end="url(#arrow-blue)"/>
+            <text x="238" y="234" fill="#60a5fa" font-size="7.5" font-family="sans-serif" opacity="0.7">分水岭</text>
+
+            <!-- 通往奴役之路 → 资本主义与自由 -->
+            <path d="M401,232 L491,224" stroke="#555" stroke-width="1" fill="none" opacity="0.4" stroke-dasharray="4,3" marker-end="url(#arrow-teal)"/>
+            <text x="428" y="220" fill="#555" font-size="7" font-family="sans-serif">深化</text>
+
+            <!-- W5 → 频道C 1984 -->
+            <path d="M320,268 Q220,310 145,325" stroke="#2dd4bf" stroke-width="1" fill="none" opacity="0.4" stroke-dasharray="3,3" marker-end="url(#arrow-teal)"/>
+            <text x="218" y="312" fill="#2dd4bf" font-size="7.5" font-family="sans-serif" opacity="0.6">跨频道C</text>
+
+            <!-- 国富论 → 资本论 -->
+            <path d="M138,95 L224,85" stroke="#E94560" stroke-width="1" fill="none" opacity="0.3" stroke-dasharray="3,3" marker-end="url(#arrow-red)"/>
+
+            <!-- Legend -->
+            <rect x="16" y="370" width="640" height="40" rx="4" fill="#0d0d0d" stroke="#1e1e1e"/>
+            <text x="32" y="386" fill="#555" font-size="7.5" font-family="sans-serif">图例：</text>
+            <line x1="68" y1="383" x2="90" y2="383" stroke="#4ade80" stroke-width="1.5"/>
+            <text x="93" y="386" fill="#4ade80" font-size="7" font-family="sans-serif">当前周</text>
+            <line x1="148" y1="383" x2="170" y2="383" stroke="#e2a355" stroke-width="1.2"/>
+            <text x="173" y="386" fill="#e2a355" font-size="7" font-family="sans-serif">传承</text>
+            <line x1="210" y1="383" x2="232" y2="383" stroke="#E94560" stroke-width="1.2"/>
+            <text x="235" y="386" fill="#E94560" font-size="7" font-family="sans-serif">对立</text>
+            <line x1="268" y1="383" x2="290" y2="383" stroke="#60a5fa" stroke-width="1.2"/>
+            <text x="293" y="386" fill="#60a5fa" font-size="7" font-family="sans-serif">分水岭</text>
+            <line x1="345" y1="383" x2="367" y2="383" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="370" y="386" fill="#2dd4bf" font-size="7" font-family="sans-serif">跨频道C</text>
+            <line x1="430" y1="383" x2="452" y2="383" stroke="#555" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="455" y="386" fill="#555" font-size="7" font-family="sans-serif">待读</text>
+
+            <!-- 第二行图例 -->
+            <text x="32" y="400" fill="#555" font-size="7.5" font-family="sans-serif">✅ 已读：W1-W5 &nbsp;·&nbsp; ○ 待读：W6 资本主义与自由 / W10 21世纪资本论</text>
+        </svg>
+    </div>
+
+    <!-- ── 连接者的一句话 ── -->
+    <div class="insight-card" style="margin-top:2rem;">
+        <div class="label teal" style="color:#2dd4bf;">连接者备注</div>
+        <div class="content">
+            五周读下来，知识地图上已经有了一条隐约的弧线：<em>斯密奠基 → 马克思挑战 → 韦伯侧切 → 凯恩斯修补 → 哈耶克反驳修补者</em>。这不是一条进步的直线，而是同一个问题的螺旋式深化：<strong>人类的合作秩序，到底是自发生长的，还是需要被设计的？</strong>下一本书，将从另一个角度切入这同一个问题。
+        </div>
+    </div>
+
+    <!-- ── 下周预告 ── -->
+    <div class="next-week">
+        <div class="week-num">下周 · 第6周</div>
+        <div class="week-book">《资本主义与自由》</div>
+        <div class="week-author">弥尔顿·弗里德曼 Milton Friedman</div>
+        <p style="font-size:.82rem;color:#666;margin-top:.75rem;line-height:1.6;">哈耶克的接班人，用实证经济学给自由主义打地基。<em>货币规则</em>、<em>教育券</em>、<em>负所得税</em>——自由不只是一个哲学立场，而是一套可操作的政策工具。</p>
+    </div>
+
+</div><!-- /container -->
+</body>
+</html>
