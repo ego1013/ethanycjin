@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>有氧 · 2026-05-11 — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #60a5fa;
+    --accent-dim: rgba(96,165,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+  .nav-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-inner a, .nav-inner span { font-size:0.85rem; }
+  .nav-inner a { color:var(--text-dim); text-decoration:none; transition:color .2s; }
+  .nav-inner a:hover { color:var(--white); }
+  .nav-inner .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #0a1a0a 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.cardio { color: #4ade80; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+  .badge.week { color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); }
+  .badge.intensity { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--green);
+  }
+  .callout strong { color: var(--white); }
+
+  /* Cardio segment card */
+  .segment-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: border-color .2s;
+  }
+  .segment-card:hover { border-color: var(--border-hover); }
+  .segment-card .seg-time {
+    font-size: 0.72rem; color: var(--text-muted); font-weight: 600;
+    min-width: 50px; text-align: center;
+  }
+  .segment-card .seg-info { flex: 1; }
+  .segment-card .seg-name { font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.2rem; }
+  .segment-card .seg-detail { font-size: 0.8rem; color: var(--text-dim); }
+  .segment-card .seg-hr {
+    font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 8px;
+    white-space: nowrap;
+  }
+  .seg-hr.z2 { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.15); }
+  .seg-hr.z3 { color: var(--orange); background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.15); }
+  .seg-hr.z1 { color: var(--text-dim); background: rgba(136,136,136,0.08); border: 1px solid rgba(136,136,136,0.15); }
+
+  /* Phase table */
+  .phase-table {
+    width: 100%; border-collapse: collapse; margin-bottom: 1rem;
+  }
+  .phase-table td {
+    padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+  }
+  .phase-table td:first-child { color: var(--white); font-weight: 500; }
+  .phase-table td:last-child { color: var(--text-dim); text-align: right; }
+
+  /* Tips */
+  .tip-list {
+    list-style: none; padding: 0;
+  }
+  .tip-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .tip-list li strong { color: var(--white); }
+  .tip-list li .emoji { margin-right: 0.4rem; }
+
+  .week-plan {
+    width: 100%; border-collapse: collapse;
+  }
+  .week-plan th, .week-plan td {
+    padding: 0.6rem 0.8rem; text-align: left; font-size: 0.82rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .week-plan th { color: var(--text-muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; }
+  .week-plan td { color: var(--text); }
+  .week-plan .today { color: var(--green); font-weight: 700; }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .quick-stats { gap: 1.2rem; }
+    .segment-card { flex-wrap: wrap; gap: 0.5rem; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+      <span class="sep">/</span>
+      <a href="index.html">Coach M</a>
+      <span class="sep">/</span>
+      <span style="color:var(--text)">2026-05-11</span>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge cardio">CARDIO</span>
+      <span class="badge week">WEEK 9</span>
+      <span class="badge intensity">轻度-中度</span>
+    </div>
+    <h1>🏃 Zone 2 稳态 + 轻冲刺</h1>
+    <p class="sub">有氧恢复 · 重建心肺基线 · 距上次有氧18天</p>
+    <div class="quick-stats">
+      <div class="qs">
+        <div class="num">40</div>
+        <div class="label">分钟</div>
+      </div>
+      <div class="qs">
+        <div class="num">280</div>
+        <div class="label">千卡</div>
+      </div>
+      <div class="qs">
+        <div class="num">3</div>
+        <div class="label">冲刺段</div>
+      </div>
+      <div class="qs">
+        <div class="num">Z2</div>
+        <div class="label">主区间</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="callout">
+      📋 <strong>排期依据：</strong>有氧距上次已 18 天（4/23），严重拖欠。上周力量 3/3 全满，周一有氧轻松开启新一周，为 Tu-Fr 力量训练留足空间。
+    </div>
+
+    <!-- Warmup -->
+    <div class="section-title">🔥 热身 · 5分钟</div>
+    <table class="phase-table">
+      <tr><td>慢走启动</td><td>2 min · 速度 4.0/坡度0 · HR &lt;100</td></tr>
+      <tr><td>快走激活</td><td>2 min · 速度 5.5/坡度0 · HR 100-110</td></tr>
+      <tr><td>动态拉伸</td><td>1 min · 高抬腿 + 股四头拉伸</td></tr>
+    </table>
+
+    <!-- Main -->
+    <div class="section-title">🏃 主训练 · 30分钟</div>
+
+    <div class="segment-card">
+      <div class="seg-time">0-8'</div>
+      <div class="seg-info">
+        <div class="seg-name">Zone 2 稳态</div>
+        <div class="seg-detail">速度 6.0 / 坡度 1 · 找到呼吸舒适点</div>
+      </div>
+      <div class="seg-hr z2">120-135 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">8-12'</div>
+      <div class="seg-info">
+        <div class="seg-name">微提速</div>
+        <div class="seg-detail">速度 6.5 / 坡度 1 · 心率不超137就保持</div>
+      </div>
+      <div class="seg-hr z2">125-137 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">12-13'</div>
+      <div class="seg-info">
+        <div class="seg-name">⚡ 轻冲刺 ①</div>
+        <div class="seg-detail">速度 7.5 / 坡度 1 · 1分钟加速</div>
+      </div>
+      <div class="seg-hr z3">138-150 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">13-17'</div>
+      <div class="seg-info">
+        <div class="seg-name">Zone 2 恢复</div>
+        <div class="seg-detail">速度 6.0 / 坡度 1 · 心率降至130以下</div>
+      </div>
+      <div class="seg-hr z2">&lt;130 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">17-18'</div>
+      <div class="seg-info">
+        <div class="seg-name">⚡ 轻冲刺 ②</div>
+        <div class="seg-detail">速度 7.5 / 坡度 1 · 1分钟加速</div>
+      </div>
+      <div class="seg-hr z3">138-150 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">18-22'</div>
+      <div class="seg-info">
+        <div class="seg-name">Zone 2 恢复</div>
+        <div class="seg-detail">速度 6.0 / 坡度 1 · 主动恢复</div>
+      </div>
+      <div class="seg-hr z2">&lt;130 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">22-23'</div>
+      <div class="seg-info">
+        <div class="seg-name">⚡ 轻冲刺 ③</div>
+        <div class="seg-detail">速度 8.0 / 坡度 1 · 最后一次稍快</div>
+      </div>
+      <div class="seg-hr z3">145-155 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">23-28'</div>
+      <div class="seg-info">
+        <div class="seg-name">Zone 2 巡航</div>
+        <div class="seg-detail">速度 6.0-6.5 / 坡度 1 · 享受节奏</div>
+      </div>
+      <div class="seg-hr z2">120-135 bpm</div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-time">28-30'</div>
+      <div class="seg-info">
+        <div class="seg-name">恢复走</div>
+        <div class="seg-detail">速度 4.5 / 坡度 0 · 逐步降速</div>
+      </div>
+      <div class="seg-hr z1">&lt;120 bpm</div>
+    </div>
+
+    <!-- Cooldown -->
+    <div class="section-title">🧘 拉伸放松 · 5分钟</div>
+    <table class="phase-table">
+      <tr><td>小腿拉伸（弓步靠墙）</td><td>30s × 2 · 后脚跟不离地</td></tr>
+      <tr><td>股四头拉伸（站姿）</td><td>30s × 2 · 保持骨盆中立</td></tr>
+      <tr><td>臀部拉伸（4字形）</td><td>30s × 2 · 臀大肌深层拉伸</td></tr>
+      <tr><td>腘绳肌拉伸（前屈）</td><td>30s × 2 · 膝盖微弯OK</td></tr>
+      <tr><td>深呼吸放松</td><td>1 min · 4秒吸-7秒呼</td></tr>
+    </table>
+
+    <!-- Tips -->
+    <div class="section-title">📝 今日重点</div>
+    <ul class="tip-list">
+      <li><span class="emoji">⚠️</span> <strong>18天没做有氧</strong>，别急追进度。目标：重新建立心肺基线</li>
+      <li><span class="emoji">💨</span> 前8分钟让心率自然爬升，不追速度</li>
+      <li><span class="emoji">🎯</span> 冲刺是"微提速"，不是全力。Zone 2 = 可以说完整句子</li>
+      <li><span class="emoji">📏</span> 坡度固定 1！上次教训：坡度+2 心率飙 30-40bpm</li>
+    </ul>
+
+    <!-- Week plan -->
+    <div class="section-title">📅 本周展望</div>
+    <table class="week-plan">
+      <thead><tr><th>日期</th><th>计划</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr class="today"><td>周一 5/11</td><td>有氧 Cardio</td><td>📍 今天</td></tr>
+        <tr><td>周二 5/12</td><td>推日 Push</td><td>待定</td></tr>
+        <tr><td>周三 5/13</td><td>拉日 Pull</td><td>待定</td></tr>
+        <tr><td>周四 5/14</td><td>腿日 Legs</td><td>待定</td></tr>
+        <tr><td>周五 5/15</td><td>有氧/恢复</td><td>待定</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Nutrition -->
+    <div class="section-title">🍽 营养 & 补水</div>
+    <ul class="tip-list">
+      <li><span class="emoji">🥩</span> 蛋白质 ≥40g：鸡胸/牛肉/鱼 150-200g</li>
+      <li><span class="emoji">🥦</span> 蔬菜不限量 + 碳水适量（半碗饭/红薯100-150g）</li>
+      <li><span class="emoji">💧</span> 训练前200ml · 每10min补100ml · 训练后400-500ml</li>
+      <li><span class="emoji">🎯</span> 训练日热量 ≤1900 kcal · 蛋白质 ≥130g/天</li>
+    </ul>
+
+    <!-- Reminder -->
+    <div class="section-title">⏰ 提醒</div>
+    <ul class="tip-list">
+      <li><span class="emoji">📊</span> InBody 复测：<strong>2026-06-03</strong>（距今 23 天）</li>
+      <li><span class="emoji">🔥</span> 假期反弹恢复期 — 严格执行热量控制</li>
+      <li><span class="emoji">💪</span> 上周力量 3/3 ✅，本周继续保持节奏！</li>
+    </ul>
+
+  </main>
+
+  <footer class="footer">
+    <p>Coach M — Ethan's AI 健身教练 · <a href="index.html">返回仪表盘</a></p>
+  </footer>
+
+</body>
+</html>
