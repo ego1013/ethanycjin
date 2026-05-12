@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九的行军：你的 AI Agent 每步 90% 成功，连起来只有 35%——可靠性正在指数级崩塌 · AI 每日洞见 #018</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* ── Header ── */
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .issue-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .issue-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+        }
+
+        .issue-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .issue-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--green-dim);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 750;
+            color: var(--white);
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .one-liner {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ── Source ── */
+        .source-box {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .source-box a { color: var(--accent); text-decoration: none; }
+        .source-box a:hover { text-decoration: underline; }
+
+        /* ── Body ── */
+        .body-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .body-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .body-section h2 .icon {
+            font-size: 1.1rem;
+        }
+
+        .body-text {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+
+        .body-text p {
+            margin-bottom: 1rem;
+        }
+
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        .body-text .highlight {
+            background: rgba(96, 165, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ── Data callout ── */
+        .data-callout {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1.25rem 0;
+        }
+
+        .data-callout .data-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .data-value.warn { color: var(--warn); }
+
+        /* ── Takeaways ── */
+        .takeaway-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .takeaway-item {
+            padding: 0.9rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .takeaway-item .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 0.6rem;
+        }
+
+        .takeaway-item strong { color: var(--white); }
+
+        /* ── Warning box ── */
+        .warning-box {
+            padding: 1rem 1.25rem;
+            background: var(--warn-dim);
+            border: 1px solid var(--warn-border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .warning-box h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* ── Further reading ── */
+        .further {
+            margin-bottom: 2.5rem;
+        }
+
+        .further h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .further-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .further-item a {
+            display: block;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .further-item a:hover {
+            border-color: var(--accent-border);
+            background: var(--surface-alt);
+        }
+
+        .further-item .label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Question ── */
+        .closing-question {
+            padding: 1.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+            border: 1px solid rgba(96,165,250,0.15);
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .closing-question .q-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .closing-question p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        /* ── Tags ── */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        /* ── Series link ── */
+        .series-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: rgba(96, 165, 250, 0.05);
+            border: 1px dashed var(--accent-border);
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.82rem;
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .series-link:hover {
+            background: rgba(96, 165, 250, 0.10);
+        }
+        .series-link .sl-label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Stage diagram ── */
+        .stage-diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.3rem;
+            margin: 1.25rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.78rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+            overflow-x: auto;
+        }
+
+        .stage-diagram .stage-pos { color: var(--green); font-weight: 600; }
+        .stage-diagram .stage-neg { color: #f87171; font-weight: 600; }
+        .stage-diagram .stage-label { color: var(--white); }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .container { padding: 1.25rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+            <span class="sep">/</span>
+            <a href="https://ego1013.github.io/ethanycjin/ainsight/">AI 每日洞见</a>
+            <span class="sep">/</span>
+            <span style="color:var(--text)">#018</span>
+        </nav>
+
+        <div class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#018</span>
+                <span class="issue-date">📅 2026-05-12 · 星期二</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>九的行军：你的 AI Agent 每步 90% 成功，连起来只有 35%——可靠性正在指数级崩塌</h1>
+
+            <div class="one-liner">
+                Princeton 大学 Kapoor & Narayanan 团队测试了 14 个主流模型后发现：AI Agent 的能力（准确率）在飞速进步，但可靠性的改善速度只有能力的 1/7。一个 10 步工作流、每步 90% 成功率的 Agent，整体成功率只有 35%——每天运行 100 次就会失败 65 次。行业用"平均准确率"掩盖了一个结构性危机。
+            </div>
+        </div>
+
+        <div class="source-box">
+            <strong>来源：</strong><br>
+            ① Rabanser, Kapoor, Narayanan et al. (Princeton/CITP), <a href="https://arxiv.org/abs/2602.16666" target="_blank">Towards a Science of AI Agent Reliability</a>, arXiv:2602.16666, 2026.02 (ICML 2026 Poster)<br>
+            ② Fortune / Jeremy Kahn, <a href="https://fortune.com/2026/03/24/ai-agents-are-getting-more-capable-but-reliability-is-lagging-narayanan-kapoor/" target="_blank">AI agents are getting more capable, but reliability is lagging</a>, Eye on AI, 2026.03.24<br>
+            ③ AgentMarketCap, <a href="https://agentmarketcap.ai/blog/2026/04/14/agent-compound-reliability-problem-multi-step-error-rates" target="_blank">The Agent Compound Reliability Problem</a>, 2026.04.14<br>
+            ④ Alex CloudStar, <a href="https://www.alexcloudstar.com/blog/ai-agent-reliability-engineering-2026/" target="_blank">AI Agent Reliability Engineering 2026: SLOs and Failure Modes</a>, 2026.05.02
+        </div>
+
+        <!-- ── 深度解读 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🔬</span> 深度解读</h2>
+            <div class="body-text">
+                <p>
+                    你大概听到过这样的宣传：<strong>"我们的 AI Agent 准确率达到 95%！"</strong> 然后你兴冲冲把它部署到生产环境里一个 10 步的工作流上，结果每天有一半的任务执行失败。你开始怀疑自己哪里用错了。
+                </p>
+
+                <p>
+                    其实问题不在你，问题在"准确率"这个指标本身。<span class="highlight">Princeton 的 Kapoor 和 Narayanan 用一篇被 ICML 2026 接收的论文，揭开了 AI Agent 领域最大的度量骗局。</span>
+                </p>
+
+                <p>
+                    他们的核心发现可以浓缩成一句话：<strong>能力和可靠性是两个完全不同的东西，而整个行业只在衡量前者。</strong>
+                </p>
+
+                <p>
+                    让我给你看一个表格，这是所有 AI Agent 用户需要贴在屏幕上的东西：
+                </p>
+
+                <div class="stage-diagram">
+                    <div><span class="stage-label">工作流步骤数</span>   单步成功率   <span class="stage-label">整体成功率</span></div>
+                    <div>─────────────────────────────────────────────</div>
+                    <div>  2 步         90%       <span class="stage-pos">81%</span></div>
+                    <div>  5 步         90%       <span class="stage-neg">59%</span></div>
+                    <div> 10 步         90%       <span class="stage-neg">35%</span></div>
+                    <div> 20 步         90%       <span class="stage-neg">12%</span></div>
+                    <div>─────────────────────────────────────────────</div>
+                    <div> 10 步         <span class="stage-pos">99%</span>       <span class="stage-pos">90%</span>  ← 这是你需要的最低线</div>
+                </div>
+
+                <p>
+                    <strong>0.9^10 = 0.35。</strong>这不是什么深奥的数学——它是复合概率——但它精确地解释了为什么你的 AI Agent 在 demo 中闪耀、在生产中崩溃。Demo 永远是 2-3 步，生产永远是 10-20 步。这就是 <em>March of Nines</em>（九的行军）：你需要把每一步从 90% 推到 99%，才能让 10 步工作流达到基本可用。
+                </p>
+
+                <p>
+                    但更让人不安的发现在后面——<strong>可靠性的改善速度���远追不上准确率。</strong>
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">可靠性 vs 准确率：改善速率的惊人差距</div>
+                    <div class="data-row">
+                        <span class="data-label">通用 Agent 基准测试</span>
+                        <span class="data-value down">可靠性改善 = 准确率的 1/2</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">客服场景基准测试</span>
+                        <span class="data-value down">可靠性改善 = 准确率的 1/7</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Claude Opus 4.5 一致性得分（最佳模型）</span>
+                        <span class="data-value warn">73%（1/4 概率不同结果）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Gemini 3 Pro 校准度（自我判断准确性）</span>
+                        <span class="data-value down">52%（等于掷硬币）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Gemini 3 Pro 灾难性失败规避率</span>
+                        <span class="data-value down">25%（4次失败有3次是严重故障）</span>
+                    </div>
+                </div>
+
+                <p>
+                    翻译一下：<strong>最先进的 AI 模型不知道自己什么时候不靠谱（校准度 52%），而且失败时有 75% 的概率是灾难性的。</strong>这不是"偶尔犯错"的问题，这是"不知道自己在犯错"的问题。
+                </p>
+
+                <p>
+                    研究者提出了一个精准的框架——<strong>可靠性的四个维度</strong>：一致性（同一任务是否给同一结果）、鲁棒性（异常输入下是否崩溃）、校准度（知不知道自己不确定）、安全性（错了有多严重）。当前所有模型评测只看"做对了多少"，而不看"做错时有多危险"。
+                </p>
+
+                <p>
+                    Fortune 文章中举了一个让我后背发凉的医疗案例：三个 AI 工具，单独准确率分别是 90%、85%、97%——每个看起来都很可靠。但<strong>串联使用后整体可靠性降到 74%</strong>——每 4 个患者就有 1 个可能被误诊。没有一个环节看起来"很危险"，但系统层面已经是定时炸弹。
+                </p>
+
+                <p>
+                    这揭示了一个深层悖论：<strong>AI Agent 越强大，工作流越长；工作流越长，可靠性崩塌越快；崩塌越快，你越需要可靠性改善——但可靠性改善恰恰是最慢的那条曲线。</strong>能力在指数增长，可靠性在线性爬行。这两条曲线之间的剪刀差，就是当下 AI Agent 生态的真实状态。
+                </p>
+
+                <a href="./2026-04-17.html" class="series-link">
+                    <span class="sl-label">📎 关联阅读 · #004</span><br>
+                    锯齿状智能：能解奥数却不会看钟，这才是 AI 最危险的地方
+                </a>
+
+                <a href="./2026-05-05.html" class="series-link">
+                    <span class="sl-label">📎 关联阅读 · #014</span><br>
+                    9 秒定律：AI 知道规则、引用规则、然后违反规则——"护栏"是一场集体幻觉
+                </a>
+
+                <p>
+                    把这篇和之前的洞见连起来：<strong>#004 告诉你 AI 的能力分布是参差不齐的（锯齿状）；#014 告诉你护栏形同虚设；今天 #018 告诉你即使每一步"看起来还行"，串联起来也会系统性崩溃。</strong>三者叠加的结论是：当前的 AI Agent 不是"偶尔出错"——它是<em>结构性地不可靠</em>，只是这种不可靠被"平均表现"的好看数字掩盖了。
+                </p>
+
+                <p>
+                    论文原文有一句值得牢记的判断：<strong>"一个在 90% 任务上成功但在剩余 10% 上不可预测地失败的 Agent，可能是有用的助手，但却是不可接受的自主系统。"</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- ── 对你意味着什么 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>用"链式成功率"而非"单步准确率"评估你的 AI 工作流。</strong>数一下你的 Agent 工作流有几步，然后做乘法。如果有 8 步且每步 90%，你的整体成功率是 43%——不到一半。这是你决定是否投入生产的真实数字，不是供应商给你看的 benchmark 数字。任何超过 5 步的自动化工作流都需要在每一步设置检查点和回退机制。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>"缩短链条"是当下最高杠杆的工程决策。</strong>不是让 AI 做更多事，而是把一个长工作流拆成多个短工作流，每个 3 步以内（3步×90%=73%，尚可接受），中间插入人类验证节点。这比提升单步准确率 5% 的收益大得多。3 步 → 73% 成功率 vs 10 步 → 35% 成功率——长度砍掉三分之二，成功率翻倍。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>追问"失败时会怎样"比追问"成功时多好"重要十倍。</strong>当你评估一个 AI Agent 产品时，不要看它的 demo（那是 2 步最优路径），追问三个问题：① 同一任务跑两遍，结果一样吗？② 输入有错别字或格式异常时会怎样？③ 错了以后它知道自己错了吗？如果对方答不上来，说明他们还没有进入可靠性工程的视野。
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 认知偏差提醒 ── -->
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒</h2>
+            <p>
+                <strong>光环效应（Halo Effect）+ 基率忽视（Base Rate Neglect）</strong>——当一个 Agent 在你面前完成了一次惊艳的操作时，你会不自觉地把"它刚才很厉害"泛化为"它很可靠"。但单次成功不代表高基率成功。更隐蔽的是<strong>幸存者偏差</strong>：你看到的每一个 AI Agent 的成功 demo，背后可能有 3 次失败的排练——而在生产环境中，你无法选择只展示成功的那次。
+            </p>
+        </div>
+
+        <!-- ── 延伸阅读 ── -->
+        <div class="further">
+            <h2>📖 想深入了解</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://arxiv.org/abs/2602.16666" target="_blank">
+                        Rabanser, Kapoor, Narayanan et al. — Towards a Science of AI Agent Reliability (全文)
+                        <br><span class="label">Princeton CITP / ICML 2026，12 个可靠性指标、4 维框架、14 模型实测</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.normaltech.ai/p/new-paper-towards-a-science-of-ai" target="_blank">
+                        AI as Normal Technology Blog — 论文作者自述解读
+                        <br><span class="label">Kapoor & Narayanan 通俗化解释为什么可靠性需要独立于准确率来衡量</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://agentmarketcap.ai/blog/2026/04/14/agent-compound-reliability-problem-multi-step-error-rates" target="_blank">
+                        AgentMarketCap — The Compound Reliability Problem
+                        <br><span class="label">从投资视角分析为什么 Agent 公司的估值模型需要引入可靠性折扣</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://fortune.com/2026/03/24/ai-agents-are-getting-more-capable-but-reliability-is-lagging-narayanan-kapoor/" target="_blank">
+                        Fortune / Eye on AI — 能力与可靠性的完整分析
+                        <br><span class="label">含医疗 AI 链式调用案例、Perplexity Agent 和 Claude Cowork 真实失败案例</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 留一个问题 ── -->
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>你正在使用（或准备使用）的 AI Agent 工作流有几步？<br>你算过它的<strong>链式成功率</strong>吗？<br>如果答案低于 50%——<br><strong>你凭什么相信它明天不会炸？</strong></p>
+        </div>
+
+        <!-- ── Tags ── -->
+        <div class="tags">
+            <span class="tag">March of Nines</span>
+            <span class="tag">Compound Reliability</span>
+            <span class="tag">Princeton / CITP</span>
+            <span class="tag">Agent Reliability</span>
+            <span class="tag">Capability-Reliability Gap</span>
+            <span class="tag">ICML 2026</span>
+            <span class="tag">Cascading Failure</span>
+        </div>
+
+        <a href="https://ego1013.github.io/ethanycjin/ainsight/" class="back-btn">← 返回洞见列表</a>
+
+        <div class="footer">
+            🧠 AI 每日洞见 · 信号提取，不是新闻聚合 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+        </div>
+    </div>
+</body>
+</html>
