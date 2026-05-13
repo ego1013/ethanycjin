@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W06·D3 应用者 — 自由的地基，谁来浇筑？ | 书单精读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.22);
+            --applier: #6eb5c0;
+            --applier-dim: rgba(110,181,192,0.08);
+            --applier-border: rgba(110,181,192,0.22);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+
+        /* ── Role Badge ── */
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--applier-dim);
+            border: 1px solid var(--applier-border);
+            color: var(--applier);
+            font-size: 0.72rem;
+            font-weight: 600;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1.2rem;
+        }
+
+        /* ── Header ── */
+        .article-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .week-tag {
+            font-size: 0.72rem;
+            font-family: -apple-system, sans-serif;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.8rem;
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 1.2rem;
+        }
+
+        .meta {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            font-size: 0.76rem;
+            font-family: -apple-system, sans-serif;
+            color: var(--text-muted);
+        }
+        .meta .book-ref {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* ── Body ── */
+        p {
+            margin-bottom: 1.4rem;
+            font-size: 1.01rem;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--applier);
+            margin: 1.8rem 0 0.75rem;
+            font-family: -apple-system, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { color: var(--accent); font-style: italic; }
+
+        strong { color: var(--white); font-weight: 700; }
+
+        /* ── Tension Echo ── */
+        .tension-echo {
+            background: var(--applier-dim);
+            border: 1px solid var(--applier-border);
+            border-left: 3px solid var(--applier);
+            border-radius: 8px;
+            padding: 1.2rem 1.4rem;
+            margin: 2rem 0;
+            font-size: 0.93rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            font-family: -apple-system, sans-serif;
+        }
+        .tension-echo .label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--applier);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .tension-echo .quote {
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.97rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ── Scene Card ── */
+        .scene-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.6rem 1.8rem;
+            margin: 2rem 0;
+        }
+
+        .scene-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .scene-num {
+            font-size: 0.68rem;
+            font-weight: 800;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--applier);
+            background: var(--applier-dim);
+            border: 1px solid var(--applier-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            margin-top: 0.15rem;
+        }
+
+        .scene-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, sans-serif;
+            line-height: 1.4;
+        }
+
+        .scene-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        .scene-card p {
+            font-size: 0.97rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+        .scene-card p:last-child { margin-bottom: 0; }
+
+        /* ── Insight Box ── */
+        .insight-box {
+            background: rgba(226,163,85,0.05);
+            border: 1px solid var(--accent-border);
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            padding: 0.9rem 1.1rem;
+            margin: 1.2rem 0 0;
+            font-size: 0.88rem;
+            font-family: -apple-system, sans-serif;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+        .insight-box .ins-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        /* ── Comparison Grid ── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem 0;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.86rem;
+        }
+        .cmp-cell {
+            background: var(--surface);
+            padding: 0.9rem 1rem;
+        }
+        .cmp-cell.header {
+            background: var(--surface-2);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .cmp-cell.left { border-left: 3px solid var(--applier); }
+        .cmp-cell.right { border-left: 3px solid #E94560; }
+        .cmp-cell .cmp-title {
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+        .cmp-cell .cmp-desc { color: var(--text-dim); line-height: 1.6; }
+
+        /* ── Career Box ── */
+        .career-box {
+            background: linear-gradient(135deg, rgba(110,181,192,0.06), rgba(110,181,192,0.02));
+            border: 1px solid var(--applier-border);
+            border-radius: 12px;
+            padding: 1.6rem 1.8rem;
+            margin: 2rem 0;
+        }
+        .career-box .career-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            font-family: -apple-system, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--applier);
+            margin-bottom: 0.8rem;
+        }
+        .career-box h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, sans-serif;
+            margin-bottom: 0.6rem;
+        }
+        .career-box p {
+            font-size: 0.95rem;
+            margin-bottom: 0.9rem;
+        }
+        .career-box p:last-child { margin-bottom: 0; }
+
+        /* ── Closing Tension ── */
+        .closing-tension {
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
+            border-top: 3px solid var(--applier);
+            border-radius: 10px;
+            padding: 1.4rem 1.6rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, sans-serif;
+        }
+        .closing-tension .ct-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--applier);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+        .closing-tension .ct-text {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+        .closing-tension .ct-text strong { color: var(--white); }
+
+        /* ── Next Day ── */
+        .next-day {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 1.4rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: border-color 0.2s, background 0.2s;
+            font-family: -apple-system, sans-serif;
+            margin-top: 3rem;
+        }
+        .next-day:hover { border-color: var(--accent); background: var(--accent-dim); }
+        .next-day .nd-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.2rem;
+        }
+        .next-day .nd-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .next-day .nd-arrow { color: var(--accent); font-size: 1.2rem; }
+
+        /* ── Back Nav ── */
+        .back-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0 2rem;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.82rem;
+        }
+        .back-nav a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .back-nav a:hover { color: var(--accent); }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* ── Bias Tag ── */
+        .bias {
+            display: inline-block;
+            background: rgba(233,69,96,0.1);
+            border: 1px solid rgba(233,69,96,0.25);
+            color: #E94560;
+            font-size: 0.72rem;
+            font-family: -apple-system, sans-serif;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.3rem;
+            vertical-align: middle;
+        }
+
+        /* ── Highlight Quote ── */
+        .highlight-quote {
+            border-left: 3px solid var(--accent);
+            padding-left: 1.2rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 0.97rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">← 主页</a>
+        <span>·</span>
+        <a href="../index.html">书单精读</a>
+        <span>·</span>
+        <span>第6周·D3</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="article-header">
+        <div class="role-badge">🙋 应用者 The Applier · Week 06 Day 3</div>
+        <div class="week-tag">第6周 · 《资本主义与自由》— 米尔顿·弗里德曼 · 2026-05-13</div>
+        <h1>自由的地基，谁来浇筑？</h1>
+        <p class="subtitle">弗里德曼说自由市场保护自由。但三个场景告诉你：那个"市场"从来不是从零开始自发生长的——有人提前浇筑了地基，而那个人，不一定是你。</p>
+        <div class="meta">
+            <span class="book-ref">📖 《资本主义与自由》第6周</span>
+            <span>·</span>
+            <span>应用者三场景·历史/当下/职业</span>
+        </div>
+    </header>
+
+    <!-- Tension Echo -->
+    <div class="tension-echo">
+        <div class="label">🔁 张力问题回响</div>
+        <div class="quote">自由市场是保护个人自由的最优机制——还是说，它只在特定权力结构中成立，而那个权力结构本身从来不是"自由"竞争出来的？</div>
+        <p>提炼者昨天在弗里德曼五把刀里标出了两个<em>红色虚线框</em>：「市场是已存在的中立载体」和「规则是客观中立的」。这两个假设看起来无害，却是整个论证的根基。应用者今天要做的，是把这两个前提带进三个真实场景——看看历史上的市场"地基"究竟是谁浇筑的，看看今天的中国互联网平台经济在弗里德曼的镜子里是什么形状，看看在你管辖的绩效管理系统里，<strong>"规则的制定者"与"规则的受益者"是否真的重合</strong>。</p>
+    </div>
+
+    <!-- Opening -->
+    <p>弗里德曼的论证有一种令人信服的内在美感：<em>经济自由（Economic Freedom）</em>是政治自由的前提，计划经济需要权力集中，权力集中必然侵蚀个人自由，因此自由市场是保护自由的最优解。逻辑链完整，步步为营。</p>
+
+    <p>但论证的起点——"市场"这个东西是怎么来的——弗里德曼几乎没有追问。他的默认假设是：<strong>市场已经在那里了，我们只需要不去干预它。</strong> 然而历史上，每一个"自发运作的自由市场"背后，都有一个隐形的建造者：殖民地产权体系的立法者、跨国贸易规则的谈判代表、平台生态游戏规则的首批制定者。那个建造者，不是市场本身。</p>
+
+    <p>今天，应用者要做的，就是把这个问题带进三个具体的现实——看看"地基"在历史上是如何被浇筑的，在当代中国又在经历什么，以及在你每天面对的绩效管理系统里，游戏规则的建造者是谁。</p>
+
+    <hr class="divider">
+
+    <!-- Scene 1 -->
+    <h2>场景一：历史实验室</h2>
+    <h3>英美自由贸易的"自由"从哪里来？</h3>
+
+    <div class="scene-card">
+        <div class="scene-header">
+            <span class="scene-num">场景 01</span>
+            <div>
+                <div class="scene-title">历史案例：自由市场的地基是谁建造的？</div>
+                <div class="scene-subtitle">19世纪英国自由贸易 vs 美国制造业保护主义的历史悖论</div>
+            </div>
+        </div>
+
+        <p><strong>英国的自由贸易：成熟霸主的选择</strong><br>
+        1846年，英国废除《谷物法》，宣布拥抱自由贸易，随后用数十年时间向全球推广这一理念。弗里德曼所继承的自由市场传统，在相当程度上以这段历史为道德背书。但有一个细节经常被省略：<strong>英国推行自由贸易的时候，它已经是全球最强大的工业国家，拥有无可匹敌的技术优势和海军实力</strong>。对英国来说，"开放市场"意味着"让我的工业品无阻碍地进入全球"——自由，对占优势的一方当然是利好。</p>
+
+        <p>更耐人寻味的是，英国在自己还是工业追赶国的18世纪，并不是自由贸易的信徒。那时它用的是重商主义：高关税保护本国产业，禁止殖民地发展竞争性制造业。<em>经济史学家（Economic Historians）</em>张夏准（Ha-Joon Chang）将这一逻辑称为"<em>梯子踢走策略（Kicking Away the Ladder）</em>"：先顺着梯子爬上去，然后把梯子踢走，告诉后来者"梯子是不必要的，靠自由竞争就够了"。<span class="bias">⚠️ 幸存者叙事偏差</span></p>
+
+        <p><strong>美国的反例</strong><br>
+        同一时代，美国选择了截然不同的路径。汉密顿在1791年的《制造业报告》里明确主张保护主义，林肯时代延续了高关税政策——正是在这段"不自由"的贸易保护期，美国完成了工业化。到二战后美国成为全球最强工业国时，它才转向倡导自由贸易和开放市场。<strong>弗里德曼写《资本主义与自由》的1962年，美国已经是那个站在梯子顶端的人。</strong></p>
+
+        <div class="insight-box">
+            <div class="ins-label">🎯 应用者洞察</div>
+            历史案例的启示不是"自由贸易是骗局"，而是：<strong>同样的制度框架，对已站在优势位置的参与者和对追赶者，意味着完全不同的东西。</strong> 弗里德曼的五把刀在分析"如何维护已存在的自由市场"时相当有力，但对"地基本身是谁建造的，谁从建造中获益"这个问题，他几乎保持了沉默。
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Scene 2 -->
+    <h2>场景二：中国当下</h2>
+    <h3>平台经济的"自由市场"：算法就是规则，规则就是权力</h3>
+
+    <div class="scene-card">
+        <div class="scene-header">
+            <span class="scene-num">场景 02</span>
+            <div>
+                <div class="scene-title">中国当下：数字平台经济是弗里德曼梦想——还是他最担心的噩梦？</div>
+                <div class="scene-subtitle">平台即市场 · 算法即规则 · 数据即权力</div>
+            </div>
+        </div>
+
+        <p><strong>弗里德曼会爱上滴滴和美团吗？</strong><br>
+        表面上，中国平台经济像极了弗里德曼的理想：价格由供需决定，政府不直接介入，消费者和服务者通过自愿交换完成匹配。每一笔订单都是"不强制"的交易。按弗里德曼的框架，<em>自愿交换（Voluntary Exchange）</em>正是经济自由的核心。</p>
+
+        <p>但在这个看似"自由"的市场里，有一个看不见的建造者：<strong>平台本身</strong>。平台不只是中性的连接管道——它制定游戏规则（抽佣比例、派单算法、评分体系），控制信息流（谁被推荐、谁被降权），管理退出成本（历史数据、用户关系被锁定在平台内）。这些规则不是"市场自发形成"的，而是平台的工程师和产品经理写进代码里的。<span class="bias">⚠️ 中立工具幻觉</span></p>
+
+        <p><strong>管制俘获的新版本</strong><br>
+        弗里德曼最担心的是<em>管制俘获（Regulatory Capture）</em>——政府管制保护现有的生产者而非消费者。他的解药是减少管制，让市场竞争保护消费者。但在平台经济里，问题的形态变了：不是政府管制被俘获，而是<strong>平台本身成了"私人监管者"</strong>——它能决定谁进入这个市场，谁被排除在外，消费者和服务者对平台的依赖程度，让"自愿退出"在实践中极度困难。今天的外卖骑手，究竟有多"自由"地选择不参与这个市场？</p>
+
+        <p>弗里德曼没有想到的问题是：<strong>当技术使得私人权力集中达到足够高的程度，"减少政府干预"非但不能保护自由，反而可能让那个私人权力集中更加无约束</strong>。他的框架擅长分析政府失灵，却对市场内生的权力集中相对沉默。</p>
+
+        <div class="insight-box">
+            <div class="ins-label">🎯 应用者洞察</div>
+            中国平台经济提供了弗里德曼理论的一个现实压力测试：<strong>当"市场"本身由少数平台主导，"自由"的定义就发生了位移——从"不受国家强制"变成了"在平台规则内的行动空间"。</strong> 提炼者留下的问题在这里找到了具体形状：那个权力结构，确实不是"自由竞争"出来的，而是由先行者、资本和技术壁垒共同建造的。
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Scene 3 -->
+    <h2>场景三：Ethan 的职业应用</h2>
+    <h3>绩效规则的制定者与受益者——你的激励体系有没有"先行者地基"？</h3>
+
+    <div class="career-box">
+        <div class="career-label">🏢 腾讯广告 · 渠道绩效管理 · 目标设定 · 代理商政策</div>
+        <h4>在你设计的游戏规则里，谁是那个"英国"，谁是那个"追赶中的美国"？</h4>
+
+        <p>弗里德曼说，自由市场的规则应该对所有参与者中立。但应用者今天的历史场景提醒我们：规则的制定时机决定了谁是默认受益者。当英国成为规则制定者时，"中立规则"恰好最有利于英国。这个模式在你的工作场景里同样存在。</p>
+
+        <p><strong>渠道绩效指标的"先行者地基"</strong><br>
+        腾讯广告渠道的KPI体系——消耗总量、ARPU、客户数、各维度占比——是在某个历史时期由某群人定义的。那时候市场处于什么状态，哪类代理商最强势，哪种增长逻辑最主导，深深嵌入了指标的设计逻辑。<em>竞价 sell_type（bidding）</em>消耗被设定为核心口径，背后是一个关于"市场化竞争最优"的价值判断。问题是：<strong>当市场从增量转向存量，当头部客户集中度上升，当腰尾部代理商面临结构性萎缩，这套指标体系还是"中立"的吗？</strong>还是它正在用历史时期建立的标准，惩罚今天的"追赶者"？</p>
+
+        <p><strong>代理商分级政策里的地基问题</strong><br>
+        代理商政策的分级标准——谁进入哪个等级，对应哪种返点和资源——通常以当前体量和历史绑定度为主要依据。这意味着<em>先进入系统的大代理商</em>在规则制定期就拥有了定义优势：它们的行为模式、资源结构成为了"优质代理商"的模板。后来的代理商，哪怕效率更高、创新性更强，都在对照一套不是为他们设计的标准竞争。这不是阴谋，而是规则制定的时间结构带来的必然结果。<span class="bias">⚠️ 路径依赖偏差</span></p>
+
+        <p><strong>一个操作性问题</strong><br>
+        下次做目标设定或政策审查时，可以追加一个"地基检查"：这个KPI/分级标准是在什么历史时期、什么市场结构下定义的？当时最受益的参与者类型是谁？今天市场结构发生了多大漂移？如果漂移足够大，继续使用原有标准，本质上是在<strong>用旧规则保护旧格局</strong>——这正是弗里德曼所批评的"管制俘获"，只不过这次俘获发生在内部激励体系里，而非政府监管里。
+        </p>
+    </div>
+
+    <!-- Comparison Grid -->
+    <h2>三场景的共同结构：弗里德曼框架的地基盲区</h2>
+
+    <div class="compare-grid">
+        <div class="cmp-cell header">弗里德曼的假设</div>
+        <div class="cmp-cell header">三场景的现实反馈</div>
+        <div class="cmp-cell left">
+            <div class="cmp-title">市场是中立的载体</div>
+            <div class="cmp-desc">规则对所有参与者平等适用</div>
+        </div>
+        <div class="cmp-cell right">
+            <div class="cmp-title">地基由先行者建造</div>
+            <div class="cmp-desc">英国建立自由贸易规则时已是最强工业国；平台建立算法规则时已垄断流量入口</div>
+        </div>
+        <div class="cmp-cell left">
+            <div class="cmp-title">减少干预即保护自由</div>
+            <div class="cmp-desc">最小化政府干预让竞争保护消费者</div>
+        </div>
+        <div class="cmp-cell right">
+            <div class="cmp-title">私人权力集中填补真空</div>
+            <div class="cmp-desc">平台经济中"减少监管"让私人算法权力更无约束；骑手的"自愿"在实践中空洞</div>
+        </div>
+        <div class="cmp-cell left">
+            <div class="cmp-title">规则的受益者是所有参与者</div>
+            <div class="cmp-desc">自由竞争会让最有效率的一方获胜</div>
+        </div>
+        <div class="cmp-cell right">
+            <div class="cmp-title">规则保护制定规则时的既得利益者</div>
+            <div class="cmp-desc">KPI体系反映历史主导代理商的模式；大代理商的分级优势是历史积累的固化</div>
+        </div>
+    </div>
+
+    <p>应用者的结论不是"弗里德曼是错的"，而是：<strong>他给了一套强有力的工具来分析政府干预的失灵，却没有给同等强力的工具来分析市场权力集中的失灵。</strong> 使用他的工具前，先做一次"地基检查"——问一问，这个"市场"或这套"规则"是谁在什么时候建造的。</p>
+
+    <hr class="divider">
+
+    <!-- Closing Tension -->
+    <div class="closing-tension">
+        <div class="ct-label">🔁 应用者对本周张力问题的回响</div>
+        <div class="ct-text">
+            <p>「自由市场是保护个人自由的最优机制——还是说，它只在特定权力结构中成立，而那个权力结构本身从来不是"自由"竞争出来的？」</p>
+            <p style="margin-top: 0.8rem;">应用者今天的答案是：<strong>两个都对，但答的是不同的问题。</strong> 弗里德曼回答的是"在一个已经存在的市场里，自由竞争比政府干预更能保护个人自由"——这个命题在大量情境下是成立的。但他回避的问题是："这个市场是怎么来的？谁是那个建造地基的人？地基建造的时候，他用的是什么标准？"</p>
+            <p style="margin-top: 0.8rem;"><em>提炼者</em>昨天说，弗里德曼的五把刀隐藏了一个前提跳跃——"市场是中立载体"。应用者今天的三个场景揭示了这个跳跃的具体形状：<strong>真正的问题不是"要不要市场"，而是"这个市场是谁的市场"——规则写于何时，谁在场，谁不在场。</strong></p>
+        </div>
+    </div>
+
+    <!-- Next Day -->
+    <a href="./w06-d04.html" class="next-day">
+        <div>
+            <div class="nd-label">明日推送 · 周四 · 挑战者</div>
+            <div class="nd-title">⚔️ 挑战弗里德曼：自由主义的断层线在哪里？</div>
+        </div>
+        <div class="nd-arrow">→</div>
+    </a>
+
+    <!-- Back Nav -->
+    <div class="back-nav">
+        <a href="./w06-d02.html">← 昨日：提炼者·自由的五把手术刀</a>
+        <a href="../index.html">书单首页 →</a>
+    </div>
+
+</div>
+</body>
+</html>
