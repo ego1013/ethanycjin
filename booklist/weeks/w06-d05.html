@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W06·D5 摆渡人 + 连接者 — 当框架本身可以被俘获 | 书单精读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d0cfc8;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0ece4;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.22);
+            --blue: #60a5fa;
+            --blue-dim: rgba(96,165,250,0.08);
+            --blue-border: rgba(96,165,250,0.2);
+            --teal: #2dd4bf;
+            --teal-dim: rgba(45,212,191,0.08);
+            --teal-border: rgba(45,212,191,0.2);
+            --purple: #c084fc;
+            --purple-dim: rgba(192,132,252,0.08);
+            --purple-border: rgba(192,132,252,0.2);
+            --red: #E94560;
+            --red-dim: rgba(233,69,96,0.08);
+            --red-border: rgba(233,69,96,0.2);
+            --green: #4ade80;
+            --green-dim: rgba(74,222,128,0.08);
+            --green-border: rgba(74,222,128,0.22);
+            --orange: #fb923c;
+            --orange-dim: rgba(251,146,60,0.08);
+            --orange-border: rgba(251,146,60,0.22);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Serif SC', Georgia, serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+
+        /* ── Breadcrumb ── */
+        .breadcrumb-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+            background: rgba(10,10,10,.92); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            font-size: 12px; font-family: sans-serif; color: #666;
+        }
+        .breadcrumb-nav a { color: #888; text-decoration: none; }
+        .breadcrumb-nav a:hover { color: #ddd; }
+        .breadcrumb-nav .sep { color: #444; font-size: 11px; }
+        .breadcrumb-nav .current { color: #ccc; font-weight: 500; }
+        .breadcrumb-spacer { height: 40px; }
+
+        /* ── Role tags ── */
+        .role-tag-blue {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue);
+        }
+        .role-tag-teal {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            font-family: sans-serif; margin-bottom: 1rem;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+
+        /* ── Week complete badge ── */
+        .week-complete {
+            display: inline-flex; align-items: center; gap: .4rem;
+            background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.25);
+            color: #4ade80; border-radius: 999px;
+            padding: .3rem .9rem; font-size: .7rem; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; font-family: sans-serif;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ── Header ── */
+        .role-header { border-bottom: 1px solid var(--border); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+        .day-label {
+            font-size: .72rem; color: var(--text-muted); font-family: sans-serif;
+            font-weight: 500; letter-spacing: .05em; margin-bottom: .6rem;
+        }
+        .main-title { font-size: 1.75rem; font-weight: 700; color: var(--white); line-height: 1.4; margin-bottom: .6rem; }
+        .sub-title { font-size: 1rem; color: var(--text-dim); font-weight: 400; line-height: 1.6; }
+
+        /* ── Body text ── */
+        p { font-size: 1rem; color: var(--text); line-height: 1.9; margin-bottom: 1.25rem; }
+        em { font-style: italic; color: var(--accent); }
+        strong { color: var(--white); font-weight: 600; }
+
+        /* ── Section title ── */
+        .section-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-muted); margin: 2.5rem 0 1.25rem;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .section-title.blue { color: var(--blue); }
+        .section-title.blue::after { background: var(--blue-border); }
+        .section-title.teal { color: var(--teal); }
+        .section-title.teal::after { background: var(--teal-border); }
+
+        h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin: 2.5rem 0 1rem; padding-bottom: .6rem; border-bottom: 1px solid var(--border-light); }
+        h3.blue { font-size: 1rem; color: var(--blue); margin: 1.5rem 0 .6rem; }
+        h3.teal { font-size: 1rem; color: var(--teal); margin: 1.5rem 0 .6rem; }
+
+        /* ── 张力问题引用 ── */
+        .tension-quote {
+            background: var(--red-dim); border: 1px solid var(--red-border);
+            border-left: 3px solid var(--red); border-radius: 6px;
+            padding: 1rem 1.25rem; margin-bottom: 2rem;
+            font-size: .875rem; color: #e8d5d8; line-height: 1.75;
+        }
+        .tension-quote .label {
+            font-size: .65rem; font-family: sans-serif; text-transform: uppercase;
+            letter-spacing: .1em; color: var(--red); font-weight: 700; margin-bottom: .4rem;
+        }
+
+        /* ── Section break ── */
+        .section-break {
+            border: none; border-top: 1px solid var(--border-light);
+            margin: 3.5rem 0; position: relative;
+        }
+        .section-break::after {
+            content: '· · ·';
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--bg); color: var(--text-muted);
+            padding: 0 .75rem; font-size: .85rem; letter-spacing: .2em;
+            font-family: sans-serif;
+        }
+
+        /* ── Bridge card (摆渡人段落) ── */
+        .bridge-card {
+            background: var(--blue-dim); border: 1px solid var(--blue-border);
+            border-radius: 10px; padding: 1.5rem; margin: 1.5rem 0;
+        }
+        .bridge-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--blue);
+            margin-bottom: .75rem;
+        }
+        .bridge-text { font-size: .97rem; color: var(--text); line-height: 1.85; }
+        .bridge-text em { font-style: italic; color: var(--accent); }
+        .bridge-text strong { color: var(--white); }
+        .bridge-text p { margin-bottom: .85rem; }
+        .bridge-text p:last-child { margin-bottom: 0; }
+
+        /* ── Insight card ── */
+        .insight-card {
+            background: var(--surface-2); border: 1px solid var(--border-light);
+            border-radius: 8px; padding: 1.1rem 1.25rem; margin: 1rem 0;
+        }
+        .insight-card .label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; margin-bottom: .5rem;
+        }
+        .insight-card .label.blue { color: var(--blue); }
+        .insight-card .label.orange { color: var(--orange); }
+        .insight-card .label.teal { color: var(--teal); }
+        .insight-card .content { font-size: .93rem; color: var(--text); line-height: 1.75; }
+        .insight-card .content em { font-style: italic; color: var(--accent); }
+        .insight-card .content strong { color: var(--white); }
+
+        /* ── 张力问题最终形态 ── */
+        .tension-final {
+            background: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(226,163,85,0.06) 100%);
+            border: 1px solid rgba(226,163,85,0.3);
+            border-radius: 12px; padding: 1.75rem; margin: 2rem 0;
+            position: relative; overflow: hidden;
+        }
+        .tension-final::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--accent));
+        }
+        .tension-final-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .9rem; display: flex; align-items: center; gap: .4rem;
+        }
+        .tension-original {
+            font-size: .9rem; color: var(--text-muted); font-style: italic;
+            border-left: 2px solid var(--border-light); padding-left: .9rem;
+            margin-bottom: 1.25rem; line-height: 1.8;
+        }
+        .tension-final-text { font-size: 1.05rem; color: #d4c8b4; line-height: 1.9; }
+        .tension-final-text em { font-style: italic; color: var(--accent); }
+        .tension-final-text strong { color: var(--white); font-weight: 600; }
+        .tension-final-text p { color: #d4c8b4; margin-bottom: .9rem; }
+        .tension-final-text p:last-child { margin-bottom: 0; }
+
+        /* ── 落地三问 ── */
+        .landing-q {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.25rem; margin: 1.25rem 0;
+        }
+        .landing-q .lq-label {
+            font-size: .65rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .9rem;
+        }
+        .lq-item {
+            display: flex; gap: .9rem; align-items: flex-start;
+            padding: .65rem 0; border-bottom: 1px solid var(--border);
+        }
+        .lq-item:last-child { border-bottom: none; }
+        .lq-num {
+            flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .68rem; font-weight: 700; font-family: sans-serif;
+            background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent);
+        }
+        .lq-text { font-size: .9rem; color: var(--text); line-height: 1.7; }
+        .lq-text em { font-style: italic; color: var(--accent); }
+        .lq-text strong { color: var(--white); }
+
+        /* ── Connector branch ── */
+        .branch-item {
+            display: flex; gap: 1rem; align-items: flex-start;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.25rem; margin: .85rem 0;
+            transition: border-color .2s;
+        }
+        .branch-item:hover { border-color: var(--border-light); }
+        .branch-num {
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .72rem; font-weight: 700; font-family: sans-serif;
+            background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal);
+        }
+        .branch-body { flex: 1; }
+        .branch-header { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; flex-wrap: wrap; }
+        .branch-book { font-size: .95rem; font-weight: 600; color: var(--white); }
+        .branch-week { font-size: .68rem; color: var(--text-muted); font-family: sans-serif; }
+        .branch-type {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            padding: .15rem .55rem; border-radius: 4px; font-family: sans-serif;
+        }
+        .branch-type.tension { background: var(--red-dim); border: 1px solid var(--red-border); color: var(--red); }
+        .branch-type.dialogue { background: var(--blue-dim); border: 1px solid var(--blue-border); color: var(--blue); }
+        .branch-type.inherit { background: var(--purple-dim); border: 1px solid var(--purple-border); color: var(--purple); }
+        .branch-type.invert { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
+        .branch-type.refute { background: var(--red-dim); border: 1px solid var(--red-border); color: var(--red); }
+        .branch-type.complement { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+        .branch-type.channel { background: var(--teal-dim); border: 1px solid var(--teal-border); color: var(--teal); }
+        .branch-desc { font-size: .9rem; color: var(--text-dim); line-height: 1.7; }
+        .branch-desc em { font-style: italic; color: var(--accent); }
+        .branch-desc strong { color: var(--white); }
+
+        /* ── SVG knowledge map container ── */
+        .map-container {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.5rem; margin: 2rem 0; overflow: hidden;
+        }
+        .map-title {
+            font-size: .72rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; color: var(--teal);
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Next week banner ── */
+        .next-week {
+            background: linear-gradient(135deg, rgba(226,163,85,0.06) 0%, rgba(45,212,191,0.04) 100%);
+            border: 1px solid rgba(226,163,85,0.2); border-radius: 12px;
+            padding: 1.5rem; margin-top: 3rem; text-align: center;
+        }
+        .next-week .week-num {
+            font-size: .7rem; font-family: sans-serif; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: .5rem;
+        }
+        .next-week .week-book { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: .3rem; }
+        .next-week .week-author { font-size: .88rem; color: var(--text-dim); }
+
+        .divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+        /* ── Footer nav ── */
+        .footer-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border);
+            font-family: sans-serif;
+        }
+        .footer-nav a {
+            display: inline-flex; align-items: center; gap: .4rem;
+            color: var(--text-dim); text-decoration: none; font-size: .82rem;
+            padding: .5rem .85rem; border: 1px solid var(--border); border-radius: 6px;
+            transition: all .2s;
+        }
+        .footer-nav a:hover { color: var(--accent); border-color: var(--accent-border); }
+        .footer-nav .center-info { font-size: .75rem; color: var(--text-muted); text-align: center; }
+
+        @media (max-width: 560px) {
+            .main-title { font-size: 1.45rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Fixed breadcrumb -->
+<nav class="breadcrumb-nav">
+    <a href="../index.html">📚 书单精读</a>
+    <span class="sep">›</span>
+    <span>第 6 周</span>
+    <span class="sep">›</span>
+    <span class="current">Day 5 · 摆渡人 + 连接者</span>
+</nav>
+<div class="breadcrumb-spacer"></div>
+
+<div class="container">
+
+    <!-- Week complete badge -->
+    <div class="week-complete">✓ 第 6 周完成 · 《资本主义与自由》收官</div>
+
+    <!-- ═════════════ 摆渡人部分 ═════════════ -->
+
+    <div class="role-tag-blue">🌉 摆渡人 The Bridger · W06·D5</div>
+
+    <div class="role-header">
+        <div class="day-label">第 6 周 · Day 5 / 5 · 2026-05-15 · 《资本主义与自由》— 米尔顿·弗里德曼</div>
+        <h1 class="main-title">当框架本身可以被俘获</h1>
+        <p class="sub-title">弗里德曼信任制度框架，就像他信任市场初始条件一样——但框架不是公理，框架也是历史的产物，框架也可以被俘获。摆渡人今天要走的那条河，河底有这个问题。</p>
+    </div>
+
+    <div class="tension-quote">
+        <div class="label">本周张力问题（叙事者·D1 提出）</div>
+        自由市场是保护个人自由的最优机制——还是说，它只在特定权力结构中成立，而那个权力结构本身从来不是"自由"竞争出来的？
+    </div>
+
+    <div class="section-title blue">第一段摆渡 · 从「保护自由」到「谁保护框架」</div>
+
+    <p>弗里德曼这本书的逻辑链条很紧致：<strong>分散经济权力 → 没有人能集中足够的力量压制政治自由 → 个人自由得以维持</strong>。这个逻辑在它自己的前提内是自洽的。</p>
+
+    <p>挑战者昨天已经在四条断层线里发现了裂缝。今天摆渡人要做的，不是把裂缝数得更全，而是问：<strong>这些裂缝为什么会在这里出现？</strong>它们是偶然的逻辑漏洞，还是结构性的视野盲点？</p>
+
+    <div class="bridge-card">
+        <div class="bridge-label">🌉 摆渡 · 从「结果」到「生成机制」</div>
+        <div class="bridge-text">
+            <p>弗里德曼的问题不是"他分析的结论是错的"——他对政府失灵、裁量权滥用、管制俘获的诊断，大多是有效的。问题在于，他把<em>分析工具</em>和<em>制度基础</em>混为一谈了。</p>
+            <p>他信任的那个保护框架——宪政约束、法律产权、竞争性政治——不是自然长出来的。它是17世纪英国内战、18世纪启蒙运动、19世纪工人阶级政治斗争、20世纪反殖民解放运动逐步砌成的。那些砌砖的人，没有一个是从自由市场竞争中获得这个权利的。他们是从暴力和流血中争来的。</p>
+            <p>弗里德曼站在这个框架之内，说"市场最优"——他是对的，在框架内他是对的。他没有回答的问题是：<strong>当建造框架的历史条件不再具备时，框架靠什么维持？当框架本身被市场里生长的最强大力量所渗透和重写时，谁来纠偏？</strong></p>
+        </div>
+    </div>
+
+    <p>这不是一个假设性的问题。2010 年美国最高法院<em>Citizens United</em>案判决企业政治献金受宪法保护，此后美国政治献金结构发生了结构性改变。弗里德曼担心的"政府俘获"发生了，但俘获的路径是通过市场里积累的最大权力——而非通过官僚扩张。</p>
+
+    <p>这是一个让弗里德曼的框架显得尴尬的地方：他对政府失灵的批判，可以对称地应用于市场自生的权力集中。他选择了不对称地使用这把刀。</p>
+
+    <div class="section-title blue">第二段摆渡 · 弗里德曼遇见 2026</div>
+
+    <p>1962 年，弗里德曼写下这本书的时候，他的对手是：凯恩斯主义的大政府、苏联计划经济的魅惑、日益膨胀的联邦官僚体系。他是在那个语境下建造他的论证大厦的。</p>
+
+    <p>今天的语境是什么？</p>
+
+    <div class="insight-card">
+        <div class="label blue">语境一 · 私人平台即立法者</div>
+        <div class="content">谷歌、苹果、Meta 的算法决定着数十亿人能看到什么、能相信什么。这不是政府裁量权的问题——这是<em>市场裁量权</em>的问题。弗里德曼的解药（减少政府干预，让市场发挥作用）在这里恰好是问题本身。这些平台不是"市场竞争的赢家"，它们是<em>网络效应的独占者</em>——一旦形成，竞争就失效了。</div>
+    </div>
+
+    <div class="insight-card">
+        <div class="label orange">语境二 · 货币规则在后QE时代</div>
+        <div class="content">弗里德曼终其一生反对裁量性货币政策。但2020-2021年，全球央行通过前所未有的<em>量化宽松（QE）</em>应对疫情冲击，避免了经济崩溃；同时，这些流动性推动了资产价格通胀，加剧了财富不平等。弗里德曼的诊断（裁量政策有副作用）是准确的，但他的处方（规则化）在这个规模的冲击面前从未被真正测试过，也不清楚能否通过测试。</div>
+    </div>
+
+    <div class="insight-card">
+        <div class="label teal">语境三 · 负所得税的现代命运</div>
+        <div class="content">弗里德曼的<em>Negative Income Tax</em>构想在21世纪以<em>Universal Basic Income（UBI）</em>的形式复活，并在多个国家进行了实验（芬兰、肯尼亚、美国部分城市）。初步数据显示，直接现金转移并不像反对者担心的那样消解工作动力，反而改善了受益者的心理健康和长期就业。这是弗里德曼框架里最具操作性的部分，而且恰好是被现实数据部分支持的部分——一个有趣的历史反讽：那个反国家干预的人的遗产，被最进步的政策实验者们继承了。</div>
+    </div>
+
+    <div class="section-title blue">第三段摆渡 · 住在地图里的自由主义者</div>
+
+    <p>摆渡人有时候必须对正在摆渡的思想本身保持距离，才能真正看清河的形状。</p>
+
+    <p>弗里德曼是一个真正的自由主义者——不是作为标签，而是作为道德直觉。他反对的是<strong>一切形式的强制</strong>：无论是政府的还是垄断者的。问题是，他花了几乎所有的论证资源攻打政府强制，却对市场强制只做了极少的分析。</p>
+
+    <p>这不是偶然的疏忽。这是他那个时代、那个位置、那个对话对象所决定的视野边界。他住在凯恩斯主义的地图里，用来反对那张地图。他没有意识到，他自己也在建造一张地图，这张地图同样有边界——而那些住在地图外的人，那些本来就没有进入产权清晰的自由市场的人，他的工具对他们来说是静默的。</p>
+
+    <p>这是摆渡人对弗里德曼最深的敬意，也是最深的挑战：<strong>你用你的工具解放了一代人，但工具本身需要被解放。</strong></p>
+
+    <!-- ═════════════ 张力最终形态 ═════════════ -->
+
+    <div class="divider"></div>
+
+    <div class="tension-final">
+        <div class="tension-final-label">❓→💡 本周张力问题的最终形态</div>
+        <div class="tension-original">
+            原始问题（D1叙事者）：自由市场是保护个人自由的最优机制——还是说，它只在特定权力结构中成立，而那个权力结构本身从来不是"自由"竞争出来的？
+        </div>
+        <div class="tension-final-text">
+            <p>弗里德曼的回答是：是的，需要框架；框架由宪政和有限政府来保护。提炼者发现框架内部的前提跳跃，应用者把"谁建造了地基"带进三个现实场景，挑战者揭示框架的四条断层线，摆渡人今天最后一渡：</p>
+            <p><strong>真正的问题不是"市场好还是政府好"，而是：在一个价值多元、历史遗留不对称、信息极度不对称的世界里，谁有资格、谁有能力参与定义"自由"的边界？</strong></p>
+            <p>弗里德曼的答案是"没有人需要定义，市场会自动协调"——但这个答案本身是一个定义，是一个价值判断，是一个关于什么样的秩序是好秩序的先验承诺。他假装自己没在定义，但其实他定义得最彻底。</p>
+            <p>最终形态的问题变成了：<em>当我们说"自由"，我们是在描述一个已经存在的状态，还是在召唤一个只在特定条件下才能生长的东西？如果是后者，我们愿意为那些条件的建造付出什么代价——那个代价会不会就是某种"不自由"？</em></p>
+        </div>
+    </div>
+
+    <div class="landing-q">
+        <div class="lq-label">📍 三个落地提问</div>
+        <div class="lq-item">
+            <div class="lq-num">1</div>
+            <div class="lq-text">你正在运作的那个系统（绩效规则、市场结构、团队协作框架）——<strong>它是谁建造的，建造时谁是默认受益者？</strong>现在这个受益者格局漂移了多少？</div>
+        </div>
+        <div class="lq-item">
+            <div class="lq-num">2</div>
+            <div class="lq-text">你对"自由"的直觉是弗里德曼式的（消极自由：不被强制干涉）还是包含积极自由（有能力做出真正选择的条件）？<strong>那个直觉是你的，还是你继承的地图给你的？</strong></div>
+        </div>
+        <div class="lq-item">
+            <div class="lq-num">3</div>
+            <div class="lq-text">弗里德曼花了一生时间告诉我们政府失灵的结构性原因。<strong>我们有没有用同等严格的标准去审视我们信任的那个机制——无论它是市场、平台、还是算法——是否也有对称的失灵可能？</strong></div>
+        </div>
+    </div>
+
+    <hr class="section-break">
+
+    <!-- ═════════════ 连接者部分 ═════════════ -->
+
+    <div class="role-tag-teal">🔗 连接者 The Connector · W06·D5</div>
+
+    <div class="day-label" style="margin-bottom:1.25rem;">50 本书的知识网络 · 第 6 周节点定位 · 《资本主义与自由》</div>
+
+    <p>连接者的工作是：把这本书放进整张知识地图里，找到它与已读书目之间的暗线——传承、对话、张力、互补。宁缺毋滥，只标真实的连接。</p>
+
+    <div class="section-title teal">五条知识枝干</div>
+
+    <div class="branch-item">
+        <div class="branch-num">1</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《国富论》</span>
+                <span class="branch-week">第 1 周</span>
+                <span class="branch-type inherit">传承深化</span>
+            </div>
+            <div class="branch-desc">斯密是始祖，弗里德曼是20世纪的操作手册。斯密说"分工产生效率"，弗里德曼说"分散权力保护自由"——这是同一个直觉在政治经济学层面的展开。但斯密没有系统讨论政府的边界，弗里德曼把这个问题作为核心命题。从斯密到弗里德曼，自由主义完成了从<em>经济描述</em>到<em>政治哲学</em>的升华，也从相对宽容的"看不见的手"走向了对政府干预的系统性敌意。<strong>传承中有漂移：弗里德曼比斯密更激进，但他没有斯密对人性的复杂性那么开放。</strong></div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <div class="branch-num">2</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《通往奴役之路》</span>
+                <span class="branch-week">第 5 周</span>
+                <span class="branch-type dialogue">对话·推进</span>
+            </div>
+            <div class="branch-desc">哈耶克是认识论上的预言家——他告诉我们<em>为什么</em>计划经济不可能运作（知识不可集中）。弗里德曼是法证专家——他用实证数据告诉我们<em>政府失灵的具体表现</em>（管制俘获、货币政策失误、职业许可保护既得利益）。两人的逻辑基础不同：哈耶克是认识论的，弗里德曼是实证主义的。但他们共享同一个政治结论和同一个结构性盲点：都预设了"限制政府"的框架足够，都没有充分分析框架本身的脆弱性。<strong>弗里德曼给哈耶克加了地基，但两人坐在同一块地基上，而那块地基的地质构造从未被认真检查过。</strong></div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <div class="branch-num">3</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《就业、利息和货币通论》</span>
+                <span class="branch-week">第 4 周</span>
+                <span class="branch-type tension">正面对立</span>
+            </div>
+            <div class="branch-desc">凯恩斯和弗里德曼的分歧是20世纪经济学最重要的裂缝，没有之一。但这条裂缝不是"干预 vs 不干预"那么简单——它是<strong>两种不确定性观</strong>的对立。凯恩斯认为不确定性是永久性的，因此需要<em>灵活的人类判断</em>介入；弗里德曼认为不确定性可以通过<em>规则和约束</em>来对冲，因为人类判断本身更不可靠。他们的争论本质上是：在无知的条件下，相信规则更安全，还是相信人更安全？这个问题在AI时代以新的面目重现：相信算法更安全，还是相信人更安全？<strong>凯恩斯和弗里德曼的分歧，在2026年不但没有解决，反而变得更复杂了。</strong></div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <div class="branch-num">4</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《资本论》</span>
+                <span class="branch-week">第 2 周</span>
+                <span class="branch-type tension">镜像对立</span>
+            </div>
+            <div class="branch-desc">马克思和弗里德曼是迄今为止50本书单里最极端的镜像对立。马克思：市场是异化和剥削的机器，必须被革命推翻；弗里德曼：市场是人类合作和自由的最优机制，政府的任何实质性干预都是危险的。两人都做了系统性分析，都发现了对方看不见的问题，都把自己的条件性洞察升华成了普世法则。<strong>他们最大的共同之处，是对自己分析框架的边界高度自信——而那份自信，恰恰是他们各自最大的盲点。</strong>历史的讽刺：马克思预测资本主义会崩溃，弗里德曼帮助资本主义渡过了它最大的合法性危机。</div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <div class="branch-num">5</div>
+        <div class="branch-body">
+            <div class="branch-header">
+                <span class="branch-book">《美丽新世界》</span>
+                <span class="branch-week">频道 C · 文学感知</span>
+                <span class="branch-type channel">跨频道</span>
+            </div>
+            <div class="branch-desc">赫胥黎的<em>Brave New World</em>（1932）描绘了一个靠<em>自愿消费</em>和<em>欲望满足</em>维持统治的世界——不是奥威尔式的暴力压制，而是通过娱乐、药物和性的自由来消解一切反抗的动力。<em>Soma</em>是合法的，选择是自由的，没有强制。弗里德曼的噩梦是政府的强制；赫胥黎的噩梦是<strong>在没有任何强制的条件下，人们主动放弃了深度思考和真正选择的能力</strong>。两者合在一起，构成了对"自由"的完整审问：消极自由（不被强制）是必要的，但是否足够？当市场通过算法精准满足每个人的即时欲望时，那种满足是弗里德曼意义上的自由，还是赫胥黎意义上的精致囚笼？</div>
+        </div>
+    </div>
+
+    <!-- SVG 知识地图 -->
+    <div class="map-container">
+        <div class="map-title">📍 知识地图 · 第 1—6 周节点 · 当前位置</div>
+        <svg viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <defs>
+                <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="#2a2a2a"/>
+                </marker>
+                <marker id="arr-accent" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="rgba(226,163,85,0.6)"/>
+                </marker>
+                <marker id="arr-teal" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="rgba(45,212,191,0.5)"/>
+                </marker>
+                <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="rgba(96,165,250,0.5)"/>
+                </marker>
+            </defs>
+
+            <!-- Background grid -->
+            <rect width="640" height="420" fill="#0f0f0f" rx="8"/>
+
+            <!-- ── 已读节点 ── -->
+            <!-- W1 国富论 -->
+            <circle cx="80" cy="100" r="32" fill="#1a1a1a" stroke="rgba(226,163,85,0.7)" stroke-width="1.5"/>
+            <text x="80" y="95" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#e2a355" font-weight="700">W1</text>
+            <text x="80" y="107" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#999">国富论</text>
+
+            <!-- W2 资本论 -->
+            <circle cx="200" cy="60" r="32" fill="#1a1a1a" stroke="rgba(233,69,96,0.7)" stroke-width="1.5"/>
+            <text x="200" y="55" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#E94560" font-weight="700">W2</text>
+            <text x="200" y="67" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#999">资本论</text>
+
+            <!-- W3 新教伦理 -->
+            <circle cx="200" cy="170" r="32" fill="#1a1a1a" stroke="rgba(192,132,252,0.7)" stroke-width="1.5"/>
+            <text x="200" y="165" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#c084fc" font-weight="700">W3</text>
+            <text x="200" y="177" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#999">新教伦理</text>
+
+            <!-- W4 通论 -->
+            <circle cx="330" cy="100" r="32" fill="#1a1a1a" stroke="rgba(96,165,250,0.7)" stroke-width="1.5"/>
+            <text x="330" y="95" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#60a5fa" font-weight="700">W4</text>
+            <text x="330" y="107" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#999">通论</text>
+
+            <!-- W5 奴役之路 -->
+            <circle cx="460" cy="60" r="32" fill="#1a1a1a" stroke="rgba(251,146,60,0.7)" stroke-width="1.5"/>
+            <text x="460" y="55" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#fb923c" font-weight="700">W5</text>
+            <text x="460" y="67" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#999">奴役之路</text>
+
+            <!-- W6 资本主义与自由 (当前, 高亮) -->
+            <circle cx="560" cy="130" r="36" fill="#1c1610" stroke="#e2a355" stroke-width="2.5"/>
+            <circle cx="560" cy="130" r="40" fill="none" stroke="rgba(226,163,85,0.2)" stroke-width="1"/>
+            <text x="560" y="124" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#e2a355" font-weight="700">W6</text>
+            <text x="560" y="135" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#e2a355">资本主义</text>
+            <text x="560" y="146" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#e2a355">与自由</text>
+            <text x="560" y="157" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#888">✓ 已完成</text>
+
+            <!-- ── 待读节点 ── -->
+            <!-- W7 待读 -->
+            <circle cx="560" cy="280" r="28" fill="#111" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="560" y="275" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#444" font-weight="700">W7</text>
+            <text x="560" y="287" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#333">待定</text>
+
+            <!-- W10 21世纪资本论 -->
+            <circle cx="400" cy="320" r="28" fill="#111" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="400" y="315" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#444" font-weight="700">W10</text>
+            <text x="400" y="327" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#333">21C资本</text>
+
+            <!-- 频道C文学感知节点 -->
+            <rect x="70" y="250" width="90" height="36" rx="6" fill="#111" stroke="rgba(45,212,191,0.3)" stroke-width="1"/>
+            <text x="115" y="265" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#2dd4bf" font-weight="700">频道 C</text>
+            <text x="115" y="278" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#2dd4bf">美丽新世界</text>
+
+            <!-- ── 连接线 ── -->
+            <!-- W1 → W4 (对话/传承) -->
+            <line x1="112" y1="100" x2="298" y2="100" stroke="#2a2a2a" stroke-width="1" marker-end="url(#arr)"/>
+
+            <!-- W1 → W6 (传承深化) -->
+            <line x1="112" y1="90" x2="521" y2="115" stroke="rgba(226,163,85,0.25)" stroke-width="1.2" stroke-dasharray="6,4" marker-end="url(#arr-accent)"/>
+
+            <!-- W2 → W4 (对话) -->
+            <line x1="232" y1="65" x2="298" y2="90" stroke="#2a2a2a" stroke-width="1" marker-end="url(#arr)"/>
+
+            <!-- W2 → W6 (镜像对立) -->
+            <line x1="232" y1="60" x2="521" y2="110" stroke="rgba(233,69,96,0.25)" stroke-width="1.2" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+
+            <!-- W3 → W4 (传承) -->
+            <line x1="232" y1="162" x2="298" y2="115" stroke="#2a2a2a" stroke-width="1" marker-end="url(#arr)"/>
+
+            <!-- W4 → W5 (知识论分水岭) -->
+            <line x1="362" y1="90" x2="428" y2="72" stroke="#2a2a2a" stroke-width="1" marker-end="url(#arr)"/>
+
+            <!-- W4 → W6 (正面对立) -->
+            <line x1="362" y1="100" x2="520" y2="115" stroke="rgba(96,165,250,0.3)" stroke-width="1.2" marker-end="url(#arr-blue)"/>
+
+            <!-- W5 → W6 (传承深化) -->
+            <line x1="492" y1="68" x2="526" y2="98" stroke="rgba(251,146,60,0.4)" stroke-width="1.5" marker-end="url(#arr-accent)"/>
+
+            <!-- W6 → W7 (待读) -->
+            <line x1="560" y1="170" x2="560" y2="252" stroke="#1e1e1e" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+
+            <!-- W6 → W10 (r>g数据延伸) -->
+            <line x1="527" y1="158" x2="428" y2="302" stroke="#1e1e1e" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+
+            <!-- W6 → 频道C (跨频道) -->
+            <line x1="521" y1="140" x2="160" y2="262" stroke="rgba(45,212,191,0.3)" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arr-teal)"/>
+
+            <!-- W2 → 频道C (马克思×文学) -->
+            <line x1="172" y1="78" x2="125" y2="250" stroke="rgba(45,212,191,0.15)" stroke-width="1" stroke-dasharray="3,5" marker-end="url(#arr-teal)"/>
+
+            <!-- ── 图例 ── -->
+            <rect x="30" y="360" width="580" height="48" rx="6" fill="#0d0d0d" stroke="#1e1e1e" stroke-width="1"/>
+            <circle cx="52" cy="384" r="5" fill="none" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="62" y="388" font-family="sans-serif" font-size="8" fill="#666">已读</text>
+            <circle cx="102" cy="384" r="5" fill="none" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="112" y="388" font-family="sans-serif" font-size="8" fill="#666">待读</text>
+            <line x1="152" y1="384" x2="172" y2="384" stroke="rgba(226,163,85,0.5)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="177" y="388" font-family="sans-serif" font-size="8" fill="#666">传承/延伸</text>
+            <line x1="237" y1="384" x2="257" y2="384" stroke="rgba(96,165,250,0.5)" stroke-width="1.5"/>
+            <text x="262" y="388" font-family="sans-serif" font-size="8" fill="#666">正面对立</text>
+            <line x1="317" y1="384" x2="337" y2="384" stroke="rgba(45,212,191,0.4)" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <text x="342" y="388" font-family="sans-serif" font-size="8" fill="#2dd4bf">跨频道</text>
+            <circle cx="400" cy="384" r="7" fill="#1c1610" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="415" y="388" font-family="sans-serif" font-size="8" fill="#e2a355">当前节点</text>
+        </svg>
+    </div>
+
+    <!-- Next week banner -->
+    <div class="next-week">
+        <div class="week-num">下周 · 第 7 周</div>
+        <div class="week-book">待定</div>
+        <div class="week-author">书单精读继续 · 50本 · 250天</div>
+    </div>
+
+    <!-- Footer Nav -->
+    <div class="footer-nav">
+        <a href="./w06-d04.html">← D4 挑战者</a>
+        <div class="center-info">
+            <div>第 6 周 · 5 / 5 · 完结</div>
+            <div style="margin-top:2px;">《资本主义与自由》收官</div>
+        </div>
+        <a href="../index.html">书单首页 →</a>
+    </div>
+
+</div>
+</body>
+</html>
