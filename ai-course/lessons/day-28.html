@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 28 · 【复习】模型判断框架构建 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0f05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--accent-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+  .callout.teal { border-left: 4px solid var(--teal); background: var(--teal-dim); }
+  .callout.pink { border-left: 4px solid var(--pink); background: var(--pink-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+  .callout.teal .callout-label { color: var(--teal); }
+  .callout.pink .callout-label { color: var(--pink); }
+
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.85rem;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:hover { background: var(--surface); }
+
+  code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85em;
+    color: var(--cyan);
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, #1a1a00 0%, var(--surface) 100%);
+    border: 2px solid var(--yellow);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .checkpoint h3 {
+    color: var(--yellow);
+    margin-top: 0;
+    font-size: 1.15rem;
+  }
+
+  .checkpoint .options { margin: 1rem 0; }
+
+  .checkpoint .option {
+    display: block;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .option:hover { border-color: var(--yellow); }
+
+  .checkpoint .option .letter {
+    display: inline-block;
+    background: var(--border);
+    color: var(--text);
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .teaser {
+    background: linear-gradient(135deg, #0a0a1a 0%, var(--surface) 100%);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .teaser h3 { color: var(--purple); margin-top: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .card .card-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    width: 1.4rem;
+    height: 1.4rem;
+    text-align: center;
+    line-height: 1.4rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .card .card-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  .card .card-body {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .connection-table { margin: 1.5rem 0; }
+
+  .conn-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .conn-row .conn-day {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.82rem;
+    min-width: 5.5rem;
+  }
+
+  .conn-row .conn-content {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  ul, ol {
+    margin: 0.75rem 0 0.75rem 1.5rem;
+    font-size: 0.92rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  li strong { color: #fff; }
+
+  .framework-box {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  .framework-box .fw-title {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .layer {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+  }
+
+  .layer-label {
+    min-width: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--bg);
+    border-radius: 8px;
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    line-height: 1.2;
+  }
+
+  .layer-content {
+    flex: 1;
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .verdict-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .verdict-grid { grid-template-columns: 1fr; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; }
+    table { font-size: 0.78rem; }
+    td, th { padding: 0.4rem 0.5rem; }
+    .layer { flex-direction: column; }
+    .layer-label { min-width: auto; padding: 0.3rem 0.5rem; }
+  }
+
+  .verdict-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .verdict-card .vc-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .verdict-card .vc-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .verdict-card .vc-body {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.35rem 0;
+  }
+
+  .score-bar .bar-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    min-width: 6rem;
+    text-align: right;
+  }
+
+  .score-bar .bar-track {
+    flex: 1;
+    height: 18px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .score-bar .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .score-bar .bar-value {
+    font-size: 0.75rem;
+    color: var(--text);
+    font-weight: 600;
+    min-width: 3rem;
+  }
+
+  .footer-note {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="../index.html">&larr; Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="../index.html">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 28
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">第三模块 · 判断篇 · 复习课</div>
+  <h1>模型判断框架构建</h1>
+  <p class="subtitle">Day 22-27 的碎片 → 一套可带走的判断操作系统</p>
+  <div class="meta">
+    <span>📅 2026-05-15 Fri</span>
+    <span>⏱️ 40 分钟</span>
+    <span>🏆 复习课</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- 开场 -->
+<div class="opening">
+  <div class="label">🔥 开场问题</div>
+  <p>老板在电梯里问你："咱们的 AI 系统该不该换成最新的 GPT-5？听说比 GPT-4o 强 30%。"</p>
+  <p>电梯 30 秒。你能说清楚<span class="highlight">判断依据</span>吗？</p>
+  <p>如果你的回答是"我得查查"——那说明你有信息但没有框架。如果你能说出<strong>"这取决于三个问题：强在哪 30%、我们的关键环节是否命中、切换成本值不值"</strong>——那你就有了一个判断操作系统。</p>
+  <p>今天就是把 Day 22-27 散落的知识，<strong>压缩成你能在 30 秒内用出来的判断力</strong>。</p>
+</div>
+
+<!-- 第一段：Why -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么你需要一个"判断操作系统"</h2>
+  </div>
+
+  <h3>六课学了什么？</h3>
+
+  <p>快速盘点 Day 22-27 的核心输出：</p>
+
+  <table>
+    <tr><th>课次</th><th>主角</th><th>核心收获</th><th>可复用的</th></tr>
+    <tr>
+      <td>Day 22</td>
+      <td>OpenAI</td>
+      <td>技术演化 + 三大赌注 + 四大风险</td>
+      <td>供应商评估五维度框架（1.0）</td>
+    </tr>
+    <tr>
+      <td>Day 23</td>
+      <td>Anthropic</td>
+      <td>安全路线 + CAI 机制 + 企业定位</td>
+      <td>"进攻型 vs 防守型"对比分析模板</td>
+    </tr>
+    <tr>
+      <td>Day 24</td>
+      <td>Google</td>
+      <td>创新者窘境 + 原生多模态 + 生态融合</td>
+      <td>"新入口 vs 老入口升级"产品策略判断</td>
+    </tr>
+    <tr>
+      <td>Day 25</td>
+      <td>Kimi</td>
+      <td>长文本战略支点 + 窗口期逻辑</td>
+      <td>创业公司评估三问法</td>
+    </tr>
+    <tr>
+      <td>Day 26</td>
+      <td>DeepSeek</td>
+      <td>开源路线 + MoE 成本极致 + R1-Zero</td>
+      <td>开源 vs 闭源三维判断框架</td>
+    </tr>
+    <tr>
+      <td>Day 27</td>
+      <td>横评</td>
+      <td>七维度框架 + 三步选型法 + 风险对冲</td>
+      <td>分层选型五条规则 + 行业三大趋势</td>
+    </tr>
+  </table>
+
+  <p>六课下来，你的工具箱里有了十几件武器。但工具多不等于战斗力强——<strong>关键是知道什么场景用什么工具，以及工具之间怎么配合</strong>。</p>
+
+  <div class="callout insight">
+    <div class="callout-label">渠道管理的同构</div>
+    <p>这就像你手里有了十几种渠道管理工具（ROI 模型、代理商评分卡、区域覆盖热力图、竞争对手分析矩阵……），但真正让你成为好的渠道总监的，不是工具本身，而是<strong>一套判断什么时候用什么工具的决策直觉</strong>。</p>
+    <p>今天要做的事就是——把碎片工具<strong>组装成一个操作系统</strong>。</p>
+  </div>
+
+  <h3>碎片 vs 系统的区别</h3>
+
+  <p>测试一下——面对以下三个问题，你能快速给出结构化回答吗？</p>
+
+  <ol>
+    <li><strong>"Qwen-3 出来了，比 DeepSeek-R1 强 15%，要不要切？"</strong><br>——你会用什么框架判断？</li>
+    <li><strong>"竞争对手用了 Claude 做合规审核，我们也要跟进吗？"</strong><br>——你会怎么拆解这个问题？</li>
+    <li><strong>"明年预算砍 30%，AI 系统得降本，怎么降？"</strong><br>——你会按什么优先级操作？</li>
+  </ol>
+
+  <p>如果你能清晰地调用 Day 22-27 的具体框架来回答这三个问题——恭喜，你已经有了判断操作系统。</p>
+
+  <p>如果你觉得"知道大概思路但说不清步骤"——那今天这课就是为你设计的。</p>
+
+  <div class="callout gold">
+    <div class="callout-label">今天的核心任务</div>
+    <p>把六课的十几件武器<strong>整合成一张三层架构图</strong>——</p>
+    <ul>
+      <li><strong>底层</strong>：判断 AI 公司/模型的基础分析能力（Day 22-26 的五家案例方法论）</li>
+      <li><strong>中层</strong>：把分析结论转化为选型决策的操作流程（Day 27 的三步选型法）</li>
+      <li><strong>顶层</strong>：判断行业趋势、预判变化、提前布局（Day 27 的三大趋势 + 风险对冲）</li>
+    </ul>
+    <p>三层协同工作，就是一个完整的<strong>模型判断操作系统</strong>。</p>
+  </div>
+</div>
+
+<!-- 第二段：What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 三层判断操作系统</h2>
+  </div>
+
+  <h3>全景架构图</h3>
+
+  <div class="framework-box">
+    <div class="fw-title">模型判断操作系统 · 三层架构</div>
+
+    <div class="layer">
+      <div class="layer-label" style="background: linear-gradient(135deg, var(--purple), var(--pink));">顶层<br>趋势<br>预判</div>
+      <div class="layer-content">
+        <strong>输入</strong>：行业新闻 / 新模型发布 / 政策变化 / 竞争动态<br>
+        <strong>工具</strong>：行业三大趋势判断（能力趋同 / 成本暴跌 / 差异化转移）+ 五种竞争策略博弈模型<br>
+        <strong>输出</strong>：现有方案是否需要调整？调整方向是什么？紧急度如何？<br>
+        <em style="font-size:0.8rem;">对应渠道管理：定期做市场环境扫描 → 判断渠道策略是否需要调整</em>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-label" style="background: linear-gradient(135deg, var(--accent), var(--gold));">中层<br>选型<br>决策</div>
+      <div class="layer-content">
+        <strong>输入</strong>：具体业务需求 / 预算约束 / 时间要求<br>
+        <strong>工具</strong>：三步选型法（定义子任务 → 匹配供应商 → 加权成本风险）+ 风险对冲矩阵<br>
+        <strong>输出</strong>：供应商组合方案 + 成本预算 + 风险应对计划<br>
+        <em style="font-size:0.8rem;">对应渠道管理：接到新区域开拓任务 → 选代理商组合 → 定预算 → 出方案</em>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-label" style="background: linear-gradient(135deg, var(--cyan), var(--blue));">底层<br>公司/<br>模型<br>分析</div>
+      <div class="layer-content">
+        <strong>输入</strong>：某家 AI 公司/模型的公开信息<br>
+        <strong>工具</strong>：七维度评估框架 + 创业公司三问法 + 开源vs闭源三维判断 + "进攻vs防守"分析模板<br>
+        <strong>输出</strong>：结构化的供应商画像（战略/护城河/风险/成本/匹配度）<br>
+        <em style="font-size:0.8rem;">对应渠道管理：调研一个新代理商 → 建立供应商档案 → 入候选池</em>
+      </div>
+    </div>
+  </div>
+
+  <p>三层不是割裂的——<strong>底层分析喂给中层决策，中层决策受顶层趋势修正</strong>。就像渠道管理中，你不会先选了代理商再看市场趋势，也不会只看趋势不做具体选型。三层联动才是完整的判断力。</p>
+
+  <h3>一、底层详解——分析一家 AI 公司/模型的标准流程</h3>
+
+  <p>当一个新模型或新公司出现在你视野中（"听说 X 很厉害"），用以下流程建立结构化认知：</p>
+
+  <div class="callout cyan">
+    <div class="callout-label">底层分析 · 四步标准流程</div>
+    <p><strong>Step 1：定位它在光谱上的位置</strong></p>
+    <p>五种竞争策略类型（Day 27）——综合领先 / 信任壁垒 / 生态捆绑 / 单点极致 / 成本颠覆。新出的 AI 公司/模型属于哪一种？这一步 30 秒就够。</p>
+    <p><strong>Step 2：七维度快速扫描</strong></p>
+    <p>战略赌注 / 护城河来源 / 商业化压力 / 路径风险 / 锁定程度 / 成本弹性 / 能力匹配度。不需要每个都深挖——先全面扫一遍，再对关键维度做深入分析。</p>
+    <p><strong>Step 3：识别差异化的持久性</strong></p>
+    <ul>
+      <li>创业公司三问法（Day 25）：差异化能否 3 秒说清？会被追平吗，多久？窗口期后靠什么？</li>
+      <li>开源 vs 闭源（Day 26）：调用量级 / 数据敏感度 / 定制深度 → 开源还是闭源对你更有利？</li>
+    </ul>
+    <p><strong>Step 4：输出结论——"一句话画像 + 一张评分卡"</strong></p>
+    <p>一句话画像示例：<em>"Qwen-3 = 综合领先型的中国挑战者，推理能力接近 GPT-4o，成本低 60%，但生态和企业信任积累仍早期。"</em></p>
+  </div>
+
+  <p>用这个流程练一下——假设明天出了一家叫 "NovaMind" 的新 AI 公司，宣称"在医疗影像 AI 领域准确率超过 GPT-4o 30%，价格只有 1/5"。你会怎么分析？</p>
+
+  <table>
+    <tr><th>Step</th><th>分析</th></tr>
+    <tr><td>1. 光谱定位</td><td><strong>单点极致</strong>——垂直领域（医疗影像）+成本优势=Kimi 式 + DeepSeek 式的混合</td></tr>
+    <tr><td>2. 七维度重点</td><td>护城河：医疗数据壁垒几何？（医疗数据获取极难 → 可能是真壁垒）<br>锁定：API 还是私有协议？（影响切换成本）<br>商业化：医疗 AI 的付费意愿和合规成本？</td></tr>
+    <tr><td>3. 差异化持久性</td><td>3 秒说清：✅ "医疗影像比 GPT-4o 准 30%"<br>会被追平吗：🟡 看数据壁垒——如果其数据来自独家合作医院，窗口期可能 2-3 年<br>窗口期后：靠什么？客户关系？合规认证？数据飞轮？</td></tr>
+    <tr><td>4. 一句话画像</td><td><em>"NovaMind = 医疗影像的 Kimi——单点极致的垂直赌注，窗口期取决于数据壁垒的独占性"</em></td></tr>
+  </table>
+
+  <p>注意——<strong>整个分析不需要了解它的技术细节</strong>。你用的是结构化的判断框架，而不是记忆某个模型的参数表。这就是"操作系统"的价值：无论来什么新公司新模型，你都能用同一套流程快速定位。</p>
+
+  <h3>二、中层详解——从分析到选型的决策流程</h3>
+
+  <p>有了底层分析产出的"供应商画像"，接下来做选型决策。这里直接复用 Day 27 的三步选型法，但加一个关键升级：<strong>决策树化</strong>。</p>
+
+  <div class="framework-box">
+    <div class="fw-title">中层决策 · 选型决策树</div>
+    <p style="font-size:0.88rem;margin-bottom:1rem;">面对"该用什么 AI"这个问题时，按以下顺序逐级判断：</p>
+
+    <p><strong>🔍 第一关：需不需要 AI？</strong></p>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-left:1rem;">回溯 Day 20（可验证性）—— 这个任务有明确的验收标准吗？AI 做和人做的净效率增益是正的吗？<br>→ 如果验收标准模糊或者验证成本 > 节省的执行成本 → <strong>不用 AI，用人</strong></p>
+
+    <p><strong>🔍 第二关：需不需要换模型/供应商？</strong></p>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-left:1rem;">当前方案有没有明确的"痛点"？性能不够？成本太高？合规风险？<br>→ 如果没有明确痛点 → <strong>不换</strong>。"新模型发布"不是换的理由，"当前方案有 Bug"才是。</p>
+
+    <p><strong>🔍 第三关：怎么换？</strong></p>
+    <p style="font-size:0.85rem;color:var(--text-dim);margin-left:1rem;">Day 27 三步选型法 —— 定义子任务 → 匹配供应商 → 加权成本风险<br>+ 风险对冲矩阵 —— 关键环节保留 Fallback，不把 >50% 押在同一家</p>
+  </div>
+
+  <div class="callout danger">
+    <div class="callout-label">最常见的判断错误</div>
+    <p>在你的工作中，最大的风险不是"选错了模型"，而是以下三种判断失误：</p>
+    <ol>
+      <li><strong>"新的一定更好"综合症</strong>——GPT-5 出来就想换。但你的 Worker A 只是做数据格式化，GPT-4o-mini 就够了，GPT-5 贵了 3 倍但对这个环节几乎没提升。<em>（回溯 Day 22：OpenAI 的"最强"是整体最强，不是每个子任务都最强）</em></li>
+      <li><strong>"别人用了我们也要用"跟风</strong>——竞争对手用了 Claude 做合规审核，但你们的合规需求可能完全不同。<em>（回溯 Day 27：能力匹配度 > 综合排名）</em></li>
+      <li><strong>"先建再想"的工程冲动</strong>——直接开始搭系统，没有先验证核心环节是否可行。<em>（回溯 Day 27 Checkpoint 的 D 选项：先定义 MVP 验证什么）</em></li>
+    </ol>
+    <p>渠道管理中你绝不会因为"听说某个代理商今年很猛"就换掉现有的合作伙伴。AI 选型应该有同样的纪律。</p>
+  </div>
+
+  <h3>三、顶层详解——趋势预判与策略调整</h3>
+
+  <p>底层和中层解决的是"当前时点的最优选择"。顶层解决的是<strong>"这个选择半年后还对吗"</strong>。</p>
+
+  <p>Day 27 给出了三大趋势：能力趋同 / 成本暴跌 / 差异化转移。但趋势本身不够——你需要知道<strong>趋势对你的具体影响</strong>和<strong>触发调整的信号</strong>。</p>
+
+  <table>
+    <tr><th>趋势</th><th>对你的含义</th><th>触发调整的信号</th><th>调整动作</th></tr>
+    <tr>
+      <td><strong>能力趋同</strong><br><em>模型差距缩小到 5-10%</em></td>
+      <td>"谁最强"越来越不重要，<strong>成本和集成便利性</strong>成为主要决策因素</td>
+      <td>你当前用的模型和替代模型在<strong>你的具体任务上</strong>差距 < 5%</td>
+      <td>开始考虑切换到更便宜或集成更方便的方案</td>
+    </tr>
+    <tr>
+      <td><strong>成本暴跌</strong><br><em>2 年降 50 倍</em></td>
+      <td>之前因为成本放弃的用法现在可能划算了；<strong>AI 从"奢侈品"变"基础设施"</strong></td>
+      <td>某个你之前计算过"不划算"的场景，API 成本降了 >80%</td>
+      <td>重新评估那些之前被否决的 AI 应用场景</td>
+    </tr>
+    <tr>
+      <td><strong>差异化转移</strong><br><em>从模型 → 生态/信任/工作流</em></td>
+      <td><strong>工作流设计能力比模型选择更重要</strong>——你的竞争力在于"怎么用"而非"用什么"</td>
+      <td>同行用了和你一样的模型，但效果明显更好或更差</td>
+      <td>投资在工作流设计和优化上，而非追逐最新模型</td>
+    </tr>
+  </table>
+
+  <div class="callout teal">
+    <div class="callout-label">顶层的运行频率</div>
+    <p>底层分析是<strong>按需触发</strong>的——有新公司/新模型出现时做。<br>
+    中层决策是<strong>项目驱动</strong>的——有新需求或现有方案出问题时做。<br>
+    顶层扫描应该是<strong>定期执行</strong>的——建议每季度花 1-2 小时做一次"AI 环境扫描"。</p>
+    <p>和你的渠道管理节奏完全一样：代理商调研随时做、选型项目制推进、市场大盘季度复盘。</p>
+  </div>
+
+  <h3>四、三层联动——用开场的三个问题跑一遍</h3>
+
+  <p>回到开场的三个问题，用完整的操作系统来回答：</p>
+
+  <div class="callout blue">
+    <div class="callout-label">问题 1："Qwen-3 强 15%，要不要切？"</div>
+    <p><strong>顶层</strong>：能力趋同趋势下，15% 的基准测试差距实际业务影响可能只有 3-5%<br>
+    <strong>中层</strong>：决策树 → 第二关：当前方案有明确痛点吗？如果没有 → 不换。如果有 → 第三关：哪个子任务痛？只换痛的环节<br>
+    <strong>底层</strong>：对 Qwen-3 做四步分析 → 它的"强 15%"强在什么维度？推理？多模态？如果强在推理但你的痛点是成本 → 不匹配</p>
+    <p><strong>结论模板</strong>：<em>"Qwen-3 的 15% 提升在 [X] 维度，我们的瓶颈在 [Y] 维度。如果 X≠Y，不急着切。如果 X=Y，先在痛点环节做 A/B 测试，验证实际业务提升后再决定。"</em></p>
+  </div>
+
+  <div class="callout green">
+    <div class="callout-label">问题 2："竞争对手用 Claude 做合规审核，跟不跟？"</div>
+    <p><strong>顶层</strong>：差异化转移趋势 → 竞争力在于"怎么用"而非"用什么"<br>
+    <strong>中层</strong>：决策树 → 第一关：我们需要 AI 做合规审核吗？（验证成本 vs 人工成本）→ 如果需要 → 第三关：我们的合规需求和竞争对手一样吗？<br>
+    <strong>底层</strong>：Claude 在合规场景的确有结构性优势（Day 23：Constitutional AI + 规则遵循），但"别人用了"不是理由，"我们也有这个痛点"才是</p>
+    <p><strong>结论模板</strong>：<em>"合规审核场景 Claude 确实有优势（Day 23），但我们先要确认：① 合规审核是我们的业务痛点吗？② 我们的合规需求具体是什么类型？③ 现有方案的缺口在哪？——先有诊断再有处方。"</em></p>
+  </div>
+
+  <div class="callout purple">
+    <div class="callout-label">问题 3："预算砍 30%，怎么降？"</div>
+    <p><strong>顶层</strong>：成本暴跌趋势 → 半年前的价格不代表现在的价格，先查最新报价<br>
+    <strong>中层</strong>：三步选型法逆向操作 → 按子任务查当前成本 → 找"贵但可降级"的环节（Day 27 五条规则的逆向）<br>
+    <strong>底层</strong>：Worker A/B 是数据处理类 → 最适合降级到更便宜的模型（DeepSeek）；Worker C 是复杂推理 → 不能降级（降了质量会崩）；报告撰写 → 可以换成 DeepSeek + 人工润色</p>
+    <p><strong>结论模板</strong>：<em>"降本优先级：① 先换 Worker A/B 到 DeepSeek（省 ~60%，质量影响极小）② 报告生成环节换模型 + 加人工终审（省 ~40%，质量靠人兜底）③ Worker C 推理环节不动（这是核心价值环节）。总计可省 35-45%。"</em></p>
+  </div>
+
+  <div class="callout insight">
+    <div class="callout-label">发现了吗？</div>
+    <p>三个完全不同的问题，用的是<strong>同一套操作系统</strong>——先看顶层趋势定方向，再走中层决策树，需要时调用底层分析做信息补充。</p>
+    <p>这套系统的价值不在于"记住了五家公司的特点"（这些信息半年后就过时了），而在于<strong>你建立了一个可以处理任何新信息的判断结构</strong>。就像你不需要记住每个代理商的具体数据，但你清楚地知道"评估代理商该看什么维度、怎么做选型决策、什么时候该换"。</p>
+  </div>
+</div>
+
+<!-- 第三段：So What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 第三模块前半程成绩单</h2>
+  </div>
+
+  <h3>你现在拥有的判断力</h3>
+
+  <p>从 Day 22 到今天，你的"AI 判断力"经历了四个阶段：</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-left:3px solid var(--text-dim);">
+      <span class="card-num" style="background:var(--text-dim);">0</span>
+      <span class="card-title">Day 22 之前</span>
+      <div class="card-body">"听说 GPT-4 很强""OpenAI 很厉害"——印象驱动，无法结构化判断</div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--blue);">
+      <span class="card-num" style="background:var(--blue);">1</span>
+      <span class="card-title">Day 22-26：案例积累</span>
+      <div class="card-body">深入了解了五家公司的战略路径、护城河、风险——信息丰富但零散</div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent);">
+      <span class="card-num" style="background:var(--accent);">2</span>
+      <span class="card-title">Day 27：方法论提炼</span>
+      <div class="card-body">七维度框架 + 三步选型法 + 风险对冲——从"记住五家特点"升级到"掌握评估方法"</div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--green);">
+      <span class="card-num" style="background:var(--green);">3</span>
+      <span class="card-title">Day 28（今天）：操作系统化</span>
+      <div class="card-body">三层架构 + 决策树 + 联动逻辑——从"有方法"升级到"任何问题都能用同一套系统处理"</div>
+    </div>
+  </div>
+
+  <h3>能力对照表：六课前 vs 现在</h3>
+
+  <table>
+    <tr><th>判断场景</th><th>六课前</th><th>现在</th></tr>
+    <tr>
+      <td>"新模型发布，要不要用？"</td>
+      <td>看新闻评测 → 跟风或观望</td>
+      <td>四步分析定位 → 决策树三关判断 → 趋势校验</td>
+    </tr>
+    <tr>
+      <td>"AI 系统选什么模型？"</td>
+      <td>"用最强的" 或 "用最便宜的"</td>
+      <td>先拆子任务 → 按任务特征匹配 → 分层组合 → 加权成本风险</td>
+    </tr>
+    <tr>
+      <td>"这家 AI 公司靠谱吗？"</td>
+      <td>看融资额 / 看评测分数</td>
+      <td>光谱定位 → 七维度扫描 → 差异化持久性三问 → 一句话画像</td>
+    </tr>
+    <tr>
+      <td>"AI 行业趋势怎么看？"</td>
+      <td>"很快所有工作都会被替代"</td>
+      <td>能力趋同+成本暴跌+差异化转移 → 工作流设计 > 模型选择</td>
+    </tr>
+    <tr>
+      <td>"预算有限怎么选？"</td>
+      <td>"选最便宜的" 或 "全砍了"</td>
+      <td>按子任务成本优先级排序 → 非核心降级 → 核心不动 → 量化省多少</td>
+    </tr>
+  </table>
+
+  <h3>操作系统的保质期</h3>
+
+  <p>一个诚实的提醒——这套操作系统里<strong>不同部分的保质期不同</strong>：</p>
+
+  <div class="score-bar">
+    <span class="bar-label">三层架构</span>
+    <span class="bar-track"><span class="bar-fill" style="width:95%;background:linear-gradient(90deg,var(--green),var(--teal));"></span></span>
+    <span class="bar-value">🔴 3-5 年</span>
+  </div>
+  <div class="score-bar">
+    <span class="bar-label">七维度框架</span>
+    <span class="bar-track"><span class="bar-fill" style="width:85%;background:linear-gradient(90deg,var(--blue),var(--cyan));"></span></span>
+    <span class="bar-value">🔴 2-3 年</span>
+  </div>
+  <div class="score-bar">
+    <span class="bar-label">三步选型法</span>
+    <span class="bar-track"><span class="bar-fill" style="width:80%;background:linear-gradient(90deg,var(--accent),var(--gold));"></span></span>
+    <span class="bar-value">🟡 1-2 年</span>
+  </div>
+  <div class="score-bar">
+    <span class="bar-label">五条选型规则</span>
+    <span class="bar-track"><span class="bar-fill" style="width:60%;background:linear-gradient(90deg,var(--yellow),var(--gold));"></span></span>
+    <span class="bar-value">🟡 6-12 月</span>
+  </div>
+  <div class="score-bar">
+    <span class="bar-label">五家公司结论</span>
+    <span class="bar-track"><span class="bar-fill" style="width:35%;background:linear-gradient(90deg,var(--red),var(--pink));"></span></span>
+    <span class="bar-value">🟢 3-6 月</span>
+  </div>
+
+  <p style="margin-top:1rem;">越靠近底部的内容更新越快——<strong>GPT-5 出来后 Day 22 的 OpenAI 分析就过时了，但你用来分析 OpenAI 的方法不会过时</strong>。这就是为什么我们花大量时间在框架和方法上，而非背诵公司参数。</p>
+
+  <div class="callout gold">
+    <div class="callout-label">核心一句话</div>
+    <p>第三模块前半程（Day 22-28）的全部价值，浓缩成一句话：</p>
+    <p style="font-size:1.1rem;text-align:center;font-weight:700;color:var(--accent);margin:1rem 0;"><strong>你不需要追踪每个模型的最新版本——你需要一套判断任何版本的操作系统。</strong></p>
+    <p>这和渠道管理的终极认知完全一致——<em>你不需要了解每个代理商的每月数据细节，你需要一套评估任何代理商的标准流程。有了流程，换人不影响决策质量。</em></p>
+  </div>
+</div>
+
+<!-- Checkpoint -->
+<div class="checkpoint">
+  <h3>🧠 Checkpoint</h3>
+  <p><strong>场景：</strong>周一早会。技术负责人兴奋地说："Llama-4 开源了，多项基准测试超过 GPT-4o，而且完全免费。我建议我们把所有 AI 模块都切换到 Llama-4 自部署，一年省几十万 API 费。"</p>
+  <p>CTO 看向你："你怎么看？"</p>
+
+  <div class="options">
+    <div class="option">
+      <span class="letter">A</span> 支持。开源免费 + 基准测试超过 GPT-4o = 没有理由不切。省下来的钱可以投入更多功能开发。越早切越好，晚了竞争对手先切了。
+    </div>
+    <div class="option">
+      <span class="letter">B</span> 反对。"所有模块都切"风险太大。我们现在的方案跑得好好的，没必要为了省钱冒稳定性风险。等半年看看别人踩完坑再说。
+    </div>
+    <div class="option">
+      <span class="letter">C</span> 部分同意。可以让 Worker A/B（数据处理环节）先试切 Llama-4，跑两周看效果。Worker C/D 暂不动，因为推理和报告生成环节对质量敏感。
+    </div>
+    <div class="option">
+      <span class="letter">D</span> 回到三个前置问题：① "超过 GPT-4o"超在什么维度？和我们的关键环节匹配吗？② 自部署的运维成本（GPU 服务器 + 团队精力）算进"省下的钱"了吗？③ 当前方案的具体痛点是什么——是成本？还是性能？如果是性能，切成免费的未必解决问题。
+    </div>
+  </div>
+
+  <p style="margin-top: 1rem; color: var(--text-dim); font-size: 0.85rem;"><strong>追问 1：</strong>假设技术负责人回答说"基准测试在推理、编程、数学三个维度超过 GPT-4o 约 10%，多模态和中文能力略弱"——这个信息会怎么影响你的判断？你会重点关注哪个维度，为什么？</p>
+
+  <p style="color: var(--text-dim); font-size: 0.85rem;"><strong>追问 2：</strong>"一年省几十万"听起来很多。但请估算一下：自部署一个 70B 参数开源模型需要什么配置的 GPU 服务器？月租大概多少？加上运维人力，"省几十万"还成立吗？</p>
+</div>
+
+<!-- 明日悬念 -->
+<div class="teaser">
+  <h3>🔮 明日悬念</h3>
+  <p>七课时间，我们建立了一套评估 AI 模型和供应商的完整操作系统。</p>
+  <p>但这只是判断力的"上半场"——你知道了<strong>模型怎么选</strong>。下半场的问题更关键：<strong>用模型做出来的"AI 产品"怎么判断好坏？</strong></p>
+  <p>一个用 GPT-4o 做的拉胯产品，和一个用 DeepSeek-7B 做的优秀产品——后者更有价值。那"好产品"和"坏产品"的分界线到底在哪？</p>
+  <p>下周一我们进入 AI 产品设计原则的第一课——<strong>长文本产品设计</strong>。</p>
+  <p><strong>Day 29：AI产品设计原则(1)：长文本产品设计</strong> — 为什么大部分"能读整本书"的产品其实很糟糕？</p>
+</div>
+
+<!-- 知识卡片 -->
+<div class="section">
+  <h3>📌 知识卡片</h3>
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-num">1</span>
+      <span class="card-title">三层判断操作系统</span>
+      <div class="card-body">底层（公司/模型分析：七维度+四步流程）→ 中层（选型决策：三步选型法+决策树+风险对冲）→ 顶层（趋势预判：三大趋势+触发信号+调整动作）。三层联动才是完整判断力。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">2</span>
+      <span class="card-title">底层四步分析流程</span>
+      <div class="card-body">① 光谱定位（五种策略类型取其一）→ ② 七维度快速扫描（重点 2-3 个维度深挖）→ ③ 差异化持久性判断（3 秒说清/追平速度/窗口期后靠什么）→ ④ 输出一句话画像+评分卡。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">3</span>
+      <span class="card-title">中层决策树三关</span>
+      <div class="card-body">第一关：需不需要 AI？（可验证性+净效率增益）→ 第二关：需不需要换？（有明确痛点才换，"新发布"不是理由）→ 第三关：怎么换？（三步选型法+风险对冲矩阵）。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">4</span>
+      <span class="card-title">顶层三大趋势的行动指引</span>
+      <div class="card-body">能力趋同 → 成本和便利性成为主因；成本暴跌 → 重新评估之前被否决的场景；差异化转移 → 投资工作流设计而非追逐模型。每季度做一次 AI 环境扫描。</div>
+    </div>
+    <div class="card">
+      <span class="card-num">5</span>
+      <span class="card-title">操作系统的保质期分层</span>
+      <div class="card-body">三层架构（3-5 年）> 七维度框架（2-3 年）> 三步选型法（1-2 年）> 五条规则（6-12 月）> 具体公司结论（3-6 月）。越上层越持久——方法不会过时，结论会。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 前序知识连接 -->
+<div class="section">
+  <h3>🔗 前序知识连接</h3>
+  <div class="connection-table">
+    <div class="conn-row">
+      <span class="conn-day">Day 22-26</span>
+      <span class="conn-content">五家公司案例分析 → 今天的底层分析方法就是从这五家提炼出来的——四步流程可以应用于任何新公司</span>
+    </div>
+    <div class="conn-row">
+      <span class="conn-day">Day 27</span>
+      <span class="conn-content">七维度框架 + 三步选型法 + 风险对冲 → 今天升级为三层操作系统的中层决策引擎，补充了决策树和联动逻辑</span>
+    </div>
+    <div class="conn-row">
+      <span class="conn-day">Day 20</span>
+      <span class="conn-content">可验证性判断 → 直接复用为中层决策树第一关"需不需要 AI"的判断依据</span>
+    </div>
+    <div class="conn-row">
+      <span class="conn-day">Day 21</span>
+      <span class="conn-content">Agent 工作流设计 → "按子任务分层选型"的实操基础——不同 Worker 用不同模型的完整示例</span>
+    </div>
+    <div class="conn-row">
+      <span class="conn-day">Day 7</span>
+      <span class="conn-content">首次复习课（DeepSeek-R1 六层解剖）→ 当时用六天的武器解剖一个现象；今天用七天的武器构建一个可复用的判断系统。从"解剖"到"系统化"的认知升级</span>
+    </div>
+    <div class="conn-row">
+      <span class="conn-day">Day 14</span>
+      <span class="conn-content">第一模块心智模型地图 → 六层认知地图 + 三条因果链。今天的三层操作系统是同一种"把碎片压缩成系统"的方法——第一次是"大模型是什么"的系统，这次是"大模型怎么选"的系统</span>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  Day 28 / 60 · 第三模块 · 判断篇（7/14）<br>
+  Coach M · AI & 大模型 12 周系统课程
+</div>
+
+</div>
+</body>
+</html>
