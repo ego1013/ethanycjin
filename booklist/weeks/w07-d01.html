@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 7 · Day 1 · 叙事者 · 《乌合之众》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .header .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            border-radius: 20px;
+            padding: 0.3rem 0.9rem;
+            margin-bottom: 1.2rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .header .week-meta {
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .header h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-label {
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        em { color: var(--accent); font-style: italic; }
+
+        /* Opening Scene */
+        .opening-scene {
+            border-left: 3px solid var(--accent);
+            padding: 1.2rem 1.4rem;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 2rem;
+        }
+
+        .opening-scene p {
+            font-size: 1.05rem;
+            line-height: 2;
+            color: var(--white);
+            margin-bottom: 0;
+        }
+
+        /* Bias Box */
+        .bias-box {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            background: rgba(226,163,85,0.06);
+            border: 1px solid rgba(226,163,85,0.15);
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem;
+            margin: 0.3rem 0 0.8rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+        .bias-box .icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+
+        /* Timeline */
+        .timeline {
+            border-left: 2px solid var(--border-light);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.65rem;
+            top: 0.45rem;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+
+        .timeline-item .time {
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .timeline-item .event {
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* Compare Box */
+        .compare-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .compare-col {
+            padding: 1.2rem;
+            background: var(--surface);
+        }
+
+        .compare-col:first-child { background: rgba(233,69,96,0.05); }
+        .compare-col:last-child { background: rgba(226,163,85,0.04); }
+
+        .compare-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .compare-col:first-child .compare-title { color: #E94560; }
+        .compare-col:last-child .compare-title { color: var(--accent); }
+
+        .compare-col ul { list-style: none; padding: 0; }
+        .compare-col li {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .compare-col li:last-child { border-bottom: none; }
+
+        /* Tension Question */
+        .tension-box {
+            background: linear-gradient(135deg, rgba(226,163,85,0.1), rgba(226,163,85,0.04));
+            border: 1px solid rgba(226,163,85,0.35);
+            border-radius: 12px;
+            padding: 1.5rem 1.8rem;
+            margin-top: 2.5rem;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        /* Preview Box */
+        .preview-box {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            margin-top: 2rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+        .preview-box strong { color: var(--accent); font-weight: 600; }
+
+        /* Quote */
+        .quote {
+            border-left: 3px solid var(--border-light);
+            padding: 0.8rem 1.2rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        /* Key Concept */
+        .key-concept {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            margin: 1rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .key-concept .kc-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+        .key-concept .kc-body {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.65;
+        }
+
+        /* Footer Nav */
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .page-nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.2s;
+        }
+        .page-nav a:hover { color: var(--accent); }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>Week 7 · Day 1</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="role-badge">🎭 叙事者 The Storyteller · Week 7 · Day 1</div>
+            <div class="week-meta">2026-05-18 · 周一 · 第7周第1天</div>
+            <h1>人群有自己的灵魂<br>那个灵魂从不理性</h1>
+            <div class="subtitle">《乌合之众》—— 古斯塔夫·勒庞 · <em>La Psychologie des foules</em> · 1895</div>
+        </header>
+
+        <!-- Section 1: Opening Scene -->
+        <section class="section">
+            <div class="section-label">01 · 开场场景</div>
+            <div class="opening-scene">
+                <p>1871年5月，巴黎公社的最后几天。塞纳河左岸的街道上，一群人将一名被怀疑是告密者的男人团团围住。没有审判，没有证据，甚至没有人看清他的脸。人群只需要一个发泄口，而他恰好在那里。</p>
+            </div>
+
+            <p>那一年，勒庞（<em>Gustave Le Bon</em>）三十岁，正在巴黎行医。他目睹了这一切：不是一个坏人杀死了另一个人，而是一群平时温和守法的人，在聚合的一刻，共同完成了一件任何一个单独个体都不会做的事情。</p>
+
+            <p>他开始记录，开始思考：<strong>人群是什么？它从哪里涌现？为什么智识上毫无关联的人，一旦聚在一起，就会变成同一张脸、同一种冲动、同一个声音？</strong></p>
+
+            <p>这个问题，他花了二十四年才给出完整的答案。</p>
+        </section>
+
+        <!-- Section 2: Man & Life -->
+        <section class="section">
+            <div class="section-label">02 · 人物生平</div>
+
+            <p>勒庞1841年生于诺让勒罗特鲁，一个法国小镇中产家庭。父亲是政府官员，母亲性格刚强。他的童年不在巴黎，因此他一生都以一种略显疏离的眼光观察这座城市——像一个永远站在观众席的人，看台上的人挤成一团。</p>
+
+            <p>他在巴黎学医，却从未安心当一名医生。他的兴趣散漫而广博：人类学、考古学、物理学，乃至摄影技术的早期研究。他写过关于阿拉伯文明的书，做过战地医疗观察员，还发明过一种便携式酒精炉——这些零散的探索背后，有一个统一的驱动力：他想弄清楚，人类的行为究竟由什么力量支配。</p>
+
+            <div class="bias-box">
+                <span class="icon">⚠️</span>
+                <span><strong>博学者权威偏差（Halo Effect）</strong>——勒庞的多学科背景很容易让读者预设他的结论有更扎实的实证基础。实际上，他的方法论更接近19世纪的"宏大叙事"，而非现代意义上的社会科学研究。</span>
+            </div>
+
+            <p>真正塑造他思想的，是他亲历的三次历史事件：<strong>1871年巴黎公社</strong>（他在城里，近距离看见了革命群众的狂热与残酷）；<strong>1886年布朗热主义运动</strong>（一位将军以民粹魅力横扫法国政坛，整个社会陷入集体迷狂）；以及他对<strong>德雷福斯案</strong>期间法国公众意见两极分化的观察。</p>
+
+            <p>这三个案例告诉他：<em>理性</em>是个人的奢侈品，一旦进入群体，它就是第一个被抛弃的东西。</p>
+        </section>
+
+        <!-- Section 3: Era Context -->
+        <section class="section">
+            <div class="section-label">03 · 时代背景</div>
+
+            <p>1895年，法国正处于第三共和国的焦虑之中。大革命一百年后，民主制度并未带来想象中的秩序与理性；相反，每一次选举都像是一次新的混乱实验，每一次政治动员都在重演勒庞所厌倦的群体非理性。</p>
+
+            <p>同时，欧洲的社会结构正在被工业化重塑。城市化将大量来自不同背景的人推入同一片街道、同一片广场、同一间工厂。<em>大众</em>（<em>the masses</em>）作为一个历史现象，第一次以如此密集的形态出现。旧有的精英知识分子感到恐惧：那些曾经分散在农村的人，现在聚集在一起，形成了一股无法用旧工具理解的力量。</p>
+
+            <div class="compare-box">
+                <div class="compare-col">
+                    <div class="compare-title">启蒙主义的乐观预设</div>
+                    <ul>
+                        <li>人类是理性动物</li>
+                        <li>教育提升判断能力</li>
+                        <li>民主汇聚集体智慧</li>
+                        <li>理性辩论推动进步</li>
+                        <li>个体自由产生秩序</li>
+                    </ul>
+                </div>
+                <div class="compare-col">
+                    <div class="compare-title">勒庞的反命题</div>
+                    <ul>
+                        <li>群体中人类退化为原始冲动</li>
+                        <li>教育在人群中失效甚至适得其反</li>
+                        <li>民主会被会操控情绪的领袖劫持</li>
+                        <li>图像、重复、感染比论证更有力</li>
+                        <li>个体自由在人群中自愿消失</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bias-box">
+                <span class="icon">⚠️</span>
+                <span><strong>精英焦虑偏差（Elite Anxiety Bias）</strong>——勒庞写作时明显带有19世纪欧洲知识精英对"大众崛起"的恐惧与鄙视。这种情绪性立场在他的措辞中处处可见，需要与其真实的洞察分开阅读。</span>
+            </div>
+
+            <p>勒庞不是唯一一个对"群众时代"感到警惕的人。但他是第一个系统性地试图解剖群体心理机制的人——不是用道德语言（"群众是邪恶的"），而是用他认为的科学语言（"群众的心理结构不同于个体"）。</p>
+        </section>
+
+        <!-- Section 4: Birth of the Book -->
+        <section class="section">
+            <div class="section-label">04 · 书的诞生</div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="time">1871</div>
+                    <div class="event">巴黎公社事件——勒庞在现场目击群体暴力的自我生长逻辑，种下最初疑问。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">1879–1884</div>
+                    <div class="event">旅行与人类学研究时期：赴印度、北非、欧洲多地考察，发表《阿拉伯文明》等著作。在跨文化比较中，他注意到不同文化中群体行为的惊人相似性。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">1886–1889</div>
+                    <div class="event">布朗热危机期间，他开始系统性记录观察：一位将军如何凭借简单口号和戏剧性手势，让数百万法国人心甘情愿地追随。这成为《乌合之众》中"领袖"理论的核心原材料。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">1894</div>
+                    <div class="event">完成手稿。出版商菲利克斯·阿尔坎最初犹豫——这本书的观点太过冒险，它批评民主、质疑理性，与第三共和国的主流叙事直接冲突。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time">1895年8月</div>
+                    <div class="event">《乌合之众：大众心理研究》（<em>Psychologie des foules</em>）出版。当年即被译成英文，两年内再版16次。据统计，截至20世纪末，此书全球销量超过200万册，被译为至少23种语言。</div>
+                </div>
+            </div>
+
+            <div class="bias-box">
+                <span class="icon">⚠️</span>
+                <span><strong>畅销书光环效应（Bestseller Halo）</strong>——极高的传播量容易被误读为"真理的证明"。《乌合之众》的广泛影响力有一部分恰恰来自它本身所描述的机制：简洁的图像式语言，重复的断言，感染力强的论点——它自己就用了群体心理学的手法，触达了大量读者。</span>
+            </div>
+        </section>
+
+        <!-- Section 5: Core Preview -->
+        <section class="section">
+            <div class="section-label">05 · 核心预览</div>
+
+            <p>勒庞在书中提出了五个贯穿性概念，后面几天我们将一一解剖：</p>
+
+            <div class="key-concept">
+                <div class="kc-title">核心概念 #1</div>
+                <div class="kc-body"><strong>心理群体（Psychological Crowd）</strong>——不是物理意义上的聚集，而是当人们共享同一念头时，无论身处何地都形成的集体心理实体。群体不是"人多"，而是"同频"。</div>
+            </div>
+
+            <div class="key-concept">
+                <div class="kc-title">核心概念 #2</div>
+                <div class="kc-body"><strong>个体退化（Individual Submergence）</strong>——进入群体后，个人的批判性能力暂时消失，被集体的无意识取代。教育程度越高的人，退化得越彻底——因为他们更擅长为情绪找到理性的外衣。</div>
+            </div>
+
+            <div class="key-concept">
+                <div class="kc-title">核心概念 #3</div>
+                <div class="kc-body"><strong>感染与暗示（Contagion & Suggestion）</strong>——群体的情绪像传染病一样扩散，个体在其中丧失独立判断，取而代之的是对图像和口号的服从。</div>
+            </div>
+
+            <div class="key-concept">
+                <div class="kc-title">核心概念 #4</div>
+                <div class="kc-body"><strong>领袖机制（The Leader）</strong>——群体不会自我组织，它需要一个意志的焦点。领袖不靠论证，靠<em>断言</em>（Affirmation）、<em>重复</em>（Repetition）和<em>感染</em>（Contagion）。伟大的演说家都是这三个工具的大师。</div>
+            </div>
+
+            <div class="key-concept">
+                <div class="kc-title">核心概念 #5</div>
+                <div class="kc-body"><strong>群体的保守性</strong>——尽管群体在当下表现为狂热和激进，长期来看，它是极度保守的。它抵拒真正的创新，它只能接受包装成"旧真理的新形式"的变化。这是为什么所有成功的革命最后都用旧的语言说话。</div>
+            </div>
+
+            <div class="quote">
+                "群体从不渴望真理。面对不合其口味的证据，它会转身离去。如果谎言更能迷住它，它宁可崇拜谎言。"<br>
+                <span style="font-size:0.82rem;color:var(--text-muted);">—— 勒庞，《乌合之众》第一卷</span>
+            </div>
+
+            <p>这是一本1895年写成的书，但它在描述什么？描述<em>Twitter</em>上的热搜、<em>TikTok</em>的算法推送、2021年的美国国会山事件、每一次网络公审的形成过程——以及一个腾讯广告系统里，代理商圈子如何集体性地涌向某个新政策解读方向，然后集体性地改口。</p>
+
+            <p>勒庞不是先知。但他找到了一些在人类群体中非常稳固的东西。这些东西今天仍在运转，只是换了更快的载体。</p>
+        </section>
+
+        <!-- Section 6: Tension Question -->
+        <section class="section">
+            <div class="tension-box">
+                <div class="tension-label">❓ 本周核心张力问题</div>
+                <div class="tension-q">
+                    如果群体行为的非理性是人类的结构性特征而非偶发缺陷——那么依赖"理性公众"作为前提的民主制度、市场机制、舆论监督，是否都建立在一个根本性的幻觉之上？<br><br>
+                    更深一层：勒庞描述的群体心理，是对人性的诊断，还是对特定历史情境的过度概括？如果它是普遍规律，我们该如何在其中寻找清醒的空间？
+                </div>
+            </div>
+        </section>
+
+        <!-- Preview Tomorrow -->
+        <div class="preview-box">
+            <strong>明日预告 →</strong> 🎯 提炼者登场。五把解剖刀拆解勒庞的理论架构：群体的三层退化机制、领袖操控的技术方程式、以及为什么这本书既被独裁者奉为圣经、又被民主理论家当作警示。
+        </div>
+
+        <!-- Page Nav -->
+        <div class="page-nav">
+            <a href="../">← 返回书单</a>
+            <a href="./w07-d02.html">明日 · 提炼者 →</a>
+        </div>
+
+        <div class="footer">
+            <p>书单精读 Deep Reading · <a href="https://ego1013.github.io/ethanycjin/booklist/">ego1013.github.io</a></p>
+        </div>
+
+    </div>
+</body>
+</html>
