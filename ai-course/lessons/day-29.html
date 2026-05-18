@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 29 · AI产品设计原则(1)：长文本产品设计 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0f05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--accent-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+  .callout.teal { border-left: 4px solid var(--teal); background: var(--teal-dim); }
+  .callout.pink { border-left: 4px solid var(--pink); background: var(--pink-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+  .callout.teal .callout-label { color: var(--teal); }
+  .callout.pink .callout-label { color: var(--pink); }
+
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  li strong { color: #fff; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-weight: 600;
+  }
+
+  td { color: var(--text); }
+
+  .knowledge-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .knowledge-card .card-title {
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .knowledge-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .knowledge-card li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .knowledge-card li:last-child { border-bottom: none; }
+
+  .connection {
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .connection .conn-title {
+    color: var(--purple);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+  }
+
+  .checkpoint .cp-title {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .checkpoint .scenario {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .checkpoint .options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .checkpoint .options li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .options li:hover {
+    border-color: var(--accent);
+  }
+
+  .checkpoint .follow-up {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  .teaser {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+
+  .teaser .teaser-label {
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .teaser p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--cyan);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .vs-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .vs-table .vs-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .vs-table .vs-col h4 {
+    margin-top: 0;
+    font-size: 0.85rem;
+  }
+
+  .vs-table .vs-col ul {
+    margin: 0.5rem 0 0 1rem;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; align-items: center; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .vs-table { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 29
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">第三模块 · 判断篇</div>
+  <h1>AI产品设计原则(1)：长文本产品设计</h1>
+  <div class="subtitle">从"能处理长文本"到"长文本产品用起来好"之间，差着一整个产品设计学科</div>
+  <div class="meta">
+    <span>📅 2026-05-18 Mon</span>
+    <span>⏱️ 约 40 分钟</span>
+    <span>🟡 中半衰期</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- 开场 -->
+<div class="opening">
+  <div class="label">🔥 开场问题</div>
+  <p>Kimi 号称支持 200K Token 上下文窗口——你把一份 80 页的代理商合同扔进去说"帮我审核"，它确实会给你一份看起来像样的审核报告。<strong>但如果你换一种方式——先问它"这份合同有几方主体"，再逐步追问"甲方核心义务有哪些"——你会发现，</strong><span class="highlight">同一个模型、同一份文件，两种用法的输出质量可能差两倍</span>。</p>
+  <p>这说明什么？<strong>"模型能力"和"产品体验"之间，存在一个巨大的设计空间。</strong>长文本的技术壁垒正在消融（Day 25 已讲过），那竞争到底在什么层面？今天我们从"技术选型者"的视角转向"产品设计者"的视角——不再问"该用哪个模型"，而是问<strong>"怎么设计一个好的长文本产品"</strong>。</p>
+</div>
+
+<!-- 第一段 Why -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么要单独讲"长文本产品设计"</h2>
+  </div>
+
+  <h3>1. 技术能力 ≠ 产品价值</h3>
+  <p>Day 10 我们讲了 Context Window 的成本经济学，Day 25 讲了 Kimi 的长文本战略押注。结论很清楚：<strong>长上下文已经不再是稀缺能力</strong>——GPT-4o 128K、Claude 200K、Gemini 2M、Kimi 200K，窗口越来越大。</p>
+  <p>但现实是：<strong>大部分用户依然不知道怎么"用好"长文本</strong>。典型场景——</p>
+  <ul>
+    <li>把一整本 PDF 丢进去问一个笼统问题 → 得到一个泛泛的摘要</li>
+    <li>把 10 份文件一起上传 → 模型幻觉暴涨，引用张冠李戴</li>
+    <li>对话到第 8 轮 → 之前的信息被"遗忘"（不是真遗忘，是注意力分配的 Lost in the Middle 效应——Day 10）</li>
+  </ul>
+  <p>这些不是模型 bug，是<strong>产品没有为用户管理好"信息→注意力→输出"这条链路</strong>。</p>
+
+  <div class="callout insight">
+    <div class="callout-label">类比：渠道管理</div>
+    <p>你手里有 200 个代理商的全量经营数据——数据量不是问题。但如果你直接把 200 张报表摆在桌上说"帮我分析"，新来的数据分析师多半给你一个无用的全面总结。而如果你说"先看华东区环比下降超 15% 的 5 家"，质量立刻不一样。</p>
+    <p><strong>信息的"投喂方式"决定了分析质量。这对 AI 同样成立。</strong></p>
+  </div>
+
+  <h3>2. 产品设计是新的壁垒</h3>
+  <p>Day 27 的核心结论之一：<strong>模型能力正在趋同，差异化正从模型层转向产品层</strong>。当每家都有 200K+ 窗口时——</p>
+  <ul>
+    <li>差异不在"能不能吃下 200K"（这只是准入门槛）</li>
+    <li>差异在"用户扔进 200K 内容后，产品怎么<strong>引导用户提出好问题</strong>，怎么<strong>帮模型分配注意力</strong>，怎么<strong>呈现高信息密度的输出</strong>"</li>
+  </ul>
+  <p>这就是为什么"AI 产品设计"将成为接下来 3-5 年的核心竞争力——<strong>不是技术壁垒，是体验壁垒</strong>。</p>
+
+  <div class="callout blue">
+    <div class="callout-label">核心认知转变</div>
+    <p>Day 22-28 我们一直在问"选哪个模型"——这是<strong>供给侧</strong>视角。<br>
+    Day 29 开始，我们转向问"怎么把模型变成好用的产品"——这是<strong>需求侧+设计侧</strong>视角。<br>
+    <strong>从模型选型者 → 产品设计者，这是第三模块后半程的核心跃迁。</strong></p>
+  </div>
+</div>
+
+<!-- 第二段 What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 长文本产品设计的本质框架</h2>
+  </div>
+
+  <h3>核心命题：信息管理三角</h3>
+  <p>长文本产品的设计本质是管理一个三角关系：</p>
+
+  <div class="diagram">┌─────────────────────────────────────────────────────┐
+│              长文本产品设计 · 信息管理三角              │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│           ┌──────────┐                              │
+│           │  用户意图  │  ← 产品要帮用户表达清楚       │
+│           └─────┬────┘                              │
+│                 │                                   │
+│        ┌────────┼────────┐                          │
+│        ▼                 ▼                          │
+│  ┌──────────┐    ┌──────────┐                       │
+│  │ 信息定位  │    │ 输出呈现  │                       │
+│  │（找到相关 │    │（信息密度 │                       │
+│  │  段落）   │    │  ×可理解 │                       │
+│  │          │    │  性）    │                       │
+│  └──────────┘    └──────────┘                       │
+│        ↑                 ↑                          │
+│        │   ┌──────────┐  │                          │
+│        └───│  注意力   │──┘  ← 产品要帮模型分配注意力 │
+│            │  分配策略  │                             │
+│            └──────────┘                             │
+└─────────────────────────────────────────────────────┘</div>
+
+  <p>三角的三个顶点，就是长文本产品需要解决的三个核心设计问题：</p>
+  <ol>
+    <li><strong>用户意图管理</strong>：帮用户把模糊的需求变成精准的指令</li>
+    <li><strong>信息定位策略</strong>：帮模型在海量文本中找到真正相关的内容</li>
+    <li><strong>输出呈现设计</strong>：把模型的分析结果以高信息密度+可操作的方式呈现</li>
+  </ol>
+
+  <h3>设计维度一：用户意图管理</h3>
+  <h4>问题：用户不知道该怎么"问"</h4>
+  <p>用户面对一份 80 页合同，最自然的操作是"帮我审核一下"。但这个需求太模糊——</p>
+  <ul>
+    <li>审核什么？合规风险？商业条款？付款条件？违约责任？</li>
+    <li>对谁来说是"好"的审核？法务？业务？管理层？</li>
+    <li>什么算"审核完了"？逐条确认？标出异常？给出建议？</li>
+  </ul>
+
+  <h4>三种设计模式</h4>
+  <table>
+    <tr><th>模式</th><th>机制</th><th>适用场景</th><th>典型产品</th></tr>
+    <tr><td><strong>引导式提问</strong></td><td>产品先提出结构化问题帮用户聚焦</td><td>新用户/不熟悉文档类型</td><td>NotebookLM 的自动问题建议</td></tr>
+    <tr><td><strong>预设意图模板</strong></td><td>按文档类型提供常见分析模板</td><td>高频重复场景（合同/研报/论文）</td><td>Kimi 的"快速摘要/逐章分析/关键信息提取"</td></tr>
+    <tr><td><strong>渐进式深钻</strong></td><td>先给概览→用户点击感兴趣的点→展开细节</td><td>探索性分析/决策支持</td><td>ChatPDF 的问答+高亮联动</td></tr>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-label">产品设计原则 #1</div>
+    <p><strong>不要让用户对着空白输入框和长文档发呆。</strong>好的长文本产品应该在用户上传文档的瞬间就"主动出击"——告诉用户"我已经读完了，这里有几个你可能关心的方向"。</p>
+  </div>
+
+  <h4>类比：渠道管理中的"引导式对话"</h4>
+  <p>这跟你带新渠道经理时的策略一模一样：</p>
+  <ul>
+    <li>❌ "帮我看看华东区情况" → 新人：给你写 20 页什么都有的报告</li>
+    <li>✅ "关注华东区三个问题：哪些代理商环比降了 15% 以上？原因是什么？下月怎么干预？" → 新人：3 页精准聚焦</li>
+  </ul>
+  <p><strong>好的产品 = 好的上司：把模糊需求结构化后再委派。</strong></p>
+
+  <h3>设计维度二：信息定位策略</h3>
+  <h4>问题：200K 窗口里，模型的注意力不是平均分配的</h4>
+  <p>Day 10 讲的 "Lost in the Middle" 效应——模型对文档<strong>开头和结尾的信息利用率</strong>远高于中间部分（中间部分利用率可能只有 50-60%）。这意味着：</p>
+
+  <div class="callout danger">
+    <div class="callout-label">反直觉事实</div>
+    <p>"把文件全扔进去让模型自己找"——这个<strong>最简单</strong>的方案，往往<strong>不是</strong>体验最好的方案。因为信息越多，注意力越分散，中间段落的重要内容越容易被忽略。</p>
+  </div>
+
+  <h4>四种信息定位策略</h4>
+  <table>
+    <tr><th>策略</th><th>机制</th><th>优势</th><th>劣势</th></tr>
+    <tr><td><strong>全量注入</strong></td><td>整份文档塞进上下文</td><td>无信息损失、实现最简</td><td>注意力分散、成本高、中间遗漏</td></tr>
+    <tr><td><strong>RAG 检索</strong></td><td>向量检索相关段落后注入</td><td>成本低、聚焦、无中间遗漏</td><td>检索不准=信息损失、跨段引用丢失</td></tr>
+    <tr><td><strong>层级摘要</strong></td><td>先摘要再按需展开原文</td><td>信息密度高、全局不遗漏</td><td>摘要有损、细节可能丢失</td></tr>
+    <tr><td><strong>混合策略</strong></td><td>摘要全文+RAG 检索重点段+原文确认</td><td>最佳体验、兼顾全局和细节</td><td>工程复杂度高、延迟增加</td></tr>
+  </table>
+
+  <h4>真正高级的做法：分层注意力引导</h4>
+  <p>最好的长文本产品不是简单地"把文档丢给模型"——而是<strong>在模型看到文档之前，先帮它建一个"注意力地图"</strong>：</p>
+  <ol>
+    <li><strong>第一层（全局索引）</strong>：自动生成文档结构大纲 + 关键实体列表</li>
+    <li><strong>第二层（焦点定位）</strong>：根据用户意图，确定需要深度阅读的章节</li>
+    <li><strong>第三层（精读+引用）</strong>：对焦点章节全文注入，其他章节仅保留摘要</li>
+  </ol>
+
+  <div class="callout gold">
+    <div class="callout-label">产品设计原则 #2</div>
+    <p><strong>帮模型"划重点"——就像你给下属说"重点看第三章和附件二，其他浏览就行"。</strong>这比"你看完这 200 页告诉我想法"效率高一个数量级。</p>
+  </div>
+
+  <h3>设计维度三：输出呈现设计</h3>
+  <h4>问题：长文本的分析结果本身可能也很长</h4>
+  <p>你让 AI 审核一份 80 页合同，它给你写了 15 页分析报告——这反而增加了你的信息处理负担。好的产品需要：</p>
+
+  <h4>输出设计的三层金字塔</h4>
+  <div class="diagram">┌──────────────────────────────────┐
+│  第一层：一句话结论              │ ← 30秒了解核心
+│  "此合同有 3 处高风险条款"       │
+├──────────────────────────────────┤
+│  第二层：结构化摘要              │ ← 3分钟掌握全貌
+│  风险1: 无限连带责任(§7.2)       │
+│  风险2: 单方解除权缺失(§12.1)   │
+│  风险3: 违约金比例过高(§15.4)   │
+├──────────────────────────────────┤
+│  第三层：原文定位+详细分析       │ ← 按需深入
+│  点击任一条 → 跳转原文高亮位置  │
+│  + AI 的逐条分析和修改建议       │
+└──────────────────────────────────┘</div>
+
+  <p>核心设计原则：<strong>让用户选择要消费多深的信息，而不是一次性灌满</strong>。</p>
+
+  <div class="callout teal">
+    <div class="callout-label">产品设计原则 #3</div>
+    <p><strong>输出应该是"金字塔结构"——结论→摘要→详情。用户默认只看顶层，需要时再一层层展开。</strong>就像好的渠道汇报：一句话结论+3个关键数据+详细附录——老板看第一层就够了，想追问再往下看。</p>
+  </div>
+
+  <h3>设计维度四：多轮对话中的上下文管理</h3>
+  <h4>问题：上下文越积越长，前面的信息被"挤出"注意力范围</h4>
+  <p>用户跟 AI 讨论一份长文档，对话本身也在消耗上下文窗口。第 10 轮对话时——</p>
+  <ul>
+    <li>对话历史可能已经占了 30-50K tokens</li>
+    <li>加上文档本身 100K+ tokens</li>
+    <li>总共 150K+ → 早期对话中的关键结论可能已被模型"稀释"</li>
+  </ul>
+
+  <h4>三种上下文管理策略</h4>
+  <table>
+    <tr><th>策略</th><th>做法</th><th>体验效果</th></tr>
+    <tr><td><strong>对话摘要压缩</strong></td><td>每 5 轮自动将前序对话压缩为关键结论</td><td>保住重要结论，释放窗口空间</td></tr>
+    <tr><td><strong>文档引用锁定</strong></td><td>用户标记的重要段落始终保持在上下文前端</td><td>用户主动选择"不允许遗忘"的内容</td></tr>
+    <tr><td><strong>分析状态持久化</strong></td><td>每轮分析结果存为结构化笔记，后续引用笔记而非重新分析</td><td>不重复工作，结论不丢失</td></tr>
+  </table>
+
+  <div class="callout purple">
+    <div class="callout-label">产品设计原则 #4</div>
+    <p><strong>产品要替用户管理"什么该记住、什么可以忘"。</strong>就像好的项目管理：每次会议的关键决策写入决议表，下次开会先回顾决议而非翻聊天记录。</p>
+  </div>
+
+  <h3>真实案例对比：三个长文本产品的设计差异</h3>
+  <table>
+    <tr><th>维度</th><th>ChatGPT + 文件上传</th><th>Kimi</th><th>NotebookLM (Google)</th></tr>
+    <tr><td>意图管理</td><td>❌ 无引导，纯空白对话框</td><td>🟡 提供快捷操作（摘要/提问）</td><td>✅ 自动生成问题+大纲+音频概述</td></tr>
+    <tr><td>信息定位</td><td>全量注入</td><td>全量注入+自研注意力优化</td><td>多文档RAG+引用定位</td></tr>
+    <tr><td>输出呈现</td><td>纯文本流式输出</td><td>结构化卡片+引用高亮</td><td>分层展示+源引用+播客模式</td></tr>
+    <tr><td>多轮管理</td><td>无明确策略</td><td>上下文压缩</td><td>笔记持久化</td></tr>
+    <tr><td>核心逻辑</td><td>"最强模型做一切"</td><td>"长窗口+体验优化"</td><td>"多源知识+交互创新"</td></tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">关键洞察</div>
+    <p>NotebookLM 在模型能力上可能不如 GPT-4o 或 Claude——但它在<strong>产品设计层</strong>领先一个代际。它的核心创新不是"模型更强"，而是"<strong>重新定义了人和长文本之间的交互方式</strong>"。这就是为什么 Google 选择在 Gemini 之外单独做 NotebookLM——它不是模型产品，是<strong>设计产品</strong>。</p>
+  </div>
+
+  <h3>长文本产品设计的五条铁律</h3>
+  <p>基于以上分析，总结五条不依赖特定模型版本的设计原则：</p>
+  <ol>
+    <li><strong>主动出击</strong>：文档上传后 3 秒内给用户可操作的"下一步"，不要让人对着空白框想问题</li>
+    <li><strong>注意力引导</strong>：帮模型划重点——用户意图 × 文档结构 = 聚焦范围</li>
+    <li><strong>金字塔输出</strong>：结论→摘要→详情三层，默认展示最精简层</li>
+    <li><strong>源引用锚定</strong>：每一条分析结论都必须可追溯到原文位置（对抗幻觉）</li>
+    <li><strong>记忆管理</strong>：多轮对话中，关键结论不允许被稀释</li>
+  </ol>
+</div>
+
+<!-- 第三段 So What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了你的什么判断？</h2>
+  </div>
+
+  <h3>1. 评估 AI 产品的新维度</h3>
+  <p>Day 22-28 你学会了评估<strong>模型供应商</strong>的框架（五维度/七维度）。今天开始，你需要加一个平行维度：<strong>产品设计质量</strong>。</p>
+
+  <table>
+    <tr><th>评估维度</th><th>模型层面（Day 22-28）</th><th>产品层面（Day 29+）</th></tr>
+    <tr><td>核心问题</td><td>"这个模型强不强？"</td><td>"这个产品好不好用？"</td></tr>
+    <tr><td>竞争壁垒来源</td><td>技术参数、训练数据、算力</td><td>交互设计、工作流、用户习惯</td></tr>
+    <tr><td>迭代周期</td><td>3-6 个月发新版</td><td>每周可优化细节</td></tr>
+    <tr><td>护城河持久性</td><td>容易被追平（能力趋同）</td><td>更持久（用户习惯难迁移）</td></tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">职业启示</div>
+    <p>如果你想在 AI 时代建立个人壁垒——<strong>"理解什么是好的 AI 产品设计"比"懂最新模型参数"更值钱</strong>。模型参数 6 个月就过时，设计原则 3-5 年有效。回顾 Day 28 的操作系统保质期：设计原则属于"框架"层（2-3 年），模型参数属于"公司结论"层（3-6 个月）。</p>
+  </div>
+
+  <h3>2. 渠道管理 AI 工具评估的产品设计清单</h3>
+  <p>用今天的框架去评估你手里的渠道数据分析 AI 工具：</p>
+  <ul>
+    <li>✅ 上传月度绩效报表后，是否主动给出"这个月 3 个最值得关注的异常"？</li>
+    <li>✅ 分析 50 个代理商的数据时，是否有注意力引导（先看异常再看正常）？</li>
+    <li>✅ 输出是否是"金字塔结构"——一句结论+关键数据+详细分析+原始数据引用？</li>
+    <li>✅ 多轮追问时，是否记得前几轮已经确认的结论？</li>
+  </ul>
+  <p><strong>四个✅的工具值得深度用；少于 2 个的，要么自己设计 Prompt 弥补，要么换工具。</strong></p>
+
+  <h3>3. 从"用 AI"到"设计 AI 工作流"的升级</h3>
+  <p>Day 21 的实战课你设计了渠道绩效 Agent 系统。那时候的设计重点是"后端逻辑"——拆任务、选模型、设质量门。</p>
+  <p>今天补上"前端设计"——如果你的 Agent 系统需要面向渠道经理使用，那你需要在 Day 21 的架构上叠加今天的产品设计原则：</p>
+  <ul>
+    <li>渠道经理上传区域报表后 → <strong>主动出击</strong>：自动标出 3 个最大的环比变动</li>
+    <li>多维度数据交叉分析时 → <strong>注意力引导</strong>：按"异常程度"排序，不是按代理商编号排序</li>
+    <li>输出绩效报告时 → <strong>金字塔结构</strong>：一页纸 + 详细附录，不是 15 页平铺</li>
+    <li>渠道经理追问"为什么这家降了 30%"时 → <strong>记忆管理</strong>：记住之前已分析过的全局结论</li>
+  </ul>
+</div>
+
+<!-- Checkpoint -->
+<div class="checkpoint">
+  <div class="cp-title">🎯 Checkpoint</div>
+  <div class="scenario">
+    <strong>场景</strong>：你的团队准备采购一个"AI 合同审核助手"给法务部用。两家供应商 Demo：<br><br>
+    <strong>供应商 A</strong>：用了最新的 Claude 3.5（200K 窗口），上传合同后直接给一份完整审核报告——列出所有潜在风险、每条引用原文条款号。模型能力强，报告很详细（通常 8-12 页）。<br><br>
+    <strong>供应商 B</strong>：用的是 GPT-4o（128K 窗口），但产品做了分层设计——上传后先给"3 个最高风险条款+风险等级+一句话说明"，法务人员点击任一条可展开详细分析和原文高亮，还能标记"已确认/需修改"直接生成修改建议。<br><br>
+    <strong>你怎么建议老板选？</strong>
+  </div>
+  <ul class="options">
+    <li><strong>A.</strong> 选供应商 A——模型更强（Claude 200K > GPT-4o 128K），合同审核准确率和完整性才是第一位，产品交互可以后续改</li>
+    <li><strong>B.</strong> 选供应商 B——产品设计更好，法务人员实际使用效率更高，模型能力差距在这个场景不是决定性的</li>
+    <li><strong>C.</strong> 让两家各审核同一批 10 份合同，对比遗漏率和误报率——数据说话</li>
+    <li><strong>D.</strong> 先问法务部"你们现在审核一份合同的痛点到底是什么——是漏看风险，还是效率太低？"——痛点不同，选型标准不同</li>
+  </ul>
+  <div class="follow-up">
+    <strong>追问 1</strong>：如果法务说"两个都是痛点——既怕漏风险又嫌慢"，那 A 和 B 的取舍逻辑是什么？给出你的判断。<br><br>
+    <strong>追问 2</strong>："产品交互可以后续改"这个说法成立吗？为什么很多 AI 产品的交互设计事后很难改？
+  </div>
+</div>
+
+<!-- 知识卡片 -->
+<div class="knowledge-card">
+  <div class="card-title">📌 知识卡片</div>
+  <ul>
+    <li><strong>1. 信息管理三角</strong>：长文本产品的设计本质是管理"用户意图 × 信息定位 × 输出呈现"三者的关系</li>
+    <li><strong>2. 产品设计五条铁律</strong>：主动出击 / 注意力引导 / 金字塔输出 / 源引用锚定 / 记忆管理</li>
+    <li><strong>3. 能力趋同后的竞争转移</strong>：当所有模型都有 200K+ 窗口时，差异化从"模型能力"转向"产品设计"</li>
+    <li><strong>4. NotebookLM 启示</strong>：最好的长文本产品不一定用最强模型——它重新定义了人和长文本的交互方式</li>
+    <li><strong>5. 评估新维度</strong>：AI产品评估 = 模型能力层（Day 22-28）+ 产品设计层（Day 29+），后者的护城河更持久</li>
+  </ul>
+</div>
+
+<!-- 前序知识连接 -->
+<div class="connection">
+  <div class="conn-title">🔗 前序知识连接</div>
+  <ul>
+    <li><strong>Day 10 Context Window</strong>：今天的"信息定位策略"直接基于上下文窗口的成本和 Lost in the Middle 效应</li>
+    <li><strong>Day 12 Fine-tune vs RAG vs Prompt</strong>：RAG 检索策略是今天"信息定位"四种方案之一，理解其优劣才能设计好的混合策略</li>
+    <li><strong>Day 15 Prompt 工程</strong>：今天的"用户意图管理"本质是产品层面的 Prompt 设计——帮用户写出好的 Prompt</li>
+    <li><strong>Day 25 Kimi 长文本战略</strong>：今天从"Kimi 的技术优势"转向"长文本如何变成好产品"——技术押注和产品设计是两件事</li>
+    <li><strong>Day 27 差异化趋势</strong>："差异化从模型转向产品"——今天是这个判断的具体展开</li>
+    <li><strong>Day 28 判断操作系统</strong>：操作系统保质期分层中，"产品设计原则"属于框架层（2-3年有效），比模型参数更持久</li>
+  </ul>
+</div>
+
+<!-- 明日悬念 -->
+<div class="teaser">
+  <div class="teaser-label">📡 明日悬念</div>
+  <p>今天讲了长文本产品——输入是文字，输出也是文字。<br>但如果输入是一张照片、一段视频、一条语音呢？<strong>多模态产品设计</strong>的挑战完全不同——你不只是在管理"注意力"，还在管理"模态翻译"。明天见。</p>
+</div>
+
+</div>
+</body>
+</html>
