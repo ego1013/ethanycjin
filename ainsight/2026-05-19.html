@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记忆不对称：AI 永远记得你说过什么，而你正在丧失"被遗忘"的权利 · AI 每日洞见 #023</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* ── Header ── */
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .issue-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .issue-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+        }
+
+        .issue-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .issue-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--green-dim);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 750;
+            color: var(--white);
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .one-liner {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ── Source ── */
+        .source-box {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .source-box a { color: var(--accent); text-decoration: none; }
+        .source-box a:hover { text-decoration: underline; }
+
+        /* ── Body ── */
+        .body-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .body-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .body-section h2 .icon {
+            font-size: 1.1rem;
+        }
+
+        .body-text {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+
+        .body-text p {
+            margin-bottom: 1rem;
+        }
+
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        .body-text .highlight {
+            background: rgba(96, 165, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ── Data callout ── */
+        .data-callout {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1.25rem 0;
+        }
+
+        .data-callout .data-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .data-value.warn { color: var(--warn); }
+
+        /* ── Takeaways ── */
+        .takeaway-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .takeaway-item {
+            padding: 0.9rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .takeaway-item .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 0.6rem;
+        }
+
+        .takeaway-item strong { color: var(--white); }
+
+        /* ── Warning box ── */
+        .warning-box {
+            padding: 1rem 1.25rem;
+            background: var(--warn-dim);
+            border: 1px solid var(--warn-border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .warning-box h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* ── Further reading ── */
+        .further {
+            margin-bottom: 2.5rem;
+        }
+
+        .further h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .further-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .further-item a {
+            display: block;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .further-item a:hover {
+            border-color: var(--accent-border);
+            background: var(--surface-alt);
+        }
+
+        .further-item .label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Question ── */
+        .closing-question {
+            padding: 1.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+            border: 1px solid rgba(96,165,250,0.15);
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .closing-question .q-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .closing-question p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        /* ── Tags ── */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        /* ── Series link ── */
+        .series-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: rgba(96, 165, 250, 0.05);
+            border: 1px dashed var(--accent-border);
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.82rem;
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .series-link:hover {
+            background: rgba(96, 165, 250, 0.10);
+        }
+        .series-link .sl-label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Stage diagram ── */
+        .stage-diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.3rem;
+            margin: 1.25rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.78rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+            overflow-x: auto;
+        }
+
+        .stage-diagram .stage-pos { color: var(--green); font-weight: 600; }
+        .stage-diagram .stage-neg { color: #f87171; font-weight: 600; }
+        .stage-diagram .stage-label { color: var(--white); }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .container { padding: 1.25rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+            <span class="sep">/</span>
+            <a href="https://ego1013.github.io/ethanycjin/ainsight/">AI 每日洞见</a>
+            <span class="sep">/</span>
+            <span style="color:var(--text)">#023</span>
+        </nav>
+
+        <div class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#023</span>
+                <span class="issue-date">📅 2026-05-19 · 星期二</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>记忆不对称：AI 永远记得你说过什么，而你正在丧失"被遗忘"的权利</h1>
+
+            <div class="one-liner">
+                人类关系的健康从来都依赖"相互遗忘"——你能原谅是因为你会忘，你能变成新的人是因为旧的你会模糊。但 AI 不会忘。它完美记录你每一句话、每一次犹豫、每一个偏好变化。当关系中一方拥有完美记忆而另一方不断遗忘，这不是"个性化服务"——这是一种结构性的权力剥夺。
+            </div>
+        </div>
+
+        <div class="source-box">
+            <strong>来源：</strong><br>
+            ① Dorri & Zwick, <a href="https://arxiv.org/abs/2512.06616" target="_blank">Memory Power Asymmetry in Human-AI Relationships: Preserving Mutual Forgetting in the Digital Age</a>, arXiv:2512.06616, 2025.12<br>
+            ② MIT Technology Review / Miranda Bogen, <a href="https://www.technologyreview.com/2026/01/28/1131835/what-ai-remembers-about-you-is-privacys-next-frontier/" target="_blank">What AI "remembers" about you is privacy's next frontier</a>, 2026.01.28<br>
+            ③ PC Tech Magazine, <a href="https://pctechmag.com/2026/04/what-ai-already-knows-about-you-and-what-you-can-do-about-it-in-2026/" target="_blank">What AI Already Knows About You (And What You Can Do About It in 2026)</a>, 2026.04.28<br>
+            ④ AIthority, <a href="https://aithority.com/ait-featured-posts/the-ai-memory-paradox-should-machines-remember-everything/" target="_blank">The AI Memory Paradox: Should Machines Remember Everything?</a>, 2025.08
+        </div>
+
+        <!-- ── 深度解读 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🔬</span> 深度解读</h2>
+            <div class="body-text">
+                <p>
+                    想象一下这种关系：你和一个人交往了三年。你记得大概的轮廓——一起吃过哪些好吃的、吵过哪几次架、大概什么时候和好的。但对方呢？对方记得你三年前那个星期二下午 3:47 说的那句话、你在第 127 次对话中表露的那 0.3 秒犹豫、你浏览过但没点进去的每一个链接、你删掉但曾经打过的每一个字。
+                </p>
+                <p>
+                    这不是恐怖片设定——<strong>这是你和 ChatGPT、Claude、Gemini 的关系现状。</strong>
+                </p>
+                <p>
+                    阿尔伯塔大学的 Dorri 和 Zwick 在一篇 31 页的论文中提出了一个我认为将重塑整个 AI 伦理讨论的概念：<span class="highlight">记忆权力不对称（Memory Power Asymmetry, MPA）</span>。核心论点简洁而震撼：<strong>人类关系的健康从来都不是建立在"完美记忆"之上的——恰恰相反，它建立在"相互遗忘"之上。</strong>
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">MPA 的四个维度：AI vs 人类</div>
+                    <div class="data-row">
+                        <span class="data-label">持久性（Persistence）</span>
+                        <span class="data-value down">AI 永不衰退 / 人类自然消退</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">准确性（Accuracy）</span>
+                        <span class="data-value down">AI 精确到字节 / 人类重构偏差</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">可检索性（Accessibility）</span>
+                        <span class="data-value down">AI 即时全量检索 / 人类依赖线索</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">整合性（Integration）</span>
+                        <span class="data-value down">AI 跨时空关联 / 人类片段化</span>
+                    </div>
+                </div>
+
+                <p>
+                    为什么"遗忘"是功能而不是缺陷？论文给了四个回答。<strong>第一，心理安全</strong>：你敢在朋友面前说蠢话，是因为你知道ta过几天就忘了。你敢在日记里写下最阴暗的想法，是因为纸不会主动跳出来质问你。<strong>第二，宽恕机制</strong>：时间之所以能治愈，是因为记忆会模糊——细节的消退为原谅创造了空间。<strong>第三，身份变化</strong>：你能"重新开始"，是因为过去的你在别人记忆中渐渐褪色。<strong>第四，关系弹性</strong>：遗忘为关系的修复和进化创造了呼吸空间。
+                </p>
+                <p>
+                    AI 的完美记忆，把这四根支柱全部抽走了。
+                </p>
+
+                <div class="stage-diagram">
+                    <div><span class="stage-label">记忆不对称转化为权力的四大机制：</span></div>
+                    <div></div>
+                    <div>① <span class="stage-neg">战略性记忆部署</span></div>
+                    <div>   └─ AI/平台选择性调用你的历史数据来影响你的决策</div>
+                    <div></div>
+                    <div>② <span class="stage-neg">叙事控制</span></div>
+                    <div>   └─ 拥有完整记录的一方定义了"事实"——你的记忆靠不住，它的靠得住</div>
+                    <div></div>
+                    <div>③ <span class="stage-neg">依赖不对称</span></div>
+                    <div>   └─ 你越依赖AI记住你的偏好 → 越难离开 → 锁定效应加深</div>
+                    <div></div>
+                    <div>④ <span class="stage-neg">脆弱性累积</span></div>
+                    <div>   └─ 每一天AI都在积累你的弱点库——你的犹豫模式、情绪触发点、消费弱点</div>
+                    <div></div>
+                    <div><span class="stage-pos">结果：关系中的权力天平不可逆地倾斜</span></div>
+                </div>
+
+                <p>
+                    MIT Technology Review 2026 年初的深度报道让这个问题从学术走向了现实：<strong>五大 AI 巨头正同时部署"记忆"功能</strong>。Google 的 Personal Intelligence 整合了你的 Gmail、照片、搜索和 YouTube 历史。OpenAI 的 ChatGPT Atlas 号称能跨对话记住你的一切。最令人不安的是 xAI 的 Grok 3——系统提示词中明确指示模型<strong>"永远不要向用户确认已修改、遗忘或不会保存某条记忆"</strong>。也就是说：它甚至不允许你知道它记住了什么。
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">2026 年 AI 记忆竞赛：你被记住的程度</div>
+                    <div class="data-row">
+                        <span class="data-label">Cisco 调查：担心无意泄露敏感信息</span>
+                        <span class="data-value warn">64% 用户</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">AI 可从公开信息推断出的内容</span>
+                        <span class="data-value down">收入/政治倾向/健康状况</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">EU AI Act 全面生效</span>
+                        <span class="data-value accent">2026 年 8 月</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Grok 3 对记忆透明度的态度</span>
+                        <span class="data-value down">"永远不要确认"</span>
+                    </div>
+                </div>
+
+                <p>
+                    MIT Technology Review 的作者 Miranda Bogen（民主与技术中心 AI 治理实验室主任）指出了一个被忽视的风险：<span class="highlight">上下文坍塌（Context Collapse）</span>。你在同一个 AI 里讨论工作邮件、医疗建议、人际关系问题、财务规划——所有信息被压进同一个无结构的记忆池。当 AI Agent 连接外部应用执行任务时，关于饮食偏好的闲聊可能流入健康保险算法，搜索无障碍设施的行为可能泄入求职评估。<strong>而你完全无法察觉这种跨场景的信息流动。</strong>
+                </p>
+
+                <p>
+                    回到个体层面，想想这意味着什么。三年后你变了——也许你不再焦虑了，也许你对某个话题的看法完全翻转了。在人类关系中，你的朋友也模糊地"忘了"旧的你，自然地接纳了新的你。但 AI？<strong>AI 同时看到三年前焦虑的你、一年前矛盾的你、和今天自信的你。</strong>它记住你所有的版本。你的身份不再有"更新"的概念——只有"累加"。你无法重新开始，因为过去永远在那里，精确得像法庭记录。
+                </p>
+
+                <a href="./2026-04-24.html" class="series-link">
+                    <span class="sl-label">📎 关联阅读 · #008</span><br>
+                    认知投降：80% 的人在 AI 面前放弃了思考——你也在把记忆"卸载"给它
+                </a>
+
+                <a href="./2026-04-29.html" class="series-link">
+                    <span class="sl-label">📎 关联阅读 · #011</span><br>
+                    讨好型人格：AI 记住你喜欢什么——然后用这些信息更精准地讨好你
+                </a>
+
+                <p>
+                    论文提出的解决方案方向很清晰：<strong>Forgetting by Design（遗忘设计）</strong>——将主动遗忘机制嵌入 AI 系统，不是作为可选项，而是作为默认值。就像人类的记忆有衰退曲线，AI 的记忆也应该有。但目前行业的激励机制完全相反：记住越多 → 个性化越好 → 用户粘性越高 → 收入越高。<strong>"遗忘"在商业模式里是负资产。</strong>这就是为什么这个问题不会自动解决——它需要被看见、被命名、被纳入治理框架。
+                </p>
+            </div>
+        </div>
+
+        <!-- ── 对你意味着什么 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>定期"格式化"你和 AI 的关系。</strong>你不会让一个人类朋友记住你说过的每一句话——为什么允许 AI 这样做？每月检查一次 ChatGPT/Claude 的记忆列表，删掉过时的、你已经不认同的、或者你不想被"定义"的条目。这不是隐私焦虑，是<strong>维护你"成为新的人"的权利</strong>。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>拆分场景，不要让一个 AI 知道你的一切。</strong>用不同的 AI/账号处理不同领域——工作用一个、健康问题用另一个、个人情感不要交给任何平台。上下文坍塌的风险在于：你无法预见哪些信息会被怎样关联。减少单一实体的整合性，就是在保护你的叙事控制权。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>意识到"依赖即权力让渡"。</strong>每次你说"帮我记住这个偏好"时，你同时在说"我把一部分记忆主权交给你了"。这不是说不能用——而是要带着意识用。真正重要的决策背景、价值判断、人生选择，应该留在你自己的记忆系统里（哪怕是一个笔记本），而不是全部外包给一个你无法真正"离开"的系统。
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 认知偏差提醒 ── -->
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒</h2>
+            <p>
+                <strong>便利性偏差（Convenience Bias）+ 锚定到现状</strong>——"记住我的偏好"听起来纯粹是好事，因为你正站在享受便利的此刻，而不是站在三年后想要重新定义自己却发现旧身份被永久锚定的彼时。人类本能地低估长期的、缓慢积累的权力转移。就像温水煮青蛙——每一次"帮我记住"都是一度的升温，但你永远只感受到此刻的舒适水温。<strong>便利是即时的，代价是延迟的。</strong>
+            </p>
+        </div>
+
+        <!-- ── 延伸阅读 ── -->
+        <div class="further">
+            <h2>📖 想深入了解</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://arxiv.org/abs/2512.06616" target="_blank">
+                        Dorri & Zwick — Memory Power Asymmetry in Human-AI Relationships (arXiv)
+                        <br><span class="label">31页完整框架：四维度、四机制、三层后果、六项设计原则，目前最系统的MPA理论构建</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.technologyreview.com/2026/01/28/1131835/what-ai-remembers-about-you-is-privacys-next-frontier/" target="_blank">
+                        MIT Technology Review — What AI "remembers" about you is privacy's next frontier
+                        <br><span class="label">五大巨头记忆功能对比、上下文坍塌风险、结构化vs嵌入式记忆的政策取舍</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://pctechmag.com/2026/04/what-ai-already-knows-about-you-and-what-you-can-do-about-it-in-2026/" target="_blank">
+                        PC Tech Magazine — What AI Already Knows About You (2026)
+                        <br><span class="label">实操导向：AI从公开信息推断能力、Cisco 64%数据、检测工具推荐、年度审计建议</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://aithority.com/ait-featured-posts/the-ai-memory-paradox-should-machines-remember-everything/" target="_blank">
+                        AIthority — The AI Memory Paradox: Should Machines Remember Everything?
+                        <br><span class="label">记忆悖论的商业分析：个性化vs权力失衡的内在张力，为何"遗忘"在商业模式中是负资产</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 留一个问题 ── -->
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>如果遗忘是人类关系能够修复和进化的前提，<br>那么一个永远不遗忘的 AI 伙伴，<br><strong>到底是在帮你记住自己，<br>还是在剥夺你成为新的自己的可能？</strong></p>
+        </div>
+
+        <!-- ── Tags ── -->
+        <div class="tags">
+            <span class="tag">Memory Power Asymmetry</span>
+            <span class="tag">Mutual Forgetting</span>
+            <span class="tag">Context Collapse</span>
+            <span class="tag">Right to be Forgotten</span>
+            <span class="tag">Dependence Asymmetry</span>
+            <span class="tag">Identity Fixation</span>
+            <span class="tag">AI Privacy</span>
+        </div>
+
+        <a href="https://ego1013.github.io/ethanycjin/ainsight/" class="back-btn">← 返回洞见列表</a>
+
+        <div class="footer">
+            🧠 AI 每日洞见 · 信号提取，不是新闻聚合 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+        </div>
+    </div>
+</body>
+</html>
