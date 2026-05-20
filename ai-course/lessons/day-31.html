@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 31 · AI产品设计原则(3)：Agent产品设计 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0f05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--accent-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+  .callout.teal { border-left: 4px solid var(--teal); background: var(--teal-dim); }
+  .callout.pink { border-left: 4px solid var(--pink); background: var(--pink-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+  .callout.teal .callout-label { color: var(--teal); }
+  .callout.pink .callout-label { color: var(--pink); }
+
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  li strong { color: #fff; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-weight: 600;
+  }
+
+  td { color: var(--text); }
+
+  .knowledge-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .knowledge-card .card-title {
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .knowledge-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .knowledge-card li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .knowledge-card li:last-child { border-bottom: none; }
+
+  .connection {
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .connection .conn-title {
+    color: var(--purple);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+  }
+
+  .checkpoint .cp-title {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .checkpoint .scenario {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .checkpoint .options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .checkpoint .options li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .options li:hover {
+    border-color: var(--accent);
+  }
+
+  .checkpoint .follow-up {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  .teaser {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+
+  .teaser .teaser-label {
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .teaser p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--cyan);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .vs-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .vs-table .vs-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .vs-table .vs-col h4 {
+    margin-top: 0;
+    font-size: 0.85rem;
+  }
+
+  .vs-table .vs-col ul {
+    margin: 0.5rem 0 0 1rem;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; align-items: center; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .vs-table { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 31
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">第三模块 · 判断篇</div>
+  <h1>AI产品设计原则(3)：Agent产品设计</h1>
+  <div class="subtitle">当 AI 不只是"分析"还要"动手做事"——可靠性管理从加分项变成了生死线</div>
+  <div class="meta">
+    <span>📅 2026-05-20 Wed</span>
+    <span>⏱️ 约 40 分钟</span>
+    <span>🟡 中半衰期</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- 开场 -->
+<div class="opening">
+  <div class="label">🔥 开场问题</div>
+  <p>Day 29 讲长文本——AI 帮你"看"200 页合同，给你分析结论。出了错？你多看一眼就发现了。<br>Day 30 讲多模态——AI 帮你"看"门店照片，标注违规区域。出了错？你对照照片就发现了。</p>
+  <p>但今天的场景不一样：<strong>AI 替你发了一封邮件给代理商，通知他下季度返利降为 0。</strong></p>
+  <p>邮件发出去了。代理商电话打进来了。你才发现——<span class="highlight">AI 把"低于目标 5%"错误理解为"低于目标 50%"</span>，一个小数点导致了一封不该发的通知。</p>
+  <p><strong>这就是 Agent 产品设计的根本不同：错误不再是"可被发现的分析偏差"，而是"已经执行的不可逆动作"。</strong><br>产品设计的核心命题，从"信息管理"变成了"行动可靠性管理"。</p>
+</div>
+
+<!-- 第一段 Why -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么 Agent 产品设计值得单独一课</h2>
+  </div>
+
+  <h3>1. "分析型"vs"行动型"——产品设计的根本分野</h3>
+  <p>Day 29 和 Day 30 本质上都是<strong>"分析型"AI 产品设计</strong>——用户给输入，AI 给分析，用户决定怎么做。AI 的输出是"建议"，决策权在人手上。</p>
+  <p>而 Agent 产品的本质不同：</p>
+
+  <div class="callout danger">
+    <div class="callout-label">核心区别</div>
+    <p><strong>分析型产品</strong>：AI输出 = 信息/建议 → 错误后果 = 人多花 10 分钟检查<br>
+    <strong>Agent产品</strong>：AI输出 = 实际动作（发邮件/改数据/调系统）→ 错误后果 = <strong>不可逆的业务损害</strong></p>
+    <p>这意味着 Agent 产品的设计核心不是"让 AI 更聪明"，而是<strong>"让 AI 犯错时伤害最小化"</strong>。</p>
+  </div>
+
+  <h3>2. Day 17-21 讲了"机制"，今天讲"产品化"</h3>
+  <p>回忆一下第二模块的知识储备：</p>
+  <ul>
+    <li><strong>Day 17</strong>：Agent 的定义、Perceive-Think-Act 循环、三个边界（可靠性/幻觉放大/权限悖论）</li>
+    <li><strong>Day 18</strong>：Function Calling、工具调用失败模式、记忆三方案</li>
+    <li><strong>Day 19</strong>：Multi-Agent 架构、通讯损耗、协调成本</li>
+    <li><strong>Day 20</strong>：可验证性分级、什么任务适合交给 AI</li>
+    <li><strong>Day 21</strong>：完整设计了渠道绩效 Agent 工作流</li>
+  </ul>
+  <p>那些都是<strong>底层机制</strong>——"Agent 是什么/能做什么/有什么风险"。</p>
+  <p>今天讲的是<strong>产品设计层</strong>——"同样的 Agent 能力，怎么包装成用户敢用、愿意用、用了不出事的产品"。</p>
+
+  <div class="callout insight">
+    <div class="callout-label">类比：渠道管理的"三级授权体系"</div>
+    <p>你不会把所有权限一次性给新渠道经理——你设计了<strong>分级授权+审批流+异常熔断</strong>。<br>
+    低风险操作（查数据）不用审批；中风险操作（调价格）需要主管确认；高风险操作（终止合作）需要总监签字。<br>
+    <strong>Agent 产品设计本质上就是给 AI 设计一套"组织管理制度"——什么能自动做、什么要报批、什么绝对不能做。</strong></p>
+  </div>
+
+  <h3>3. 为什么现在市面上大部分 Agent 产品都不好</h3>
+  <p>2025-2026 的 Agent 产品爆发期，绝大多数产品犯了同一个错误：</p>
+  <ul>
+    <li><strong>Demo 思维</strong>：展示"AI 能做到"就结束了，没有设计"AI 做错了怎么办"</li>
+    <li><strong>把"能力"当"产品"</strong>：模型可以调 API 了 → 就直接让它调 → 没有权限分级、没有预确认、没有回滚</li>
+    <li><strong>忽视用户信任建立</strong>：第一次使用就让 AI 执行高风险操作 → 用户出一次事就永远不信了</li>
+  </ul>
+  <p>结果就是我们看到的行业现状：<strong>Agent 的技术 demo 很惊艳，但用户留存率极低</strong>——因为产品设计没有解决"信任"问题。</p>
+</div>
+
+<!-- 第二段 What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — Agent 产品设计的五个核心维度</h2>
+  </div>
+
+  <h3>核心框架：Agent 产品的"信任飞轮"</h3>
+  <p>Agent 产品设计的终极目标不是"让 AI 做更多事"，而是<strong>建立用户对 AI 行动的信任</strong>，让用户逐渐愿意把更多决策权交给 AI。这是一个飞轮：</p>
+
+  <div class="diagram">┌─────────────────────────────────────────────────────────┐
+│          Agent 产品设计 · 信任飞轮                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────┐     ┌──────────┐     ┌──────────┐        │
+│  │ 小范围    │────▶│ 证明可靠  │────▶│ 扩大授权  │───┐   │
+│  │ 低风险    │     │ 建立信任  │     │ 做更多    │   │   │
+│  │ 可逆操作  │     │           │     │           │   │   │
+│  └──────────┘     └──────────┘     └──────────┘   │   │
+│       ↑                                             │   │
+│       └─────────────────────────────────────────────┘   │
+│                                                         │
+│  反方向（信任崩塌）：                                     │
+│  一次严重失误 → 用户关闭全部权限 → 产品沦为花瓶          │
+│                                                         │
+│  ⚡ 设计核心：让飞轮正向转动，同时防止一次失误摧毁全盘    │
+└─────────────────────────────────────────────────────────┘</div>
+
+  <p><strong>围绕这个飞轮，Agent 产品有五个核心设计维度：</strong></p>
+
+  <h3>维度一：权限分级——"能做什么"的边界设计</h3>
+  <h4>问题：Agent 有了工具就等于有了"手脚"，但不是所有手脚都该放开</h4>
+  <p>Day 18 讲了 Tool Schema——每个工具就是一个权限。问题是：<strong>产品设计者要决定哪些权限对用户可见、哪些默认开启、哪些需要显式授权。</strong></p>
+
+  <table>
+    <tr><th>风险等级</th><th>操作类型</th><th>产品设计策略</th><th>渠道管理对照</th></tr>
+    <tr><td>🟢 低</td><td>查询/读取（查数据、看报表）</td><td>默认开启，无需确认</td><td>查绩效看报告——随时可看</td></tr>
+    <tr><td>🟡 中</td><td>内部变更（写备忘录、建草稿）</td><td>自动执行，事后通知</td><td>渠道经理内部记录——做完告知</td></tr>
+    <tr><td>🟠 中高</td><td>外部通讯（发邮件、发消息）</td><td>预览确认后发送</td><td>给代理商发通知——主管过目后发</td></tr>
+    <tr><td>🔴 高</td><td>资金/合同/终止操作</td><td>必须人工审批+二次确认</td><td>终止合作/调返利——总监签字</td></tr>
+    <tr><td>⛔ 禁止</td><td>删除数据/发布公告/批量操作</td><td>产品层面直接禁止，不给工具</td><td>集体辞退——不可能授权任何个人</td></tr>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-label">Agent 设计原则 #1</div>
+    <p><strong>权限要"从下往上开放"——先让 Agent 只做低风险的事，证明可靠后再逐步解锁更高权限。</strong><br>
+    反面案例：一上来就让 Agent 可以"自动发送客户通知"——第一天就发错一封，用户永远不敢再用。<br>
+    正面案例：前两周只让 Agent 起草通知（你审一遍再发）→ 发现准确率 99% → 第三周开放"低风险通知自动发送"。</p>
+  </div>
+
+  <h4>类比：新员工的权限阶梯</h4>
+  <p>你招了一个新的渠道运营，不管他简历多优秀，第一天绝不会让他自己拍板终止代理商合作。你会设计一条<strong>权限升级路径</strong>：先跟你一起做 → 独立做低风险的 → 证明判断力后扩大范围 → 最终可以独立处理大部分事务但重大决策仍需汇报。</p>
+  <p><strong>Agent 产品需要同样的"成长路径"设计。</strong></p>
+
+  <h3>维度二：预确认设计——"动手前先说"</h3>
+  <h4>问题：用户不知道 Agent 要做什么就做了，出事后才发现</h4>
+  <p>好的 Agent 产品在执行动作前，会用清晰的方式告诉用户"我打算做什么"：</p>
+
+  <div class="diagram">┌──────────────────────────────────────────┐
+│  预确认设计的三种模式                      │
+├──────────────────────────────────────────┤
+│                                          │
+│  模式 A：Silent Execution（静默执行）     │
+│  适用：🟢 低风险操作                      │
+│  "已为你查询了 Q1 华东区数据"             │
+│  → 用户看到结果，不需要事先同意           │
+│                                          │
+│  模式 B：Plan → Confirm → Execute        │
+│  适用：🟡🟠 中/中高风险操作               │
+│  "我计划做以下 3 件事：                   │
+│   1. 生成绩效异常报告                    │
+│   2. 标记 5 个待关注代理商               │
+│   3. 起草预警邮件（待你确认后发送）       │
+│   确认执行？"                            │
+│  → 用户看到计划全貌后一键确认             │
+│                                          │
+│  模式 C：Step-by-Step Approval            │
+│  适用：🔴 高风险操作                      │
+│  每一步都暂停，等用户确认后才继续         │
+│  "Step 1 完成。下一步是调整返利比例       │
+│   从 8% → 5%，确认？"                    │
+│  → 最安全但最慢                          │
+│                                          │
+└──────────────────────────────────────────┘</div>
+
+  <div class="callout gold">
+    <div class="callout-label">Agent 设计原则 #2</div>
+    <p><strong>动作的"可逆程度"决定预确认的"严格程度"。</strong><br>
+    可逆操作（生成草稿）→ 先做再说（用户可以撤销）<br>
+    部分可逆（发内部消息）→ 先展示计划再执行<br>
+    不可逆操作（发外部邮件/修改合同/转账）→ 必须逐步确认</p>
+    <p>好的 Agent 产品不会让你选这三种模式——它<strong>根据操作风险自动选择正确的确认模式</strong>。用户不需要理解底层逻辑，产品替他管好了。</p>
+  </div>
+
+  <h3>维度三：可观测性——"让用户看见 Agent 在想什么"</h3>
+  <h4>问题：Agent 是"黑箱"——用户不知道它为什么做了这个决定</h4>
+  <p>Day 16 讲过 CoT——让模型展示推理过程。在 Agent 产品中，<strong>可观测性</strong>不是技术选项，是产品必需：</p>
+
+  <ul>
+    <li><strong>决策透明</strong>：为什么选了这个动作？（"我选择发邮件给李总因为他连续 2 月低于目标且未回复上次约谈"）</li>
+    <li><strong>数据溯源</strong>：这个判断基于什么数据？（"数据来源：CRM 系统 Q1 数据 + 上月绩效报告"）</li>
+    <li><strong>置信度标注</strong>：Agent 对自己的判断有多确定？（"85% 确信度——有一条数据缺失可能影响判断"）</li>
+    <li><strong>执行日志</strong>：做了什么？什么时候做的？结果是什么？（可审计、可回溯）</li>
+  </ul>
+
+  <div class="callout cyan">
+    <div class="callout-label">Agent 设计原则 #3</div>
+    <p><strong>"展示推理过程"不是炫技，是建立信任的最低成本方式。</strong><br>
+    用户信任 Agent 有两种路径：①用了很多次没出过错（耗时长、不确定）；②每次都能看到它的"思考过程"，确认逻辑靠谱后放心让它做（快速建立信任）。<br>
+    好的 Agent 产品两条路径同时走——显示推理过程+积累正确率数据。</p>
+  </div>
+
+  <h4>类比：渠道管理中的"下属工作汇报"</h4>
+  <p>你管一个渠道经理，他说"我决定暂停跟代理商张总的合作"。你需要什么？</p>
+  <ul>
+    <li>不是一句结论——你需要<strong>为什么</strong>（数据依据+推理链条）</li>
+    <li>不是事后汇报——你需要<strong>事前汇报</strong>（让你有机会阻止）</li>
+    <li>不是口头承诺——你需要<strong>可追溯的记录</strong>（万一出事，能复盘决策过程）</li>
+  </ul>
+  <p><strong>Agent 产品的可观测性设计，就是给 AI 建立一套"工作汇报制度"。</strong></p>
+
+  <h3>维度四：错误恢复——"出了事怎么办"</h3>
+  <h4>问题：Agent 一定会犯错，关键是犯错后的损害能否控制</h4>
+  <p>Day 17 讲过 0.95^10 ≈ 60%——即使每一步 95% 正确，10 步之后整体正确率只有 60%。<strong>Agent 产品不能假设不犯错，必须为犯错设计恢复机制。</strong></p>
+
+  <table>
+    <tr><th>恢复策略</th><th>机制</th><th>适用场景</th></tr>
+    <tr><td><strong>一键撤销</strong></td><td>所有操作记录完整的执行日志+逆操作能力</td><td>内部系统操作（标记/备注/分类）</td></tr>
+    <tr><td><strong>暂存草稿区</strong></td><td>外发内容先进"发件箱"等待一个时间窗口</td><td>邮件/消息类操作（30分钟内可撤回）</td></tr>
+    <tr><td><strong>影响范围限制</strong></td><td>单次操作不超过 N 个对象（如最多同时调整 5 个代理商）</td><td>批量操作场景</td></tr>
+    <tr><td><strong>自动熔断</strong></td><td>检测到异常模式立即停止（如"一次性降低 10+ 代理商返利"）</td><td>所有自动化执行场景</td></tr>
+    <tr><td><strong>人工回滚窗口</strong></td><td>重大操作执行后保留 24h 确认期，期间可一键回滚</td><td>合同/资金/权限类操作</td></tr>
+  </table>
+
+  <div class="callout purple">
+    <div class="callout-label">Agent 设计原则 #4</div>
+    <p><strong>好的 Agent 产品不是"不犯错"，而是"犯错后能快速恢复到安全状态"。</strong><br>
+    设计目标不是 100% 正确率（不可能），而是：①错误可发现（可观测性）；②发现后可恢复（回滚能力）；③恢复前损害有限（影响范围限制）。<br>
+    这就是 Day 17 讲的"可靠性三要素"的产品化落地——从抽象原则变成了具体机制。</p>
+  </div>
+
+  <h3>维度五：渐进授权——"Agent 的成长路径"</h3>
+  <h4>问题：用户不可能第一天就完全信任 Agent</h4>
+  <p>最关键的产品设计：<strong>Agent 的权限不是静态的，而是根据表现动态调整的。</strong></p>
+
+  <div class="diagram">┌──────────────────────────────────────────────────┐
+│  Agent 渐进授权路径                                │
+├──────────────────────────────────────────────────┤
+│                                                  │
+│  Level 0: 只读旁观                               │
+│  "我发现华东区 3 个代理商数据异常，建议关注"     │
+│  → Agent 只提供分析，不执行任何动作              │
+│                                                  │
+│  Level 1: 建议+起草                              │
+│  "已为你起草预警邮件（附件），确认后我来发送"    │
+│  → Agent 准备好所有东西，人一键确认              │
+│                                                  │
+│  Level 2: 自动执行+事后报告                      │
+│  "已自动发送 3 封预警邮件（详见日志），           │
+│   其中 1 封因代理商信息缺失暂停待确认"           │
+│  → 大部分自动，异常停下来问                      │
+│                                                  │
+│  Level 3: 完全自治+异常熔断                      │
+│  Agent 独立运行，仅在异常时通知人                │
+│  → 高度信任+异常情况自动刹车                     │
+│                                                  │
+│  ⚡ 升级条件：连续 N 次无误 + 用户主动解锁       │
+│  ⚡ 降级条件：一次严重失误 → 自动退回上一级       │
+└──────────────────────────────────────────────────┘</div>
+
+  <div class="callout teal">
+    <div class="callout-label">Agent 设计原则 #5</div>
+    <p><strong>Agent 产品必须设计"升降级机制"——根据累计表现自动调整权限，而不是一刀切"全自动"或"全手动"。</strong><br>
+    升级要缓慢（积累信任），降级要迅速（一次失误立刻降）。这和管理团队一模一样——信任需要长期积累，但可以一次丧失。</p>
+  </div>
+
+  <h4>类比：渠道经理的"放权路径"</h4>
+  <p>你带一个新渠道经理：</p>
+  <ul>
+    <li><strong>第 1 个月</strong>：你做决定，他观察学习（Level 0）</li>
+    <li><strong>第 2-3 个月</strong>：他提方案，你审批后他执行（Level 1）</li>
+    <li><strong>第 4-6 个月</strong>：日常事务他独立处理，每周汇报；异常情况立刻上报（Level 2）</li>
+    <li><strong>第 7 个月起</strong>：完全独立负责，你只看月报和异常告警（Level 3）</li>
+    <li><strong>如果他某次搞砸了一个大客户</strong>：立刻退回 Level 1（重大事项需审批），直到重新证明判断力</li>
+  </ul>
+  <p><strong>同样的管理智慧，直接迁移到 Agent 产品设计。</strong></p>
+
+  <h3>真实产品对比：Agent 产品设计水平三档</h3>
+  <table>
+    <tr><th>维度</th><th>初级（Demo级）</th><th>中级（可用级）</th><th>高级（可信赖级）</th></tr>
+    <tr><td>权限分级</td><td>全部权限一次给</td><td>分高/低两级</td><td>五级分层+动态调整</td></tr>
+    <tr><td>预确认</td><td>不确认直接做</td><td>重要操作前确认</td><td>根据风险自动选模式</td></tr>
+    <tr><td>可观测性</td><td>只有结果</td><td>有执行日志</td><td>推理链+数据溯源+置信度</td></tr>
+    <tr><td>错误恢复</td><td>没有回滚</td><td>操作可撤销</td><td>熔断+范围限制+回滚窗口</td></tr>
+    <tr><td>渐进授权</td><td>要么全自动要么手动</td><td>可配置自动化程度</td><td>根据表现自动升降级</td></tr>
+    <tr><td>用户感受</td><td>"很酷但不敢真用"</td><td>"可以用但要盯着"</td><td>"放心交给它，出事它会刹车"</td></tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">关键洞察</div>
+    <p>市面上绝大部分 Agent 产品还停留在"初级"——Demo 很震撼，但没有人敢在真实业务中全自动运行。<strong>从"初级"到"高级"的差距，不是模型能力的差距，而是产品设计的差距。</strong><br><br>
+    这就是为什么 Day 27 讲的"工作流设计能力比模型选择更重要"在 Agent 场景里更加成立——Agent 的底层模型只决定"天花板"，但产品设计决定"用户实际能获得多少价值"。</p>
+  </div>
+
+  <h3>与 Day 29/30 的设计原则对照</h3>
+  <p>三种 AI 产品的设计核心差异：</p>
+  <table>
+    <tr><th>对比维度</th><th>长文本产品(Day 29)</th><th>多模态产品(Day 30)</th><th>Agent产品(Day 31)</th></tr>
+    <tr><td>核心挑战</td><td>注意力管理</td><td>模态翻译损耗</td><td><strong>行动可靠性</strong></td></tr>
+    <tr><td>错误后果</td><td>分析偏差（可修正）</td><td>识别错误（可发现）</td><td><strong>不可逆动作（已执行）</strong></td></tr>
+    <tr><td>用户角色</td><td>决策者（AI建议，人决定）</td><td>确认者（AI标注，人审核）</td><td><strong>监督者（AI做事，人兜底）</strong></td></tr>
+    <tr><td>设计重心</td><td>信息呈现（怎么展示结果）</td><td>翻译质量（怎么减少损耗）</td><td><strong>信任管理（怎么让人放心）</strong></td></tr>
+    <tr><td>Day 29-30-31关系</td><td>基础层（信息辅助）</td><td>增强层（感知辅助）</td><td><strong>动作层（执行辅助）</strong></td></tr>
+  </table>
+
+  <div class="callout blue">
+    <div class="callout-label">三层叠加的完整认知</div>
+    <p>一个成熟的 AI 产品往往同时包含这三层——以你的渠道绩效 Agent 为例：<br>
+    • Worker A/B 做数据拉取和异常标记 → <strong>长文本设计</strong>（怎么从海量数据中聚焦异常）<br>
+    • Worker E（Day 30 新增）做门店照片分析 → <strong>多模态设计</strong>（怎么减少图片识别损耗）<br>
+    • Orchestrator 做任务分发+Worker C/D 生成报告并通知代理商 → <strong>Agent 设计</strong>（怎么确保通知不发错）<br><br>
+    <strong>三层设计原则不是互斥的，而是叠加的。越靠近"行动端"，设计要求越高。</strong></p>
+  </div>
+</div>
+
+<!-- 第三段 So What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这改变了你的什么判断</h2>
+  </div>
+
+  <h3>1. 评估 Agent 产品的五问清单</h3>
+  <p>当你评估一个 Agent 产品（自动化工作流/AI助手/智能运营工具）时：</p>
+  <ol>
+    <li><strong>权限分级</strong>：它能做的事有几级？高风险操作有没有单独管控？还是"一个开关全开"？</li>
+    <li><strong>预确认机制</strong>：它执行动作前会告诉你吗？还是直接做了你才知道？</li>
+    <li><strong>推理可见</strong>：你能看到它为什么做这个决定吗？有数据来源和置信度吗？</li>
+    <li><strong>错误恢复</strong>：做错了能撤回吗？有熔断机制吗？还是"覆水难收"？</li>
+    <li><strong>渐进授权</strong>：能从"半自动"逐步升级到"全自动"吗？还是要么全开要么全关？</li>
+  </ol>
+  <p><strong>5 项齐全 = 生产环境可用；3 项以下 = 只适合内部试验；0 项 = 这不是产品，是个 Demo。</strong></p>
+
+  <h3>2. Day 21 Agent 系统的产品化升级</h3>
+  <p>如果你真要落地渠道绩效 Agent，Day 21 的架构需要叠加今天的产品设计层：</p>
+  <table>
+    <tr><th>Day 21 架构</th><th>+ Day 31 产品设计</th></tr>
+    <tr><td>Worker A 数据拉取</td><td>🟢自动执行（只读操作，无风险）</td></tr>
+    <tr><td>Worker B 异常标记</td><td>🟡自动执行+事后报告（"标记了5个异常，详见附件"）</td></tr>
+    <tr><td>Worker C 归因分析</td><td>🟡Plan-Confirm模式（"我的分析如下...确认这个方向对吗？"）+ 置信度标注</td></tr>
+    <tr><td>Worker D 对策建议</td><td>🟠预览确认（"建议给以下3个代理商发预警通知，预览？"）</td></tr>
+    <tr><td>Orchestrator 全局协调</td><td>🔴 自动熔断（"检测到Worker C输出不一致，暂停等待人工确认"）+ 执行日志</td></tr>
+  </table>
+  <p>加上<strong>渐进授权路径</strong>：第一个月全部 Plan-Confirm → 第二个月 Worker A/B 升级到自动执行 → 第三个月 Worker C 升级到自动+异常停 → Worker D 的通知发送始终保持预览确认（外部操作不可逆）。</p>
+
+  <h3>3. 与 Day 20 可验证性的闭环</h3>
+  <p>Day 20 讲了"什么任务适合 AI"——可验证性高的任务。今天给这个判断加一个维度：</p>
+
+  <div class="callout insight">
+    <div class="callout-label">判断框架更新</div>
+    <p><strong>Agent 产品适合自动化的任务 = 可验证性高 + 错误后果可控 + 可回滚。</strong><br>
+    三个条件缺一不可：<br>
+    • 可验证 + 后果严重 + 不可回滚 → 预确认模式（如转账）<br>
+    • 可验证 + 后果轻微 + 可回滚 → 全自动（如标记异常）<br>
+    • 不可验证 + 任何后果 → 人做决定，Agent 只建议<br><br>
+    <strong>"能不能自动化"不只取决于 AI 准不准，还取决于"准得不够的时候后果多严重"。</strong></p>
+  </div>
+
+  <h3>4. "Agent 产品成熟度"的行业判断</h3>
+  <p>从今天的框架看当前行业：</p>
+  <ul>
+    <li><strong>Manus / Devin 类</strong>：技术演示震撼（Level 3 演示），但产品设计还在初级——缺乏精细的权限分级和错误恢复。适合"探索性任务"不适合"生产环境"</li>
+    <li><strong>Claude MCP + Computer Use</strong>：权限分级意识强（每个工具显式授权），可观测性好（推理过程可见），但渐进授权机制缺失。企业级 Agent 的"基础设施"方向</li>
+    <li><strong>垂直 Agent（如 Harvey/法律、Abridge/医疗）</strong>：产品设计往往最成熟——因为垂直场景的错误后果清晰可量化，倒逼了完整的恢复和确认机制设计。与多模态场景类似，<strong>Agent 场景也是"垂直优于通用"</strong></li>
+  </ul>
+</div>
+
+<!-- Checkpoint -->
+<div class="checkpoint">
+  <div class="cp-title">🎯 Checkpoint</div>
+  <div class="scenario">
+    <strong>场景</strong>：你们团队的"渠道绩效 Agent"已经开发完成 MVP，准备开始内部试用。产品经理问你："第一周就让 Agent 全流程自动运行吗？还是怎么上线？"<br><br>
+    目前的 Agent 可以做的事：<br>
+    ① 自动拉取代理商数据 → ② 标记绩效异常 → ③ 生成归因分析报告 → ④ 起草预警邮件 → ⑤ 发送邮件给代理商<br><br>
+    内测测试结果：步骤 ①② 准确率 99%+，步骤 ③ 准确率约 88%，步骤 ④ 合格率约 82%，步骤 ⑤ 是自动发送（一旦发就收不回来）。<br><br>
+    <strong>你建议什么上线策略？</strong>
+  </div>
+  <ul class="options">
+    <li><strong>A.</strong> 全流程自动化上线——88% 和 82% 已经够用了，人工做这事准确率也差不多，AI 的优势是快。让它跑一周看看再说</li>
+    <li><strong>B.</strong> 保守起见，Agent 只做到步骤 ②（标记异常），后面全部人工。等准确率到 95% 再逐步放开</li>
+    <li><strong>C.</strong> 分层策略：①② 全自动 → ③ 自动生成但人审 → ④ 起草后预览确认 → ⑤ 永远不自动发（外部通讯必须人确认）。两周后根据 ③ 的准确率数据决定是否升级到自动</li>
+    <li><strong>D.</strong> 先问三个问题：错误的代价是什么（发错一封邮件的最坏情况）？第 ③ 步 88% 的错误集中在什么类型？能否用规则把"高置信"的自动处理、"低置信"的交给人？</li>
+  </ul>
+  <div class="follow-up">
+    <strong>追问 1</strong>：假设步骤 ③ 的 12% 错误中，8% 是"方向对但措辞不精确"（影响不大），4% 是"归因方向完全错误"（可能导致错误决策）。这个信息如何改变你的上线策略？<br><br>
+    <strong>追问 2</strong>：产品经理说"如果 Agent 太保守（总是要人确认），渠道经理不愿意用——比手动做还麻烦。"你怎么在"安全"和"效率"之间找到平衡点？用户从什么时刻开始觉得 Agent"有用"？
+  </div>
+</div>
+
+<!-- 知识卡片 -->
+<div class="knowledge-card">
+  <div class="card-title">📌 知识卡片</div>
+  <ul>
+    <li><strong>1. Agent产品的核心命题</strong>：不是"让AI做更多"，而是"让AI犯错时伤害最小化"——设计核心从"信息管理"变为"行动可靠性管理"</li>
+    <li><strong>2. 信任飞轮</strong>：小范围低风险可逆操作→证明可靠→扩大授权→做更多 | 一次严重失误→信任崩塌→退回起点。飞轮正向需要长期积累，崩塌只需一次</li>
+    <li><strong>3. 五条设计原则</strong>：权限从下往上开放 / 动作可逆程度决定确认严格度 / 展示推理过程建立信任 / 为犯错设计恢复机制而非假设不犯错 / 根据表现动态升降级</li>
+    <li><strong>4. 三种AI产品的设计核心差异</strong>：长文本=注意力管理 / 多模态=翻译损耗管理 / Agent=行动可靠性管理。三层叠加，越靠近行动端设计要求越高</li>
+    <li><strong>5. Agent自动化条件三问</strong>：可验证吗？+ 错误后果可控吗？+ 可回滚吗？三项全满足才适合全自动；缺一项就需要人介入点</li>
+  </ul>
+</div>
+
+<!-- 前序知识连接 -->
+<div class="connection">
+  <div class="conn-title">🔗 前序知识连接</div>
+  <ul>
+    <li><strong>Day 17 Agent的三个边界</strong>：今天把抽象边界（可靠性0.95^10/幻觉放大/权限悖论）具体化为产品设计维度——权限分级解决权限悖论，错误恢复解决可靠性问题，可观测性解决幻觉放大</li>
+    <li><strong>Day 18 工具调用与记忆</strong>：Tool Schema是权限分级的技术基础——今天是"有了技术能力后，产品层面怎么管控这些权限"</li>
+    <li><strong>Day 20 可验证性</strong>：今天加了新维度——Agent适合自动化=可验证+错误后果可控+可回滚。可验证性高但后果不可逆的任务，仍然需要人工确认</li>
+    <li><strong>Day 21 Agent工作流</strong>：Day 21设计了架构（Orchestrator+4Workers），今天在架构之上叠加了产品设计层——每个Worker的权限等级、确认模式、熔断条件</li>
+    <li><strong>Day 29 长文本/Day 30 多模态</strong>：三课形成完整对照——从信息辅助→感知辅助→执行辅助，错误后果递增，设计约束递增</li>
+    <li><strong>Day 27 "工作流设计>模型选择"</strong>：Agent场景更验证了这个判断——底层模型只决定天花板，产品设计决定用户实际获得的价值</li>
+  </ul>
+</div>
+
+<!-- 明日悬念 -->
+<div class="teaser">
+  <div class="teaser-label">📡 明日悬念</div>
+  <p>Day 29-31 连续三课讲了"好的 AI 产品设计该怎么做"。<br>
+  但实际项目中，你更常遇到的不是"怎么做对"，而是<strong>"怎么避免做错"</strong>——那些看起来合理但必定失败的 AI 产品方案。<br>
+  明天：<strong>AI产品设计的常见陷阱</strong>——那些被反复踩的坑，为什么"显而易见"但依然有人前赴后继。</p>
+</div>
+
+</div>
+</body>
+</html>
