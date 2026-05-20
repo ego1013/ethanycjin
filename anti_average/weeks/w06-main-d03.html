@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 《自由选择》第 2 天 · 提炼者 | 反均值认知</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616;
+            --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d0cfc8; --text-dim: #888; --text-muted: #555;
+            --white: #f0ece4;
+            --accent: #E94560; --accent-dim: rgba(233,69,96,0.10); --accent-border: rgba(233,69,96,0.25);
+            --shadow: #b08968; --shadow-dim: rgba(176,137,104,0.10); --shadow-border: rgba(176,137,104,0.25);
+            --main: #e2a355; --main-dim: rgba(226,163,85,0.10); --main-border: rgba(226,163,85,0.25);
+            --distiller: #60a5fa; --distiller-dim: rgba(96,165,250,0.10); --distiller-border: rgba(96,165,250,0.25);
+            --detective: #2dd4bf; --detective-dim: rgba(45,212,191,0.08); --detective-border: rgba(45,212,191,0.2);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Noto Serif SC', Georgia, serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; -webkit-font-smoothing: antialiased;
+            line-height: 1.85;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2rem; font-size: 0.78rem; color: var(--text-muted); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--distiller); }
+        .nav .sep { opacity: 0.4; }
+
+        .head-block { border-bottom: 1px solid var(--border); padding-bottom: 1.8rem; margin-bottom: 2.2rem; }
+        .role-tag { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin-bottom: 1rem; margin-right: 0.4rem; }
+        .role-tag.distiller { background: var(--distiller-dim); border: 1px solid var(--distiller-border); color: var(--distiller); }
+        .role-tag.main-book { background: var(--main-dim); border: 1px solid var(--main-border); color: var(--main); }
+        .day-label { font-size: 0.72rem; color: var(--text-muted); font-family: -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: 0.05em; margin-bottom: 0.6rem; }
+        .main-title { font-size: 1.75rem; font-weight: 700; color: var(--white); line-height: 1.4; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+        .sub-title { font-size: 0.98rem; color: var(--text-dim); font-weight: 400; line-height: 1.65; }
+        .sub-title em { color: var(--distiller); font-style: normal; font-weight: 600; }
+
+        .section-divider { display: flex; align-items: center; gap: 0.6rem; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin: 2.5rem 0 1.2rem; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin: 1.8rem 0 0.7rem; letter-spacing: -0.01em; }
+        h3 { font-size: 0.95rem; font-weight: 600; color: var(--distiller); margin: 1.2rem 0 0.4rem; }
+        p { margin-bottom: 1rem; font-size: 0.94rem; }
+        p strong { color: var(--white); font-weight: 600; }
+        p em { color: var(--accent); font-style: normal; font-weight: 600; }
+        .en-term { font-style: italic; color: var(--shadow); }
+
+        .tree { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; margin: 1.3rem 0; font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace; font-size: 0.82rem; line-height: 2; color: var(--text); white-space: pre; overflow-x: auto; }
+        .tree .root { color: var(--white); font-weight: 600; }
+        .tree .node { color: var(--shadow); }
+        .tree .leaf { color: var(--text-dim); }
+        .tree .end  { color: var(--accent); font-weight: 600; }
+
+        .prop-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1rem 0; }
+        .prop-card .prop-num { font-size: 0.6rem; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin-bottom: 0.3rem; }
+        .prop-card .prop-title { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.8rem; }
+        .prop-card .prop-row { display: grid; grid-template-columns: 95px 1fr; gap: 0.8rem; margin-bottom: 0.55rem; font-size: 0.9rem; line-height: 1.7; }
+        .prop-card .prop-row:last-child { margin-bottom: 0; }
+        .prop-card .prop-row .lbl { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding-top: 3px; }
+        .prop-card .prop-row.flip .lbl { color: var(--accent); }
+        .prop-card .prop-row p { margin: 0; }
+
+        .concept-head { background: linear-gradient(135deg, rgba(176,137,104,0.08), rgba(176,137,104,0.02)); border: 1px solid var(--shadow-border); border-radius: 12px 12px 0 0; padding: 1rem 1.3rem 0.8rem; }
+        .concept-head .lbl { font-size: 0.62rem; font-weight: 700; color: var(--shadow); letter-spacing: 0.1em; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin-bottom: 0.3rem; }
+        .concept-head .name { font-size: 1.3rem; color: var(--white); font-weight: 700; }
+        .concept-head .name span { color: var(--shadow); font-style: italic; margin-left: 0.3rem; font-weight: 500; }
+        .concept-body { border: 1px solid var(--shadow-border); border-top: none; border-radius: 0 0 12px 12px; padding: 1.2rem 1.3rem; background: var(--surface); }
+        .concept-body h3 { font-size: 0.88rem; color: var(--shadow); margin: 1rem 0 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
+        .concept-body h3:first-child { margin-top: 0; }
+        .concept-body p { font-size: 0.9rem; margin-bottom: 0.6rem; }
+
+        /* 三国落地差异表（左中右三栏） */
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin: 1rem 0 1.2rem; border: 1px solid var(--shadow-border); border-radius: 10px; overflow: hidden; font-size: 0.85rem; }
+        .three-col .col { padding: 0.9rem 1rem; border-right: 1px solid var(--shadow-border); }
+        .three-col .col:last-child { border-right: none; }
+        .three-col .col.smile  { background: rgba(96,165,250,0.04); }
+        .three-col .col.mid    { background: rgba(226,163,85,0.04); }
+        .three-col .col.dark   { background: rgba(233,69,96,0.04); }
+        .three-col .col .lbl  { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .three-col .col.smile .lbl { color: var(--distiller); }
+        .three-col .col.mid   .lbl { color: var(--main); }
+        .three-col .col.dark  .lbl { color: var(--accent); }
+        .three-col .col ul { margin: 0.2rem 0 0 1rem; }
+        .three-col .col li { font-size: 0.8rem; line-height: 1.6; margin-bottom: 0.25rem; color: var(--text); }
+        .three-col .col li strong { color: var(--white); }
+
+        .echo { background: var(--accent-dim); border: 1px solid var(--accent-border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 1.1rem 1.3rem; margin: 2rem 0; font-size: 0.92rem; }
+        .echo .label { font-size: 0.65rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .echo em { color: var(--white); font-style: normal; font-weight: 600; }
+
+        .detective { background: var(--detective-dim); border: 1px solid var(--detective-border); border-left: 3px solid var(--detective); border-radius: 10px; padding: 1.1rem 1.3rem; margin-top: 2.5rem; font-size: 0.9rem; }
+        .detective .label { font-size: 0.65rem; font-weight: 700; color: var(--detective); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+
+        .bias-warning { display: inline-block; font-size: 0.72rem; color: #f59e0b; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); padding: 2px 8px; border-radius: 5px; margin-left: 0.5rem; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+
+        .footer-nav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .footer-nav a { font-size: 0.78rem; color: var(--text-dim); text-decoration: none; padding: 0.5rem 0.9rem; border: 1px solid var(--border); border-radius: 8px; transition: all 0.2s; }
+        .footer-nav a:hover { color: var(--distiller); border-color: var(--distiller-border); background: var(--distiller-dim); }
+        .footer-meta { text-align: center; margin-top: 2rem; font-size: 0.68rem; color: #333; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .footer-meta a { color: #444; text-decoration: none; }
+
+        @media (max-width: 520px) {
+            .prop-card .prop-row { grid-template-columns: 1fr; gap: 0.15rem; }
+            .prop-card .prop-row .lbl { padding-top: 0; }
+            .three-col { grid-template-columns: 1fr; }
+            .three-col .col { border-right: none; border-bottom: 1px solid var(--shadow-border); }
+            .three-col .col:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span class="sep">›</span>
+            <a href="../">反均值认知</a>
+            <span class="sep">›</span>
+            <span>第 6 周 · 主线 · Day 2</span>
+        </nav>
+
+        <div class="head-block">
+            <span class="role-tag distiller">🔧 提炼者 · The Distiller</span>
+            <span class="role-tag main-book">📗 主线 · Week 6</span>
+            <div class="day-label">2026 · 05 · 20 · 周三 · 本书第 2 天 / 3</div>
+            <h1 class="main-title">《自由选择》拆机图</h1>
+            <p class="sub-title">
+                周一我们挖了 1980 PBS 摄像机背后的政治位能——弗里德曼<em>把"自由"翻译成可立法的政策套件</em>这件事本身就是一台机器。<br>
+                今天把它拧开看：
+                选择架构 → 价格信号 → 政府失灵 → 福利反向激励 → 三国落地差异 → AI 时代再校准，
+                六节齿轮怎么咬合，哪一齿正在你工位上嗒嗒转。
+            </p>
+        </div>
+
+        <div class="section-divider">⚙ 核心论证链 · Argument Chain</div>
+
+        <h2>整本书可以压成六步</h2>
+        <p>
+            《自由选择》10 章 + 后记，骨架是 <strong>6 个推论节点</strong>。和哈耶克"防御性"的滑坡论不同，弗里德曼写的是一台"建设性"机器——他不只论证为什么干预坏，更重要的是<em>把"自由"翻译成具体可立法的政策件</em>。这条链最大的特点是<em>每一节都有一个对应的"立法落地物"</em>——这是它能从 1980 一路传到 2026 的核心传染力：
+        </p>
+
+        <div class="tree"><span class="root">前提：自由不是一个抽象概念，是个体可在多套选项之间做出真实选择的状态
+  → 评估任何制度的标尺：它扩大还是压缩了选择集</span>
+│
+├── <span class="node">①  选择架构 · Choice Architecture</span>
+│     └── <span class="leaf">自由 = 在哪里有几个真实选项 + 选项的代价是否事前明确</span>
+│         <span class="leaf">立法落地物：教育券 / 负所得税 / 志愿兵 / 自由港</span>
+│            ↓
+├── <span class="node">②  价格信号 + 个人激励 · Pencil Story</span>
+│     └── <span class="leaf">无人能造出一支铅笔——自发协调依赖价格</span>
+│         <span class="leaf">→ <em>计划替代价格 = 用一个委员会替代 N 亿次微观判断</em></span>
+│            ↓
+├── <span class="node">③  政府失灵论 · Government Failure</span>
+│     └── <span class="leaf">监管被俘获（Capture）/ 福利扩张惯性 / 干预卸不下来</span>
+│         <span class="leaf">关键：不和"市场失灵"对称比较</span>
+│            ↓
+├── <span class="node">④  福利反向激励 · Cradle to Grave</span>
+│     └── <span class="leaf">从摇篮到坟墓的福利→受助者最优策略变成"维持受助资格"</span>
+│         <span class="leaf">→ <em>系统给的是补丁，激励却让伤口扩大</em></span>
+│            ↓
+├── <span class="node">⑤  三国落地差异 · Smile / Mid / Dark</span>
+│     └── <span class="leaf">英国（撒切尔）/ 中国（双轨改革）/ 智利（芝加哥男孩）</span>
+│         <span class="leaf">→ 同一处方三种结果——今天的张力问题</span>
+│            ↓
+└── <span class="end">⑥  AI 时代再校准 · 选择架构本身被算法接管</span>
+     ├── <span class="leaf">弗里德曼时代：选项由市场+政府之间的张力决定</span>
+     ├── <span class="leaf">2026：选项由算法预先过滤——你看见的就是它给你的</span>
+     └── <span class="leaf">→ "自由 = 选择架构"这条公理是否还成立？这是本书今天的失效检验</span></div>
+
+        <p>
+            这条链最反直觉的是<strong>它不是"反政府"链</strong>。它是"<em>把抽象哲学翻译成可被立法的政策件</em>"的方法论链。每一节都对应一个具体的法案/制度提案——这才是弗里德曼能让里根、撒切尔、邓改后期都借走他工具箱的真正原因。<span class="bias-warning">⚠ 叙事谬误：右翼把这本书简化成"小政府宣言"，左翼把它简化成"为资本辩护"——双方都把它的"翻译方法"当成"政治立场"。</span>
+        </p>
+
+        <div class="section-divider">💡 三个反直觉命题</div>
+
+        <div class="prop-card">
+            <div class="prop-num">命题 ① · Proposition I</div>
+            <div class="prop-title">弗里德曼最厉害的不是反政府——是"翻译"</div>
+            <div class="prop-row">
+                <div class="lbl">主流读法</div>
+                <p>弗里德曼 = 极端自由市场派，反福利、反工会、反最低工资、反一切政府干预。这是这本书 40 年来在两边阵营被各取所需的标准摘要。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">原文真章</div>
+                <p>这本书最难复制的能力不是"反对什么"，是<strong>把抽象政治哲学翻译成可立法的政策件</strong>。"自由"在他手里变成<em>四个具体物</em>：教育券、负所得税、志愿兵、自由港。每一件都附带"这条规则如何写、谁来管、钱从哪来、效果怎么测"——他把哲学家从黑板搬到了立法委员会的辩论席。</p>
+            </div>
+            <div class="prop-row">
+                <div class="lbl">实用推论</div>
+                <p>对一个在大公司做政策设计的人，这条命题是<strong>整本书最贵的一句</strong>——你的真正继承者不是任何政客，而是<em>任何一个把抽象 KPI 翻译成具体可执行政策件的中层</em>。"激励代理"是哲学，"返点率 × 达标门槛 × 校准频率 × 申诉通道"是政策件——前者无法落地，后者才是机器。<em>识别一份政策稿是否合格的最快测试：能否拆成 4 件以上独立可立法可测量的小件</em>。如果它只是一段慷慨陈词的方向陈述，它在弗里德曼意义上还不是政策——它是诗。</p>
+            </div>
+        </div>
+
+        <div class="prop-card">
+            <div class="prop-num">命题 ② · Proposition II</div>
+            <div class="prop-title">"市场失灵 vs 政府失灵"是个伪二分</div>
+            <div class="prop-row">
+                <div class="lbl">直觉上</div>
+                <p>主流经济学课的教法：先讲市场失灵（外部性 / 公共品 / 信息不对称），然后顺理成章引出政府干预；80 年代后又被弗里德曼派加上"政府失灵"作为反向修正——两边轮流出招、互相纠偏。这是过去 40 年公共政策辩论的标准框架。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">弗里德曼</div>
+                <p>第 7 章其实在悄悄拆这个框架。<strong>真问题不是"市场失灵 vs 政府失灵谁更严重"，而是"用哪种失灵替换哪种失灵代价更可承受"</strong>。两种失灵在结构上不对称：市场失灵是<em>分布式的小损失</em>（单个产品定价不准），政府失灵是<em>集中式的大错位</em>（整个监管框架被俘获 20 年）。把它们放在一个天平上比较本身就是错的——你比较的是"很多个 1 加起来 vs 1 个 100"。</p>
+            </div>
+            <div class="prop-row">
+                <div class="lbl">关键转折</div>
+                <p>这条命题给政策设计者的启示：<strong>每次新政策提案，必须明确写出"我们正在用哪种失灵替换哪种失灵"</strong>。回到你的渠道场景——"统一返点率"是用监管失灵替换市场失灵；"窗口指导补贴中小代理"是用集中错位替换分布损失；"算法分流"是把<em>分布式信息损失换成单点模型偏差</em>。每一种替换都不是免费的——选错替换方向，三个月后用更大代价为它买单。<span class="bias-warning">⚠ 确认偏误：每个人都倾向认为对面阵营才会"政府失灵"或"市场失灵"——其实失灵是结构属性不是阵营属性。一个组织内部的"行政科层"也会出现"政府失灵"，"自由市场化的内部 BU 竞争"也会出现"市场失灵"。这条命题真正的应用场景在组织内部，不在国家层面。</span></p>
+            </div>
+        </div>
+
+        <div class="prop-card">
+            <div class="prop-num">命题 ③ · Proposition III</div>
+            <div class="prop-title">中国 1990–2010 跑了一段"半套弗里德曼+半套兰小欢"杂交版</div>
+            <div class="prop-row">
+                <div class="lbl">直觉上</div>
+                <p>"中国是社会主义市场经济，弗里德曼那套自由主义在中国不适用。"——这是公共讨论中最常见的省事说法，把他的工具箱整盒挪到一边。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">更精确</div>
+                <p>实际跑的是一台拼装机器：<em>需求侧用兰小欢的"政府就是主力玩家"（土地财政三角 + GDP 锦标赛），供给侧用弗里德曼的"价格信号 + 个人激励"（外贸代工 + 民营雇佣 + 个体户激励）</em>。这台杂交机器在 90-10 二十年跑出了人类历史上最快的工业化曲线——但它的两半在结构上互相依赖也互相磨损：政府主力推动的需求侧扩张，让供给侧的"价格信号"长期失真（地价、利率、要素价格全被需求侧反向锚定）。</p>
+            </div>
+            <div class="prop-row flip">
+                <div class="lbl">关键转折</div>
+                <p>当土地财政三角 2021 后开始失效，<strong>这台杂交机器的"前半节"正在熄火</strong>，但"后半节"（已经被需求侧扭曲了 20 年的价格信号）也无法独立支撑——这正是 2024-2026 看到的"<em>消费不足</em>"的真身。它不是凯恩斯式周期失灵，也不是单纯的弗里德曼"政府干预过度"，是<em>杂交机器的特定结构性后果</em>——前 20 年的高速本身就是债，今天必须还。这条命题对你的工作场景意味着：未来 3-5 年的渠道政策设计，将进入"<em>无法靠'继续刺激'撑过去</em>"的新地形——刺激工具已经在失效，但纯弗里德曼的"放手让市场出清"在中国也行不通——必须设计第三套工具。<span class="bias-warning">⚠ 幸存者偏差：用过去 20 年中国增长曲线证明"我们的杂交模式是对的"，等于用一个还没跑完的实验中段去给它颁奖。结构性账单的兑现期通常在第 30-40 年——我们正进入那个区间。</span></p>
+            </div>
+        </div>
+
+        <div class="section-divider">🔬 概念深挖 · Concept Dive</div>
+
+        <div class="concept-head">
+            <div class="lbl">这本书最实用的两个发明</div>
+            <div class="name">教育券 + 负所得税<span>（school voucher + negative income tax）</span></div>
+        </div>
+        <div class="concept-body">
+            <h3>▸ 它们在解什么真问题</h3>
+            <p>
+                第 6 章和第 4 章里这两件政策提案，今天读最大的发现是：<em>它们解的根本不是"教育"和"福利"两个表面问题——它们解的是同一个深层问题：怎么把'救济资源'转成'选择架构'</em>。在弗里德曼之前，福利的标准设计是"给穷人一份完整的服务"（公立学校、公立医院、住房）；他的反转是<strong>给穷人一张可被携带、可被替换的凭证</strong>——把"政府提供服务"换成"政府提供选择权"。这一拧，整个公共政策的形态变了。
+            </p>
+
+            <h3>🇨🇳 中国语境的"对等物"在哪</h3>
+            <p>
+                教育券在中国 30 多年没真正落地，但它的"<em>选择权货币化</em>"思想在三个地方留下了影子：① 90 年代住房公积金（把"分房"换成"购房凭证"）② 2010 年代医保跨省结算（把"户籍绑定的医疗权"换成"可携带就医权"）③ 2020 年代职业年金的市场化运营尝试。<em>三件事的共同点是把"绑死的权利"拧成"可携带的凭证"</em>——这正是弗里德曼的核心思想暗中在中国制度里跑了 30 年的路径。负所得税这件事中国从未走通，但它的反面"<em>建档立卡精准扶贫</em>"恰好走的是相反方向（识别+定向给付而非全民负税基线），这个对照本身能反向照出弗里德曼工具的盲区——它需要一个高效低成本的"全民收入识别系统"作为前提，而这件事在 2010 之前任何国家都做不到。
+            </p>
+
+            <h3>💼 Ethan · 腾讯渠道绩效场景的 voucher 思想应用</h3>
+            <p>
+                你的工作日常里，渠道返点 + 流量分配 + 政策窗口指导本质上就是<strong>三种公共政策形态的微观翻版</strong>。把"教育券思想"翻译成渠道工具，能给你三个立刻可用的设计原则：
+            </p>
+            <p>
+                <strong>① "返点不是给钱，是给选择架构"</strong>——传统返点是"达到 X 给 Y 元"，标准的"政府供给"模式。voucher 化版本：把返点转成"<em>等值积分凭证</em>"，代理可在四个方向兑换（现金 / 流量倾斜 / 数据能力 / 培训资源），<em>真正的激励价值不在金额而在可选择性</em>——同样的预算，让代理自己决定怎么用，远比统一发现金更能激发结构性投入。<br>
+                <strong>② "政策也要可携带"</strong>——代理 A 在 Q1 攒下的"达标记录"，能否在 Q2 进入新政策周期时<em>部分继承而非清零</em>？传统设计是"按季度全清"——这等于每季度强制代理重新购买"忠诚度"；可携带版本会激发跨季度的稳定投入，副作用是降低了短期博弈空间——这正是哈耶克 rule of law 那条原则在你工作场景的具体形态。<br>
+                <strong>③ "negative incentive 思想"</strong>——给"未达标但稳定经营的中尾代理"设一条<em>负所得税式的基础线</em>（不是补贴，是低于一定营收时的运营成本分担凭证），让他们不至于跌到完全退出，同时不养出"维持受助资格"的反向激励。这件事难做但价值极高——它直接对接你正在关注的"<em>客户结构劣化</em>"早期信号问题。
+            </p>
+
+            <h3>🤖 AI 时代：弗里德曼的核心公理还成立吗？</h3>
+            <p>
+                弗里德曼的整套理论建立在一个隐含公理上：<strong>"选择架构"是个体面对的客观环境</strong>——市场和政府是两种制造选项的力量，自由 = 在它们之间挑选。但 2026 的真实场景是：<em>选择架构本身已经被算法预先过滤过了</em>——你以为是个人选择，其实你看见的"选项"是一个推荐模型给你的子集。
+            </p>
+            <p>
+                推论一：<em>"选项不可见的减法"是一种全新的不自由形态</em>——它不出现在弗里德曼的政府失灵清单里，也不出现在"市场失灵"清单里。它是第三种失灵：算法失灵——一个分散市场被一个超大模型在毫秒级模拟，产生的不是"汇总分散知识"而是"模拟一个看起来像分散市场的假象"。这条恰好接到上周哈耶克拆机图的最后一节——两本书在 1944-1980-2026 这条时间线上构成同一道题的三次回声。
+            </p>
+            <p>
+                推论二：<em>"个人激励"作为机制起点正在被改写</em>——弗里德曼相信"市场会让对的人做对的事"，前提是个体能感知激励。算法时代的实际运作是：<strong>个体感知到的激励可以被实时调节、A/B 测试、差异化定价</strong>——同样一个"选择"对张三是 5 块钱回报、对李四是 8 块钱回报、对王五系统判断他价格不敏感所以是 3 块钱。<em>"市场价格"作为统一信号瓦解</em>——价格变成给每个人定制的小说。
+            </p>
+            <p>
+                这条推论对你日常工作的现实意义：<strong>未来 12-24 个月，渠道政策设计将面临"是否使用算法定制激励"的伦理与效率双重选择题</strong>——技术上完全能做（甚至已经在做），但一旦走到"每个代理感知到的政策面不同"这一步，<em>整个渠道生态就从 rule of law 滑入 rule by algorithm</em>，弗里德曼意义上的"自由"和哈耶克意义上的"可预测性"会同时失效。这件事提前想清楚比事后补救要省得多——本周五摆渡人会把这个张力落到 Ethan 工位上的具体动作清单上，并接上暗线《拉丁美洲被切开的血管》——<em>当"自由选择"的处方在不平等初始条件下落地，会变成什么</em>。
+            </p>
+        </div>
+
+        <div class="section-divider">🌏 三国落地差异</div>
+
+        <h2>同一处方，三种结果</h2>
+        <p>
+            周一留下的张力问题：<em>同一套弗里德曼自由市场处方，1980 年后在三国落地结果完全不同</em>。这一节用一张三栏表把它显形——这不是"哪个版本是对的"，而是<strong>处方的效果由初始条件决定，初始条件由前 30-50 年的历史路径决定</strong>。
+        </p>
+
+        <div class="three-col">
+            <div class="col smile">
+                <div class="lbl">🟦 英国 · Smile</div>
+                <ul>
+                    <li><strong>处方</strong>：撒切尔 1979-90 国企私有化 + 工会改革 + 金融大爆炸</li>
+                    <li><strong>初始条件</strong>：成熟法治 + 中产社会 + 已工业化 100 年</li>
+                    <li><strong>结果</strong>：经济恢复活力，伴随中北部去工业化、贫富差距扩大</li>
+                    <li><strong>评价</strong>：处方"基本兑现承诺"，副作用集中在区域阶层</li>
+                </ul>
+            </div>
+            <div class="col mid">
+                <div class="lbl">🟧 中国 · Mid</div>
+                <ul>
+                    <li><strong>处方</strong>：1980-2010 价格双轨 + 民营激活 + 外贸开放</li>
+                    <li><strong>初始条件</strong>：政府强主导 + 城乡分割 + 几乎从零起步</li>
+                    <li><strong>结果</strong>：人类史最快工业化曲线，副作用 20 年后兑现</li>
+                    <li><strong>评价</strong>：处方"半套生效"，与本土需求侧机器拼接形成杂交版</li>
+                </ul>
+            </div>
+            <div class="col dark">
+                <div class="lbl">🟥 智利 · Dark</div>
+                <ul>
+                    <li><strong>处方</strong>：1973 后芝加哥男孩 + 皮诺切特军政府强推全套</li>
+                    <li><strong>初始条件</strong>：依附型经济 + 资源单一 + 政变后高压</li>
+                    <li><strong>结果</strong>：宏观数字漂亮，社会撕裂至 2019 大规模抗议</li>
+                    <li><strong>评价</strong>：处方"在没有民主前提下落地"，长期账单极重</li>
+                </ul>
+            </div>
+        </div>
+
+        <p>
+            这张表给出的真正命题：<strong>弗里德曼的处方是有效的，但它隐含了一个从未被它自己写明的前提——"已经存在的法治、中产社会、可被改进的制度基底"</strong>。三个案例的差异不在处方本身，而在<em>处方落到了什么样的初始条件上</em>。这件事弗里德曼 1980 没承认，加莱亚诺 1971 在《拉丁美洲被切开的血管》里早他 9 年指出来——<em>当"自由贸易"的处方落到一个"已经被切开 500 年血管"的大陆上，结果是什么</em>。<span class="bias-warning">⚠ 可得性启发：媒体报道弗里德曼时几乎只引英国和中国（成功故事），1973 智利的版本被系统性地从他的形象里剪掉。但 1975 弗里德曼访问智利与皮诺切特会面 45 分钟这件事，是任何评估这本书都绕不过的硬数据——周五摆渡人会把这条线索完整接上。</span>
+        </p>
+
+        <div class="echo">
+            <div class="label">本周张力问题 · 回响</div>
+            <p style="margin-bottom: 0;">
+                周一留下的问题是：<em>同一处方三国结果不同——是处方的问题还是使用环境的问题？</em><br><br>
+                今天的拆机图给出第一层答案——<strong>都是问题，但权重在使用环境</strong>。处方是工具，工具的效果由使用者+被使用对象的状态决定。问题不是"该不该用弗里德曼"，是<em>使用前必须诚实写出我们的初始条件清单</em>——拒绝把处方当万能药，也拒绝因副作用就把工具箱整体扔掉。<em>周五摆渡人会把这张张力图正式落到 Ethan 工位上，并接上暗线《拉丁美洲被切开的血管》——这是开播以来主线和暗线张力最直接的一周</em>。
+            </p>
+        </div>
+
+        <div class="detective">
+            <div class="label">🕵 侦探注记 · Connector</div>
+            <p style="margin-bottom: 0;">
+                弗里德曼的"<em>选择架构</em>"和你「AI 每日洞见」近期反复回到的<em>"上下文工程 vs 端到端模型"</em>之间，藏着一条没被点破的对称——<strong>都是在问同一个问题：选项是被谁过滤之后才到达决策者的？</strong>。<br><br>
+                1980 弗里德曼回答"由市场过滤"，1944 哈耶克回答"由价格信号汇总"，2026 大模型工程师的回答正在分裂——<em>一派说让模型自己决定，一派说必须保留人类编排的选择层</em>。把这条线索放回上周《通往奴役之路》——哈耶克和弗里德曼这俩芝加哥派老朋友 36 年间的两次出场，刚好框住"<em>不要让一台过大的机器替分散个体做选择</em>"的两个面向：哈耶克防的是"政治意义上的过大机器"（计划委员会），弗里德曼防的是"福利意义上的过大机器"（从摇篮到坟墓的国家）。<em>2026 第三种过大机器——算法平台——同时具备两人警惕的所有特征</em>，但既不像计划经济那样可被识别，也不像福利国家那样可被投票推翻。<br><br>
+                把这条线索叠到你自己——白天在腾讯渠道里设计 voucher 化政策（让代理选择如何使用激励），晚上在「凝视·频道D」记录那些<em>"不被任何选项收编的密度"</em>，凌晨在 RPST #009 里练习"主动按停加速"。<strong>三件事在同一张弗里德曼-哈耶克地图的三个坐标上</strong>——一个在制造选择架构、一个在记录被任何架构漏掉的微观真实、一个在抗拒被任何架构自动收编。<em>弗里德曼这本 1980 年的书加上哈耶克 1944 那本，恰好把这三件事用同一根逻辑线串了起来——分散的、不可被替代的、必须被守护的</em>。
+            </p>
+        </div>
+
+        <div class="footer-nav">
+            <a href="./w06-main-d01.html">← 🪨 解构者</a>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">周五继续 · 🌉 摆渡人 + 🕵 连接者</span>
+        </div>
+        <div class="footer-meta">
+            🧱 反均值认知 · 第 6 周 · 主线 06《自由选择》· Day 2 / 3<br>
+            <a href="../../">Ethan's Lab</a> · <a href="../">返回频道</a> · &copy; 2026
+        </div>
+    </div>
+</body>
+</html>
