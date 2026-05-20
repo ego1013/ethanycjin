@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>有氧 · 2026-05-20 — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #60a5fa;
+    --accent-dim: rgba(96,165,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+  .nav-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-inner a, .nav-inner span { font-size:0.85rem; }
+  .nav-inner a { color:var(--text-dim); text-decoration:none; transition:color .2s; }
+  .nav-inner a:hover { color:var(--white); }
+  .nav-inner .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #0a1a0d 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.cardio { color: var(--green); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+  .badge.week { color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); }
+  .badge.intensity { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.15); }
+  .badge.health { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--accent);
+  }
+  .callout strong { color: var(--white); }
+  .callout.warning {
+    background: rgba(251,191,36,0.08);
+    border-color: rgba(251,191,36,0.25);
+    color: var(--yellow);
+  }
+
+  /* Segment card for cardio */
+  .segment-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: border-color .2s;
+  }
+  .segment-card:hover { border-color: var(--border-hover); }
+  .segment-card .seg-left { display: flex; align-items: center; gap: 0.75rem; }
+  .segment-card .seg-zone {
+    font-size: 0.7rem; font-weight: 700; padding: 3px 8px;
+    border-radius: 6px; white-space: nowrap;
+  }
+  .zone-z2 { color: var(--green); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+  .zone-sprint { color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); }
+  .zone-recover { color: var(--accent); background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2); }
+  .zone-walk { color: var(--text-dim); background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); }
+  .segment-card .seg-name { font-size: 0.9rem; font-weight: 600; color: var(--white); }
+  .segment-card .seg-right { text-align: right; }
+  .segment-card .seg-speed { font-size: 0.82rem; color: var(--text-dim); }
+  .segment-card .seg-hr { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+  .segment-card .seg-dur { font-size: 0.78rem; color: var(--orange); font-weight: 600; margin-top: 2px; }
+
+  /* Phase table */
+  .phase-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  .phase-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .phase-table td:first-child { color: var(--white); font-weight: 500; }
+  .phase-table td:last-child { color: var(--text-dim); text-align: right; }
+
+  /* Nutrition */
+  .nutrition-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .nutrition-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem;
+  }
+  .nutrition-card .n-name { font-size: 0.78rem; color: var(--white); font-weight: 600; margin-bottom: 0.3rem; }
+  .nutrition-card .n-cal { font-size: 0.72rem; color: var(--orange); }
+  .nutrition-card .n-protein { font-size: 0.72rem; color: var(--green); }
+
+  /* Week progress */
+  .week-progress {
+    display: flex; gap: 0.3rem; margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .wp-day {
+    flex: 1; min-width: 80px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.4rem;
+    text-align: center;
+    font-size: 0.72rem;
+  }
+  .wp-day.done { border-color: rgba(74,222,128,0.3); }
+  .wp-day.today { border-color: rgba(96,165,250,0.4); background: rgba(96,165,250,0.05); }
+  .wp-day .wp-label { color: var(--text-muted); margin-bottom: 2px; }
+  .wp-day .wp-type { color: var(--white); font-weight: 600; }
+  .wp-day.done .wp-type { color: var(--green); }
+  .wp-day.today .wp-type { color: var(--accent); }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .nutrition-grid { grid-template-columns: 1fr; }
+    .week-progress { flex-direction: column; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--text)">05/20</span>
+      </div>
+  </nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge cardio">Cardio · 有氧</span>
+      <span class="badge week">第10周 Day 66</span>
+      <span class="badge intensity">轻度 RPE 3-4</span>
+      <span class="badge health">⚠️ 头痛观察</span>
+    </div>
+    <h1>🏃 Zone 2 轻松恢复跑</h1>
+    <p class="sub">2026-05-20（周三）· 连续2天力量后有氧恢复 · 头痛观察窗口</p>
+
+    <div class="quick-stats">
+      <div class="qs"><div class="num">40</div><div class="label">分钟</div></div>
+      <div class="qs"><div class="num">280</div><div class="label">卡路里</div></div>
+      <div class="qs"><div class="num">7</div><div class="label">阶段</div></div>
+      <div class="qs"><div class="num">3-4</div><div class="label">RPE</div></div>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <div class="callout warning">
+      ⚠️ <strong>头痛观察日</strong> — 连续两天训练伴头痛（5/18 推日 + 5/19 拉日）。今天全程注意：如出现头痛/头晕/视觉异常 → <strong>立即停止，建议就医</strong>。轻度有氧无屏气，是最安全的观察窗口。
+    </div>
+
+    <div class="section-title">本周进度</div>
+    <div class="week-progress">
+      <div class="wp-day done"><div class="wp-label">周一</div><div class="wp-type">推 ⚠️</div></div>
+      <div class="wp-day done"><div class="wp-label">周二</div><div class="wp-type">拉 🔥⚠️</div></div>
+      <div class="wp-day today"><div class="wp-label">周三</div><div class="wp-type">有氧 ←</div></div>
+      <div class="wp-day"><div class="wp-label">周四</div><div class="wp-type">腿日?</div></div>
+      <div class="wp-day"><div class="wp-label">周五</div><div class="wp-type">推/有氧?</div></div>
+    </div>
+
+    <div class="section-title">热身 · 5分钟</div>
+    <table class="phase-table">
+      <tr><td>🚶 快走</td><td>2min · 速度 5.0 / 坡度 0</td></tr>
+      <tr><td>🔄 关节活动</td><td>2min · 踝/膝/髋绕环各10圈</td></tr>
+      <tr><td>🚶‍♂️ 轻走加速</td><td>1min · 速度 5.5 / 坡度 1</td></tr>
+    </table>
+
+    <div class="section-title">主训练 · Zone 2 稳态 + 轻冲刺 · 30分钟</div>
+
+    <div class="segment-card">
+      <div class="seg-left">
+        <span class="seg-zone zone-z2">Z2</span>
+        <span class="seg-name">Z2 稳态 1</span>
+      </div>
+      <div class="seg-right">
+        <div class="seg-speed">速度 6.0-6.5 / 坡度 1</div>
+        <div class="seg-hr">💓 120-135 bpm</div>
+        <div class="seg-dur">10 min</div>
+      </div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-left">
+        <span class="seg-zone zone-sprint">冲刺</span>
+        <span class="seg-name">轻冲刺 1</span>
+      </div>
+      <div class="seg-right">
+        <div class="seg-speed">速度 7.5 / 坡度 1</div>
+        <div class="seg-hr">💓 140-150 bpm</div>
+        <div class="seg-dur">1 min</div>
+      </div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-left">
+        <span class="seg-zone zone-recover">恢复</span>
+        <span class="seg-name">Z2 恢复</span>
+      </div>
+      <div class="seg-right">
+        <div class="seg-speed">速度 6.0 / 坡度 1</div>
+        <div class="seg-hr">💓 120-130 bpm</div>
+        <div class="seg-dur">3 min</div>
+      </div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-left">
+        <span class="seg-zone zone-z2">Z2</span>
+        <span class="seg-name">Z2 稳态 2</span>
+      </div>
+      <div class="seg-right">
+        <div class="seg-speed">速度 6.0-6.5 / 坡度 1</div>
+        <div class="seg-hr">💓 120-135 bpm</div>
+        <div class="seg-dur">8 min</div>
+      </div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-left">
+        <span class="seg-zone zone-sprint">冲刺</span>
+        <span class="seg-name">轻冲刺 2</span>
+      </div>
+      <div class="seg-right">
+        <div class="seg-speed">速度 7.5 / 坡度 1</div>
+        <div class="seg-hr">💓 140-150 bpm</div>
+        <div class="seg-dur">1 min</div>
+      </div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-left">
+        <span class="seg-zone zone-recover">恢复</span>
+        <span class="seg-name">Z2 收尾</span>
+      </div>
+      <div class="seg-right">
+        <div class="seg-speed">速度 6.0 / 坡度 1</div>
+        <div class="seg-hr">💓 120-130 bpm</div>
+        <div class="seg-dur">4 min</div>
+      </div>
+    </div>
+
+    <div class="segment-card">
+      <div class="seg-left">
+        <span class="seg-zone zone-walk">放松</span>
+        <span class="seg-name">放松走</span>
+      </div>
+      <div class="seg-right">
+        <div class="seg-speed">速度 4.5 / 坡度 0</div>
+        <div class="seg-hr">💓 &lt;110 bpm</div>
+        <div class="seg-dur">3 min</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      💡 <strong>今日要点</strong> — 冲刺强度降低至 7.5（非 8.0），减少血压波动。全程正常呼吸，<strong>绝不屏气</strong>。能聊天的节奏就对了。
+    </div>
+
+    <div class="section-title">拉伸放松 · 5分钟</div>
+    <table class="phase-table">
+      <tr><td>小腿拉伸</td><td>30s × 2 · 脚尖抵墙</td></tr>
+      <tr><td>股四头拉伸</td><td>30s × 2 · 扶墙单腿后拉</td></tr>
+      <tr><td>髋屈肌拉伸</td><td>30s × 2 · 弓步下沉</td></tr>
+      <tr><td>腘绳肌拉伸</td><td>30s × 2 · 前腿伸直前倾</td></tr>
+      <tr><td>深呼吸放松</td><td>1min · 4-7-8 呼吸法</td></tr>
+    </table>
+
+    <div class="section-title">营养建议</div>
+    <div class="nutrition-grid">
+      <div class="nutrition-card">
+        <div class="n-name">鸡胸沙拉 + 全麦面包</div>
+        <div class="n-cal">~550 kcal</div>
+        <div class="n-protein">蛋白 45g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">牛肉汤粉 + 水煮蛋×2</div>
+        <div class="n-cal">~600 kcal</div>
+        <div class="n-protein">蛋白 42g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">三文鱼饭团 + 豆浆</div>
+        <div class="n-cal">~580 kcal</div>
+        <div class="n-protein">蛋白 40g</div>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--yellow);margin-bottom:1rem;">⚡ 骨骼肌微降中！确保全天蛋白质 ≥130g，训练日热量 ≤1900kcal</p>
+
+    <div class="section-title">反馈</div>
+    <p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:0.5rem;">练完后记录今日表现：</p>
+    <a href="http://localhost:9876/?date=2026-05-20&type=cardio&week=10&day=66" style="display:inline-block;padding:0.6rem 1.2rem;background:var(--green);color:#000;font-weight:700;border-radius:8px;text-decoration:none;font-size:0.85rem;transition:opacity .2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">📝 填写训练反馈</a>
+
+  </div>
+
+  <footer class="footer">
+    <p>Coach M · Ethan's AI Fitness Coach</p>
+    <p style="margin-top:0.3rem;"><a href="https://ego1013.github.io/ethanycjin/workout/">← 返回训练仪表盘</a></p>
+  </footer>
+
+</body>
+</html>
