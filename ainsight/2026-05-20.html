@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>增强陷阱：AI 让你变强的过程，正在让你永久性变弱——而且这是数学证明的 · AI 每日洞见 #024</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* ── Header ── */
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .issue-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .issue-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+        }
+
+        .issue-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .issue-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--green-dim);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 750;
+            color: var(--white);
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .one-liner {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ── Source ── */
+        .source-box {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .source-box a { color: var(--accent); text-decoration: none; }
+        .source-box a:hover { text-decoration: underline; }
+
+        /* ── Body ── */
+        .body-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .body-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .body-section h2 .icon {
+            font-size: 1.1rem;
+        }
+
+        .body-text {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+
+        .body-text p {
+            margin-bottom: 1rem;
+        }
+
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        .body-text .highlight {
+            background: rgba(96, 165, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ── Data callout ── */
+        .data-callout {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1.25rem 0;
+        }
+
+        .data-callout .data-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .data-value.warn { color: var(--warn); }
+
+        /* ── Takeaways ── */
+        .takeaway-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .takeaway-item {
+            padding: 0.9rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .takeaway-item .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 0.6rem;
+        }
+
+        .takeaway-item strong { color: var(--white); }
+
+        /* ── Warning box ── */
+        .warning-box {
+            padding: 1rem 1.25rem;
+            background: var(--warn-dim);
+            border: 1px solid var(--warn-border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .warning-box h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        /* ── Further reading ── */
+        .further {
+            margin-bottom: 2.5rem;
+        }
+
+        .further h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .further-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .further-item a {
+            display: block;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .further-item a:hover {
+            border-color: var(--accent-border);
+            background: var(--surface-alt);
+        }
+
+        .further-item .label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Question ── */
+        .closing-question {
+            padding: 1.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06));
+            border: 1px solid rgba(96,165,250,0.15);
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .closing-question .q-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .closing-question p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        /* ── Tags ── */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        /* ── Series link ── */
+        .series-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: rgba(96, 165, 250, 0.05);
+            border: 1px dashed var(--accent-border);
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.82rem;
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .series-link:hover {
+            background: rgba(96, 165, 250, 0.10);
+        }
+        .series-link .sl-label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        /* ── Stage diagram ── */
+        .stage-diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.3rem;
+            margin: 1.25rem 0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.78rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+            overflow-x: auto;
+        }
+
+        .stage-diagram .stage-pos { color: var(--green); font-weight: 600; }
+        .stage-diagram .stage-neg { color: #f87171; font-weight: 600; }
+        .stage-diagram .stage-label { color: var(--white); }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .container { padding: 1.25rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+            <span class="sep">/</span>
+            <a href="https://ego1013.github.io/ethanycjin/ainsight/">AI 每日洞见</a>
+            <span class="sep">/</span>
+            <span style="color:var(--text)">#024</span>
+        </nav>
+
+        <div class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#024</span>
+                <span class="issue-date">📅 2026-05-20 · 星期三</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>增强陷阱：AI 让你变强的过程，正在让你永久性变弱——而且这是数学证明的</h1>
+
+            <div class="one-liner">
+                MIT 斯隆管理学院的正式动态模型证明：即使管理者<strong>完全预见</strong>到技能退化，理性选择仍然导致工人最终比从未用过 AI 时更差。10 分钟 AI 辅助就能显著降低独立完成能力，恢复半衰期 2.3 年。这不是意志力问题——是激励结构陷阱。
+            </div>
+        </div>
+
+        <div class="source-box">
+            <strong>来源：</strong><br>
+            ① Caosun & Aral (MIT Sloan), <a href="https://arxiv.org/abs/2604.03501" target="_blank">The Augmentation Trap: AI Productivity and the Cost of Cognitive Offloading</a>, arXiv:2604.03501, 2026.04.03<br>
+            ② Liu, Christian, Dumbalska et al., <a href="https://arxiv.org/abs/2604.04721" target="_blank">AI Assistance Reduces Persistence and Hurts Independent Performance</a>, arXiv:2604.04721, RCT N=1,222, 2026.04.06<br>
+            ③ Gartner, <a href="https://www.gartner.com/en/articles/ai-lock-in" target="_blank">AI Lock-In: Why Skill Loss Puts Your Workforce at Risk</a>, 2026<br>
+            ④ Tian Pan, <a href="https://tianpan.co/blog/2026-04-19-skill-atrophy-ai-augmented-engineering" target="_blank">The Skill Atrophy Trap: How AI Assistance Silently Erodes the Engineers Who Use It Most</a>, 2026.04.19
+        </div>
+
+        <!-- ── 深度解读 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🔬</span> 深度解读</h2>
+            <div class="body-text">
+                <p>
+                    "AI 增强人类"——这是过去三年科技行业最美好的叙事。不是替代你，是让你更强。一个初级工程师用 Copilot 写出高级工程师水平的代码。一个新手分析师用 Claude 产出资深分析师质量的报告。每个人都升了一级。太美了。
+                </p>
+                <p>
+                    MIT 斯隆管理学院的 Sinan Aral 教授刚刚用一个正式的动态数学模型，把这个美好故事撕成了碎片。
+                </p>
+                <p>
+                    他提出的概念叫 <span class="highlight">增强陷阱（The Augmentation Trap）</span>：<strong>AI 工具带来的生产力提升，恰恰建立在它正在侵蚀的那些人类技能之上。</strong>你用 AI 写代码越多，你的编码能力越弱；你的编码能力越弱，你越需要 AI——直到有一天，你比从未接触过 AI 时还差。而且——这才是最可怕的——<strong>即使决策者完全预见到这个后果，理性选择仍然会把你推进陷阱。</strong>
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">增强陷阱：核心实验数据</div>
+                    <div class="data-row">
+                        <span class="data-label">AI辅助后独立调试得分下降（Anthropic RCT）</span>
+                        <span class="data-value down">-17 百分点</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">仅需多短的AI交互即显著损害独立能力</span>
+                        <span class="data-value warn">10 分钟</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">自认为AI加速 vs 实际减速（METR）</span>
+                        <span class="data-value down">+20% vs -19%（39pp偏差）</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">技能恢复半衰期</span>
+                        <span class="data-value warn">约 2.3 年</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">2030年面临不可逆技能短缺的企业（Gartner）</span>
+                        <span class="data-value down">50%（至少两个关键岗位）</span>
+                    </div>
+                </div>
+
+                <p>
+                    Aral 的模型做了一个精妙的分解。他把 AI 的生产力效应拆成<strong>两个渠道</strong>：一个与你的专业技能无关（AI 自身的能力），另一个与你的专业技能成正比（AI 放大你现有能力）。关键洞察是：当第一个渠道（AI 独立能力）越来越强时，你练习自身技能的激励越来越弱。<strong>最终结果是一个交叉点：AI 让你"暂时变强"的收益，被"永久变弱"的成本吞噬。</strong>
+                </p>
+
+                <div class="stage-diagram">
+                    <div><span class="stage-label">增强陷阱的三重发现（MIT 动态模型）：</span></div>
+                    <div></div>
+                    <div>① <span class="stage-neg">稳态损失 (Steady-State Loss)</span></div>
+                    <div>   └─ 即使决策者完全预见技能退化，当短期收益 > 长期成本时</div>
+                    <div>      仍理性选择采用 → 工人最终生产力 < 从未用AI时</div>
+                    <div></div>
+                    <div>② <span class="stage-neg">增强陷阱 (Augmentation Trap)</span></div>
+                    <div>   └─ 管理者短视 + 工人技能有外部价值 → "稳态损失"恶化为"陷阱"</div>
+                    <div>      工人处境比从未采用AI时更糟糕，且不可逆</div>
+                    <div></div>
+                    <div>③ <span class="stage-neg">技能分化 (Skill Divergence)</span></div>
+                    <div>   └─ 有经验者 → 充分发挥潜力 (AI放大专家能力)</div>
+                    <div>      经验不足者 → 技能退化至零 (永久性分化)</div>
+                    <div></div>
+                    <div><span class="stage-pos">管理激励的微小差异，决定工人走向哪条路径</span></div>
+                </div>
+
+                <p>
+                    如果你觉得这只是理论模型，那来看实验数据。Liu 等人的 RCT（随机对照试验，N=1,222）发现了一个令人震惊的事实：<strong>仅仅 10 分钟的 AI 辅助，就能显著降低参与者之后在无 AI 条件下的独立完成能力和坚持度。</strong>机制很直觉但后果很严重：AI 给你即时且完整的答案，剥夺了你"独立克服困难"的体验——而坚持力（persistence）恰恰是技能习得的最强预测因子。
+                </p>
+                <p>
+                    Tian Pan 的工程视角分析补充了一个航空业的经典类比：<strong>法航 447 号航班</strong>。长途自动驾驶普及后，飞行员手动飞行时间锐减。法航内部调查发现机组"常识和基本飞行知识的普遍丧失"。当 AF447 在 38,000 英尺高空自动驾驶断开时，多年来每月手动飞行不足几小时的飞行员无法恢复控制。228 人遇难。<strong>自动化一直在隐藏技能退化——直到它断开连接的那一刻。</strong>
+                </p>
+
+                <div class="data-callout">
+                    <div class="data-title">谁最危险？中期职业者（5-15年经验）</div>
+                    <div class="data-row">
+                        <span class="data-label">提示AI的能力</span>
+                        <span class="data-value warn">强 → 更有效地委托工作</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">领域知识</span>
+                        <span class="data-value warn">足够 → AI输出"看起来对"</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">第一性原理验证能力</span>
+                        <span class="data-value down">不足 → 无法深度评估</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">组织压力</span>
+                        <span class="data-value down">短期生产力 > 长期能力信号</span>
+                    </div>
+                </div>
+
+                <p>
+                    这里出现了一个残酷的<strong>评估悖论</strong>：评估 AI 输出是否正确，需要的专业能力比自己从零开始做<strong>更强</strong>（因为你需要识别"看起来对但实际错"的情况）。然而 AI 辅助正在减少你积累这种能力的练习机会。用 Tian Pan 的话说：<strong>"日常例行工作就是训练场。AI 通过很好地处理常规任务，消除了建立专家判断力所需的练习机会——而专家判断力正是处理异常情况所必需的。"</strong>
+                </p>
+                <p>
+                    Gartner 的预测把这个问题推到了组织级别：到 2030 年，<strong>50% 的企业将在至少两个关键岗位面临不可逆转的技能短缺</strong>——直接原因是自动化失控和 GenAI 引发的技能侵蚀。他们给了这个现象一个精确的名字：<span class="highlight">AI 锁定（AI Lock-In）</span>。当员工停止练习基础工作任务，企业在 AI 系统出错时将缺乏人力来发现和修复错误。技能员工越少 → 对 AI 依赖越大 → 填补关键缺口的成本越高。恶性循环启动。
+                </p>
+
+                <a href="./2026-04-24.html" class="series-link">
+                    <span class="sl-label">📎 关联阅读 · #008</span><br>
+                    认知投降：80%的人放弃思考——增强陷阱解释了为什么这不只是"懒"
+                </a>
+
+                <a href="./2026-05-08.html" class="series-link">
+                    <span class="sl-label">📎 关联阅读 · #016</span><br>
+                    近端悖论：与AI越亲密协作，创新越无力——增强陷阱的微观机制
+                </a>
+
+                <a href="./2026-04-22.html" class="series-link">
+                    <span class="sl-label">📎 关联阅读 · #007</span><br>
+                    消失的第一级台阶：初级岗位消失——而增强陷阱让"有经验者"也在退化
+                </a>
+
+                <p>
+                    最让人不安的是蔡志锋（Zhifeng Cai）5月6日的论文揭示的<strong>外部性</strong>：低技能工人产生的低质量数据会反向污染 AI 的训练数据，导致 AI 本身的质量下降——与 #020（数据自噬）形成完美闭环。技能退化不只是个人问题，它是一个具有负外部性的系统性危机，市场均衡中的 AI 使用强度可能系统性过高。
+                </p>
+            </div>
+        </div>
+
+        <!-- ── 对你意味着什么 ── -->
+        <div class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>刻意保留"无 AI 时间"——这不是复古情怀，是技能保险。</strong>每周选择 1-2 个任务完全独立完成，不用任何 AI 辅助。就像飞行员被要求定期进行手动飞行训练一样。重点选择你最依赖 AI 的领域：如果你总是让 AI 写第一稿，那就定期从白纸开始。技能恢复半衰期 2.3 年——你现在不练，两年后可能练不回来。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>用 AI 做"脚手架"而不是"代工厂"。</strong>论文给出了关键区分：让 AI 帮你<em>检查</em>你的思路（脚手架）vs 让 AI<em>替代</em>你的思考（代工）。前者保留了你的认知训练；后者消灭了它。具体操作：先自己想出答案/方案/代码骨架，再用 AI 验证和优化——<strong>顺序很重要</strong>。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>独立于 AI 产出，单独测量你的真实能力。</strong>你的绩效考核可能反映的是"你 + AI"的输出，而不是"你"的能力。定期做一个"裸考"：在无 AI 条件下测试自己核心技能的水平。如果发现差距在扩大，你正在滑向陷阱——现在修正比两年后修正成本低得多。
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 认知偏差提醒 ── -->
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒</h2>
+            <p>
+                <strong>流畅性启发（Fluency Heuristic）+ 短视偏差（Present Bias）</strong>——你之所以感觉不到技能在退化，是因为<em>有 AI 时</em>你的产出依然流畅、甚至更好。退化是在"无 AI 条件下"才暴露的——而你几乎不会主动创造那个条件。就像肌肉萎缩：你坐在轮椅上感觉不到腿在变弱，因为你从不尝试站起来。METR 的数据已经证明：你自认为快了 20%，实际慢了 19%。<strong>你甚至无法准确感知自己是否在变弱。</strong>这就是为什么"主动测试"不是建议，是必须。
+            </p>
+        </div>
+
+        <!-- ── 延伸阅读 ── -->
+        <div class="further">
+            <h2>📖 想深入了解</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://arxiv.org/abs/2604.03501" target="_blank">
+                        Caosun & Aral (MIT Sloan) — The Augmentation Trap (arXiv)
+                        <br><span class="label">正式动态模型：两渠道分解、稳态损失、增强陷阱、技能分化三大定理，五种部署体制分类</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://arxiv.org/abs/2604.04721" target="_blank">
+                        Liu et al. — AI Assistance Reduces Persistence and Hurts Independent Performance
+                        <br><span class="label">N=1,222 RCT：10分钟AI交互即损害独立能力，坚持力是技能习得最强预测因子</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://tianpan.co/blog/2026-04-19-skill-atrophy-ai-augmented-engineering" target="_blank">
+                        Tian Pan — The Skill Atrophy Trap: Engineers Who Use AI Most
+                        <br><span class="label">工程视角：AF447类比、中期职业者最危险、恢复半衰期2.3年、评估悖论详解</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.gartner.com/en/articles/ai-lock-in" target="_blank">
+                        Gartner — AI Lock-In: Why Skill Loss Puts Your Workforce at Risk
+                        <br><span class="label">企业级预警：2030年50%企业面临不可逆技能短缺、恶性循环机制、六项行动建议</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ── 留一个问题 ── -->
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>如果"用 AI 变强"和"自己变弱"是同一枚硬币的两面，<br>那么你现在用 AI 最多的那项技能——<br><strong>你还有信心在没有 AI 的情况下，<br>独立完成它吗？</strong></p>
+        </div>
+
+        <!-- ── Tags ── -->
+        <div class="tags">
+            <span class="tag">Augmentation Trap</span>
+            <span class="tag">Cognitive Offloading</span>
+            <span class="tag">Skill Erosion</span>
+            <span class="tag">AI Lock-In</span>
+            <span class="tag">MIT Sloan</span>
+            <span class="tag">Persistence</span>
+            <span class="tag">AF447 Analogy</span>
+        </div>
+
+        <a href="https://ego1013.github.io/ethanycjin/ainsight/" class="back-btn">← 返回洞见列表</a>
+
+        <div class="footer">
+            🧠 AI 每日洞见 · 信号提取，不是新闻聚合 · <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a> · &copy; 2026 Ethan
+        </div>
+    </div>
+</body>
+</html>
