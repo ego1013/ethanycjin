@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 32 · AI产品设计的常见陷阱 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0f05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--red), var(--accent), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .opening {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .opening .label {
+    color: var(--red);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .opening .highlight {
+    background: var(--red-dim);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--red);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .time-badge {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  strong { color: #fff; }
+
+  em { color: var(--text-dim); font-style: italic; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.insight { border-left: 4px solid var(--accent); background: var(--accent-dim); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-dim); }
+  .callout.blue { border-left: 4px solid var(--blue); background: var(--blue-dim); }
+  .callout.purple { border-left: 4px solid var(--purple); background: var(--purple-dim); }
+  .callout.green { border-left: 4px solid var(--green); background: var(--green-dim); }
+  .callout.cyan { border-left: 4px solid var(--cyan); background: var(--cyan-dim); }
+  .callout.gold { border-left: 4px solid var(--gold); background: var(--gold-dim); }
+  .callout.teal { border-left: 4px solid var(--teal); background: var(--teal-dim); }
+  .callout.pink { border-left: 4px solid var(--pink); background: var(--pink-dim); }
+
+  .callout .callout-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.insight .callout-label { color: var(--accent); }
+  .callout.danger .callout-label { color: var(--red); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.purple .callout-label { color: var(--purple); }
+  .callout.green .callout-label { color: var(--green); }
+  .callout.cyan .callout-label { color: var(--cyan); }
+  .callout.gold .callout-label { color: var(--gold); }
+  .callout.teal .callout-label { color: var(--teal); }
+  .callout.pink .callout-label { color: var(--pink); }
+
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  blockquote strong { color: var(--text); }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  li strong { color: #fff; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-weight: 600;
+  }
+
+  td { color: var(--text); }
+
+  .knowledge-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .knowledge-card .card-title {
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .knowledge-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .knowledge-card li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .knowledge-card li:last-child { border-bottom: none; }
+
+  .connection {
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .connection .conn-title {
+    color: var(--purple);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .checkpoint {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+  }
+
+  .checkpoint .cp-title {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .checkpoint .scenario {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .checkpoint .options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .checkpoint .options li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+
+  .checkpoint .options li:hover {
+    border-color: var(--accent);
+  }
+
+  .checkpoint .follow-up {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  .teaser {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+
+  .teaser .teaser-label {
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .teaser p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--cyan);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .trap-card {
+    background: var(--surface);
+    border: 1px solid var(--red);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+
+  .trap-card::before {
+    content: '⚠️';
+    position: absolute;
+    top: -0.6rem;
+    left: 1.5rem;
+    background: var(--bg);
+    padding: 0 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .trap-card .trap-name {
+    color: var(--red);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  .trap-card .trap-desc {
+    font-size: 0.92rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .trap-card .trap-example {
+    background: var(--red-dim);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .trap-card .trap-fix {
+    background: var(--green-dim);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .trap-card .trap-fix strong { color: var(--green); }
+  .trap-card .trap-example strong { color: var(--red); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .hero .meta { flex-direction: column; gap: 0.5rem; align-items: center; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 32
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">第三模块 · 判断篇</div>
+  <h1>AI产品设计的常见陷阱</h1>
+  <div class="subtitle">为什么那些"显而易见"的错误仍然被反复踩——以及你怎么在立项前就识别它们</div>
+  <div class="meta">
+    <span>📅 2026-05-21 Thu</span>
+    <span>⏱️ 约 40 分钟</span>
+    <span>🟡 中半衰期</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- 开场 -->
+<div class="opening">
+  <div class="label">🔥 开场问题</div>
+  <p>过去三课你学了怎么设计好的 AI 产品：长文本注意力管理、多模态翻译链、Agent 信任飞轮。</p>
+  <p>但现实是：<strong>大部分 AI 产品不是死于"没设计好"，而是死于"在错误的方向上设计得很精致"。</strong></p>
+  <p>2024-2025 年有超过 3000 个 AI 创业项目拿到融资，如今活下来的不到 15%。失败的项目绝大多数不是技术差——它们的模型能力够强，团队也够聪明。</p>
+  <p>它们的问题是：<span class="highlight">在"不应该用 AI"的地方硬塞了 AI，或者在"AI 只是手段"的地方把 AI 当成了目的。</span></p>
+  <p>今天是一堂<strong>"反面教材"课</strong>——不讲怎么做对，讲怎么避免做错。如果你能在立项阶段识别这些陷阱，就能省下 3-6 个月和几十万开发成本。</p>
+</div>
+
+<!-- 第一段 Why -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">10 min</span>
+    <h2>Why — 为什么"避坑"比"学做"更值钱</h2>
+  </div>
+
+  <h3>1. 失败的项目不会写博客</h3>
+  <p>AI 行业有严重的<strong>幸存者偏差</strong>——你看到的案例分享全是成功者。那些踩坑烧了钱的项目，没人愿意分享失败经验。</p>
+  <p>但踩坑的数量远远大于成功——你在工作中遇到的 AI 项目提案，<strong>80% 以上会踩进至少一个今天要讲的陷阱</strong>。</p>
+
+  <h3>2. "技术可行"≠"产品该做"</h3>
+  <p>Day 29-31 给了你三套设计方法论（信息管理三角/模态翻译链/信任飞轮）——它们都有一个<strong>隐含前提</strong>：你要做的东西本身是对的。</p>
+  <p>但如果方向就是错的，设计得再好也是把一辆开往悬崖的车装修得漂漂亮亮。</p>
+
+  <div class="callout danger">
+    <div class="callout-label">核心观点</div>
+    <p><strong>AI 产品设计的第零步不是"怎么做"，而是"该不该做"——或者更精确：该在什么条件下做。</strong><br>
+    今天的课在 Day 29-31 之前插一个"前置过滤器"：能通过这个过滤器的项目，才值得动用那三套设计方法论。</p>
+  </div>
+
+  <h3>3. 陷阱的本质——"正确直觉"在 AI 场景中的失灵</h3>
+  <p>这些陷阱危险之处在于：它们在传统软件产品中是<strong>正确的决策逻辑</strong>。问题是，AI 产品有独特属性——非确定性、概率性输出、边界模糊——让传统直觉失效。</p>
+
+  <div class="callout insight">
+    <div class="callout-label">类比：渠道管理中的"经验陷阱"</div>
+    <p>一个从快消品转到 To B 的渠道经理，最容易犯的错是"用快消品的经验做 To B"——<br>
+    快消品的正确做法："铺渠道越广越好"。<br>
+    To B 的正确做法："深耕少数精准客户"。<br>
+    两者在各自领域都是对的，但跨场景套用就会失败。<br><br>
+    <strong>AI 产品的常见陷阱，本质上就是"用传统软件产品的正确直觉，套用到 AI 产品上"。</strong></p>
+  </div>
+</div>
+
+<!-- 第二段 What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">20 min</span>
+    <h2>What — 七大常见陷阱与诊断方法</h2>
+  </div>
+
+  <p>以下陷阱按"被踩频率"排序——第一个是最常见也最致命的。</p>
+
+  <!-- 陷阱 1 -->
+  <div class="trap-card">
+    <div class="trap-name">陷阱 #1：解决方案先行（"拿着锤子找钉子"）</div>
+    <div class="trap-desc">
+      <p><strong>症状</strong>：项目的起点是"我们要用 AI 做一个 XX"，而不是"用户有 XX 问题需要解决"。</p>
+      <p>传统软件中这个问题不严重——因为确定性系统的能力边界清晰（"能不能做"是明确的）。但 AI 的"能做"和"能做好"之间有巨大的鸿沟。</p>
+    </div>
+    <div class="trap-example">
+      <strong>❌ 典型案例</strong>：公司决定"上一个 AI 代理商智能客服"→ 花 3 个月开发 → 上线后代理商更愿意直接打电话给渠道经理 → 使用率 8%。<br>
+      根本原因：代理商的核心诉求不是"随时能问问题"（信息获取），而是"感觉有人在负责我的事"（关系维护）。AI 客服解决了一个不存在的问题。
+    </div>
+    <div class="trap-fix">
+      <strong>✅ 诊断方法</strong>：问"如果不用 AI，用户现在怎么解决这个问题？" 如果答案是"他们根本不需要解决"或"现有方案已经够好了"——项目不值得做。<br>
+      Day 20 的"可验证性四步法"的第一步"验收标准是什么"本质上就是在过滤这个陷阱。
+    </div>
+  </div>
+
+  <!-- 陷阱 2 -->
+  <div class="trap-card">
+    <div class="trap-name">陷阱 #2：Demo 即产品（"台上一分钟"误区）</div>
+    <div class="trap-desc">
+      <p><strong>症状</strong>：在演示环境（精心选择的输入+最好的例子）下效果惊艳，就认为可以直接上线。</p>
+      <p>Day 30 讲过"实验室强、真实场景弱"——Demo 和产品之间隔了一个<strong>"现实世界的残酷性"</strong>。</p>
+    </div>
+    <div class="trap-example">
+      <strong>❌ 典型案例</strong>：AI 合同审核 demo 在 10 份标准合同上准确率 98% → 上线后面对真实合同（格式混乱/扫描歪斜/条款嵌套/非标附件）准确率暴跌至 72% → 法务不信任、弃用。<br>
+      根本原因：Demo 的输入是"选择性精选"的，真实世界的输入是"什么都可能有"的。Day 30 的"模态翻译链"框架精确解释了为什么——输入质量无保障时，中间模型再强也没用。
+    </div>
+    <div class="trap-fix">
+      <strong>✅ 诊断方法</strong>：问"最差的 20% 输入长什么样？在这些输入上准确率是多少？" 如果团队无法回答（因为只测了"好的输入"），项目还没准备好上线。<br>
+      <strong>量化红线</strong>：如果 demo 准确率比"最差 20% 输入"准确率高出 15 个百分点以上，这个产品的用户体验将远不如演示。
+    </div>
+  </div>
+
+  <!-- 陷阱 3 -->
+  <div class="trap-card">
+    <div class="trap-name">陷阱 #3：追求 100% 准确率（"完美主义陷阱"）</div>
+    <div class="trap-desc">
+      <p><strong>症状</strong>：因为 AI 输出不是 100% 准确，就一直不上线，或者用户因为"出过一次错"就完全不信任。</p>
+      <p>这是传统软件思维的直接迁移——传统软件的确定性逻辑要么对要么错，所以"出 bug 就要修到不出"是合理的。但 AI 的输出本质是概率性的，永远有错误率。</p>
+    </div>
+    <div class="trap-example">
+      <strong>❌ 典型案例</strong>：AI 绩效异常检测准确率 92%（8% 误报） → 主管说"每周给我 5 个误报太烦了"→ 团队试图优化到 99%（技术上极难） → 半年过去仍未上线 → 期间人工方式漏掉了 3 个真正的异常。<br>
+      根本原因：混淆了"不完美"和"不可用"。正确的问题不是"准不准"而是"比人工好不好"——人工检测可能只有 75% 覆盖率（漏掉更多）。
+    </div>
+    <div class="trap-fix">
+      <strong>✅ 诊断方法</strong>：比较"AI + 人工确认"的总效率 vs "纯人工"的总效率。如果 AI 方案即使有误报也比纯人工漏报少——就应该上线。<br>
+      <strong>框架</strong>：不比"AI vs 完美"，比"AI+人 vs 纯人"。后者是真实的商业决策基线。
+    </div>
+  </div>
+
+  <!-- 陷阱 4 -->
+  <div class="trap-card">
+    <div class="trap-name">陷阱 #4：AI 包装传统功能（"AI Washing"）</div>
+    <div class="trap-desc">
+      <p><strong>症状</strong>：把传统规则引擎/数据库查询/简单统计就能做的事，包装成"AI 功能"上线。不是不能用 AI，而是<strong>用 AI 没有增量价值</strong>——增加了成本、延迟和不确定性，效果却和 if-else 一样。</p>
+    </div>
+    <div class="trap-example">
+      <strong>❌ 典型案例</strong>：用 LLM 做"代理商等级判断"（规则就 5 条，每条都是精确数值比较）→ 调用成本 ¥0.1/次，月消耗数万次 → 几千块成本做了数据库 WHERE 语句就能做的事，而且还偶尔算错。<br>
+      根本原因：AI 的优势是处理模糊性（自然语言理解/模式识别/推理/创造），不是处理确定性规则。确定性问题用确定性工具。
+    </div>
+    <div class="trap-fix">
+      <strong>✅ 诊断方法</strong>：问"这个功能需要'理解'还是'执行'？" 如果输入、规则和输出都是精确的——用传统编程。如果输入模糊（自然语言/图片）或判断标准有歧义——用 AI。<br>
+      Day 20 的"可验证性"给了更精确的判断：完全可验证的简单规则 → 传统编程比 AI 更可靠也更便宜。
+    </div>
+  </div>
+
+  <!-- 陷阱 5 -->
+  <div class="trap-card">
+    <div class="trap-name">陷阱 #5：数据飞轮幻觉（"越用越聪明"迷思）</div>
+    <div class="trap-desc">
+      <p><strong>症状</strong>：项目 BP 里写"用户越多数据越多，模型越准"——把这当作"为什么我们一定能赢"的护城河。</p>
+      <p>这个逻辑在 Day 8 Scaling Law 视角下有边界：数据不是无限有用的，很快会遇到边际递减。更关键的是——<strong>大部分 AI 产品的核心瓶颈不是"数据不够多"，而是"数据质量不够好"或"模型架构不匹配"。</strong></p>
+    </div>
+    <div class="trap-example">
+      <strong>❌ 典型案例</strong>：AI 广告素材审核系统，团队说"用了半年积累了 50 万条标注数据" → 但准确率从第 3 万条后就不再提升 → 因为瓶颈是"审核标准本身有歧义"（同一素材不同审核员判断不同），不是数据量。<br>
+      根本原因：数据飞轮只在"数据质量可控 + 反馈信号清晰 + 模型确实是数据受限"三个条件同时满足时才成立。
+    </div>
+    <div class="trap-fix">
+      <strong>✅ 诊断方法</strong>：画"准确率 vs 数据量"的学习曲线。如果已经进入平台期（曲线变平）——问题不在数据量。<br>
+      Day 8 Chinchilla 修正的核心洞见直接适用：<strong>配比比总量重要</strong>。1 万条高质量标注 > 50 万条有歧义标注。
+    </div>
+  </div>
+
+  <!-- 陷阱 6 -->
+  <div class="trap-card">
+    <div class="trap-name">陷阱 #6：忽视"最后一公里"（"AI输出≠用户价值"）</div>
+    <div class="trap-desc">
+      <p><strong>症状</strong>：AI 确实能给出正确答案，但用户<strong>消化不了/用不起来/融入不了工作流</strong>。Day 29 讲的"输出呈现金字塔"就是解决这个问题的——但很多团队根本没意识到这是个问题。</p>
+    </div>
+    <div class="trap-example">
+      <strong>❌ 典型案例</strong>：AI 代理商分析系统生成了 15 页深度报告（分析确实准确）→ 渠道经理看了 2 分钟说"太长了告诉我该做什么" → 使用率持续下降。<br>
+      根本原因：产品解决了"分析问题"但没解决"行动问题"。用户要的不是"信息"而是"决策支持"——一句话结论 + 建议下一步动作。
+    </div>
+    <div class="trap-fix">
+      <strong>✅ 诊断方法</strong>：问"用户看完 AI 输出后的下一个动作是什么？AI 的输出能直接指导这个动作吗？" 如果用户还需要"消化、转译、判断"才能行动——说明输出设计没到位。<br>
+      Day 29 的"金字塔输出"原则：用户应该能在 30 秒内决定是否需要深入——而不是被迫读完 15 页才知道结论。
+    </div>
+  </div>
+
+  <!-- 陷阱 7 -->
+  <div class="trap-card">
+    <div class="trap-name">陷阱 #7：用户替代幻想（"AI 取代人"叙事）</div>
+    <div class="trap-desc">
+      <p><strong>症状</strong>：产品定位是"让 AI 替代某个岗位"——而不是"让这个岗位的人效率提升 3-5 倍"。</p>
+      <p>Day 20-21 讲了 Human-in-the-Loop 和可验证性分级——绝大部分实际业务的中高价值环节是<strong>不完全可验证的</strong>，需要人的判断力参与。想"完全替代"这些环节的产品，要么准确率达不到要求，要么出了问题没人兜底。</p>
+    </div>
+    <div class="trap-example">
+      <strong>❌ 典型案例</strong>："AI 渠道经理"产品定位为完全替代渠道经理的日常工作 → 客户买了发现：数据拉取很准（但 Excel 也行）、异常分析有用（但需要人复核）、代理商沟通完全不行（关系维护需要情商和灵活性）→ 退订。<br>
+      根本原因：混淆了"辅助"和"替代"。AI 能替代的是任务，不是角色。一个角色包含大量 AI 无法覆盖的任务。
+    </div>
+    <div class="trap-fix">
+      <strong>✅ 诊断方法</strong>：列出目标岗位的全部工作内容 → 按 Day 20 可验证性分级 → 只有"完全可验证 + 错误可逆"的子任务才适合全自动化。其他的定位为"辅助"。<br>
+      <strong>更好的定位</strong>：不是"AI 渠道经理"，而是"渠道经理的 AI 助手"——前者暗示替代（用户期望值拉满后必然失望），后者暗示增强（超出期望值就是惊喜）。
+    </div>
+  </div>
+
+  <h3>七大陷阱的底层共性</h3>
+
+  <div class="callout gold">
+    <div class="callout-label">深层规律</div>
+    <p>这七个陷阱看似各不相同，但底层有两条共同线索：</p>
+    <p><strong>线索一：混淆了"技术能力"和"用户价值"。</strong><br>
+    技术能力是"AI 能做 X"。用户价值是"用户因为 X 而解决了问题 Y"。#1/#2/#4/#6 都是这条线。</p>
+    <p><strong>线索二：混淆了"确定性"和"概率性"。</strong><br>
+    传统软件的输出是确定的（同样输入必定同样输出）。AI 的输出是概率性的（有时对有时错）。#3/#5/#7 都是用"确定性思维"去管理"概率性系统"。</p>
+    <p>这两条线索指向一个统一的认知升级：<strong>AI 产品的设计者需要同时是"用户问题专家"和"概率思维者"——缺任何一个维度都会掉进陷阱。</strong></p>
+  </div>
+
+  <h3>陷阱检测清单："立项五问"</h3>
+  <p>把七个陷阱浓缩为立项前必须回答的五个问题：</p>
+
+  <table>
+    <tr><th>#</th><th>问题</th><th>如果答不出来...</th><th>对应陷阱</th></tr>
+    <tr><td>1</td><td>用户现在怎么解决这个问题？AI 比现有方案好多少？</td><td>可能在解决不存在的问题</td><td>#1</td></tr>
+    <tr><td>2</td><td>最差 20% 的输入上准确率是多少？</td><td>可能在用 demo 冒充产品</td><td>#2</td></tr>
+    <tr><td>3</td><td>这个任务用 if-else 能不能做到 90%？</td><td>可能在用 AI 做传统编程的事</td><td>#4</td></tr>
+    <tr><td>4</td><td>用户看到输出后 30 秒内知道下一步该做什么吗？</td><td>可能在做信息堆砌而非决策辅助</td><td>#6</td></tr>
+    <tr><td>5</td><td>目标岗位有哪些子任务是"不可验证"的？产品怎么处理它们？</td><td>可能在卖"替代"的故事但交付的是半成品</td><td>#7</td></tr>
+  </table>
+
+  <div class="callout insight">
+    <div class="callout-label">类比：渠道管理中的"项目评估"</div>
+    <p>你不会听到一个代理商说"我要做一个大项目"就直接批预算——你会问：<br>
+    "客户痛点是什么？目前市场上有没有替代方案？你的方案比竞品好在哪？最差情况下亏多少？"<br><br>
+    <strong>AI 产品的"立项五问"就是你对代理商说的"先把这五个问题答清楚再来找我批预算"。</strong><br>
+    同样的管理判断力，一套用在管人上，一套用在管项目上。</p>
+  </div>
+</div>
+
+<!-- 第三段 So What -->
+<div class="section">
+  <div class="section-header">
+    <span class="time-badge">8 min</span>
+    <h2>So What — 这如何改变你的日常判断</h2>
+  </div>
+
+  <h3>1. 评估 AI 项目提案的新视角</h3>
+  <p>以后看到任何 AI 项目提案（无论是供应商推的还是团队提的），先过"立项五问"：</p>
+  <ul>
+    <li><strong>五问全过</strong> → 值得认真评估设计方案（用 Day 29-31 的方法论）</li>
+    <li><strong>有 1-2 问答不出</strong> → 还需要做更多验证再决定（不急着投入开发）</li>
+    <li><strong>有 3 问以上答不出</strong> → 大概率是个"锤子找钉子"项目（建议暂停或转向）</li>
+  </ul>
+
+  <h3>2. 你自己的渠道绩效 Agent——过关了吗？</h3>
+  <p>拿 Day 21 设计的渠道绩效 Agent 过一遍五问：</p>
+  <table>
+    <tr><th>问题</th><th>Day 21 系统的回答</th><th>评估</th></tr>
+    <tr><td>用户现在怎么解决？AI 好多少？</td><td>渠道经理手动拉数据+人工分析，每月 40 小时 → AI 压到 2 小时（20x 提效）</td><td>✅ 痛点真实且改善显著</td></tr>
+    <tr><td>最差 20% 输入准确率？</td><td>数据缺失/口径变更/新代理商无历史 → Worker C 归因准确率可能从 88% 降到 ~70%</td><td>🟡 需要针对异常输入设计降级策略</td></tr>
+    <tr><td>if-else 能做到 90% 吗？</td><td>数据拉取和简单异常标记可以，但归因分析和报告撰写不行（需要理解+推理）</td><td>✅ 确实有 AI 增量价值</td></tr>
+    <tr><td>用户 30s 知道下一步？</td><td>Day 29 金字塔设计——结论+异常清单+建议动作，层层展开</td><td>✅ 已在设计中考虑</td></tr>
+    <tr><td>不可验证子任务怎么处理？</td><td>归因分析(部分不可验证) → Plan-Confirm 模式；对策建议(不可验证) → 人做终审</td><td>✅ Day 31 已经设计了分层策略</td></tr>
+  </table>
+  <p><strong>结论</strong>：这个项目能过五问中的 4.5 个（第 2 个需要补充异常输入降级策略），属于"值得投入"的项目。但如果当时直接跳过 Day 20-21 的可验证性分析，只凭"AI 能做绩效分析"就开干——很可能掉进 #1 或 #7。</p>
+
+  <h3>3. 把"陷阱检测"变成团队工具</h3>
+  <p>这五个问题可以做成你团队的<strong>"AI 项目立项模板"</strong>：</p>
+  <ul>
+    <li>任何人提 AI 需求，先填这五问</li>
+    <li>答不清楚的 → 先做用户调研/技术验证再来</li>
+    <li>答得清楚的 → 进入正式评估（此时再用 Day 22-27 的供应商框架 + Day 29-31 的设计方法论）</li>
+  </ul>
+
+  <div class="callout teal">
+    <div class="callout-label">认知升级</div>
+    <p><strong>Day 29-31 教你"怎么把 AI 产品做好"。今天教你"什么 AI 产品不该做/不该现在做"。</strong><br>
+    两者组合起来就是完整的判断力：<br>
+    ① 立项前过"五问过滤器"（今天）→ ② 选型用"七维度+五条规则"（Day 22-27）→ ③ 设计用"三套方法论"（Day 29-31）<br><br>
+    跳过第①步就做第③步 = 在错误的方向上精致地失败。<br>
+    而大部分"AI 产品经验丰富"的人其实只有第③步——这就是为什么他们做了 10 个项目成了 2 个。</p>
+  </div>
+
+  <h3>4. 对 Day 27 三大趋势的补充</h3>
+  <p>Day 27 讲了"能力趋同/成本暴跌/差异化转移"三大趋势。今天补充一个推论：</p>
+  <blockquote>
+    <strong>当 AI 能力趋同且成本暴降后，"技术壁垒"几乎不存在了——剩下的壁垒只有两个：①对用户问题的深度理解（避开陷阱 #1/#6/#7）；②产品设计的细腻程度（Day 29-31 的方法论）。</strong><br><br>
+    这意味着：<strong>踩坑能力成为最稀缺的竞争力之一</strong>——因为 AI 能力人人都能调用，但"知道不该做什么"是需要交学费的。
+  </blockquote>
+</div>
+
+<!-- Checkpoint -->
+<div class="checkpoint">
+  <div class="cp-title">🎯 Checkpoint</div>
+  <div class="scenario">
+    <strong>场景</strong>：你的同事（产品经理）兴奋地找到你，说要做一个 AI 项目：<br><br>
+    "我打算做一个<strong>AI 代理商满意度预测系统</strong>——用代理商历史数据（销售额趋势、沟通频率、投诉记录、账期遵守率等）训练模型，预测每个代理商下季度的满意度评分（1-10 分），这样我们可以提前干预低满意度的代理商。"<br><br>
+    他已经做了初步数据分析：历史数据有 3 年 × 200 个代理商 = 约 2400 条记录；现有满意度数据来源是"年度调查问卷"（每年一次，回收率 65%）。<br><br>
+    <strong>用今天学到的框架，你怎么评估这个项目？</strong>
+  </div>
+  <ul class="options">
+    <li><strong>A.</strong> 好主意，数据量足够，代理商管理确实需要提前预警。建议尽快开始模型训练，先跑出 demo 看效果</li>
+    <li><strong>B.</strong> 方向对但数据有问题——年度问卷频率太低、回收率只有 65%，标注数据质量不够。建议先解决数据源问题（比如改成季度 NPS）再考虑建模</li>
+    <li><strong>C.</strong> 用立项五问过一遍：①现在怎么解决？渠道经理靠直觉——有提升空间。②最差 20% 输入？没回答问卷的 35% 代理商就是盲区。③if-else 能做？部分指标（账期逾期>3次=不满意）可以。④30s 知道下一步？需要设计。⑤不可验证？"满意度"本身就不完全可验证——更适合做"风险信号提示"而非"精确预测"</li>
+    <li><strong>D.</strong> 先追问一个更根本的问题："预测满意度"是目的还是手段？真正的目标是"提前干预防止代理商流失"——那要问的不是"满意度几分"而是"哪些行为信号预示着即将出问题"。后者可能不需要预测模型，规则引擎+异常检测就够了</li>
+  </ul>
+  <div class="follow-up">
+    <strong>追问 1</strong>：假设项目推进了，3 个月后模型 MAE（平均绝对误差）= 1.8 分（满分 10 分）。产品经理很兴奋说"误差不到 2 分，够用了"。你怎么判断这个结果——1.8 分的误差在商业决策中意味着什么？是"够用"还是"没用"？<br><br>
+    <strong>追问 2</strong>：如果你是这个产品的负责人，你会怎么把项目从"满意度预测"重新定义为一个更落地的方案？具体用今天七大陷阱中的哪几条来指导调整方向？
+  </div>
+</div>
+
+<!-- 知识卡片 -->
+<div class="knowledge-card">
+  <div class="card-title">📌 知识卡片</div>
+  <ul>
+    <li><strong>1. AI 产品设计的"第零步"</strong>：不是"怎么做好"而是"该不该做"。大部分失败项目死于"方向错误"而非"执行不力"——在错误方向上精致地设计，就是精致地浪费资源</li>
+    <li><strong>2. 七大陷阱的两条底层线索</strong>：①混淆"技术能力"与"用户价值"（#1/2/4/6）；②用"确定性思维"管理"概率性系统"（#3/5/7）。AI 产品设计者必须同时是用户问题专家和概率思维者</li>
+    <li><strong>3. 立项五问过滤器</strong>：用户现在怎么解决且AI好多少？/ 最差20%输入准确率？/ if-else能做到90%吗？/ 用户30s知道下一步吗？/ 不可验证子任务怎么处理？——五问全过才值得投入开发</li>
+    <li><strong>4. "Demo即产品"是最常见的致命陷阱</strong>：Demo输入是精选的，真实世界输入是混乱的。如果最差20%输入的准确率比demo低15个百分点以上——这不是产品，是幻觉</li>
+    <li><strong>5. 完整判断链</strong>：五问过滤器（今天）→ 供应商七维度（Day 22-27）→ 产品设计三套方法论（Day 29-31）。跳过前置过滤器直接做设计 = 80%的项目将失败</li>
+  </ul>
+</div>
+
+<!-- 前序知识连接 -->
+<div class="connection">
+  <div class="conn-title">🔗 前序知识连接</div>
+  <ul>
+    <li><strong>Day 8 Scaling Law</strong>：陷阱 #5"数据飞轮幻觉"的底层解释——数据量的边际递减效应。Chinchilla 修正的核心洞见（配比>总量）直接诊断"数据越多越好"的迷思</li>
+    <li><strong>Day 20 可验证性</strong>：陷阱 #1/#7 的核心过滤器——不可验证的任务不适合全自动化。"立项五问"的第 5 问直接复用了 Day 20 的可验证性光谱</li>
+    <li><strong>Day 21 Agent工作流</strong>：渠道绩效 Agent 过五问验证——4.5/5 通过，证明 Day 20-21 的前置分析有效避免了陷阱</li>
+    <li><strong>Day 27 三大趋势</strong>：能力趋同+成本暴跌→技术壁垒消失→剩下的壁垒是"理解用户问题"和"设计细腻度"——两者都指向"避坑能力"的稀缺性</li>
+    <li><strong>Day 29 长文本设计</strong>：陷阱 #6"最后一公里"的解法就是 Day 29 的"金字塔输出"原则——用户应该 30s 内知道下一步</li>
+    <li><strong>Day 30 多模态设计</strong>：陷阱 #2"Demo即产品"的深层机制就是 Day 30 的"模态翻译链"——输入质量无保障时模型再强也无用</li>
+    <li><strong>Day 31 Agent设计</strong>：陷阱 #7"替代幻想"的解法就是 Day 31 的"渐进授权"——从辅助开始，而非从替代开始</li>
+  </ul>
+</div>
+
+<!-- 明日悬念 -->
+<div class="teaser">
+  <div class="teaser-label">📡 明日悬念</div>
+  <p>你现在知道了 AI 产品"怎么设计好"（Day 29-31）和"怎么避免做错"（今天）。<br>
+  但一个产品设计得再好，如果<strong>赚不到钱</strong>——它就是一个优雅的慈善项目。<br>
+  明天：<strong>商业模式：AI 产品怎么赚钱？</strong>——为什么很多 AI 产品"用户爱用但公司亏钱"，以及如何设计可持续的 AI 商业模式。</p>
+</div>
+
+</div>
+</body>
+</html>
