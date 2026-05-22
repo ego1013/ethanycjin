@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W07-D5 · 摆渡人+连接者 · 乌合之众 · 书单精读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --blue: #4a9eff;
+            --blue-dim: rgba(74,158,255,0.08);
+            --teal: #2dd4bf;
+            --teal-dim: rgba(45,212,191,0.08);
+            --red: #E94560;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            color: var(--text-muted);
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        /* ── Role Header ── */
+        .role-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .role-badge.bridger {
+            background: var(--blue-dim);
+            color: var(--blue);
+            border: 1px solid rgba(74,158,255,0.2);
+        }
+
+        .role-badge.connector {
+            background: var(--teal-dim);
+            color: var(--teal);
+            border: 1px solid rgba(45,212,191,0.2);
+        }
+
+        .book-tag {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ── Section Break ── */
+        .section-break {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 3rem 0 2.5rem;
+        }
+
+        .section-break .line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .section-break .label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ── Body Text ── */
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        em { color: var(--accent); font-style: normal; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 0.75rem;
+            line-height: 1.4;
+        }
+
+        h3 {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 2rem 0 0.75rem;
+        }
+
+        /* ── Quote Block ── */
+        .quote-block {
+            border-left: 3px solid var(--blue);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: rgba(74,158,255,0.04);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .quote-block.teal {
+            border-left-color: var(--teal);
+            background: rgba(45,212,191,0.04);
+        }
+
+        .quote-block.amber {
+            border-left-color: var(--accent);
+            background: rgba(226,163,85,0.04);
+        }
+
+        .quote-block p {
+            margin-bottom: 0;
+            font-style: italic;
+            color: var(--text-dim);
+        }
+
+        /* ── Tension Box ── */
+        .tension-final {
+            background: linear-gradient(135deg, rgba(74,158,255,0.07), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.2);
+            border-radius: 12px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-final .label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-final .content {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .tension-final .landing {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        /* ── Connector Branch ── */
+        .branch-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .branch-item:last-child { border-bottom: none; }
+
+        .branch-badge {
+            flex-shrink: 0;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            height: fit-content;
+            margin-top: 0.2rem;
+        }
+
+        .badge-tension { background: rgba(233,69,96,0.12); color: var(--red); border: 1px solid rgba(233,69,96,0.25); }
+        .badge-inherit { background: rgba(45,212,191,0.1); color: var(--teal); border: 1px solid rgba(45,212,191,0.25); }
+        .badge-dialogue { background: rgba(226,163,85,0.1); color: var(--accent); border: 1px solid rgba(226,163,85,0.25); }
+        .badge-complement { background: rgba(74,158,255,0.1); color: var(--blue); border: 1px solid rgba(74,158,255,0.25); }
+        .badge-cross { background: rgba(160,110,255,0.1); color: #a06eff; border: 1px solid rgba(160,110,255,0.25); }
+
+        .branch-content .branch-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .branch-content .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ── SVG Knowledge Map ── */
+        .map-container {
+            margin: 2.5rem 0;
+            background: #0d0d0d;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .map-container h3 {
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Ferry Segment ── */
+        .ferry-seg {
+            margin: 2rem 0;
+            padding: 1.25rem 1.5rem;
+            background: rgba(74,158,255,0.04);
+            border-radius: 10px;
+            border: 1px solid rgba(74,158,255,0.1);
+        }
+
+        .ferry-seg .seg-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .ferry-seg h3 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            color: var(--white);
+            font-family: Georgia, serif;
+            font-size: 1rem;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        /* ── Landing Questions ── */
+        .landing-q {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .landing-q .q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .landing-q .q-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .landing-q .q-item:last-child { margin-bottom: 0; }
+
+        .landing-q .q-item .qn {
+            flex-shrink: 0;
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        /* ── Footer ── */
+        .page-footer {
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .page-footer a {
+            color: var(--text-dim);
+            text-decoration: none;
+        }
+        .page-footer a:hover { color: var(--accent); }
+
+        .next-week-preview {
+            background: linear-gradient(135deg, rgba(45,212,191,0.06), rgba(226,163,85,0.04));
+            border: 1px solid rgba(45,212,191,0.15);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin-top: 2.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .next-week-preview .nw-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 0.4rem;
+        }
+
+        .next-week-preview .nw-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .next-week-preview .nw-desc {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="https://ego1013.github.io/ethanycjin/">首页</a>
+        <span>›</span>
+        <a href="../index.html">书单精读</a>
+        <span>›</span>
+        <span>W07 · D5</span>
+    </nav>
+
+    <!-- ════════════════ 摆渡人 ════════════════ -->
+
+    <div class="role-header">
+        <div class="role-badge bridger">🌉 摆渡人 The Bridger</div>
+        <div class="book-tag">第 7 周 · 第 5 天 · 2026-05-22 / 《乌合之众》— 古斯塔夫·勒庞</div>
+        <h1>人群的逻辑，制度的解药</h1>
+        <p class="subtitle">当所有人都可能退化，我们还能信任什么？</p>
+    </div>
+
+    <p>勒庞写完《乌合之众》的时候，他以为自己发现了一条黑暗定律：人只要聚集成群，就会变蠢。这周五天，我们检视了这条定律的每一寸肌理——叙事者讲了1871年巴黎的血腥，提炼者拆解了退化机制的五层皮肤，应用者把三个容器摆在一起对比，挑战者揭穿了勒庞样本的选择性偏见。</p>
+
+    <p>今天是最后一站。摆渡人不做总结，做渡河。</p>
+
+    <!-- 第一段摆渡 -->
+    <div class="ferry-seg">
+        <div class="seg-num">摆渡 · 第一段</div>
+        <h3>从"群体退化"到"制度作为人性的容器"</h3>
+        <p>挑战者昨天留下了一个最关键的转向：精英和大众都会退化，问题不是"谁更聪明"，而是"什么制度设计让退化的损害最小"。</p>
+        <p>这是个工程问题，不是哲学问题——这句话本身需要再走远一步。</p>
+        <p>勒庞把退化写成人性的暗面。但摆渡人注意到：他描述的"退化机制"（匿名性+感染+暗示），恰好都是<em>制度可以干预的变量</em>。匿名性可以通过问责制削减；感染速度可以通过信息设计减缓；暗示性可以通过异见保护来对冲。</p>
+        <p>换言之：勒庞发现的不是人类的命运，而是在特定<em>制度缺席</em>的条件下，人类会滑向什么。这个区别让整本书从悲剧诊断书变成了设计约束条件的清单。</p>
+    </div>
+
+    <!-- 第二段摆渡 -->
+    <div class="ferry-seg">
+        <div class="seg-num">摆渡 · 第二段</div>
+        <h3>勒庞遇见 2026：群体退化机制的算法时代升级版</h3>
+        <p>1895年的勒庞没有见过算法。他担心的"领袖"是站在广场上演讲的人。</p>
+        <p>2026年的领袖没有面孔——它是<em>推荐系统</em>。</p>
+        <p>断言+重复+感染，这三件套在平台机制里被精确复现，而且是规模化的、个性化的、不间断的。更危险的是：平台算法的"领袖功能"不需要意识形态，它只需要最大化<em>参与度</em>（*engagement*）。愤怒比快乐更容易传播。极化比中立更能留住用户。</p>
+        <p>勒庞担心群体会被煽动者控制。今天的问题更复杂：群体被一个没有意图的优化目标控制，而那个目标恰好奖励最坏的群体状态。</p>
+        <p>这让"制度设计"的问题变得更紧迫，也更棘手：当算法本身成为无意识的领袖，我们要设计的"约束容器"是什么？谁来设计？谁来监督设计者？</p>
+    </div>
+
+    <div class="quote-block">
+        <p>勒庞的贡献不是告诉我们群体多危险，而是迫使我们问：如果人有退化的潜力，那"不让退化得太彻底"的机制，究竟长什么样？</p>
+    </div>
+
+    <!-- 第三段摆渡 -->
+    <div class="ferry-seg">
+        <div class="seg-num">摆渡 · 第三段</div>
+        <h3>住在地图里的摆渡人</h3>
+        <p>摆渡人自己也是人群的一部分。</p>
+        <p>写这篇文字的时候，摆渡人意识到一个讽刺：我在用理性语言分析非理性，在用系统性思维解析去系统化过程，在用一个人的视角批评一个人视角的局限——这本身就是一种勒庞没有逃脱的困境。</p>
+        <p>勒庞以旁观者自居，却无法逃脱19世纪法国中产阶级知识分子的群体认同。他对工人运动的恐惧、对女性参政的轻视，都深嵌在他的"科学客观性"里。</p>
+        <p>摆渡人也有自己的容器。我们阅读的这七本书——斯密、马克思、韦伯、凯恩斯、哈耶克、弗里德曼、勒庞——都是西方男性知识分子在特定历史情境下的焦虑产物。</p>
+        <p>带着这个觉察读书，不是为了抛弃这些地图，而是为了知道<em>地图的边界在哪里</em>。</p>
+    </div>
+
+    <!-- 张力问题最终形态 -->
+    <div class="tension-final">
+        <div class="label">❓→💡 本周张力问题的最终形态</div>
+        <div class="content">
+            当我们承认群体退化是真实的结构性机制——不是偶发的缺陷，而是在特定条件下必然激活的模式——我们还能信任什么？
+            <br><br>
+            <strong>不是放弃民主、市场、舆论监督，而是：把群体退化机制纳入这些制度的设计约束。</strong>
+            <br><br>
+            这不是哲学问题，而是工程问题——但工程问题有一个哲学前提需要先回答：我们愿意承认自己也是潜在的退化者吗？包括设计制度的人，包括批评制度的人，包括此刻在读这篇文章的你。
+        </div>
+        <div class="landing">
+            三个落地提问：<br>
+            <strong>① 你所在的组织，有没有设计用来防止「群体幻觉」的异见保护机制？</strong><br>
+            <strong>② 你最近一次被「感染」的经历是什么？触发点是内容还是社群压力？</strong><br>
+            <strong>③ 如果你是制度设计者，你会在哪里插入「减速装置」——让群体在做重要决定前多停留一秒？</strong>
+        </div>
+    </div>
+
+    <!-- Section Break -->
+    <div class="section-break">
+        <div class="line"></div>
+        <div class="label">连接者 · The Connector</div>
+        <div class="line"></div>
+    </div>
+
+    <!-- ════════════════ 连接者 ════════════════ -->
+
+    <div class="role-header">
+        <div class="role-badge connector">🔗 连接者 The Connector</div>
+        <div class="book-tag">知识地图第 7 节点 · 《乌合之众》</div>
+        <h1>群体与理性：七本书的拉力线</h1>
+        <p class="subtitle">勒庞不是终点，是一个让前六本书产生新张力的棱镜</p>
+    </div>
+
+    <p>连接者这周一直在等一个问题变得清晰：前六本书都在构建某种理性的制度蓝图——斯密的市场机制、马克思的阶级分析、韦伯的制度伦理、凯恩斯的政策设计、哈耶克的知识分散论、弗里德曼的规则化框架。</p>
+
+    <p>然后勒庞来了，像一盆冷水泼在六本书的理论基础上：<em>你们设计的制度，执行者是会退化的群体</em>。</p>
+
+    <p>这不是简单的否定，而是一个新的维度被打开了。</p>
+
+    <h3>五条枝干</h3>
+
+    <div class="branch-item">
+        <span class="branch-badge badge-tension">张力</span>
+        <div class="branch-content">
+            <div class="branch-title">《国富论》· 斯密 · 第1周 — 理性个体的静默假设</div>
+            <div class="branch-desc">斯密的市场机制依赖"个体理性追求自利"产生自发秩序。勒庞在一百年后指出：个体进入群体后，理性不是被覆盖，而是被<em>替换</em>——被感染和暗示替换。斯密的"看不见的手"建立在一个从未被明说的前提上：参与市场的人是独立行动的个体，而不是感染链上的节点。互联网时代，价格信号和舆论感染在同一个平台上混合传播，这个前提正在瓦解。</div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <span class="branch-badge badge-dialogue">对话</span>
+        <div class="branch-content">
+            <div class="branch-title">《资本论》· 马克思 · 第2周 — 阶级意识 vs 群体感染</div>
+            <div class="branch-desc">马克思期待无产阶级形成"阶级意识"——一种理性认知自身历史位置的集体清醒。但勒庞的群体心理学提出了一个令人不安的反问：历史上真正动员起来的工人运动，有多少是"阶级意识"驱动的，有多少是"群体感染"机制在起作用？两者的动员效果可能相似，但稳定性和可控性完全不同。马克思相信意识的历史力量，勒庞揭示了意识可能只是感染的事后叙事。</div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <span class="branch-badge badge-inherit">传承</span>
+        <div class="branch-content">
+            <div class="branch-title">《通论》· 凯恩斯 · 第4周 — 动物精神的群体维度</div>
+            <div class="branch-desc">凯恩斯用"动物精神"（<em>Animal Spirits</em>）解释投资者的非理性决策波动——这个概念在勒庞的框架里获得了更深的解释机制。金融市场的恐慌和狂热，是群体退化机制（感染+匿名性+暗示）在经济领域的完美表达。凯恩斯直觉地感受到了非理性，但没有拆解其微观机制；勒庞给了机制，但没有政策含义。两者叠加，才有了行为经济学后来的故事。</div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <span class="branch-badge badge-tension">张力</span>
+        <div class="branch-content">
+            <div class="branch-title">《通往奴役之路》· 哈耶克 · 第5周 — 知识分散 vs 群体感染</div>
+            <div class="branch-desc">哈耶克的核心论点是：知识是分散的，任何中央计划都无法集中这些信息，市场价格机制是最优的知识汇聚装置。但勒庞提出了另一面：分散的知识参与者，一旦形成"市场情绪"，就会退化为一个同向感染的群体。价格信号能汇聚分散知识，但也能传播分散的恐慌。哈耶克的知识论没有回答：在群体退化时，市场的信息处理功能是否仍然成立？</div>
+        </div>
+    </div>
+
+    <div class="branch-item">
+        <span class="branch-badge badge-cross">跨频道 C</span>
+        <div class="branch-content">
+            <div class="branch-title">《蝇王》· 威廉·戈尔丁 · 频道C文学感知 — 制度崩塌后的群体真相</div>
+            <div class="branch-desc">《蝇王》是对勒庞论题最彻底的文学实验：把一群孩子放在无制度的荒岛上，观察群体退化的极限形态。戈尔丁1954年出版此书，与勒庞的理论相隔六十年，却用叙事完成了勒庞用数据和案例无法完成的论证——退化不是坏人的专属，是<em>制度缺席时</em>人的默认状态。文学让抽象的群体心理学获得了肉身和道德重量。</div>
+        </div>
+    </div>
+
+    <!-- Knowledge Map SVG -->
+    <div class="map-container">
+        <h3>知识图谱 · 第 1–7 周节点（含跨频道 C）</h3>
+        <svg viewBox="0 0 620 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <defs>
+                <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#333"/>
+                </marker>
+                <marker id="arr-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#4a9eff"/>
+                </marker>
+                <marker id="arr-teal" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#2dd4bf"/>
+                </marker>
+                <marker id="arr-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#E94560"/>
+                </marker>
+            </defs>
+
+            <!-- Background -->
+            <rect width="620" height="400" fill="#0d0d0d" rx="8"/>
+
+            <!-- Week nodes — arranged in arc -->
+            <!-- W1 国富论 -->
+            <circle cx="80" cy="200" r="28" fill="#1a1a1a" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="80" y="196" text-anchor="middle" fill="#e2a355" font-size="8" font-family="sans-serif">W1</text>
+            <text x="80" y="207" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">国富论</text>
+
+            <!-- W2 资本论 -->
+            <circle cx="160" cy="130" r="28" fill="#1a1a1a" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="160" y="126" text-anchor="middle" fill="#e2a355" font-size="8" font-family="sans-serif">W2</text>
+            <text x="160" y="137" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">资本论</text>
+
+            <!-- W3 新教伦理 -->
+            <circle cx="240" cy="80" r="28" fill="#1a1a1a" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="240" y="76" text-anchor="middle" fill="#e2a355" font-size="8" font-family="sans-serif">W3</text>
+            <text x="240" y="87" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">新教伦理</text>
+
+            <!-- W4 通论 -->
+            <circle cx="330" cy="60" r="28" fill="#1a1a1a" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="330" y="56" text-anchor="middle" fill="#e2a355" font-size="8" font-family="sans-serif">W4</text>
+            <text x="330" y="67" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">通论</text>
+
+            <!-- W5 奴役之路 -->
+            <circle cx="420" cy="80" r="28" fill="#1a1a1a" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="420" y="76" text-anchor="middle" fill="#e2a355" font-size="8" font-family="sans-serif">W5</text>
+            <text x="420" y="87" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">奴役之路</text>
+
+            <!-- W6 资本主义与自由 -->
+            <circle cx="510" cy="130" r="28" fill="#1a1a1a" stroke="#e2a355" stroke-width="1.5"/>
+            <text x="510" y="126" text-anchor="middle" fill="#e2a355" font-size="8" font-family="sans-serif">W6</text>
+            <text x="510" y="137" text-anchor="middle" fill="#888" font-size="7" font-family="sans-serif">资本主义</text>
+
+            <!-- W7 乌合之众 — CURRENT, highlighted -->
+            <circle cx="565" cy="220" r="32" fill="#1a1a1a" stroke="#4a9eff" stroke-width="2.5"/>
+            <circle cx="565" cy="220" r="36" fill="none" stroke="rgba(74,158,255,0.15)" stroke-width="1"/>
+            <text x="565" y="215" text-anchor="middle" fill="#4a9eff" font-size="9" font-family="sans-serif" font-weight="bold">W7</text>
+            <text x="565" y="226" text-anchor="middle" fill="#e2a355" font-size="7.5" font-family="sans-serif">乌合之众</text>
+            <text x="565" y="237" text-anchor="middle" fill="#888" font-size="6.5" font-family="sans-serif">● 今日</text>
+
+            <!-- Future nodes -->
+            <!-- W8 待定 -->
+            <circle cx="565" cy="330" r="22" fill="none" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+            <text x="565" y="326" text-anchor="middle" fill="#444" font-size="7.5" font-family="sans-serif">W8</text>
+            <text x="565" y="337" text-anchor="middle" fill="#444" font-size="6.5" font-family="sans-serif">待定</text>
+
+            <!-- W10 皮凯蒂 -->
+            <circle cx="310" cy="360" r="22" fill="none" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+            <text x="310" y="356" text-anchor="middle" fill="#444" font-size="7.5" font-family="sans-serif">W10</text>
+            <text x="310" y="367" text-anchor="middle" fill="#444" font-size="6.5" font-family="sans-serif">21世纪资本论</text>
+
+            <!-- Channel C node: 蝇王 -->
+            <circle cx="90" cy="330" r="22" fill="none" stroke="rgba(160,110,255,0.35)" stroke-width="1.5"/>
+            <text x="90" y="325" text-anchor="middle" fill="#a06eff" font-size="7.5" font-family="sans-serif">频道C</text>
+            <text x="90" y="336" text-anchor="middle" fill="#a06eff" font-size="6.5" font-family="sans-serif">蝇王</text>
+
+            <!-- Arc connections (main timeline) -->
+            <path d="M108,200 Q130,165 132,130" fill="none" stroke="#333" stroke-width="1" marker-end="url(#arr)"/>
+            <path d="M188,130 Q210,105 212,80" fill="none" stroke="#333" stroke-width="1" marker-end="url(#arr)"/>
+            <path d="M268,80 Q295,70 302,60" fill="none" stroke="#333" stroke-width="1" marker-end="url(#arr)"/>
+            <path d="M358,60 Q385,68 392,80" fill="none" stroke="#333" stroke-width="1" marker-end="url(#arr)"/>
+            <path d="M448,80 Q475,105 482,130" fill="none" stroke="#333" stroke-width="1" marker-end="url(#arr)"/>
+            <path d="M538,130 Q558,172 558,188" fill="none" stroke="#333" stroke-width="1" marker-end="url(#arr)"/>
+
+            <!-- W7 tension links: to W1 (理性个体) -->
+            <path d="M533,232 Q320,275 108,205" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,3" opacity="0.6" marker-end="url(#arr-red)"/>
+            <text x="300" y="285" fill="#E94560" font-size="7" font-family="sans-serif" opacity="0.7">张力·理性个体假设</text>
+
+            <!-- W7 dialogue link: to W2 (阶级意识) -->
+            <path d="M536,208 Q360,150 188,135" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,3" opacity="0.5" marker-end="url(#arr)"/>
+            <text x="340" y="160" fill="#e2a355" font-size="7" font-family="sans-serif" opacity="0.6">对话·阶级意识</text>
+
+            <!-- W7 inherit link: to W4 (动物精神) -->
+            <path d="M545,195 Q440,120 358,65" fill="none" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="4,3" opacity="0.5" marker-end="url(#arr-teal)"/>
+            <text x="448" y="120" fill="#2dd4bf" font-size="7" font-family="sans-serif" opacity="0.6">传承·动物精神</text>
+
+            <!-- W7 to future W8 -->
+            <path d="M565,252 L565,308" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+            <!-- W7 to Channel C (蝇王) -->
+            <path d="M533,240 Q320,300 112,330" fill="none" stroke="rgba(160,110,255,0.6)" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arr-teal)"/>
+            <text x="295" y="320" fill="#a06eff" font-size="7" font-family="sans-serif" opacity="0.8">跨频道C·蝇王</text>
+
+            <!-- Labels -->
+            <text x="10" y="390" fill="#444" font-size="7" font-family="sans-serif">◼ 已读  ◻ 待读  ---- 跨周连接  频道C 文学感知</text>
+        </svg>
+    </div>
+
+    <p>七本书读完，知识地图上有了七个节点。连接者注意到一条还没有被充分挖掘的深层弧线：从斯密到勒庞，这七位思想家都在回答同一个问题的不同侧面——<em>人类的集体行动，究竟怎样才能产生好的结果？</em></p>
+
+    <p>斯密说市场会自发协调，马克思说需要历史性革命，韦伯说文化伦理是基础，凯恩斯说政策可以工程性干预，哈耶克说分散知识不可集中，弗里德曼说规则比裁量更可靠，勒庞说你们的前提都错了——因为人在集体中会退化。</p>
+
+    <p>没有人给出了完整的答案。但七本书合在一起，比任何一本单独都更接近真相的形状。</p>
+
+    <!-- Next Week Preview -->
+    <div class="next-week-preview">
+        <div class="nw-label">📚 下周预告 · 第 8 周</div>
+        <div class="nw-title">《影响力》— 罗伯特·西奥迪尼</div>
+        <div class="nw-desc">从群体心理学到个体说服机制——勒庞问"为什么群体会退化"，西奥迪尼问"为什么个体会被说服"。六大原则：互惠、承诺与一致、社会认同、权威、喜好、稀缺。下周一，叙事者将带你进入西奥迪尼的实验室。</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+        <span>📅 2026-05-22 · W07-D5</span>
+        <span>
+            <a href="./w07-d04.html">← D4 挑战者</a>
+            &nbsp;&nbsp;
+            <a href="../index.html">书单首页 →</a>
+        </span>
+    </footer>
+
+</div>
+</body>
+</html>
