@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 36 · Test-Time Compute Scaling：推理时的算力投资 — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0f05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--red-dim);
+    color: var(--red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--red), var(--accent), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .section {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .label-fire { background: var(--red-dim); color: var(--red); }
+  .label-why { background: var(--blue-dim); color: var(--blue); }
+  .label-what { background: var(--purple-dim); color: var(--purple); }
+  .label-sowhat { background: var(--green-dim); color: var(--green); }
+  .label-check { background: var(--gold-dim); color: var(--gold); }
+  .label-card { background: var(--cyan-dim); color: var(--cyan); }
+  .label-link { background: var(--teal-dim); color: var(--teal); }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--text);
+  }
+
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+    color: var(--accent);
+  }
+
+  p {
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  strong { color: var(--accent); font-weight: 600; }
+
+  .callout {
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout-blue { border-left-color: var(--blue); }
+  .callout-green { border-left-color: var(--green); }
+  .callout-purple { border-left-color: var(--purple); }
+  .callout-gold { border-left-color: var(--gold); }
+  .callout-red { border-left-color: var(--red); }
+
+  .insight-box {
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .insight-box h4 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background: var(--surface-2);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td { color: var(--text); }
+  tr:nth-child(even) td { background: var(--surface); }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.5rem;
+    color: var(--text);
+  }
+
+  li { margin-bottom: 0.4rem; }
+
+  .checkpoint-box {
+    background: var(--surface-2);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .checkpoint-box h4 {
+    color: var(--gold);
+    margin-top: 0;
+  }
+
+  .option {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.88rem;
+  }
+
+  .option-label {
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+
+  .knowledge-card {
+    background: var(--surface-2);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .knowledge-card ul { margin-left: 1.25rem; }
+
+  .link-section {
+    background: var(--surface);
+    border: 1px solid var(--teal);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .small { font-size: 0.85rem; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .hero { padding: 2rem 1rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 36
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🔴 长半衰期 · 深讲</div>
+  <h1>Test-Time Compute Scaling：推理时的算力投资</h1>
+  <p class="subtitle">为什么"让模型花更长时间思考"可能是 AI 下一个最重大的范式转移</p>
+  <div class="meta">
+    <span>📅 2026-05-27 · Day 36</span>
+    <span>⏱️ 预计 40 分钟</span>
+    <span>📍 第四模块 · 前沿篇 · 第 1 课</span>
+    <span>🏷️ 🔴 长半衰期</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 开场 ==================== -->
+<div class="section">
+  <span class="section-label label-fire">🔥 OPENING</span>
+  <h2>一个奇怪的现象</h2>
+  
+  <p>你问 ChatGPT 一个简单问题："2+3 等于几？"——它瞬间回答 5。</p>
+  
+  <p>你问它一个复杂问题："证明哥德巴赫猜想在 n<10^8 时成立"——它也瞬间开始输出，但答案往往是错的。</p>
+  
+  <p>奇怪的地方在于：<strong>为什么一个"更难"的问题不会让模型"想更久"？</strong></p>
+  
+  <div class="callout">
+    人类面对简单问题和复杂问题的反应是完全不同的——简单的 2+3 秒答，复杂的证明题可能要想一个下午。但传统大模型不管问题难度如何，<strong>每个 token 的生成代价完全一样</strong>。<br><br>
+    这就好比：不管你问渠道经理"今天有几个代理商来访？"还是"未来三年这个区域应该怎么布局？"——他都用同样的 <strong>0.3 秒</strong>给你一个回答。<br><br>
+    你会信后一个答案吗？
+  </div>
+  
+  <p><strong>Test-Time Compute Scaling</strong>（推理时算力缩放）就是在解决这个根本问题：让模型在遇到难题时，能够<strong>自主决定花更多"算力"去思考</strong>——更多的计算步骤、更多的验证、更多的回溯尝试——而不是所有问题一视同仁地"秒答"。</p>
+  
+  <p>这为什么重要？因为这可能是 AI 能力突破的<strong>第二条增长曲线</strong>——当第一条曲线（Pre-train Scaling，堆更多数据和参数）逼近天花板时，第二条曲线才刚刚开始爬升。</p>
+</div>
+
+<!-- ==================== WHY ==================== -->
+<div class="section">
+  <span class="section-label label-why">第一段 · 10 分钟 · WHY</span>
+  <h2>为什么"推理时的算力投资"是下一个关键方向？</h2>
+  
+  <h3>Scaling 的第一条曲线正在见顶</h3>
+  
+  <p>回顾 Day 8——你已经知道 Pre-train Scaling Law 的三堵墙：</p>
+  
+  <ul>
+    <li><strong>数据墙</strong>：互联网高质量文本已经被扫得差不多了</li>
+    <li><strong>算力墙</strong>：训练一次 GPT-5 级模型的电费可能超过一个小国的 GDP</li>
+    <li><strong>能力天花板</strong>：参数翻倍不再带来等比例的能力提升（边际递减）</li>
+  </ul>
+  
+  <p>如果"训练时堆算力"的投资回报率在下降，行业要怎么继续进步？</p>
+  
+  <h3>答案：把算力从"训练时"搬到"推理时"</h3>
+  
+  <div class="insight-box">
+    <h4>🎯 核心直觉</h4>
+    <p><strong>类比：培训预算 vs 项目差旅预算</strong></p>
+    <p>过去的 AI 发展模式像是——把所有预算砸在<strong>员工入职前的培训</strong>上：MBA + 商学院 + 各种认证。希望培训越长，员工上岗后表现越好。</p>
+    <p>但现实中你会发现：培训到一定程度之后，边际收益急剧递减。一个员工参加了 10 门课和参加了 12 门课，工作表现差别微乎其微。</p>
+    <p><strong>Test-Time Compute 的理念完全不同</strong>：不再无限增加入职培训时长，而是在员工<strong>面对具体项目</strong>时——给他更多的调研时间、更多的讨论机会、更多的试错空间。</p>
+    <p>一个"培训适中但每个项目给充足思考时间"的员工，可能比"过度培训但每次只给 30 秒回答"的员工<strong>表现好得多</strong>。</p>
+  </div>
+  
+  <h3>这不只是技术趋势——它改变了 AI 的经济学</h3>
+  
+  <table>
+    <tr><th>维度</th><th>Pre-train Scaling（训练时堆算力）</th><th>Test-Time Compute（推理时花算力）</th></tr>
+    <tr><td>投入时机</td><td>一次性巨额前置投入</td><td>按需求实时投入</td></tr>
+    <tr><td>成本结构</td><td>固定成本极高，边际接近零</td><td>固定成本低，但按使用量线性增长</td></tr>
+    <tr><td>适应性</td><td>训练完就"冻结"了</td><td>面对新问题可以动态调整策略</td></tr>
+    <tr><td>天花板</td><td>数据/算力/能力三堵墙</td><td>理论上没有硬天花板（越想越好）</td></tr>
+    <tr><td>商业类比</td><td>重资产建厂（一次性）</td><td>按项目聘请顾问（按需）</td></tr>
+  </table>
+  
+  <div class="callout callout-blue">
+    <strong>为什么这对你有意义？</strong><br><br>
+    如果你在评估 AI 产品和供应商（Day 22-35 的操作系统），你需要理解：<br>
+    • 未来 AI 服务的<strong>定价模型</strong>可能从"按 token 计费"变成"按推理复杂度计费"<br>
+    • "更贵但想得更深"的模型可能在高价值任务上回报率远高于便宜快速的模型<br>
+    • 你的渠道绩效 Agent（Day 21 设计的）中，Worker C（原因分析）值得花 10 倍算力，Worker A（数据拉取）则不值得
+  </div>
+</div>
+
+<!-- ==================== WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-what">第二段 · 20 分钟 · WHAT</span>
+  <h2>Test-Time Compute Scaling 的本质</h2>
+  
+  <h3>一、从"一次性输出"到"迭代式推理"</h3>
+  
+  <p>传统大模型的工作方式（Day 1 你已经知道）：</p>
+  
+  <div class="callout">
+    输入 Prompt → 逐 token 生成 → 每个 token 的计算量<strong>完全相同</strong> → 输出完毕
+  </div>
+  
+  <p>这意味着——模型回答"2+3"和回答"设计一个全国渠道扩张策略"，<strong>每个 token 背后的"思考强度"没有任何差别</strong>。</p>
+  
+  <p>Test-Time Compute Scaling 的核心改变：</p>
+  
+  <div class="callout callout-red">
+    输入 Prompt → <strong>多轮内部推理</strong>（生成思路→验证→回溯→换思路→再验证→…）→ 最终输出<br><br>
+    关键变化：<strong>难题的内部推理步骤可以成倍增加</strong>，而用户最终只看到一个精炼的答案。
+  </div>
+  
+  <h3>二、四种 Test-Time Compute 策略</h3>
+  
+  <p>行业在"推理时多花算力"这件事上，探索出了四条不同的路径：</p>
+  
+  <table>
+    <tr><th>策略</th><th>核心思路</th><th>类比</th><th>代表</th></tr>
+    <tr>
+      <td><strong>① Chain-of-Thought（思维链）</strong></td>
+      <td>生成中间推理步骤再给出答案</td>
+      <td>做题先打草稿再写答案</td>
+      <td>Day 16 已学</td>
+    </tr>
+    <tr>
+      <td><strong>② Best-of-N 采样</strong></td>
+      <td>生成 N 个候选答案，选最好的一个</td>
+      <td>写 5 版方案挑最好的交给老板</td>
+      <td>Self-Consistency</td>
+    </tr>
+    <tr>
+      <td><strong>③ 树搜索（Tree Search）</strong></td>
+      <td>像下棋一样探索多条推理路径，剪枝保留最优</td>
+      <td>渠道拓展时并行试探 5 个市场，数据好的追加投入</td>
+      <td>AlphaProof, MCTS</td>
+    </tr>
+    <tr>
+      <td><strong>④ 自我纠错循环</strong></td>
+      <td>生成 → 检查 → 发现错误 → 修正 → 再检查…直到满意</td>
+      <td>交报告前自己检查三遍，每次修正一些错误</td>
+      <td>o1/o3 内部机制</td>
+    </tr>
+  </table>
+  
+  <h4>策略间的递进关系</h4>
+  
+  <p>这四种不是平行的——它们形成了一个<strong>复杂度和算力消耗的递进光谱</strong>：</p>
+  
+  <div class="callout callout-purple">
+    <strong>算力消耗递增排列</strong>：<br><br>
+    ① CoT（多花 2-5x token）<br>
+    → ② Best-of-N（多花 N 倍 token，通常 N=5-64）<br>
+    → ③ 树搜索（多花 10-1000x 计算，视搜索深度）<br>
+    → ④ 自我纠错循环（多花 5-50x 计算，视迭代次数）<br><br>
+    <strong>关键洞察</strong>：o1/o3 系列之所以强，是因为它同时使用了 ①+④（内置思维链 + 自我纠错循环），形成了一个"<strong>内化了的深度推理过程</strong>"。
+  </div>
+  
+  <h3>三、Scaling Law 的"第二条曲线"——DeepMind 论文的核心发现</h3>
+  
+  <p>2024 年 Google DeepMind 发表了一篇关键论文（<em>Scaling LLM Test-Time Compute Optimally</em>），揭示了一个惊人的结论：</p>
+  
+  <div class="insight-box">
+    <h4>核心发现</h4>
+    <p><strong>在同一道数学题上，让一个小模型"思考"足够久（增加 test-time compute），可以超过一个大 4 倍的模型直接回答。</strong></p>
+    <p>换句话说——<strong>推理时的算力投入，可以弥补训练规模的差距。</strong></p>
+    <p style="margin-top:0.75rem">具体数据：在 MATH 基准测试上，PaLM 2-S（小模型）配合最优 test-time 策略，超过了 PaLM 2-L（大模型）的直接回答。推理时每花 1 美元，等效于训练时省了 4 美元。</p>
+  </div>
+  
+  <p>这意味着什么？<strong>两条完全不同的"变聪明"路径</strong>：</p>
+  
+  <table>
+    <tr><th></th><th>路径 A：Pre-train Scaling</th><th>路径 B：Test-Time Compute Scaling</th></tr>
+    <tr><td>怎么变聪明</td><td>训练更大的模型</td><td>让模型在推理时想得更久</td></tr>
+    <tr><td>投入时机</td><td>训练时（一次性）</td><td>使用时（按需）</td></tr>
+    <tr><td>成本分布</td><td>固定成本极高</td><td>变动成本按难度浮动</td></tr>
+    <tr><td>适合场景</td><td>所有问题普遍提升</td><td>难问题重点提升</td></tr>
+    <tr><td>天花板</td><td>数据墙/算力墙</td><td>尚未找到硬天花板</td></tr>
+    <tr><td>类比</td><td>全员 MBA 培训</td><td>重要项目给充足调研时间</td></tr>
+  </table>
+  
+  <h3>四、"最优算力分配"——不是越多越好</h3>
+  
+  <p>DeepMind 论文的另一个关键发现：<strong>Test-Time Compute 也有自己的"甜蜜点"</strong>——不是无限思考就无限好。</p>
+  
+  <div class="callout callout-gold">
+    <strong>最优分配策略取决于问题难度</strong>：<br><br>
+    • <strong>简单问题</strong>：不需要额外思考 → 直接回答最高效（花更多算力 = 浪费钱）<br>
+    • <strong>中等问题</strong>：适量思考有明显收益 → 最优 ROI 区间<br>
+    • <strong>极难问题</strong>：即使花很多算力也可能无法解决 → 应该诚实说"我需要更多信息"而非硬猜<br><br>
+    <strong>这和渠道预算分配一模一样</strong>：<br>
+    • 已经做得很好的成熟区域 → 不需要加投入<br>
+    • 有潜力但还没做透的区域 → 加大投入回报最高<br>
+    • 完全没有基础的空白区域 → 砸再多钱短期也起不来
+  </div>
+  
+  <h4>两种具体分配机制</h4>
+  
+  <p>论文还发现了两种不同的最优策略，取决于<strong>问题的难度分布</strong>：</p>
+  
+  <ol>
+    <li><strong>Process Reward Model（过程奖励模型）</strong>：不只看最终答案对不对，而是<strong>每一步推理</strong>都有一个打分模型在评判。走错了立刻回溯。<br><span class="dim small">→ 类比：不只年终考核看 KPI 结果，而是每月 review 过程指标，偏了立刻调整</span></li>
+    <li><strong>自适应计算分配（Adaptive Allocation）</strong>：模型自己判断"这题需要花多少时间想"，简单的直接回答，难的自动进入深度推理模式。<br><span class="dim small">→ 类比：优秀的渠道经理不会对每个代理商花一样的时间——问题代理商多花时间，稳定的代理商定期抽查就行</span></li>
+  </ol>
+  
+  <h3>五、o1/o3 系列是怎么做到的？——内化的 Test-Time Compute</h3>
+  
+  <p>OpenAI 的 o1 和 o3 系列（Day 37 将详细展开）是 Test-Time Compute Scaling 的<strong>最成功商业化落地</strong>：</p>
+  
+  <div class="callout">
+    <strong>关键架构差异</strong>：<br><br>
+    传统模型（GPT-4）：用户问 → 直接逐 token 输出答案<br>
+    o1/o3 模型：用户问 → <strong>内部产生一长串"思维链"token</strong>（用户看不到）→ 多轮自我验证和纠错 → 最终输出精炼答案<br><br>
+    那些"隐藏的思维 token"就是 Test-Time Compute 的具体实现——<strong>模型在"背后"多花了 5-100 倍的 token 在思考</strong>。
+  </div>
+  
+  <p>这带来了什么效果？</p>
+  
+  <table>
+    <tr><th>基准测试</th><th>GPT-4（直接回答）</th><th>o1（Test-Time Compute）</th><th>提升幅度</th></tr>
+    <tr><td>MATH（竞赛数学）</td><td>~52%</td><td>~94%</td><td>+42 百分点</td></tr>
+    <tr><td>GPQA（博士级物理/化学）</td><td>~53%</td><td>~78%</td><td>+25 百分点</td></tr>
+    <tr><td>Codeforces（竞赛编程）</td><td>~10th percentile</td><td>~89th percentile</td><td>接近人类专家</td></tr>
+    <tr><td>简单事实问答</td><td>~95%</td><td>~95%</td><td>基本持平</td></tr>
+  </table>
+  
+  <p>最后一行是关键——<strong>简单问题 o1 并不比 GPT-4 好</strong>。这验证了"最优分配"的理论：推理算力在简单问题上回报为零，在难问题上回报巨大。</p>
+  
+  <h3>六、Test-Time Compute 的三个边界</h3>
+  
+  <p>这不是万能药。三个明确的局限：</p>
+  
+  <table>
+    <tr><th>边界</th><th>原因</th><th>类比</th></tr>
+    <tr>
+      <td><strong>① 知识缺失不救</strong></td>
+      <td>如果模型训练时从未见过某个知识——再多的推理也推不出来。"想得更久"≠"知道得更多"。</td>
+      <td>给你 3 小时想一道量子力学题——如果你从没学过量子力学，3 小时和 3 秒结果一样。</td>
+    </tr>
+    <tr>
+      <td><strong>② 成本线性增长</strong></td>
+      <td>推理时多花 10x 算力 = API 费用贵 10 倍。适合高价值决策，不适合批量处理。</td>
+      <td>给每个项目请外部顾问——如果是百万级项目值得；如果是日常审批就大材小用。</td>
+    </tr>
+    <tr>
+      <td><strong>③ 验证瓶颈</strong></td>
+      <td>自我纠错需要"知道自己错了"——如果缺乏验证手段（Day 20 可验证性），推理可能在错误方向上越跑越远。</td>
+      <td>一个人闭门造车"想了一个月"——如果没有客户反馈，可能方向完全错误。</td>
+    </tr>
+  </table>
+  
+  <div class="callout callout-green">
+    <strong>一句话总结 Test-Time Compute 的本质：</strong><br><br>
+    不是让模型"更聪明"（那是训练的事），而是让模型<strong>"更认真"</strong>——把已有的能力更充分地发挥出来。<br><br>
+    就像一个能力 80 分的员工——<br>
+    • 给他 30 秒回答，表现可能只有 50 分<br>
+    • 给他 3 小时调研 + 验证 + 修正，表现可能达到 78 分<br>
+    • 但无论给多少时间，他不会变成 100 分——因为知识上限就在那里
+  </div>
+</div>
+
+<!-- ==================== SO WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-sowhat">第三段 · 8 分钟 · SO WHAT</span>
+  <h2>这改变了什么？</h2>
+  
+  <h3>1. AI 产品定价模型的颠覆</h3>
+  
+  <p>Day 33 你学过 AI 的商业模式——"按 token 计费"是主流。但 Test-Time Compute 带来一个新维度：</p>
+  
+  <div class="callout">
+    <strong>同一个问题，不同的"思考深度"对应完全不同的成本和效果。</strong><br><br>
+    未来的 AI 定价可能变成：<br>
+    • 🟢 快速模式（Standard）：直接回答，便宜，适合简单任务 → ¥0.01/次<br>
+    • 🟡 深度模式（Advanced）：30 秒思考，适合中等分析 → ¥0.5/次<br>
+    • 🔴 极致模式（Expert）：5 分钟深度推理，适合复杂决策 → ¥5/次<br><br>
+    这就像——快递有当日达、次日达、经济件——<strong>你为"时效"和"确定性"付费</strong>。
+  </div>
+  
+  <h3>2. 你的 Agent 系统应该怎么用？</h3>
+  
+  <p>回到 Day 21 设计的渠道绩效 Agent——有了 Test-Time Compute 的理解，你应该这样分配"思考预算"：</p>
+  
+  <table>
+    <tr><th>Agent 环节</th><th>任务特征</th><th>推荐推理模式</th><th>理由</th></tr>
+    <tr><td>Worker A（数据拉取）</td><td>规则明确、可验证、错误代价低</td><td>🟢 Standard — 直接执行</td><td>不需要"想"，规则执行就好</td></tr>
+    <tr><td>Worker B（异常标记）</td><td>规则为主 + 少量判断</td><td>🟢 Standard + 简单 CoT</td><td>边界案例用 CoT 辅助判断</td></tr>
+    <tr><td>Worker C（原因分析）</td><td>开放推理、多因素归因、需要验证</td><td>🔴 Expert — 深度推理</td><td>错误代价高 + 问题复杂度高 → 值得多花算力</td></tr>
+    <tr><td>Worker D（报告撰写）</td><td>结构明确、基于前序输出</td><td>🟡 Advanced — 适度思考</td><td>需要组织逻辑但不需要发现新东西</td></tr>
+  </table>
+  
+  <p><strong>核心原则</strong>：<strong>问题的错误代价 × 问题的复杂度 = 应该投入的推理算力。</strong></p>
+  
+  <h3>3. 重新理解 Day 8 的 Scaling Law 全景图</h3>
+  
+  <p>Day 8 你学过四维 Scaling 新范式——现在有了更清晰的全景：</p>
+  
+  <table>
+    <tr><th>Scaling 维度</th><th>投入时机</th><th>效果</th><th>当前状态</th></tr>
+    <tr><td>Pre-train Scaling</td><td>训练时</td><td>提升基础能力上限</td><td>🟡 接近天花板（数据墙+算力墙）</td></tr>
+    <tr><td>Post-train Scaling（SFT/RL）</td><td>训练后</td><td>提升特定任务表现</td><td>🟡 有效但成本不低</td></tr>
+    <tr><td><strong>Test-Time Compute Scaling</strong></td><td>推理时</td><td>让已有能力更充分释放</td><td>🟢 <strong>当前最热的突破方向</strong></td></tr>
+    <tr><td>Data Scaling（合成数据）</td><td>训练时</td><td>突破数据墙</td><td>🟡 有进展但质量存疑</td></tr>
+  </table>
+  
+  <h3>4. 对 AI 行业竞争格局的影响</h3>
+  
+  <p>Test-Time Compute 改变了"谁能赢"的规则：</p>
+  
+  <ul>
+    <li><strong>小模型公司的机会</strong>：不需要世界最大的模型，只要推理策略足够好，小模型+深度推理可以打败大模型。DeepSeek 就是这个策略的受益者。</li>
+    <li><strong>推理芯片变得更重要</strong>：过去行业焦点是"训练芯片"（A100/H100），现在"推理芯片"的需求在爆发（低延迟、高吞吐）。</li>
+    <li><strong>定价权的转移</strong>：如果推理算力成为核心价值——谁控制推理基础设施，谁就有定价权。这对 Day 33 的商业模式分析有新的含义。</li>
+  </ul>
+  
+  <div class="callout callout-blue">
+    <strong>一个有趣的行业悖论</strong>：<br><br>
+    DeepSeek 一方面把<strong>训练成本</strong>打到了 OpenAI 的 1/10（Day 26）；另一方面，o1/o3 的推理模式把<strong>推理成本</strong>提高了 10-100 倍。<br><br>
+    行业正在从"训练贵推理便宜"转向"训练便宜推理贵"——这对你选型意味着：<strong>批量简单任务选便宜快速的模型，少数关键决策选"会深度思考"的模型</strong>。<br><br>
+    和渠道管理一模一样：日常管理标准化自动化（低成本），重大客户决策投入最优秀的人（高成本高回报）。
+  </div>
+</div>
+
+<!-- ==================== CHECKPOINT ==================== -->
+<div class="section">
+  <span class="section-label label-check">CHECKPOINT · 2 分钟</span>
+  <h2>💡 检验时间</h2>
+  
+  <div class="checkpoint-box">
+    <h4>🎯 场景：算力预算分配</h4>
+    
+    <p>你正在为渠道绩效 Agent 系统选择 API 方案。供应商给了三种计费选项：</p>
+    
+    <div class="callout">
+      • <strong>方案甲</strong>：统一 Standard 模式，所有调用 ¥0.02/次，不区分任务难度<br>
+      • <strong>方案乙</strong>：全部使用 Expert 深度推理模式，每次 ¥2/次，保证最高准确率<br>
+      • <strong>方案丙</strong>：分层计费——数据拉取和异常标记用 Standard（¥0.02），原因分析用 Expert（¥2），报告撰写用 Advanced（¥0.3）
+    </div>
+    
+    <p>系统每月处理 ~200 个代理商的数据（每个代理商触发一次完整流程 = 4 步）。你怎么选？</p>
+    
+    <div class="option"><span class="option-label">A.</span> 选甲——便宜！每月总成本 200×4×0.02 = ¥16。省的钱可以做其他事。准确率低点用人工补就好。</div>
+    <div class="option"><span class="option-label">B.</span> 选乙——准确率最重要！每月 200×4×2 = ¥1,600。反正总预算能 cover，不要在关键系统上省钱。</div>
+    <div class="option"><span class="option-label">C.</span> 选丙——按任务难度分层。每月 200×(0.02+0.02+2+0.3) = ¥468。把算力花在刀刃上。</div>
+    <div class="option"><span class="option-label">D.</span> 先回到一个问题：200 个代理商里真正需要"深度原因分析"的有多少？如果只有 20% 的代理商出现异常需要归因，那 Expert 模式只需要给这 40 个代理商用——其他 160 个走 Standard 全流程就够了。月成本约 200×2×0.02 + 40×(0.02+2+0.3) + 160×(0.02+0.3) = ¥8 + ¥92.8 + ¥51.2 ≈ ¥152。</div>
+    
+    <p class="small dim" style="margin-top: 1rem;">💬 追问 1：D 的逻辑比 C 多了什么思考步骤？这个步骤对应今天讲的哪个概念？</p>
+    
+    <p class="small dim">💬 追问 2：如果今天只有 20% 需要深度分析，但你发现 Expert 模式在 Worker C 上的准确率从 85% 提升到 97%（而 Standard 模式 Worker C 只有 60%）——这个 12 百分点的差距在你的业务场景里值多少钱？给一个量级估算。</p>
+  </div>
+  
+  <h3>🔮 明日悬念</h3>
+  
+  <div class="callout callout-purple">
+    今天你理解了 Test-Time Compute 的<strong>原理和经济学</strong>。<br><br>
+    但一个关键问题还没有回答——<br><br>
+    <strong>o1/o3 这类"推理模型"内部到底在想什么？</strong><br><br>
+    当 o1 花 30 秒"思考"一个问题时，那 30 秒里发生了什么？它真的在"思考"还是只是在"生成更多 token"？<br>"慢思考"和"快思考"的边界在哪里？什么任务应该用 o1 而不是 GPT-4o？<br><br>
+    Day 37：<strong>o1/o3 推理模式：慢思考的价值</strong>——从理论走向实操。
+  </div>
+</div>
+
+<!-- ==================== 知识卡片 ==================== -->
+<div class="section">
+  <span class="section-label label-card">📌 KNOWLEDGE CARDS</span>
+  
+  <div class="knowledge-card">
+    <h4>今日知识卡片</h4>
+    <ul>
+      <li><strong>Test-Time Compute Scaling 的本质</strong>：让模型在推理时根据问题难度动态分配算力——难题多想，简单题秒答。不是"更聪明"而是"更认真"。</li>
+      <li><strong>四种策略谱系</strong>：CoT（草稿纸）→ Best-of-N（多方案择优）→ 树搜索（并行探索+剪枝）→ 自我纠错循环（迭代验证修正）。o1/o3 = CoT + 自我纠错的内化。</li>
+      <li><strong>DeepMind 核心发现</strong>：小模型+最优推理策略 > 大模型直接回答。推理时 $1 ≈ 训练时 $4 的效果。</li>
+      <li><strong>最优分配原则</strong>：简单问题不需要额外推理（浪费）/ 中等问题推理 ROI 最高 / 极难问题可能推理也救不了（知识缺失）。<strong>= 渠道预算的 80/20 法则</strong>。</li>
+      <li><strong>行业影响</strong>：AI 定价从"按 token"走向"按难度"/ 推理芯片重要性上升 / 小公司有了"以小博大"的策略空间 / 你的 Agent 系统应该按任务特征分配推理深度。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== 前序连接 ==================== -->
+<div class="section">
+  <span class="section-label label-link">🔗 CONNECTIONS</span>
+  
+  <div class="link-section">
+    <h4>前序知识连接</h4>
+    <ul>
+      <li><strong>Day 8（Scaling Law）</strong>→ Pre-train Scaling 的三堵墙 = 推动行业寻找"第二条曲线"的直接原因。今天的 Test-Time Compute 就是最热的第二条曲线。</li>
+      <li><strong>Day 16（CoT 思维链）</strong>→ CoT 是 Test-Time Compute 最简单的一种形式。今天把它放到了更大的谱系中——CoT 只是四种策略之一。</li>
+      <li><strong>Day 13（SFT vs RL）</strong>→ o1/o3 的深度推理能力来自 RL 训练（Day 37 将展开）。RL 让模型"学会"在推理时投入更多计算——不是被动的 prompt 引导而是主动的策略选择。</li>
+      <li><strong>Day 21（Agent 工作流）</strong>→ Agent 系统的不同 Worker 应该使用不同的推理深度。今天给出了具体的分配原则：错误代价 × 复杂度 = 推理投入。</li>
+      <li><strong>Day 33（商业模式）</strong>→ Test-Time Compute 将重塑 AI 的计费模型——从"按 token 统一价"转向"按推理深度差异化定价"。这对你评估 AI 服务成本有直接影响。</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- container -->
+
+</body>
+</html>
