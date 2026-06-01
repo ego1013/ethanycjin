@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>拉日 · 2026-06-01 — Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #60a5fa;
+    --accent-dim: rgba(96,165,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --purple: #a78bfa;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-inner a, .nav-inner span { font-size:0.85rem; }
+  .nav-inner a { color:var(--text-dim); text-decoration:none; transition:color .2s; }
+  .nav-inner a:hover { color:var(--white); }
+  .nav-inner .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0d1a 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.pull { color: var(--accent); background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2); }
+  .badge.week { color: var(--purple); background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+  .badge.intensity { color: var(--yellow); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--accent);
+  }
+  .callout strong { color: var(--white); }
+  .callout.warn {
+    background: rgba(248,113,113,0.06);
+    border-color: rgba(248,113,113,0.2);
+    color: var(--red);
+  }
+  .callout.success {
+    background: rgba(74,222,128,0.06);
+    border-color: rgba(74,222,128,0.2);
+    color: var(--green);
+  }
+
+  .exercise {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: border-color .2s;
+  }
+  .exercise:hover { border-color: var(--border-hover); }
+
+  .exercise .ex-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+  .exercise .ex-num {
+    font-size: 0.7rem; font-weight: 700; color: var(--accent);
+    background: rgba(96,165,250,0.1); border-radius: 6px;
+    padding: 2px 8px; margin-right: 0.6rem; flex-shrink: 0;
+  }
+  .exercise .ex-name {
+    font-size: 1.05rem; font-weight: 700; color: var(--white); flex: 1;
+  }
+  .exercise .ex-badge {
+    font-size: 0.65rem; color: var(--green); padding: 2px 6px;
+    border: 1px solid rgba(74,222,128,0.2); border-radius: 6px;
+    background: rgba(74,222,128,0.08); white-space: nowrap;
+  }
+  .exercise .ex-badge.consolidate {
+    color: var(--yellow);
+    border-color: rgba(251,191,36,0.2);
+    background: rgba(251,191,36,0.08);
+  }
+
+  .exercise .ex-target {
+    font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.5rem;
+  }
+
+  .exercise .ex-prescription {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.7rem;
+  }
+  .ex-pill {
+    font-size: 0.75rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 8px;
+    background: #1a1a1a; border: 1px solid #2a2a2a; color: var(--white);
+  }
+  .ex-pill.weight { color: var(--accent); border-color: rgba(96,165,250,0.2); background: rgba(96,165,250,0.06); }
+
+  .exercise .ex-notes {
+    font-size: 0.8rem; color: var(--text-dim); line-height: 1.6;
+  }
+  .exercise .ex-notes .tip { color: var(--green); }
+  .exercise .ex-notes .warn { color: var(--red); }
+
+  .ex-details {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+  .ex-details summary {
+    font-size: 0.78rem; color: var(--text-muted); cursor: pointer;
+    transition: color .2s;
+  }
+  .ex-details summary:hover { color: var(--text); }
+  .ex-details .detail-content {
+    margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-dim); line-height: 1.7;
+  }
+  .ex-details .detail-content ul { padding-left: 1.2rem; }
+  .ex-details .detail-content li { margin-bottom: 0.2rem; }
+
+  .phase-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  .phase-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .phase-table td:first-child { color: var(--white); font-weight: 500; }
+  .phase-table td:last-child { color: var(--text-dim); text-align: right; }
+
+  .nutrition-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .nutrition-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem;
+  }
+  .nutrition-card .n-name { font-size: 0.78rem; color: var(--white); font-weight: 600; margin-bottom: 0.3rem; }
+  .nutrition-card .n-cal { font-size: 0.72rem; color: var(--orange); }
+  .nutrition-card .n-protein { font-size: 0.72rem; color: var(--green); }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  .back-btn {
+    display: inline-block;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    transition: color .2s;
+  }
+  .back-btn:hover { color: var(--white); }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .nutrition-grid { grid-template-columns: 1fr; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--text)">06/01</span>
+      </div>
+  </nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge pull">Pull · 拉</span>
+      <span class="badge week">第12周 Day 78</span>
+      <span class="badge intensity">中度 RPE 5-6</span>
+    </div>
+    <h1>🏋️ 上肢力量（拉）</h1>
+    <p class="sub">2026-06-01（周一）· 距上次拉日 13 天，休息充分后重新激活</p>
+
+    <div class="quick-stats">
+      <div class="qs"><div class="num">50</div><div class="label">分钟</div></div>
+      <div class="qs"><div class="num">320</div><div class="label">卡路里</div></div>
+      <div class="qs"><div class="num">8</div><div class="label">动作</div></div>
+      <div class="qs"><div class="num">5-6</div><div class="label">RPE</div></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <a href="https://ego1013.github.io/ethanycjin/workout/" class="back-btn">← 返回训练仪表盘</a>
+
+    <!-- Key Context -->
+    <div class="callout">
+      📋 <strong>排期依据</strong>：距上次拉日已 13 天（5/19），所有类型中间隔最长。5 天完全休息体力充沛，但久未训练→巩固策略为主，不冒进突破。
+    </div>
+
+    <div class="callout warn">
+      🚨 <strong>骨骼肌保卫战</strong>：33.1kg 逼近 33 红线（连降 3 次！）。6/8 复测倒计时 7 天，训练后 30 分钟内补蛋白质 ≥40g！
+    </div>
+
+    <div class="callout" style="background:rgba(167,139,250,0.06);border-color:rgba(167,139,250,0.2);color:var(--purple);">
+      📅 <strong>第12周启动</strong>：新周第1天，目标力量 3次 + 有氧 1-2次。今天开好头！
+    </div>
+
+    <!-- Warmup -->
+    <div class="section-title">🔥 热身 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>手臂画圈</td><td>前后各 15 次</td></tr>
+      <tr><td>猫牛式</td><td>10 次（激活脊柱灵活性）</td></tr>
+      <tr><td>弹力带面拉 / 外旋</td><td>15 次（激活后三角/菱形肌）</td></tr>
+      <tr><td>轻重量高位下拉（25kg）</td><td>10 次慢速</td></tr>
+      <tr><td>肩胛后缩练习</td><td>10 次</td></tr>
+    </table>
+
+    <!-- Main Training -->
+    <div class="section-title">💪 主训练 · 40 分钟</div>
+
+    <!-- Exercise 1 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">01</span>
+        <span class="ex-name">高位下拉</span>
+        <span class="ex-badge consolidate">巩固</span>
+      </div>
+      <div class="ex-target">背阔肌 · 大圆肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">32 kg × 12</span>
+        <span class="ex-pill weight">35.5 kg × 12</span>
+        <span class="ex-pill weight">35.5 kg × 12</span>
+        <span class="ex-pill">休息 90s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="tip">策略：</span>13天未拉→降回35.5巩固，不冲39。目标3组全12次<br>
+        <span class="tip">✓</span> 挺胸微后倾15°，肩胛先下沉再拉<br>
+        <span class="tip">✓</span> 拉到锁骨位置停顿1s，离心段3s慢放
+      </div>
+      <details class="ex-details">
+        <summary>展开动作细节</summary>
+        <div class="detail-content">
+          <ul>
+            <li><span class="warn">✗</span> 避免：躯干过度后仰借力</li>
+            <li><span class="warn">✗</span> 避免：手肘未完全伸展就收回</li>
+            <li>替代动作：引体辅助器、绳索直臂下拉</li>
+            <li>上次记录：32/35.5/39 × 12/12/10（5/19 冲39成功）</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 2 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">02</span>
+        <span class="ex-name">坐姿划船</span>
+        <span class="ex-badge consolidate">巩固</span>
+      </div>
+      <div class="ex-target">菱形肌 · 中背 · 后三角</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">29.5 kg × 12</span>
+        <span class="ex-pill weight">32 kg × 12</span>
+        <span class="ex-pill weight">35.5 kg × 12</span>
+        <span class="ex-pill">休息 90s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="tip">策略：</span>递增到35.5巩固（上次全程12次成功）<br>
+        <span class="tip">✓</span> 起始挺胸不驼背，手肘贴身后拉至腹部<br>
+        <span class="tip">✓</span> 顶峰挤压2s再缓慢返回
+      </div>
+      <details class="ex-details">
+        <summary>展开动作细节</summary>
+        <div class="detail-content">
+          <ul>
+            <li><span class="warn">✗</span> 避免：耸肩借力</li>
+            <li><span class="warn">✗</span> 避免：身体前后大幅摆动</li>
+            <li>替代动作：单臂绳索划船、杠铃划船</li>
+            <li>上次记录：29.5/32/35.5 × 12/12/12（5/19 冲35.5成功 🔥）</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 3 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">03</span>
+        <span class="ex-name">单臂哑铃划船</span>
+        <span class="ex-badge consolidate">巩固</span>
+      </div>
+      <div class="ex-target">背阔肌 · 菱形肌（单侧）</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">12 kg × 12</span>
+        <span class="ex-pill weight">12 kg × 12</span>
+        <span class="ex-pill weight">14 kg × 10</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="tip">策略：</span>12/12/14维持，看13天后手感<br>
+        <span class="tip">✓</span> 弱侧（左手）先做<br>
+        <span class="tip">✓</span> 肩胛骨全程运动：下沉→后缩→还原
+      </div>
+      <details class="ex-details">
+        <summary>展开动作细节</summary>
+        <div class="detail-content">
+          <ul>
+            <li><span class="warn">✗</span> 避免：身体旋转代偿</li>
+            <li><span class="warn">✗</span> 避免：用惯性甩铃</li>
+            <li>替代动作：绳索单臂划船</li>
+            <li>上次记录：12/12/14 × 12/12/10（5/19 冲14成功）</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 4 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">04</span>
+        <span class="ex-name">哑铃弯举</span>
+        <span class="ex-badge consolidate">巩固</span>
+      </div>
+      <div class="ex-target">肱二头肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">6 kg × 12</span>
+        <span class="ex-pill weight">8 kg × 12</span>
+        <span class="ex-pill weight">8 kg × 10</span>
+        <span class="ex-pill weight">6 kg × 12</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="tip">策略：</span>维持6/8/8/6，目标8kg全12次<br>
+        <span class="tip">✓</span> 上臂贴身不动，顶端旋腕挤压二头<br>
+        <span class="tip">✓</span> 离心3s控制下放
+      </div>
+      <details class="ex-details">
+        <summary>展开动作细节</summary>
+        <div class="detail-content">
+          <ul>
+            <li><span class="warn">✗</span> 避免：耸肩、身体前后摇摆</li>
+            <li>替代动作：锤式弯举、绳索弯举</li>
+            <li>上次记录：6/8/8/6 × 12/12/10/10（5/19 首次8kg成功 🔥）</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 5 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">05</span>
+        <span class="ex-name">面拉</span>
+        <span class="ex-badge">稳定</span>
+      </div>
+      <div class="ex-target">后三角 · 菱形肌 · 外旋肌群</div>
+      <div class="ex-prescription">
+        <span class="ex-pill weight">10 kg × 15</span>
+        <span class="ex-pill weight">10 kg × 15</span>
+        <span class="ex-pill weight">10 kg × 15</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="tip">策略：</span>10kg站直基准维持，连续5次稳定<br>
+        <span class="tip">✓</span> 拉至眼睛高度，双手外旋，站直不后仰<br>
+        <span class="tip">✓</span> 肩胛后缩顶峰停2s
+      </div>
+      <details class="ex-details">
+        <summary>展开动作细节</summary>
+        <div class="detail-content">
+          <ul>
+            <li><span class="warn">✗</span> 避免：身体后仰借力</li>
+            <li>替代动作：俯身哑铃飞鸟</li>
+            <li>上次记录：10×3×15 连续4次稳定 ✅</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Exercise 6 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">06</span>
+        <span class="ex-name">平板支撑</span>
+        <span class="ex-badge consolidate">巩固</span>
+      </div>
+      <div class="ex-target">核心稳定（腹横肌 · 竖脊肌）</div>
+      <div class="ex-prescription">
+        <span class="ex-pill">60s × 3 组</span>
+        <span class="ex-pill">休息 60s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="tip">策略：</span>维持60s×3巩固（上次冲60s成功）<br>
+        <span class="tip">✓</span> 头-臀-脚跟一条直线，收紧腹部<br>
+        <span class="tip">✓</span> 骨盆后倾，肩胛骨下沉远离耳朵
+      </div>
+    </div>
+
+    <!-- Exercise 7+8 -->
+    <div class="exercise">
+      <div class="ex-header">
+        <span class="ex-num">07-08</span>
+        <span class="ex-name">核心组合</span>
+        <span class="ex-badge">稳定</span>
+      </div>
+      <div class="ex-target">腹直肌 · 腹斜肌</div>
+      <div class="ex-prescription">
+        <span class="ex-pill">卷腹 3×15</span>
+        <span class="ex-pill weight">俄罗斯转体 6kg 3×12</span>
+        <span class="ex-pill">休息 45s</span>
+      </div>
+      <div class="ex-notes">
+        <span class="tip">✓</span> 卷腹注意慢起慢落，不抱头拉颈<br>
+        <span class="tip">✓</span> 俄罗斯转体双脚离地，转体幅度到位
+      </div>
+    </div>
+
+    <!-- Cooldown -->
+    <div class="section-title">🧘 拉伸放松 · 5 分钟</div>
+    <table class="phase-table">
+      <tr><td>背阔肌拉伸</td><td>每侧 30s</td></tr>
+      <tr><td>二头肌门框拉伸</td><td>每侧 20s</td></tr>
+      <tr><td>猫牛式放松</td><td>8 次</td></tr>
+      <tr><td>仰卧脊柱扭转</td><td>每侧 30s</td></tr>
+      <tr><td>深呼吸</td><td>5 次</td></tr>
+    </table>
+
+    <!-- Nutrition -->
+    <div class="section-title">🍽 营养建议</div>
+    <div class="nutrition-grid">
+      <div class="nutrition-card">
+        <div class="n-name">鸡胸/牛肉</div>
+        <div class="n-protein">蛋白 40-50g</div>
+        <div class="n-cal">200g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">糙米/全麦</div>
+        <div class="n-protein">碳水 ~50g</div>
+        <div class="n-cal">150g</div>
+      </div>
+      <div class="nutrition-card">
+        <div class="n-name">蔬菜水果</div>
+        <div class="n-protein">纤维+维C</div>
+        <div class="n-cal">随意多吃</div>
+      </div>
+    </div>
+    <div class="callout success">
+      💪 <strong>蛋白质紧急令</strong>：骨骼肌连降 3 次→今日蛋白质总量 ≥130g！训练后 30min 内优先补充 ≥40g。
+    </div>
+
+    <!-- Reminder -->
+    <div class="section-title">⏰ 提醒</div>
+    <div class="callout" style="background:rgba(167,139,250,0.06);border-color:rgba(167,139,250,0.2);color:var(--purple);">
+      📅 <strong>InBody 复测倒计时</strong>：2026-06-08（7 天后）<br>
+      🎯 关键指标：骨骼肌 ≥33.0（当前33.1⚠️）、体脂↓<br>
+      💡 这一周：训练出勤 + 蛋白质到位 = 守住骨骼肌底线！
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>Coach M · Ethan's AI 健身教练 · 第12周<br>
+    <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a></p>
+  </footer>
+
+</body>
+</html>
