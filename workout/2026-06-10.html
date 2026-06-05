@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>有氧 · Z2慢跑稳态（膝盖友好）— Coach M</title>
+  <style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface-hover: #161616;
+    --border: #222;
+    --border-hover: #383838;
+    --accent: #60a5fa;
+    --accent-dim: rgba(96,165,250,0.1);
+    --orange: #f97316;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --purple: #a78bfa;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --text-muted: #555;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  .nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-inner a, .nav-inner span { font-size:0.85rem; }
+  .nav-inner a { color:var(--text-dim); text-decoration:none; transition:color .2s; }
+  .nav-inner a:hover { color:var(--white); }
+  .nav-inner .sep { color:var(--text-muted); }
+
+  .hero {
+    background: linear-gradient(135deg, #1a0a0a 0%, #0a0a0a 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .hero .badge-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .hero .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .04em;
+  }
+  .badge.cardio { color: var(--red); background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); }
+  .badge.week { color: var(--purple); background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+  .badge.intensity { color: var(--green); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); }
+
+  .hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 900; color: var(--white);
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .hero .sub { color: var(--text-dim); font-size: 0.95rem; }
+
+  .quick-stats {
+    display: flex; justify-content: center; gap: 2rem;
+    padding: 1rem 0; margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .qs { text-align:center; }
+  .qs .num { font-size:1.3rem; font-weight:800; color:var(--white); }
+  .qs .num.green { color: var(--green); }
+  .qs .label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section-title {
+    font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 1.2rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); margin-top: 2.5rem;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--accent);
+  }
+  .callout strong { color: var(--white); }
+
+  .knee-list {
+    list-style: none; margin-bottom: 1.5rem;
+  }
+  .knee-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .knee-list li strong { color: var(--white); }
+
+  .hr-table { width:100%; border-collapse:collapse; margin:1rem 0; }
+  .hr-table th, .hr-table td { padding:0.6rem; text-align:left; border-bottom:1px solid var(--border); font-size:0.85rem; }
+  .hr-table th { color:var(--text-muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:.06em; }
+  .hr-table .zone-z2 { color:var(--green); }
+  .hr-table .zone-z3 { color:var(--orange); }
+  .hr-table .zone-warmup { color:var(--text-dim); }
+
+  .reminder-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .reminder-box p {
+    font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.5rem; line-height: 1.6;
+  }
+  .reminder-box p:last-child { margin-bottom: 0; }
+
+  .feedback-link {
+    display: block; text-align: center;
+    background: linear-gradient(135deg, rgba(248,113,113,0.08) 0%, rgba(74,222,128,0.08) 100%);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 12px;
+    padding: 1.2rem;
+    color: var(--red);
+    text-decoration: none;
+    transition: all .2s;
+    margin-top: 2rem;
+  }
+  .feedback-link:hover { background: rgba(248,113,113,0.12); transform: translateY(-2px); }
+  .feedback-link .fl-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .feedback-link .fl-sub { font-size: 0.8rem; color: var(--text-dim); }
+
+  .footer {
+    text-align:center; font-size:0.75rem; color:var(--text-muted);
+    padding: 2rem; border-top: 1px solid var(--border);
+  }
+  .footer a { color:var(--text-muted); text-decoration:none; }
+
+  @media (max-width:600px) {
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav"><div class="nav-inner">
+    <a href="https://ego1013.github.io/ethanycjin/">← Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="https://ego1013.github.io/ethanycjin/workout/">Coach M</a>
+    <span class="sep">/</span>
+    <span style="color:var(--text);">06/10</span>
+  </div></nav>
+
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge cardio">CARDIO · 有氧</span>
+      <span class="badge week">WEEK 13</span>
+      <span class="badge intensity">Z2</span>
+    </div>
+    <h1>有氧 · Z2慢跑稳态（膝盖友好）</h1>
+    <p class="sub">2026-06-10（周三）· Week 13 Day 3</p>
+
+    <div class="quick-stats">
+      <div class="qs"><div class="num">40</div><div class="label">分钟</div></div>
+      <div class="qs"><div class="num">~320</div><div class="label">千卡</div></div>
+      <div class="qs"><div class="num green">26</div><div class="label">Z2时间</div></div>
+      <div class="qs"><div class="num">5</div><div class="label">RPE</div></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="callout">
+      💡 <strong>今日策略</strong>：Z2甜蜜点确认：跑7.0/坡1 = 140bpm 稳态Z2！走跑交替保护膝盖。走路=Z1，跑步=Z2，分界线非常明确。
+    </div>
+
+    <!-- 跑前热身 + 膝盖保护 -->
+    <div class="section-title">🦵 膝盖保护策略</div>
+    <ul class="knee-list">
+      <li><strong>跑前5min动态热身</strong>（高抬腿 + 踢臀跑 + 侧移）</li>
+      <li><strong>小步幅高步频</strong>（170-180步/分）</li>
+      <li><strong>前掌/中掌落地</strong>，避免脚跟硬着地</li>
+      <li><strong>坡度固定1%</strong>（模拟户外，减少冲击）</li>
+      <li><strong>走跑交替</strong>：跑10min → 走2min，让关节恢复</li>
+      <li><strong>跑后拉伸</strong>：股四头 + 腘绳 + 小腿各30s</li>
+    </ul>
+
+    <!-- 心率方案 -->
+    <div class="section-title">❤️ 心率方案</div>
+    <table class="hr-table">
+      <thead>
+        <tr><th>阶段</th><th>时长</th><th>速度</th><th>心率目标</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>热身快走</td>
+          <td>0-3 min</td>
+          <td>5.0 / 坡0</td>
+          <td class="zone-warmup">&lt;110 bpm</td>
+        </tr>
+        <tr>
+          <td>慢跑过渡</td>
+          <td>3-5 min</td>
+          <td>6.0 / 坡1</td>
+          <td class="zone-warmup">110-120 bpm</td>
+        </tr>
+        <tr>
+          <td>Z2稳态跑 A</td>
+          <td>5-15 min</td>
+          <td>7.0 / 坡1</td>
+          <td class="zone-z2">125-140 bpm</td>
+        </tr>
+        <tr>
+          <td>走路恢复</td>
+          <td>15-17 min</td>
+          <td>5.0 / 坡0</td>
+          <td class="zone-warmup">&lt;115 bpm</td>
+        </tr>
+        <tr>
+          <td>Z2稳态跑 B</td>
+          <td>17-27 min</td>
+          <td>7.0 / 坡1</td>
+          <td class="zone-z2">125-140 bpm</td>
+        </tr>
+        <tr>
+          <td>走路恢复</td>
+          <td>27-29 min</td>
+          <td>5.0 / 坡0</td>
+          <td class="zone-warmup">&lt;115 bpm</td>
+        </tr>
+        <tr>
+          <td>Z2稳态跑 C</td>
+          <td>29-35 min</td>
+          <td>7.0 / 坡1</td>
+          <td class="zone-z2">125-140 bpm</td>
+        </tr>
+        <tr>
+          <td>冷却走路</td>
+          <td>35-40 min</td>
+          <td>5.0 / 坡0</td>
+          <td class="zone-warmup">&lt;110 bpm</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 提醒 -->
+    <div class="section-title">⚠️ 提醒</div>
+    <div class="reminder-box">
+      <p>🎯 <strong>目标是心率，不是速度！</strong>如果7.0心率超过140，降到6.5</p>
+      <p>💧 <strong>每10min补水</strong>，小口慢饮</p>
+      <p>🦵 <strong>膝盖有任何不适立即改走路</strong>，不强撑</p>
+      <p>💊 <strong>有氧日 ≤1700kcal，蛋白质 ≥120g</strong></p>
+    </div>
+
+    <!-- Feedback -->
+    <a href="http://localhost:9876/?date=2026-06-10&type=cardio&week=13&day=3" class="feedback-link" target="_blank">
+      <div class="fl-title">📝 训练反馈</div>
+      <div class="fl-sub">完成后点击记录你的表现</div>
+    </a>
+
+  </main>
+
+  <footer class="footer">
+    <p>Coach M · Week 13 · <a href="https://ego1013.github.io/ethanycjin/workout/">← 返回仪表盘</a></p>
+  </footer>
+
+</body>
+</html>
