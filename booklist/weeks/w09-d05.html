@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 9 · Day 5 · 摆渡人+连接者 · 《竞争战略三部曲》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 摆渡人专属：蓝调 */
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            /* 连接者专属：青调 */
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Body text */
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        /* Bridge section */
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Connector section */
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Section break */
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Final tension box */
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        /* Connector branch */
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        /* Bridge passage */
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        /* SVG map container */
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+        }
+
+        /* Landing questions */
+        .landing-questions {
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .lq-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .lq-item {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.9rem;
+            align-items: flex-start;
+        }
+
+        .lq-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--bridge);
+            min-width: 1.2rem;
+            padding-top: 0.2rem;
+        }
+
+        .lq-text {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>Week 9 · Day 5</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人 · 周五</span>
+                <span class="meta-badge" style="background:var(--connector-dim);color:var(--connector);border-color:var(--connector-border);">🔗 连接者</span>
+                <span style="color:var(--text-muted)">Week 9 · Day 5</span>
+                <span style="color:var(--text-muted)">·</span>
+                <span style="color:var(--text-muted)">2026-06-05</span>
+            </div>
+            <h1>住在地图里的战略家</h1>
+            <p class="subtitle">《竞争战略三部曲》— 迈克尔·波特 · 知识图谱第9节点</p>
+        </header>
+
+        <!-- ═══ 摆渡人部分 ═══ -->
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridger</div>
+        </div>
+
+        <p>这周我们跟着波特在一张非常精确的地图里行走。五力模型、价值链、钻石模型——每一个工具都有坐标轴、有参数、有输出。地图足够好，好到可以指导博士论文、重塑商学院课程、帮助数十个国家制定产业政策。</p>
+
+        <p>但今天，摆渡人想问的不是这张地图对不对。而是：<strong>当地图描述的那个世界，开始系统性地消失，地图还剩什么用？</strong></p>
+
+        <!-- 第一段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第一段摆渡</div>
+            <div class="passage-title">从"如何在均衡里获胜"到"均衡本身还存在吗"</div>
+            <p style="margin-bottom:0.8rem">波特的整个体系有一个结构性前提，他本人从未明说：<strong>竞争最终会达到某种相对稳定的均衡状态，而战略的任务就是在这个均衡里找到最好的位置。</strong></p>
+            <p style="margin-bottom:0.8rem">这不是一个坏假设。在制造业时代，它几乎是真的。钢铁公司、汽车公司、食品公司——它们竞争激烈，但行业边界清晰，规模经济有上限，网络效应基本不存在，"最坏的情况"是市场集中度提高后形成寡头。均衡会出现，只是位置不同。</p>
+            <p style="margin-bottom:0.8rem">平台经济改变了这个基础假设。谷歌在搜索广告的市场份额超过90%，不是因为它"位置更好"，而是因为<em>每增加一个用户，搜索质量就更高，广告精准度就更好，吸引下一个用户的成本就更低</em>。这是一个正反馈螺旋，它产生的不是均衡，而是<strong>赢家通吃的锁定</strong>。</p>
+            <p style="margin-bottom:0">五力模型在这里遇到的不是"需要修正的缺陷"，而是一个哲学前提的失效：<em>当竞争机制本身从均衡导向变成消灭均衡的机器，"位置"这个概念就失去了它依存的地理基础。</em>没有稳定地形，就没有战略高地。</p>
+        </div>
+
+        <!-- 第二段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第二段摆渡</div>
+            <div class="passage-title">波特遇见2026：三个变量，一个问题</div>
+            <p style="margin-bottom:0.8rem">让我们把波特的三部曲放到2026年的世界里，看看哪些变量今天读来最不寻常：</p>
+            <p style="margin-bottom:0.8rem"><strong>变量一：AI正在压缩差异化的成本。</strong>波特说，差异化战略依赖"独特活动配置"——你的研发、设计、品牌积累很难被复制。但当大语言模型能在几小时内生成合格的营销文案、产品文档、初级代码，"差异化活动"的壁垒高度正在被压缩。波特没有错，但"维持差异化壁垒所需的资源量"正在以指数级变化。</p>
+            <p style="margin-bottom:0.8rem"><strong>变量二：算法定价让"成本领先战略"的边界变模糊。</strong>动态定价系统让价格实时响应供需，两家企业可以用几乎相同的技术栈实现完全不同的定价逻辑。成本领先不再只是规模经济的函数，而是数据积累量和算法质量的函数——这是波特没有遇到过的竞争变量。</p>
+            <p style="margin-bottom:0">变量三：<strong>Stuck in the Middle的陷阱，在平台经济里可能被颠倒。</strong>波特警告不要同时追求成本领先和差异化。但拼多多的崛起——同时做到"最低价"和"品质信任感"——正是在平台网络效应的加持下，实现了波特认为不可持续的双重定位。网络效应是过去没有的杠杆。</p>
+        </div>
+
+        <div class="pull-quote">
+            <p>波特的贡献是构建了一套"有均衡解的世界"里的竞争语言。今天的战略家面对的挑战，是学会在一个"均衡正在被消灭的世界"里，仍然说出有意义的话。</p>
+        </div>
+
+        <!-- 第三段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第三段摆渡</div>
+            <div class="passage-title">住在地图里的战略家</div>
+            <p style="margin-bottom:0.8rem">这是摆渡人每次站在这里都会想到的问题：<strong>每一个足够好的框架，都有把人锁进去的风险。</strong></p>
+            <p style="margin-bottom:0.8rem">英特尔的故事是最好的案例。英特尔用波特的逻辑把PC处理器市场做到极致——垂直整合、技术壁垒、生态锁定，教科书级别的位置战略。但正是这种"住在地图里的完美执行"，让他们错过了移动时代：ARM的低功耗芯片不符合英特尔的位置定义，所以英特尔没有把它当竞争。</p>
+            <p style="margin-bottom:0.8rem">这不是英特尔的失误，而是框架的代价。当你太擅长用一张地图，你就会开始把地图当作世界本身。</p>
+            <p style="margin-bottom:0">波特给了我们一套可靠的战略语言。但更重要的技能，也许是<em>知道什么时候这套语言开始描述的是昨天的地形，而不是今天的地面</em>。地图工具，但不要住进去。</p>
+        </div>
+
+        <!-- 张力问题最终形态 -->
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">❓→💡</div>
+            <div class="ft-original">
+                本周最初的问题是：波特把竞争优势定位在"位置"——在数字经济时代"位置"还是正确框架吗？还是平台经济正在系统性消灭竞争均衡本身？
+            </div>
+            <div class="ft-evolved">
+                当竞争均衡被系统性地消灭，"持续竞争优势"这个战略北极星，不再是帮我们找到高地的罗盘——它变成了一个在不断移动的大陆上，仍然试图测量海拔高度的仪器。<br><br>
+                更深的问题是：<strong>在一个赢家通吃机制不断压缩均衡空间的世界里，"竞争战略"这门学科，到底在为谁解决什么问题？</strong>是帮助在位者巩固优势，还是帮助挑战者识别颠覆窗口？是描述竞争秩序，还是参与建构竞争秩序？<br><br>
+                波特没有问这个问题。但这个问题，是从他的框架里生长出来的。
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你当前使用的战略框架，描述的是一个有均衡解的世界，还是一个均衡正在消失的世界？你怎么判断？</div>
+                <div class="ft-q-item">你最近一次因为"坚守战略定位"而错过了一个新信号，是什么时候？那个信号当时为什么不符合你的地图？</div>
+                <div class="ft-q-item">如果你是一个没有历史包袱的进入者，你会用波特的框架来攻击在位者的哪一个假设？</div>
+            </div>
+        </div>
+
+        <hr class="section-break">
+
+        <!-- ═══ 连接者部分 ═══ -->
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector · 知识图谱第9节点</div>
+        </div>
+
+        <p>从本周的视角出发，连接者在这张50本书的知识网络里，为波特的《竞争战略三部曲》找到五条枝干。每一条都不是重复，而是思想传承链上一个独特的接续动作。</p>
+
+        <!-- 枝干1 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">《国富论》— 斯密</span>
+                <span class="branch-week">第 1 周</span>
+            </div>
+            <div class="branch-desc">
+                斯密发现分工产生专业化，专业化提升生产力，进而形成比较优势——这是竞争优势最早的概念基因。波特的价值链，本质上是斯密分工思想在企业内部的精细化展开：把"企业"这个黑箱打开，找到每一个可以被优化、被差异化的活动单元。从"别针工厂的分工"到"企业价值活动系统"，这是一条横跨两百年的逻辑传承。但波特把视角从国家比较优势拉到了企业竞争优势——这个尺度的转换，既是传承也是扩展。
+            </div>
+        </div>
+
+        <!-- 枝干2 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">《资本论》— 马克思</span>
+                <span class="branch-week">第 2 周</span>
+            </div>
+            <div class="branch-desc">
+                马克思的剩余价值论认为，企业盈利来自对劳动者剩余价值的榨取——利润是剥削关系的体现。波特的竞争优势论认为，企业盈利来自"相对位置"和"活动配置"——利润是战略卓越的回报。这是两套平行的"利润起源理论"，深层价值观截然对立：一个把利润当结构性症结，一个把利润当竞争结果。有趣的是，两者都没有认真讨论"地球上只有一个谷歌可以存在"的赢家通吃逻辑——这是两套地图都没画完的地方。
+            </div>
+        </div>
+
+        <!-- 枝干3 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">《就业、利息和货币通论》— 凯恩斯</span>
+                <span class="branch-week">第 4 周</span>
+            </div>
+            <div class="branch-desc">
+                凯恩斯的宏观工具箱（财政政策、货币政策、有效需求管理）与波特的微观战略框架（行业分析、竞争定位）处于不同楼层——一个管大气候，一个管小地形。但两者有一个深层的互补关系：宏观政策改变竞争格局的基础条件，微观战略在那个基础条件里选择位置。有趣的是，凯恩斯相信政府可以有效管理总需求，但波特提醒我们"政府影响行业结构，往往通过保护既有势力而非促进真正的竞争"——钻石模型里政府角色的有限性，是对凯恩斯式乐观主义的微观反驳。
+            </div>
+        </div>
+
+        <!-- 枝干4 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type complement">互补</span>
+                <span class="branch-book">《影响力》— 西奥迪尼</span>
+                <span class="branch-week">第 8 周</span>
+            </div>
+            <div class="branch-desc">
+                波特的框架假设竞争是理性的：企业基于行业分析选择位置，顾客基于功能和价格做决策。西奥迪尼的六原则则揭示了竞争的"心理层"——互惠、权威、稀缺感、社会认同，这些机制在理性分析之前就已经运作。波特描述了竞争格局的地形，西奥迪尼描述了在这个地形上移动的人为什么并不总是按地形行动。两者合并，才是完整的竞争图景：<em>结构决定战场，心理决定战斗。</em>理解波特而不理解西奥迪尼，你能设计战略但不能说服人执行；理解西奥迪尼而不理解波特，你能说服顾客但不知道去争夺哪块市场。
+            </div>
+        </div>
+
+        <!-- 枝干5：跨频道C -->
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C · 文学感知</span>
+                <span class="branch-book">《老人与海》— 海明威</span>
+            </div>
+            <div class="branch-desc">
+                一位老渔夫独自出海，花了三天时间搏斗一条大马林鱼，最终带回来的只有一具被鲨鱼啃光的骨架。从战略角度看，这是最彻底的"持续竞争优势"失败案例——投入巨大，产出为零。但老人在返回港口时没有溃败感，只有安静的满足。这是海明威对"战略目标本身"最深刻的质疑：如果整个旅程的意义不在于"占有战果"，而在于"与真正的对手完整地较量"——那么"持续竞争优势"这个概念，是否从一开始就把我们引向了一个错误的成功定义？波特问的是"如何赢"，海明威问的是"赢了什么算数"。
+            </div>
+        </div>
+
+        <!-- 知识地图 SVG -->
+        <div class="map-container">
+            <div class="map-title">📍 知识图谱 · 第9节点 · 《竞争战略三部曲》</div>
+            <svg viewBox="0 0 620 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+                <!-- Background -->
+                <rect width="620" height="380" fill="#111111" rx="8"/>
+
+                <!-- Connection arcs (draw first, below nodes) -->
+                <!-- W1 → W9 inherit -->
+                <path d="M 95 110 Q 200 50 370 110" fill="none" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+                <!-- W2 → W9 tension -->
+                <path d="M 95 175 Q 200 130 370 120" fill="none" stroke="#E94560" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.45"/>
+                <!-- W4 → W9 dialogue -->
+                <path d="M 95 240 Q 250 170 370 130" fill="none" stroke="#4A9EFF" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.45"/>
+                <!-- W8 → W9 complement -->
+                <path d="M 95 305 Q 210 260 370 150" fill="none" stroke="#2DD4BF" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+                <!-- W9 → Channel C -->
+                <path d="M 440 160 Q 500 200 530 250" fill="none" stroke="#B47CDC" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+                <!-- W9 → W10 next -->
+                <path d="M 450 130 Q 510 110 540 110" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+
+                <!-- Left column: connected books -->
+                <!-- W1 -->
+                <circle cx="80" cy="110" r="24" fill="#0a0a0a" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="80" y="106" text-anchor="middle" fill="#e2a355" font-size="9" font-family="sans-serif" font-weight="700">W1</text>
+                <text x="80" y="118" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">国富论</text>
+                <text x="80" y="140" text-anchor="middle" fill="#e2a355" font-size="7" font-family="sans-serif">传承</text>
+
+                <!-- W2 -->
+                <circle cx="80" cy="175" r="24" fill="#0a0a0a" stroke="#E94560" stroke-width="1.5"/>
+                <text x="80" y="171" text-anchor="middle" fill="#E94560" font-size="9" font-family="sans-serif" font-weight="700">W2</text>
+                <text x="80" y="183" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">资本论</text>
+                <text x="80" y="205" text-anchor="middle" fill="#E94560" font-size="7" font-family="sans-serif">张力</text>
+
+                <!-- W4 -->
+                <circle cx="80" cy="240" r="24" fill="#0a0a0a" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="80" y="236" text-anchor="middle" fill="#4A9EFF" font-size="9" font-family="sans-serif" font-weight="700">W4</text>
+                <text x="80" y="248" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">通论</text>
+                <text x="80" y="270" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">对话</text>
+
+                <!-- W8 -->
+                <circle cx="80" cy="305" r="24" fill="#0a0a0a" stroke="#2DD4BF" stroke-width="1.5"/>
+                <text x="80" y="301" text-anchor="middle" fill="#2DD4BF" font-size="9" font-family="sans-serif" font-weight="700">W8</text>
+                <text x="80" y="313" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">影响力</text>
+                <text x="80" y="335" text-anchor="middle" fill="#2DD4BF" font-size="7" font-family="sans-serif">互补</text>
+
+                <!-- Center: W9 main node -->
+                <circle cx="410" cy="140" r="42" fill="#0a0a0a" stroke="#e2a355" stroke-width="2.5"/>
+                <text x="410" y="130" text-anchor="middle" fill="#e2a355" font-size="11" font-family="sans-serif" font-weight="800">W9</text>
+                <text x="410" y="145" text-anchor="middle" fill="#f0f0f0" font-size="8.5" font-family="sans-serif" font-weight="700">竞争战略</text>
+                <text x="410" y="157" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">三部曲·波特</text>
+
+                <!-- Right: Channel C -->
+                <circle cx="540" cy="265" r="28" fill="#0a0a0a" stroke="#B47CDC" stroke-width="1.5" stroke-dasharray="5,3"/>
+                <text x="540" y="259" text-anchor="middle" fill="#B47CDC" font-size="8.5" font-family="sans-serif" font-weight="700">频道C</text>
+                <text x="540" y="271" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">老人与海</text>
+                <text x="540" y="285" text-anchor="middle" fill="#B47CDC" font-size="7" font-family="sans-serif">文学感知</text>
+
+                <!-- Right: W10 next -->
+                <circle cx="560" cy="110" r="22" fill="#0a0a0a" stroke="#333" stroke-width="1.5" stroke-dasharray="5,4"/>
+                <text x="560" y="106" text-anchor="middle" fill="#555" font-size="9" font-family="sans-serif" font-weight="700">W10</text>
+                <text x="560" y="118" text-anchor="middle" fill="#444" font-size="7.5" font-family="sans-serif">21C资本论</text>
+
+                <!-- Labels on arcs -->
+                <text x="195" y="64" text-anchor="middle" fill="#e2a355" font-size="7" font-family="sans-serif">传承</text>
+                <text x="215" y="133" text-anchor="middle" fill="#E94560" font-size="7" font-family="sans-serif">利润起源张力</text>
+                <text x="245" y="172" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">宏微观对话</text>
+                <text x="240" y="258" text-anchor="middle" fill="#2DD4BF" font-size="7" font-family="sans-serif">战略+心理互补</text>
+                <text x="500" y="240" text-anchor="middle" fill="#B47CDC" font-size="7" font-family="sans-serif">跨频道C</text>
+            </svg>
+        </div>
+
+        <!-- 下周预告 -->
+        <div class="tension-box" style="border-color:var(--border);background:var(--surface-2);">
+            <div class="tension-label" style="color:var(--text-muted)">下周预告 · Week 10</div>
+            <p class="tension-text" style="color:var(--text-dim);font-size:0.9rem;">
+                第10周：《21世纪资本论》— 托马斯·皮凯蒂<br>
+                <span style="font-size:0.82rem;color:var(--text-muted)">从"竞争优势的分配逻辑"到"资本回报率系统性高于经济增长"——当波特描述的竞争秩序生产了利润，皮凯蒂问的是这些利润最终去了哪里。r>g不是对竞争战略的否定，而是它的长期结果追踪。</span>
+            </p>
+        </div>
+
+        <!-- 导航 -->
+        <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+            <a href="./w09-d04.html" style="color:#888;text-decoration:none;">← D04 · 挑战者</a>
+            <a href="../" style="color:#888;text-decoration:none;">📚 书单首页</a>
+            <a href="./w10-d01.html" style="color:#888;text-decoration:none;">W10 D01 · 叙事者 →</a>
+        </div>
+    </div>
+</body>
+</html>
