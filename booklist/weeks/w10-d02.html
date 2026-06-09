@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10 · Day 2 · 提炼者 · 《21世纪资本论》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Framework card */
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        /* SVG info container */
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Contrast box */
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        /* Pullquote */
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        /* Misread block */
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        /* Formula box */
+        .formula-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.92rem;
+            color: var(--accent);
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+        .formula-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        /* Bias note */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Footer nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第10周 · 第2天</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W10-D02</div>
+        <div class="meta">
+            <span>📅 2026-06-09</span>
+            <span>📖 第 10 周 · Day 2 / 5</span>
+            <span>🔢 《21世纪资本论》</span>
+        </div>
+        <h1>资本在奔跑，劳动在追赶</h1>
+        <div class="subtitle">皮凯蒂用五把数据刀，解剖了三百年财富分配的结构秘密——每一刀都切在"增长会惠及所有人"这个善意的谎言上</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把皮凯蒂散落在八百页里的数据逻辑，拼成一张可理解的地图。皮凯蒂的核心方法其实很简单：<strong>让数据说话，让公式作证</strong>。但他用的不是抽象模型，而是三百年、二十多个国家的税收档案。今天这五把刀，每一把都从一个具体的数据模式出发，指向一个让主流经济学不安的结论。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <!-- Knife 1: r > g -->
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title"><em>r > g</em> · 核心不等式</div>
+            <div class="card-body">
+                这是皮凯蒂全书的核心发现，也是最有争议的命题。<br><br>
+                <em>r</em> 代表资本的平均年收益率（利润、利息、租金、股息的总和），历史数据显示，<em>r</em> 长期稳定在<strong>4–5%</strong>左右（税前）。<em>g</em> 代表经济的年增长率，长期约<strong>1–2%</strong>。<br><br>
+                当 <em>r > g</em> 时，资本所有者的财富增速会系统性超过整体经济的增速。一个拥有资本但不工作的人，其财富增长会快过一个辛勤工作、靠工资生活的人。长此以往，资本在国民收入中的份额会不断上升，劳动的份额被挤压。
+            </div>
+            <div class="formula-box">
+                r (4–5%)  >  g (1–2%)
+            </div>
+            <div class="formula-desc">资本收益率长期大于经济增长率</div>
+            <div class="card-core">
+                <strong>关键命题：</strong><em>r > g</em> 不是偶然，而是历史常态。20世纪中期的相对平等（<em>r</em> 暂时低于或接近 <em>g</em>）是两次世界大战、大萧条和高增长的<strong>历史例外</strong>，不是结构性趋势。和平与低增长时代，这个不等式会重新主导。
+            </div>
+        </div>
+
+        <!-- Knife 2: β = s/g -->
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">资本/收入比 <em>β = s/g</em> · 第二基本定律</div>
+            <div class="card-body">
+                皮凯蒂用 <em>β</em> 表示一个国家<strong>总财富</strong>与<strong>年国民收入</strong>的比值。这个比值回答了一个问题：一个社会积累了多少年的财富？<br><br>
+                第二基本定律说：在长期稳态下，<em>β</em> 趋向于 <em>s/g</em>——储蓄率除以增长率。这意味着，当经济增长放缓（<em>g</em> 下降），而储蓄率（<em>s</em>）保持稳定时，资本存量会相对于年收入膨胀。<br><br>
+                皮凯蒂的数据显示：欧洲的 <em>β</em> 从1950年的约300%上升到2010年的约600%。换句话说，欧洲现在积累的总财富，相当于六年的国民收入——回到了19世纪的水平。
+            </div>
+            <div class="formula-box">
+                β = s / g
+            </div>
+            <div class="formula-desc">资本/收入比 = 储蓄率 ÷ 经济增长率</div>
+            <div class="card-core">
+                <strong>关键命题：</strong>低增长时代天然有利于资本积累。当 <em>g</em> 从4%降到1%，同样的储蓄率会让 <em>β</em> 翻四倍。这不是阴谋，是数学。21世纪的低增长（人口老龄化、技术红利递减）正在把世界推回"继承资本主义"。
+            </div>
+        </div>
+
+        <!-- Knife 3: α = r × β -->
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">资本份额 <em>α = r × β</em> · 第一基本定律</div>
+            <div class="card-body">
+                这是皮凯蒂从国民账户恒等式中推导出的一个会计等式，不是假设，而是定义：<em>α</em>（国民收入中归属于资本的比例）<strong>恒等于</strong> <em>r</em>（资本收益率）乘以 <em>β</em>（资本/收入比）。<br><br>
+                这把刀的真正威力在于<strong>组合使用</strong>：把刀#2的 <em>β = s/g</em> 代入，得到 <em>α = r × s/g</em>。在 <em>r > g</em> 的条件下，这意味着资本份额 <em>α</em> 会随时间推移而上升——劳动收入在国民收入中的占比被系统性挤压。<br><br>
+                传统经济学假设资本份额和劳动份额长期稳定（大约在各占50%左右）。皮凯蒂的数据表明，这个"稳定"在20世纪中期是真实的，但正在瓦解。
+            </div>
+            <div class="formula-box">
+                α = r × β  →  α = r × (s/g)
+            </div>
+            <div class="formula-desc">资本份额 = 资本收益率 × 资本/收入比</div>
+            <div class="card-core">
+                <strong>关键命题：</strong>资本份额的上升不是周期性的波动，而是结构性趋势。当 <em>r > g</em> 且 <em>β</em> 在低增长时代膨胀时，<em>α</em> 的上升几乎是必然的——除非有强有力的制度干预（如累进税、资本管制）来打断这个链条。
+            </div>
+        </div>
+
+        <!-- Knife 4: U型曲线 -->
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">U型曲线 · 历史长周期模式</div>
+            <div class="card-body">
+                皮凯蒂团队最震撼的数据发现，是一张横跨三百年的U型曲线。<br><br>
+                以顶层1%人群的收入占比为例：1910年左右的欧洲和美国，顶层1%拿走约<strong>20%</strong>的国民收入。两次世界大战、大萧条和战后高增长的冲击，把这个比例压到了<strong>8%</strong>左右。但从1980年代开始，它重新攀升，到2010年回到了<strong>15–20%</strong>——接近一战前的水平。<br><br>
+                财富集中度（顶层1%和0.1%拥有的总财富占比）呈现出几乎完全相同的U型。这个模式在法国、英国、美国、日本等多个国家反复出现，不是单一国家的特例。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>20世纪中期的相对平等不是资本主义的自然终点，而是<strong>历史冲击的临时结果</strong>。战争摧毁了资本存量，高增长了提升了劳动的相对价值，累进税压缩了顶层收入。当这些条件消退，U型的右半边上翘几乎是数据层面的必然。
+            </div>
+        </div>
+
+        <!-- Knife 5: Inherited Capitalism -->
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">继承资本主义 · <em>Inherited Capitalism</em></div>
+            <div class="card-body">
+                这是前四把刀的逻辑终点。如果 <em>r > g</em> 持续足够长的时间，财富的代际传递会变得比个人劳动积累更重要。<br><br>
+                皮凯蒂计算了21世纪初法国的数据：继承财富的总价值已经超过了劳动财富的总价值。这意味着，一个法国人一生中从父母那里继承的财产，平均而言，已经超过了他自己一辈子工作所能积累的全部财富。<br><br>
+                这不是道德判断，是数学结果。当资本收益率持续高于增长率，早出生的一代（在资本便宜时积累资产）会系统性优于晚出生的一代（在资产昂贵时进入市场）。"拼爹"从文化现象变成了<strong>结构性经济机制</strong>。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>当继承财富 > 劳动财富，"白手起家"的故事不再是励志模板，而是统计学上的<strong>尾部事件</strong>。社会流动性的下降不是个人努力不够，而是 <em>r > g</em> 这个不等式的必然副产品。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 皮凯蒂逻辑链与历史U型曲线</div>
+
+        <!-- SVG Infographic -->
+        <div class="svg-container">
+            <div class="svg-label">从 r>g 到继承资本主义 · 三百年财富分配的U型轨迹</div>
+            <svg viewBox="0 0 720 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                    <linearGradient id="uGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="rgba(226,163,85,0.15)"/>
+                        <stop offset="100%" stop-color="rgba(226,163,85,0)"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Background -->
+                <rect width="720" height="560" fill="#111" rx="8"/>
+
+                <!-- Title -->
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">皮凯蒂框架逻辑链 · 历史U型曲线</text>
+
+                <!-- ── Left: U型曲线图 ── -->
+                <rect x="16" y="44" width="336" height="240" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">顶层1%收入占比 · 三百年 (%)</text>
+
+                <!-- Y axis -->
+                <line x1="44" y1="76" x2="44" y2="268" stroke="#333" stroke-width="1"/>
+                <text x="36" y="84" text-anchor="end" fill="#555" font-family="system-ui,sans-serif" font-size="8">25%</text>
+                <text x="36" y="132" text-anchor="end" fill="#555" font-family="system-ui,sans-serif" font-size="8">20%</text>
+                <text x="36" y="180" text-anchor="end" fill="#555" font-family="system-ui,sans-serif" font-size="8">15%</text>
+                <text x="36" y="228" text-anchor="end" fill="#555" font-family="system-ui,sans-serif" font-size="8">10%</text>
+                <text x="36" y="268" text-anchor="end" fill="#555" font-family="system-ui,sans-serif" font-size="8">5%</text>
+
+                <!-- X axis labels -->
+                <text x="52" y="282" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">1800</text>
+                <text x="120" y="282" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">1850</text>
+                <text x="188" y="282" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">1900</text>
+                <text x="256" y="282" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">1950</text>
+                <text x="324" y="282" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">2000</text>
+
+                <!-- Grid lines -->
+                <line x1="44" y1="132" x2="340" y2="132" stroke="#222" stroke-width="0.5"/>
+                <line x1="44" y1="180" x2="340" y2="180" stroke="#222" stroke-width="0.5"/>
+                <line x1="44" y1="228" x2="340" y2="228" stroke="#222" stroke-width="0.5"/>
+
+                <!-- U curve fill -->
+                <path d="M 52,100 Q 110,96 168,104 Q 200,120 220,180 Q 240,248 280,236 Q 310,220 332,168 L 332,268 L 52,268 Z" fill="url(#uGrad)" stroke="none"/>
+
+                <!-- U curve line -->
+                <path d="M 52,100 Q 110,96 168,104 Q 200,120 220,180 Q 240,248 280,236 Q 310,220 332,168" fill="none" stroke="#e2a355" stroke-width="2"/>
+
+                <!-- Key points -->
+                <circle cx="168" cy="104" r="4" fill="#e2a355"/>
+                <text x="168" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="8">~20%</text>
+
+                <circle cx="220" cy="180" r="4" fill="#6cbf73"/>
+                <text x="220" y="170" text-anchor="middle" fill="#6cbf73" font-family="system-ui,sans-serif" font-size="8">~8%</text>
+
+                <circle cx="332" cy="168" r="4" fill="#E94560"/>
+                <text x="332" y="158" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="8">~18%</text>
+
+                <!-- Historical events labels -->
+                <text x="220" y="200" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="7">两次世界大战 · 大萧条</text>
+                <text x="280" y="256" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="7">1980s 新自由主义</text>
+
+                <!-- ── Right: Logic chain ── -->
+                <rect x="368" y="44" width="336" height="240" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">r>g → 继承资本主义 · 逻辑链</text>
+
+                <!-- Box 1: r > g -->
+                <rect x="392" y="80" width="288" height="44" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="100" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" font-weight="600">刀 #1 · r > g</text>
+                <text x="536" y="116" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="11">资本收益率 4–5% > 经济增长率 1–2%</text>
+
+                <line x1="536" y1="124" x2="536" y2="140" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 2: β = s/g -->
+                <rect x="392" y="144" width="288" height="44" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="164" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" font-weight="600">刀 #2 · β = s/g</text>
+                <text x="536" y="180" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="11">低增长时代 → 资本/收入比膨胀</text>
+
+                <line x1="536" y1="188" x2="536" y2="204" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 3: α = r×β -->
+                <rect x="392" y="208" width="288" height="44" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="228" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="10" font-weight="600">刀 #3 · α = r × β</text>
+                <text x="536" y="244" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="11">资本份额上升 · 劳动份额被挤压</text>
+
+                <line x1="536" y1="252" x2="536" y2="268" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 4: Output -->
+                <rect x="392" y="272" width="288" height="36" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="536" y="286" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #5 · 输出</text>
+                <text x="536" y="300" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="11" font-weight="700">继承资本主义 · 代际财富固化</text>
+
+                <!-- ── Bottom: Two paths comparison ── -->
+                <rect x="16" y="304" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="324" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两条历史路径 · 两条解释</text>
+
+                <!-- Kuznets -->
+                <rect x="28" y="336" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="356" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">库兹涅茨曲线（1950s）</text>
+                <path d="M 60,400 Q 140,360 220,400" fill="none" stroke="#6fb5e0" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <text x="188" y="392" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">倒U型：不平等先升后降，最终收敛</text>
+
+                <!-- Piketty -->
+                <rect x="372" y="336" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="356" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">皮凯蒂 U型（2013）</text>
+                <path d="M 404,380 Q 464,408 524,380 Q 552,360 580,380" fill="none" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="532" y="392" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">U型：历史例外后回归常态</text>
+
+                <!-- ── Red dashed boxes: Preconditions ── -->
+                <rect x="16" y="440" width="688" height="104" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="460" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 前提条件</text>
+
+                <!-- Pre 1 -->
+                <rect x="32" y="472" width="316" height="56" rx="4" fill="rgba(233,69,96,0.04)" stroke="rgba(233,69,96,0.15)" stroke-width="1"/>
+                <text x="190" y="492" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">前提 A</text>
+                <text x="190" y="508" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">r 确实持续 > g（税前？税后？）</text>
+                <text x="190" y="520" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">资本损耗、风险、税收是否被充分计入？</text>
+
+                <!-- Pre 2 -->
+                <rect x="372" y="472" width="316" height="56" rx="4" fill="rgba(233,69,96,0.04)" stroke="rgba(233,69,96,0.15)" stroke-width="1"/>
+                <text x="530" y="492" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">前提 B</text>
+                <text x="530" y="508" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">资本可跨代传递（继承制度稳定）</text>
+                <text x="530" y="520" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">如果遗产税接近100%，链条断裂</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图有两个红色虚线框值得盯住。左边的前提A问的是：<em>r</em> 和 <em>g</em> 的数据测量是否准确？税后 <em>r</em> 可能远低于4–5%，资本的风险损耗也可能被低估。右边的前提B问的是：如果遗产税足够高，继承链条会被打断，<em>r > g</em> 的分配后果就不会那么严重。皮凯蒂的数据刀切得很深，但<strong>刀口下面还有两个假设</strong>——明天应用者会把这个框架带进三个真实场景，看看这两个假设在哪里成立、在哪里失效。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条解释路径对比</div>
+
+        <h2>库兹涅茨 vs 皮凯蒂：同一个世界，两种历史观</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">库兹涅茨曲线（1955）</div>
+                <div class="col-name col-accent">倒U型 · 乐观收敛</div>
+                <div class="col-text">
+                    工业化初期不平等上升<br><br>
+                    发展成熟后自动下降<br><br>
+                    教育普及 + 民主化 → 自然收敛<br><br>
+                    20世纪中期数据支持这一趋势<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：增长最终惠及所有人。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">皮凯蒂 U型（2013）</div>
+                <div class="col-name" style="color:#E94560;">U型 · 历史例外论</div>
+                <div class="col-text">
+                    19世纪不平等高位<br><br>
+                    20世纪中期是<strong>战争例外</strong>，不是常态<br><br>
+                    和平 + 低增长 → U型右半边上翘<br><br>
+                    1980s后数据明确支持回升<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：没有制度干预，不平等会自我强化。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种历史观的分歧，不只是数据解读的差异，更是关于<strong>历史是否有方向</strong>的根本分歧。库兹涅茨看到的是进步叙事——人类在变得更好。皮凯蒂看到的是循环叙事——没有干预，结构就会回到原来的位置。谁对谁错？数据本身不能裁决，因为两人用的是同一套数据，但<strong>框定问题的方式不同</strong>。
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：库兹涅茨的数据样本恰好覆盖1913–1948年这个不平等下降的时段，他没有看到此后的回升。皮凯蒂的数据覆盖了更长的三百年，但主要集中在发达国家。两种框架都有边界，都不是"全貌"。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：<em>r > g</em> 意味着不平等必然恶化，无法逆转</strong>
+                    <span>皮凯蒂自己反复强调，<em>r > g</em> 描述的是结构性趋势，不是物理定律。税收政策、资本管制、累进遗产税、财富透明制度都可以干预这个趋势。20世纪中期的相对平等就是证明——它正是通过高累进税和资本管制实现的。</span>
+                    <div class="misread-correction">✓ 准确理解：<em>r > g</em> 是默认路径，不是宿命。制度设计可以改变路径。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：皮凯蒂主张废除资本主义 / 没收私有财产</strong>
+                    <span>皮凯蒂的政策处方是全球财富累进税（从0.5%到10%不等）和全球财富透明登记系统。他明确说自己是资本主义的支持者——"资本主义需要监管才能生存"。他的目标不是废除私有制，而是防止资本主义的自我毁灭。</span>
+                    <div class="misread-correction">✓ 准确理解：皮凯蒂是资本主义的内科医生，不是掘墓人。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：皮凯蒂的数据是全球普适的</strong>
+                    <span>皮凯蒂的数据主要来自法国、英国、美国、德国、日本等发达经济体，对发展中国家和新兴经济体（如中国、印度、巴西）的历史覆盖极为有限。这意味着他的"普遍规律"声明可能只适用于特定类型的资本主义经济体。</span>
+                    <div class="misread-correction">✓ 准确理解：数据是发达国家的长周期，不能无条件外推到全球。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <!-- Tension echo -->
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                r>g趋势是历史必然还是政策选择的结果？数据不能告诉你"应该"做什么——我们对不平等的感受是正义问题、效率问题还是更原始的恐惧？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，皮凯蒂的逻辑链在数学层面是闭合的——<em>r > g</em> → <em>β</em> 膨胀 → <em>α</em> 上升 → 继承资本主义。但<strong>除了那两个红色虚线框</strong>，还有一个更深层的问题：<em>r</em> 和 <em>g</em> 本身不是自然常数，它们是制度产物。<br><br>
+                <em>r</em> 之所以是4–5%，部分是因为知识产权法、公司治理结构、金融去监管——这些都是政策选择。<em>g</em> 之所以在1980s后下降，部分是因为新自由主义政策下劳动议价能力被削弱——这也是政策选择。<strong>皮凯蒂用数据证明了 <em>r > g</em> 的存在，但他没有证明 <em>r > g</em> 是中立的。</strong><br><br>
+                更精确的问题变成：我们是在面对一个需要被接受的结构性定律，还是在面对一系列可以被重新审视的政策选择的累积结果？数据告诉你"发生了什么"，但"为什么会发生"和"应该怎么办"——那是数据边界之外的问题。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "财富分配的历史总是充满深刻的政治性。它不能用经济机制的自然性来解释，也不能用数学定律的必然性来证明。"
+            <br>— 皮凯蒂，《21世纪资本论》引言
+        </div>
+
+        <p>
+            这句话是皮凯蒂给自己的框架设下的边界。他清楚数据刀的锋利，也清楚它的局限。明天，应用者会把这三百年的逻辑链放进三个真实场景——历史的、中国的、和Ethan每天面对的商业世界——看看 <em>r > g</em> 的力学在什么样的土壤里生效，在什么样的容器里可以被改变。
+        </p>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w10-d01.html">← 叙事者 · 当数据开始说话，300年的沉默结束了</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w10-d03.html">应用者 · 待更新 →</a>
+        </div>
+    </nav>
+
+    <!-- Page Nav (required) -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w10-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w10-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>
