@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10 · Day 3 · 应用者 · 《21世纪资本论》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            --applier: #4ade80;
+            --applier-dim: rgba(74,222,128,0.07);
+            --applier-border: rgba(74,222,128,0.18);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--applier-dim);
+            border: 1px solid var(--applier-border);
+            color: var(--applier);
+            padding: 0.3rem 0.85rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--applier);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Scene card */
+        .scene-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .scene-card::before {
+            content: attr(data-scene);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(74,222,128,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .scene-card .scene-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--applier);
+            margin-bottom: 0.5rem;
+        }
+
+        .scene-card .scene-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .scene-card .scene-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .scene-card .scene-body em {
+            color: var(--accent);
+        }
+
+        /* Compare table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .compare-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: var(--surface-2);
+            color: var(--text-dim);
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-table td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .compare-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* Bias note */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        /* Pullquote */
+        .pullquote {
+            border-left: 3px solid var(--applier);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--applier);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Post nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        /* Key insight box */
+        .insight-box {
+            background: var(--surface-2);
+            border-left: 3px solid var(--applier);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .insight-box strong {
+            color: var(--applier);
+        }
+
+        @media (max-width: 520px) {
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+            .compare-table { font-size: 0.78rem; }
+            .compare-table th, .compare-table td { padding: 0.6rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第10周 · 第3天</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🙋 应用者 The Applier · W10-D03</div>
+        <div class="meta">
+            <span>📅 2026-06-10</span>
+            <span>📖 第 10 周 · Day 3 / 5</span>
+            <span>🔢 《21世纪资本论》</span>
+        </div>
+        <h1>r>g 的力学，在什么土壤里生效？</h1>
+        <div class="subtitle">把皮凯蒂的公式放进三个真实容器——历史的、中国的、和你每天面对的——看看结构性趋势在什么样的制度设计下可以被弯曲</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <p>
+            应用者今天的工作，是把提炼者留下的那把刀——<em>"r 和 g 本身不是自然常数，是制度产物"</em>——带进三个真实场景，看看这个不等式在什么条件下被强化、在什么条件下被削弱、在什么条件下彻底失效。
+        </p>
+
+        <p>
+            皮凯蒂的数据覆盖了三百年的发达国家历史，但数据是<strong>事后描述</strong>，不是<strong>事前处方</strong>。应用者要问的是：如果你面对的不是历史数据，而是今天的决策——你会在哪些杠杆点上用力？
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D3·应用者视角）</div>
+            <div class="tension-q">
+                r>g趋势是历史必然还是政策选择的结果？数据不能告诉你"应该"做什么——我们对不平等的感受是正义问题、效率问题还是更原始的恐惧？
+            </div>
+            <div class="tension-echo">
+                提炼者昨天把问题从"是否必然"推进到了"制度产物"——<em>r</em> 和 <em>g</em> 都是政策选择的结果，不是自然常数。应用者今天继续推进：<strong>如果 r>g 是制度产物，那么哪些制度参数是最有效的干预杠杆？</strong><br><br>
+                这个问题有一个隐藏的陷阱——它假设"干预"本身是中立的。但每一次制度调整都会创造新的赢家和输家。皮凯蒂的累进税方案，在政治上为什么几乎不可能实现？因为那些有能力通过税收来限制 r>g 的人，恰恰是 r>g 的最大受益者。<br><br>
+                应用者的回响把问题从"能不能"推进到"谁会允许"——<strong>结构性趋势的可干预性，本身就是权力结构的函数。</strong>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">三场景应用</div>
+
+        <!-- Scene 1: History -->
+        <div class="scene-card" data-scene="01">
+            <div class="scene-label">场景一 · 历史</div>
+            <div class="scene-title">美国累进税的黄金四十年 vs 北欧模式：同样的资本主义，不同的分配结果</div>
+            <div class="scene-body">
+                <p style="margin-bottom:1rem">
+                    1932年到1980年，美国顶层1%的联邦边际所得税率从25%攀升至<strong>91%</strong>。这不是社会主义实验，是罗斯福新政和艾森豪威尔时代的 bipartisan（两党共识）。在这一时期，美国经历了历史上最长久的经济扩张，同时顶层1%的收入占比从约20%下降到约10%。
+                </p>
+                <p style="margin-bottom:1rem">
+                    然后里根革命来了。1981年《经济复苏税法》把最高税率从70%砍到28%。此后四十年，顶层1%的收入占比重新爬回20%以上——U型曲线的右半边就此成型。
+                </p>
+                <p style="margin-bottom:1rem">
+                    北欧提供了一个对照实验。瑞典、丹麦、挪威在二战后建立了全球最高税率+最完善福利的资本主义变体。结果？它们的基尼系数长期维持在0.25–0.30之间（美国约0.40–0.41），同时人均GDP增长并不逊色于美国。皮凯蒂的数据显示，北欧的 <em>r > g</em> 同样存在，但<strong>税收和福利制度把资本的增量大部分重新分配了</strong>。
+                </p>
+
+                <div class="data-highlight">
+                    <div class="data-item">
+                        <div class="data-num">91%</div>
+                        <div class="data-label">美国1950s最高边际税率</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-num">28%</div>
+                        <div class="data-label">里根时代最低税率</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-num">0.25</div>
+                        <div class="data-label">北欧基尼系数</div>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    <strong>核心发现：</strong><em>r > g</em> 的力学在所有这些社会都真实存在，但<strong>分配结果取决于税收制度的累进程度</strong>。这不是"资本主义 vs 社会主义"的选择题，而是"什么样的资本主义"的设计题。美国证明了高累进税可以压缩不平等，北欧证明了高累进税可以不牺牲增长——但两者都要求一个前提：政治联盟愿意让渡顶层利益。
+                </div>
+
+                <div class="bias-note">
+                    ⚠️ <strong>幸存者叙事偏差</strong>：美国战后"黄金四十年"的相对平等，常被归因于"增长红利"而非税收政策。但皮凯蒂的数据显示，即使在高增长期（1950s–1960s），如果没有高累进税，顶层收入占比也会上升。增长本身不会自动压缩不平等——制度才会。
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 2: China -->
+        <div class="scene-card" data-scene="02">
+            <div class="scene-label">场景二 · 中国当下</div>
+            <div class="scene-title">房地产作为"中国式资本"：r>g 的本土变体与共同富裕的政策回应</div>
+            <div class="scene-body">
+                <p style="margin-bottom:1rem">
+                    皮凯蒂的数据主要覆盖欧美发达国家，但中国提供了一个更极端的 <em>r > g</em> 案例——只是这里的"r"不是股票和债券的收益，而是<strong>房地产</strong>。
+                </p>
+                <p style="margin-bottom:1rem">
+                    2000年到2020年，中国一线城市房价涨幅远超工资增长。以深圳为例，商品住宅均价从约5000元/平米涨到约70000元/平米，涨幅约14倍；同期城镇职工平均工资涨幅约8倍。这意味着，一个2000年买房的深圳家庭，其房产增值收益远远超过了两个工薪阶层二十年的工资总和。
+                </p>
+                <p style="margin-bottom:1rem">
+                    这是中国版的 <em>r > g</em>，但有一个关键差异：在欧美，资本收益主要通过金融市场的股息、利息和资本利得来体现；在中国，<strong>房地产是绝大多数家庭财富的主要储存器</strong>，也是财富分化的主要加速器。有房者和无房者之间的财富鸿沟，比任何工资差距都更触目惊心。
+                </p>
+
+                <table class="compare-table">
+                    <tr>
+                        <th>维度</th>
+                        <th>欧美版 r>g</th>
+                        <th>中国版 r>g</th>
+                    </tr>
+                    <tr>
+                        <td>资本形态</td>
+                        <td>股票、债券、遗产</td>
+                        <td>房地产（占家庭财富约70%）</td>
+                    </tr>
+                    <tr>
+                        <td>r 的来源</td>
+                        <td>股息、利息、资本利得</td>
+                        <td>房产增值、租金收益</td>
+                    </tr>
+                    <tr>
+                        <td>g 的构成</td>
+                        <td>GDP增长 + 工资增长</td>
+                        <td>GDP增长 + 工资增长（滞后）</td>
+                    </tr>
+                    <tr>
+                        <td>政策干预空间</td>
+                        <td>累进所得税、遗产税、资本利得税</td>
+                        <td>限购、房产税试点、共同富裕</td>
+                    </tr>
+                    <tr>
+                        <td>政治可行性</td>
+                        <td>低（顶层阻力大）</td>
+                        <td>中等（政策执行力强但工具有限）</td>
+                    </tr>
+                </table>
+
+                <p style="margin-bottom:1rem">
+                    2021年提出的"共同富裕"政策，可以被理解为对 <em>r > g</em> 的制度回应——但工具箱与皮凯蒂的建议截然不同。中国没有成熟的累进所得税和遗产税体系，而是依赖<strong>行政干预</strong>（反垄断、教培行业整顿、房地产限购）和<strong>再分配承诺</strong>（三次分配）。
+                </p>
+
+                <div class="insight-box">
+                    <strong>核心发现：</strong>中国版的 <em>r > g</em> 干预，依赖的是<strong>行政能力</strong>而非<strong>税收制度</strong>。这创造了一个悖论：行政干预可以快速改变游戏规则（如教培行业一夜之间消失），但也制造了巨大的不确定性——而这种不确定性本身会抑制长期投资和财富积累，可能反而压低 <em>g</em>。
+                </div>
+
+                <div class="bias-note">
+                    ⚠️ <strong>中性工具幻觉</strong>："共同富裕"常被讨论为价值中立的分配技术。但任何再分配政策都有赢家和输家——在中国，输家是城市有房中产（资产缩水恐惧）和互联网平台（监管压力），赢家是农村和三四线城市人口。政策不是"纠正"不平等，而是<strong>重新定义谁在不平等中占据什么位置</strong>。
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 3: Ethan Career -->
+        <div class="scene-card" data-scene="03">
+            <div class="scene-label">场景三 · Ethan 职业</div>
+            <div class="scene-title">渠道生态中的"资本 vs 劳动"：腾讯广告代理商体系的 r>g 微型镜像</div>
+            <div class="scene-body">
+                <p style="margin-bottom:1rem">
+                    把皮凯蒂的框架缩小到腾讯广告的代理商生态，你会发现一个微观版的 <em>r > g</em> 在运行——只是这里的"资本"和"劳动"需要重新定义。
+                </p>
+                <p style="margin-bottom:1rem">
+                    在广告渠道生态中，<strong>"资本"是平台规则和客户关系的复利</strong>——一家头部代理商多年来积累的KA客户资源、对平台算法的深度理解、以及跨行业数据的整合能力。这些资产的"收益率"（赢单率、客户续约率、返点层级）通常高于行业平均增速。<strong>"劳动"则是每次 campaign 的执行</strong>——投手的人力、创意的生产、报表的制作——这些劳动的回报被标准化、可替代化，边际价值递减。
+                </p>
+
+                <table class="compare-table">
+                    <tr>
+                        <th>皮凯蒂框架</th>
+                        <th>代理商生态映射</th>
+                    </tr>
+                    <tr>
+                        <td>资本（Capital）</td>
+                        <td>客户资源、行业 know-how、平台关系、数据资产</td>
+                    </tr>
+                    <tr>
+                        <td>劳动（Labor）</td>
+                        <td>投手执行、创意产出、运营人力</td>
+                    </tr>
+                    <tr>
+                        <td>r（资本收益率）</td>
+                        <td>存量客户的续约利润率、返点层级溢价、数据复用效率</td>
+                    </tr>
+                    <tr>
+                        <td>g（经济增长率）</td>
+                        <td>行业广告预算增速、新客获取成本增幅</td>
+                    </tr>
+                    <tr>
+                        <td>继承资本主义</td>
+                        <td>头部代理商的"客户资产"可交易、可并购——行业正在集中化</td>
+                    </tr>
+                </table>
+
+                <p style="margin-bottom:1rem">
+                    这个微型 <em>r > g</em> 有两个具体表现：
+                </p>
+                <p style="margin-bottom:1rem">
+                    <strong>第一，KPI 体系的分配倾斜。</strong> 大多数代理商的考核以"消耗量"为核心指标，这意味着利润主要流向能撬动大客户资源的团队——而这些资源是历史积累的"资本"，不是当期劳动的成果。新进入者即使劳动效率更高，也难以在短期内突破头部代理商的"资本壁垒"。
+                </p>
+                <p style="margin-bottom:1rem">
+                    <strong>第二，平台规则的"资本化"效应。</strong> 每一次平台算法升级或政策调整，都会淘汰一批适应能力弱的代理商——但那些提前积累了跨平台能力和多行业经验的头部代理商，反而能在规则变动中扩大份额。这和皮凯蒂描述的"危机后资本集中度上升"是同一力学。
+                </p>
+
+                <div class="insight-box">
+                    <strong>对 Ethan 的提问：</strong>你设计的渠道政策，是在加速这个微型 <em>r > g</em>（奖励存量资本），还是在试图打断它（给新进入者创造公平的劳动回报）？代理商分级体系中的"历史业绩权重"，是否正在把行业推向继承资本主义——少数头部代理商靠存量客户资产持续获利，而创新者的劳动回报被系统性压低？
+                </div>
+
+                <p style="margin-bottom:0">
+                    一个可能的干预方向：在代理商考核中引入<strong>"劳动增值指标"</strong>——不仅考核消耗量，也考核创意创新度、客户满意度提升、新行业开拓等"劳动密集型"贡献。这相当于在微观层面建立一个"累进税"机制：让资本的复利不至于完全吞噬劳动的增量价值。
+                </p>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">三场景对照</div>
+
+        <h2>同一个力学，三种容器</h2>
+
+        <table class="compare-table">
+            <tr>
+                <th>场景</th>
+                <th>r>g 的表现形态</th>
+                <th>干预杠杆</th>
+                <th>干预效果</th>
+                <th>核心限制</th>
+            </tr>
+            <tr>
+                <td>美国 1932–1980</td>
+                <td>资本收益 vs 工资增长</td>
+                <td>高累进所得税</td>
+                <td>顶层收入占比腰斩</td>
+                <td>政治联盟瓦解后政策逆转</td>
+            </tr>
+            <tr>
+                <td>北欧模式</td>
+                <td>同上</td>
+                <td>高税收 + 高福利 + 工会力量</td>
+                <td>低不平等 + 高流动性</td>
+                <td>依赖社会共识，移民压力测试</td>
+            </tr>
+            <tr>
+                <td>中国房地产</td>
+                <td>房产增值 vs 工资增长</td>
+                <td>行政限购 + 共同富裕</td>
+                <td>短期抑制，长期不确定</td>
+                <td>缺乏制度化税收工具</td>
+            </tr>
+            <tr>
+                <td>代理商生态</td>
+                <td>客户资本 vs 执行劳动</td>
+                <td>KPI 多元化 + 新进入者保护</td>
+                <td>理论可行，执行依赖平台意愿</td>
+                <td>平台自身也是资本方</td>
+            </tr>
+        </table>
+
+        <div class="pullquote">
+            三场景的共同教训：r>g 本身不是敌人。敌人是"r>g 的分配后果被制度默认接受"。每一次成功的干预，都是在某个环节插入了一个"减速装置"——让资本的复利不至于无限碾压劳动的增量。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">应用者的最终回响</div>
+
+        <div class="tension-box">
+            <div class="tension-label">🔁 应用者对张力问题的最终回响</div>
+            <div class="tension-echo">
+                三场景验证了一个核心判断：<strong><em>r > g</em> 的可干预性不是技术问题，是权力问题。</strong><br><br>
+                美国证明了累进税有效——但累进税的政治联盟在1980年代瓦解了。北欧证明了高福利+高税收可持续——但依赖同质社会的共识。中国证明了行政干预可以快速改变分配格局——但制度化税收工具的缺失让干预效果不确定。代理商生态证明了微观层面的 r>g 同样真实——但平台作为规则制定者同时也是资本方，让"公平"设计面临结构性冲突。<br><br>
+                皮凯蒂的问题是"发生了什么"，应用者的问题是"在谁的地盘上能改变什么"。数据告诉你趋势，但<strong>改变趋势需要的不只是正确的诊断，还需要在权力结构中找到可以借力的支点</strong>——而这个支点，往往不在经济学教科书里。<br><br>
+                明天，挑战者会从数据和理论的缝隙中，找出皮凯蒂框架自身的问题。
+            </div>
+        </div>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w10-d02.html">← 提炼者 · 资本在奔跑，劳动在追赶</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w10-d04.html">挑战者 · 待更新 →</a>
+        </div>
+    </nav>
+
+    <!-- Page Nav (required) -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w10-d02.html" style="color:#888;text-decoration:none;">← D02 · 提炼者</a>
+        <a href="./w10-d04.html" style="color:#888;text-decoration:none;">D04 · 挑战者 →</a>
+    </div>
+
+</div>
+</body>
+</html>
