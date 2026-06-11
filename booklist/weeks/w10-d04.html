@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10 · Day 4 · 挑战者 · 《21世纪资本论》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 挑战者专属：红调 */
+            --challenger: #E94560;
+            --challenger-dim: rgba(233,69,96,0.07);
+            --challenger-border: rgba(233,69,96,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--challenger); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--challenger-dim);
+            border: 1px solid var(--challenger-border);
+            color: var(--challenger);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        /* Role intro */
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--challenger-dim);
+            border: 1px solid var(--challenger-border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--challenger); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Body text */
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--challenger);
+            font-style: normal;
+        }
+
+        /* Opening scene block */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--challenger);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block p + p {
+            margin-top: 0.875rem;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--challenger);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Fault line card */
+        .fault-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--challenger);
+            border-radius: 0 0 0.75rem 0.75rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0 2rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .fault-card .fault-num {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: var(--challenger);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .fault-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .fault-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+            margin-bottom: 0.875rem;
+        }
+
+        .fault-card p:last-child { margin-bottom: 0; }
+
+        .fault-card .verdict {
+            background: var(--challenger-dim);
+            border: 1px solid var(--challenger-border);
+            border-radius: 0.4rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.82rem;
+            color: var(--challenger);
+            line-height: 1.6;
+            margin-top: 1rem;
+        }
+
+        .bias-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(233,69,96,0.07);
+            border: 1px solid rgba(233,69,96,0.18);
+            color: #d4657a;
+            font-size: 0.72rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.875rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        /* Refuted list */
+        .refuted-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0 2rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+        }
+
+        .refuted-table th {
+            background: var(--surface-2);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.625rem 0.875rem;
+            text-align: left;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .refuted-table th:first-child { color: var(--challenger); }
+
+        .refuted-table td {
+            padding: 0.75rem 0.875rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            line-height: 1.55;
+            vertical-align: top;
+        }
+
+        .refuted-table tr:last-child td { border-bottom: none; }
+        .refuted-table td:first-child { color: var(--white); font-weight: 500; }
+
+        .verdict-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+
+        .verdict-partial {
+            background: rgba(226,163,85,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(226,163,85,0.2);
+        }
+
+        .verdict-hold {
+            background: rgba(74,222,128,0.08);
+            color: #4ade80;
+            border: 1px solid rgba(74,222,128,0.18);
+        }
+
+        .verdict-disproven {
+            background: rgba(233,69,96,0.08);
+            color: #e06070;
+            border: 1px solid rgba(233,69,96,0.2);
+        }
+
+        /* Quote block */
+        .quote-block {
+            border-left: 2px solid var(--challenger);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+        }
+
+        /* Tension block */
+        .tension-block {
+            background: rgba(233,69,96,0.04);
+            border: 1px solid rgba(233,69,96,0.2);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--challenger);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .tension-q {
+            font-size: 0.92rem;
+            color: var(--white);
+            line-height: 1.75;
+        }
+
+        /* Fair witness box */
+        .fair-witness {
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
+            border-radius: 0.5rem;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .fair-witness .box-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .fair-witness p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            margin-bottom: 0.75rem;
+        }
+
+        .fair-witness p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span class="sep">›</span>
+            <a href="../">书单精读</a>
+            <span class="sep">›</span>
+            <span>W10 · D4 · 挑战者</span>
+        </nav>
+
+        <!-- Week Badge -->
+        <div class="week-badge">⚔️ Week 10 · Day 4 · 2026-06-11</div>
+
+        <!-- Book Title Area -->
+        <div class="book-title-area">
+            <div class="book-label">第十周 · 本周书目</div>
+            <div class="book-name">21世纪资本论</div>
+            <div class="book-author">托马斯·皮凯蒂 <span>Thomas Piketty</span></div>
+        </div>
+
+        <!-- Role Intro -->
+        <div class="role-intro">
+            <div class="role-icon">⚔️</div>
+            <div>
+                <div class="role-name">挑战者 The Challenger</div>
+                <div class="role-desc">四条断层线。审问数据的边界、理论的假设、处方的可行性，以及被遗漏的变量。</div>
+            </div>
+        </div>
+
+        <!-- Opening -->
+        <div class="scene-block">
+            <div class="scene-label">挑战者导言</div>
+            <p>过去三天，叙事者讲述了皮凯蒂如何用一个800页的学术著作震动世界，提炼者拆开了五把数据刀——<em>r > g</em>、<em>β = s/g</em>、<em>α = r × β</em>、U型曲线、继承资本主义——应用者把它们带进了美国累进税、中国房地产和代理商生态三个场景。</p>
+            <p>今天，挑战者不做皮凯蒂的翻译，而要做他的<em>反方律师</em>。皮凯蒂的数据工作是里程碑式的，但他的理论模型比数据更脆弱，政策处方比诊断更天真。挑战者的工作不是否定三百年数据——而是找到从数据到结论之间的裂缝。</p>
+        </div>
+
+        <!-- Fault Line 1 -->
+        <h2>断层线一 · 数据测量：r 和 g 真的被准确测量了吗？</h2>
+
+        <p>皮凯蒂的整个大厦建立在一个数字之上：<em>r ≈ 4–5%</em>。但挑战者首先要问：这个4–5%是怎么来的？它可靠吗？</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 01</div>
+            <h3>税前收益率不等于实际收益率——皮凯蒂用的 r 是高估的</h3>
+
+            <p>皮凯蒂的 <em>r</em> 主要来自资本收入（利润、利息、股息、租金）与总资本存量的比值。但这个计算有一个关键问题：<em>它没有扣除资本的维持成本、风险溢价和税收</em>。一座房子的租金收益率是5%，但扣除维修、空置期、物业税和管理费后，净收益可能只有2–3%。同理，股权投资的平均回报率包含了大量失败投资——幸存者偏差让"平均"显得很高。</p>
+
+            <p>经济学家马修·罗ognlie（2015）在《布鲁金斯学会》发表的一篇被广泛引用的论文中指出，当把住房资本从总资本中分离后，<em>非住房资本的净收益率在下降，而非上升</em>。皮凯蒂的 <em>r > g</em> 在很大程度上是被住房资本的升值（尤其在房地产泡沫期）所驱动的——而住房资本的"收益率"计算方式与生产性资本完全不同。</p>
+
+            <div class="bias-tag">⚠️ 数据选择偏差</div>
+
+            <p>更深的问题是：皮凯蒂的 <em>r</em> 来自国民账户数据，而国民账户对"资本存量"的估算本身充满假设——折旧率是多少？无形资本（品牌、专利、数据）怎么估值？这些技术选择会显著改变 <em>r</em> 的数值。皮凯蒂的数据精度被公众高估了——它不是"测量"，它是"估算"。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：r > g 的方向性结论可能成立，但4–5%的幅度被系统性高估。税后、净风险调整后的 <em>r</em> 可能远低于皮凯蒂的数字——这意味着 <em>r > g</em> 的差距比书中宣称的更窄，制度干预的窗口可能比想象的更宽。
+            </div>
+        </div>
+
+        <!-- Fault Line 2 -->
+        <h2>断层线二 · β = s/g 的稳态假设：一个从未到达的均衡</h2>
+
+        <p>皮凯蒂的第二基本定律 <em>β = s/g</em> 说：在长期稳态下，资本/收入比趋向于储蓄率除以增长率。这是一个优雅的数学关系——但"长期稳态"在真实历史中几乎从未存在过。</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 02</div>
+            <h3>稳态假设把历史当成了平衡点，但历史从未停止摇晃</h3>
+
+            <p><em>β = s/g</em> 是一个收敛定理——它描述的是一个经济体如果持续保持某个储蓄率 <em>s</em> 和增长率 <em>g</em>，最终资本/收入比会稳定在这个比值上。问题是：没有任何一个国家的 <em>s</em> 和 <em>g</em> 在长期保持不变。</p>
+
+            <p>两次世界大战把欧洲的 <em>β</em> 从700%打到300%，这不是"稳态调整"，这是灾难性断裂。1980年代后的金融自由化让 <em>s</em>（储蓄率）的定义本身变得模糊——企业利润留存、股票回购、离岸财富，哪些算"储蓄"？2008年金融危机后，量化宽松让资产价格飙升，<em>β</em> 的上升有多少是"真实财富积累"，有多少是"金融资产通胀"？</p>
+
+            <div class="bias-tag">⚠️ 均衡崇拜偏差</div>
+
+            <p>经济学家德顿（Angus Deaton，2015年诺贝尔奖得主）指出，皮凯蒂的框架过度依赖一个"稳态世界"的假设——但真实经济是持续被战争、技术革命、制度变革和人口结构转换所扰动的。把 <em>β = s/g</em> 当成"定律"来使用，就像用一张停车场的地图来导航高速公路。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：β = s/g 是理论基准，不是历史描述。用它来预测长期趋势，需要假设未来不会有大的制度断裂——但这个假设本身，在皮凯蒂的数据中最常看到的恰恰就是断裂（两次世界大战、大萧条、金融自由化）。
+            </div>
+        </div>
+
+        <!-- Fault Line 3 -->
+        <h2>断层线三 · 全球财富累进税：一个精致的乌托邦</h2>
+
+        <p>皮凯蒂的政策处方——建立全球财富透明登记系统，对高额财富征收累进税——在逻辑上是 <em>r > g</em> 的对应解药。但挑战者要问：这个处方在政治上可行吗？皮凯蒂是否在用一个经济学的答案回应一个政治学的问题？</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 03</div>
+            <h3>皮凯蒂诊断了病，但开的药方需要病人自己同意做手术</h3>
+
+            <p>皮凯蒂自己也承认全球财富税"在政治上几乎不可能"。但这个承认太轻描淡写了——<em>不是"几乎不可能"，而是结构性不可能</em>。</p>
+
+            <p>全球财富税需要所有主要经济体（至少是OECD国家）同时协调税制、共享财富数据、放弃税收主权竞争。但现实是：税收竞争是国家间吸引资本的核心工具。爱尔兰的公司税率12.5%、新加坡的财富管理中心地位、开曼群岛的离岸信托——这些都不是偶然，是国家间竞争的战略选择。要求这些国家自愿放弃税收竞争力，等于要求它们在经济主权上集体自残。</p>
+
+            <div class="bias-tag">⚠️ 制度可行性盲区</div>
+
+            <p>更深层的问题是：皮凯蒂的政治分析缺失了。他没有系统回答——<em>谁有动机推动财富税？谁能克服既得利益者的抵抗？民主制度下的选民结构是否支持累进税？</em> 美国1980年代的减税不是"错误"，它是一场由资金、智库、媒体和政治联盟共同推动的意识形态运动的结果。皮凯蒂假设"一旦人们理解了数据，就会支持正确的政策"——但这本身就是一个理性主义幻觉。</p>
+
+            <p>应用者昨天已经指出：<em>r > g 的可干预性不是技术问题，是权力问题</em>。皮凯蒂的数据证明了不平等在加剧，但他的处方回避了权力分析——而权力分析恰恰是马克思的强项。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：全球财富累进税在理论上是 r>g 的完美解药，在政治上是结构性不可能。皮凯蒂的处方之所以显得"天真"，不是因为他不懂政治——而是因为他选择用经济学的语言回应一个本质上属于政治经济学和权力分析的问题。
+            </div>
+        </div>
+
+        <!-- Fault Line 4 -->
+        <h2>断层线四 · 被遗漏的变量：技术、人力资本与 "无形资本"</h2>
+
+        <p>皮凯蒂的框架把国民收入分成两类：资本所得和劳动所得。但现代经济中，越来越大的份额既不属于传统"资本"，也不属于传统"劳动"——它属于<em>人力资本</em>和<em>无形资本</em>。</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 04</div>
+            <h3>当医生的收入既是"劳动"也是"资本"，二分法失效了</h3>
+
+            <p>一个硅谷工程师的高薪，有多少来自他的"劳动"（每天8小时的工作），有多少来自他的"人力资本"（教育、技能、专业认证）？人力资本的回报在国民账户里被归类为"劳动收入"，但它的经济学本质更接近资本——它是前期投资（教育成本、时间投入）的后期回报，而且可以跨期累积、代际传递（父母教育水平对子女收入的显著影响）。</p>
+
+            <p>皮凯蒂的数据可能因此系统性地<em>低估了资本的真实集中度</em>：如果一个富裕家庭通过教育投资把优势传递给下一代，这在统计上显示为"劳动收入的不平等"，但实际上是"资本优势的人力化"——本质上仍是继承机制。</p>
+
+            <div class="bias-tag">⚠️ 范畴误置</div>
+
+            <p>另一个被遗漏的变量是<em>技术变革对劳动的互补效应</em>。皮凯蒂的框架隐含一个假设：资本积累会系统性挤压劳动份额。但技术史告诉我们，蒸汽机、电力、计算机在最初都引发了对"技术性失业"的恐惧——而长期结果往往是劳动生产率的提升和新岗位创造。AI时代是否会让这个历史模式继续？皮凯蒂的框架无法回答，因为它不是关于技术变革的框架。</p>
+
+            <p>经济学家托马斯·菲利普pon（Thomas Philippon）等人指出，过去二十年资本份额的上升可能部分反映了<em>无形资本</em>（软件、数据、品牌、算法）的计量问题——这些资产在传统国民账户中被严重低估或错误归类。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：资本/劳动二分法在21世纪经济中越来越模糊。人力资本、无形资本、技术互补效应——这些变量被皮凯蒂的框架系统性地边缘化。这不是皮凯蒂的"错误"，是他的框架选择（历史税收数据）天然无法捕捉的现象。
+            </div>
+        </div>
+
+        <!-- Refuted Judgments -->
+        <h2>被证伪判断清单</h2>
+
+        <p>公正地审视，不是皮凯蒂的所有命题都有同等缺陷。下面是一个诚实的清单：</p>
+
+        <div style="background:var(--surface);border-radius:0.5rem;overflow:hidden;margin:1.5rem 0 2rem;border:1px solid var(--border);">
+            <table class="refuted-table" style="background:transparent;margin:0;">
+                <thead>
+                    <tr>
+                        <th style="width:42%;">皮凯蒂命题</th>
+                        <th style="width:38%;">证据评估</th>
+                        <th style="width:20%;">判定</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>r > g 作为历史常态（税前）</td>
+                        <td>多国三百年税收数据支持，方向性结论可靠</td>
+                        <td><span class="verdict-badge verdict-hold">成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>r ≈ 4–5%（税后净收益）</td>
+                        <td>罗ognlie等研究显示税后净 r 可能显著更低；住房资本驱动被低估</td>
+                        <td><span class="verdict-badge verdict-partial">高估</span></td>
+                    </tr>
+                    <tr>
+                        <td>β = s/g 长期稳态</td>
+                        <td>数学关系成立，但真实历史从未处于稳态；收敛速度未知</td>
+                        <td><span class="verdict-badge verdict-partial">理论成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>资本份额 α 持续上升</td>
+                        <td>数据有分歧；部分研究显示2000年后趋稳；无形资本计量问题</td>
+                        <td><span class="verdict-badge verdict-partial">部分成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>继承财富 > 劳动财富趋势</td>
+                        <td>法国数据支持；但依赖税制和遗产制度，非普遍规律</td>
+                        <td><span class="verdict-badge verdict-partial">条件成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>全球财富累进税可行</td>
+                        <td>结构性政治不可行；税收主权竞争、离岸体系、既得利益阻力</td>
+                        <td><span class="verdict-badge verdict-disproven">基本证伪</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Fair Witness -->
+        <div class="fair-witness">
+            <div class="box-title">⚖️ 公道话</div>
+            <p>皮凯蒂的学术成就是真实的。他花了十五年构建的全球不平等数据库，把分配问题重新推回了经济学的中心舞台——这一点无论批评者还是支持者都承认。数据工作改变了学科议程，这是极少数经济学家能做到的事。</p>
+            <p>但挑战者今天的四条断层线指向一个更复杂的判断：<em>皮凯蒂的数据比他的理论更可靠，他的诊断比他的处方更可信。</em> r > g 的方向性结论大概率是对的——资本在和平与低增长时代确实倾向于集中。但4–5%的幅度、β = s/g 的稳态假设、全球财富税的可行性、资本/劳动二分法的适用性——这些都是可争议的。</p>
+            <p>挑战者最终的立场是：皮凯蒂的框架是"一个时代的正确诊断"，但不是"所有时代的通用处方"。他用19世纪的方法（历史数据积累）回答了一个21世纪的问题——这个回答是有力的，但也是有限的。</p>
+        </div>
+
+        <!-- Tension Question Echo -->
+        <div class="tension-block">
+            <div class="tension-label">🔁 张力问题回响 · 挑战者视角</div>
+            <div class="tension-q">
+                叙事者抛出：<em>r>g 趋势是历史必然还是政策选择的结果？我们对不平等的感受是正义问题、效率问题还是更原始的恐惧？</em><br><br>
+                提炼者推进到：r 和 g 本身不是自然常数，是制度产物。<br>
+                应用者验证了：可干预性不是技术问题，是权力问题。<br><br>
+                挑战者今天把问题再推深一层：<br><br>
+                <strong style="color:var(--white)">即使皮凯蒂的所有数据都是准确的——数据能告诉你"应该"做什么吗？</strong><br><br>
+                从"顶层1%收入占比从10%上升到20%"这个事实，到"我们应该对财富征收累进税"这个处方，中间隔着整整一个政治哲学。数据告诉你"是什么"，但"应该是什么"需要价值判断——而皮凯蒂的框架对此保持沉默，甚至假装数据本身可以推导出规范结论。<br><br>
+                挑战者最终的回响：<em>我们对不平等的感受，可能确实混合了正义诉求、效率担忧和更原始的恐惧——但皮凯蒂的数据只能描述"不平等在加剧"，不能证明"加剧是坏的"。从描述到规范的那一步，每一步都是选择，每一步都有争议。</em><br><br>
+                明天，摆渡人会接住这个裂缝，问最后一个问题：如果数据不能给我们答案，什么可以？
+            </div>
+        </div>
+
+        <h2>明天的视角</h2>
+
+        <p>挑战者今天从数据、理论、处方和遗漏变量四个维度解构了皮凯蒂的框架——不是否定，是定位。<em>摆渡人明天</em>会接过这四条裂缝，做最后的摆渡：如果 r>g 是真实的但干预是困难的，如果数据是准确的但处方是模糊的——那我们作为个人、作为组织、作为社会，应该如何与不平等共处？</p>
+
+        <p>还有一个更深层的问题留给摆渡人：如果"不平等"本身不是一个可以被"解决"的问题，而是一种永恒的结构张力——那我们追求的究竟是消除不平等，还是管理不平等的后果？</p>
+
+        <!-- Navigation -->
+        <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+            <a href="./w10-d03.html" style="color:#888;text-decoration:none;">← D03 · 应用者</a>
+            <a href="./w10-d05.html" style="color:#888;text-decoration:none;">D05 · 摆渡人+连接者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
