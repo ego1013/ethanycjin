@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10 · Day 5 · 摆渡人+连接者 · 《21世纪资本论》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 摆渡人专属：蓝调 */
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            /* 连接者专属：青调 */
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Body text */
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        /* Bridge section */
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Connector section */
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Section break */
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Final tension box */
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        /* Connector branch */
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        /* Bridge passage */
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        /* SVG map container */
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+        }
+
+        /* Landing questions */
+        .landing-questions {
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .lq-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .lq-item {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.9rem;
+            align-items: flex-start;
+        }
+
+        .lq-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--bridge);
+            min-width: 1.2rem;
+            padding-top: 0.2rem;
+        }
+
+        .lq-text {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Compare table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-table th {
+            background: var(--surface-2);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.625rem 0.875rem;
+            text-align: left;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-table td {
+            padding: 0.75rem 0.875rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            line-height: 1.55;
+            vertical-align: top;
+        }
+
+        .compare-table tr:last-child td { border-bottom: none; }
+        .compare-table td:first-child { color: var(--white); font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>Week 10 · Day 5</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人 · 周五</span>
+                <span class="meta-badge" style="background:var(--connector-dim);color:var(--connector);border-color:var(--connector-border);">🔗 连接者</span>
+                <span style="color:var(--text-muted)">Week 10 · Day 5</span>
+                <span style="color:var(--text-muted)">·</span>
+                <span style="color:var(--text-muted)">2026-06-12</span>
+            </div>
+            <h1>住在数据里的摆渡人</h1>
+            <p class="subtitle">《21世纪资本论》— 托马斯·皮凯蒂 · 知识图谱第10节点</p>
+        </header>
+
+        <!-- ═══ 摆渡人部分 ═══ -->
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridger</div>
+        </div>
+
+        <p>这周我们跟着皮凯蒂穿越了三百年数据。他给我们看了一个清晰的模式：<em>r > g</em>不是例外，是常态。20世纪的相对平等是战争和激进政策的意外产物，和平时代的不平等回潮才是历史的默认设置。</p>
+
+        <p>但挑战者昨天留下了一个尖锐的问题：<strong>即使数据准确，数据能告诉你"应该"做什么吗？</strong>从"顶层1%收入占比上升"这个事实，到"我们应该征收全球财富累进税"这个处方，中间隔着整整一个政治哲学。数据描述世界，但不裁决价值。</p>
+
+        <p>今天，摆渡人的工作不是反驳皮凯蒂，也不是替他辩护。而是问：如果数据不能给答案——<strong>什么可以？</strong></p>
+
+        <!-- 第一段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第一段摆渡</div>
+            <div class="passage-title">从"数据不能给答案"到"我们如何在不确定中与不平等共处"</div>
+            <p style="margin-bottom:0.8rem">皮凯蒂的框架有一个隐含的乐观主义：只要数据足够清晰，理性的人就会选择正确的政策。这个假设贯穿全书——他花了七百页证明 <em>r > g</em>，然后用一百页提出全球财富税，仿佛前者自然导向后者。</p>
+            <p style="margin-bottom:0.8rem">但挑战者已经证明，这个推导的每一步都有裂缝：<em>r</em> 的幅度被高估，<em>β = s/g</em> 的稳态假设从未被历史验证，全球财富税在政治上结构性不可行，资本/劳动二分法在21世纪日益模糊。</p>
+            <p style="margin-bottom:0.8rem">更重要的是：<strong>即使所有数据都完美，"不平等加剧"这个事实本身并不包含"应该减少不平等"的规范命令。</strong> 一个自由意志主义者可以说"这是市场选择的结果，应该尊重"；一个功利主义者可以说"不平等只要提升总体福利就可以接受"；一个保守主义者可以说"传统秩序需要财富集中来维持文化资本"。皮凯蒂的数据无法在这些价值框架之间做出裁决。</p>
+            <p style="margin-bottom:0">所以摆渡人想问的更深层问题是：<strong>如果数据不能裁决价值争议，我们追求的究竟是消除不平等，还是管理不平等的后果？</strong>这两个目标需要完全不同的策略。消除不平等需要激进的财富再分配——皮凯蒂的路线。管理后果则需要托底机制、机会均等化和流动性通道——一个更温和、更务实、也更可能被民主制度接纳的路线。</p>
+        </div>
+
+        <!-- 第二段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第二段摆渡</div>
+            <div class="passage-title">皮凯蒂遇见2026：三个新变量，一条旧裂缝</div>
+            <p style="margin-bottom:0.8rem">让我们把皮凯蒂的框架放到2026年的世界里，看看哪些变量正在改写 <em>r > g</em> 的故事：</p>
+            <p style="margin-bottom:0.8rem"><strong>变量一：AI 正在创造一种全新的资本集中机制。</strong>皮凯蒂的 <em>r</em> 衡量的是传统资本（房产、股票、债券）的回报率。但AI时代的核心资产是数据和算力——它们与传统资本不同：边际成本趋近于零，网络效应极强，赢家通吃的倾向比任何传统行业都更极端。OpenAI、Google、NVIDIA的市值膨胀，不是 <em>r > g</em> 的旧故事，而是一个更激进的版本：<em>数据资本的可扩展性让 r 的分子以超线性速度增长，而 g（GDP增长）受限于物理世界的约束。</em> 皮凯蒂的框架需要扩展，而非简单套用。</p>
+            <p style="margin-bottom:0.8rem"><strong>变量二：数字平台正在重塑"继承资本主义"的形态。</strong>皮凯蒂担心孩子继承父母的房产和股票。但2026年的新继承是"数字足迹"——一个拥有百万粉丝的创作者可以把注意力资产传给下一代，一个积累了数据优势的算法可以把竞争壁垒固化成永久性结构。这种新型"继承"不在传统税收体系的雷达上。</p>
+            <p style="margin-bottom:0"><strong>变量三：中国的"共同富裕"是一条皮凯蒂没有预见的道路。</strong>皮凯蒂的处方是全球财富累进税——依赖民主国家之间的协调。但中国的路径是行政主导：反垄断（阿里/腾讯）、教育平权（教培行业整顿）、房地产"三条红线"、推进三次分配。这些工具与皮凯蒂建议的税收制度完全不同，效率更高，但代价是行政权力的大幅扩张。这是另一条应对 <em>r > g</em> 的路径——不是通过税收再分配，而是通过<strong>前置性的结构干预</strong>来阻止财富过度集中。它有效吗？代价是什么？这些问题皮凯蒂没有问，但2026年的世界必须面对。</p>
+        </div>
+
+        <div class="pull-quote">
+            <p>皮凯蒂给了我们一张三百年数据的地图。但地图上的地形正在以他无法预见的方式变化——AI资本、数字继承、非西方的制度实验。地图仍然是宝贵的，但住在地图里的人会错过正在发生的地震。</p>
+        </div>
+
+        <!-- 第三段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第三段摆渡</div>
+            <div class="passage-title">住在数据里的摆渡人</div>
+            <p style="margin-bottom:0.8rem">这是摆渡人每次站在这里都会想到的问题：<strong>每一个足够好的数据框架，都有把人锁进去的风险。</strong></p>
+            <p style="margin-bottom:0.8rem">皮凯蒂的数据工作是无与伦比的。他把分配问题从经济学的边缘拉回了中心。但"数据足够清晰"这个信念本身，可能是一种新的确定性幻觉——我们用三百年的数据安慰自己"趋势是可见的"，却忽视了数据无法捕捉的东西：技术奇点、制度断裂、价值多元性。</p>
+            <p style="margin-bottom:0.8rem">更重要的是，数据框架本身是一种权力。谁定义了"资本"？谁决定了哪些收入被归类为"劳动"？国民账户的每一个分类决策，都是政治选择的技术化。皮凯蒂的数据看似客观，但数据的收集、分类和呈现方式——<em>从来都不是中立的</em>。</p>
+            <p style="margin-bottom:0">摆渡人不想否定数据。数据是必要的——没有皮凯蒂的三百年档案，我们仍在黑暗中猜测。但数据不是充分的。<strong>真正重要的决策，发生在数据结束的地方。</strong>而那个地方，需要我们带着谦逊、带着对不确定性的容忍、带着对多种价值框架的尊重，才能走进去。</p>
+        </div>
+
+        <!-- 张力问题最终形态 -->
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">❓→💡</div>
+            <div class="ft-original">
+                本周最初的问题是：r>g 趋势是历史必然还是政策选择的结果？数据不能告诉你"应该"做什么——我们对不平等的感受是正义问题、效率问题还是更原始的恐惧？
+            </div>
+            <div class="ft-evolved">
+                如果数据不能裁决价值争议，我们如何在不确定中与不平等共处？<br><br>
+                更深一层：<strong>我们追求的究竟是消除不平等，还是管理不平等的后果？</strong>这两个目标指向完全不同的策略——前者需要激进的财富再分配和全球制度协调，后者需要务实的托底机制、机会通道设计和局部流动性保护。<br><br>
+                但还有一个更根本的问题：<em>不平等本身是否是错误的？</em>皮凯蒂假设答案是"是"，但他的数据无法证明这一点。这个假设来自他的价值判断，不是来自他的回归分析。如果我们承认这一点——那么接下来的问题就变成了：<strong>在什么条件下，不平等从"可容忍的差异"变成了"不可接受的结构性暴力"？谁有权力画那条线？画线的过程本身，是否已经在复制我们试图纠正的权力不对称？</strong>
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次做决策时，数据告诉了你"是什么"，但"应该怎么做"的部分你是靠什么来判断的？那个判断依据可靠吗？</div>
+                <div class="ft-q-item">在你的组织/行业里，"不平等"（资源分配、机会差异、信息不对称）是被当作需要消除的问题，还是需要管理的约束条件？这个定位本身是否经过了审视？</div>
+                <div class="ft-q-item">如果皮凯蒂是对的但处方不可行，如果挑战者是对的但批判不提供替代方案——你能接受的"次优"策略是什么？你愿意为那个策略付出什么代价？</div>
+            </div>
+        </div>
+
+        <hr class="section-break">
+
+        <!-- ═══ 连接者部分 ═══ -->
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector · 知识图谱第10节点</div>
+        </div>
+
+        <p>从本周的视角出发，连接者在这张50本书的知识网络里，为皮凯蒂的《21世纪资本论》找到五条枝干。皮凯蒂站在一个特殊的位置：他不是提出新理论来替代旧理论，而是用数据把旧理论的分配维度重新激活。</p>
+
+        <!-- 枝干1 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">《国富论》— 斯密</span>
+                <span class="branch-week">第 1 周</span>
+            </div>
+            <div class="branch-desc">
+                斯密发现分工提升生产力，生产力创造国民财富——这是增长的起点。但斯密有一个未完成的追问：财富创造之后，如何在社会中分配？他说"看不见的手"会自然协调，但他也承认地主、资本家和劳动者之间的利益分歧。皮凯蒂用三百年的数据回答了斯密没问完的问题：<em>分工→专业化→资本积累→财富集中</em>——这个逻辑链的终点不是普遍繁荣，而是 <em>r > g</em> 驱动的结构性不平等。斯密是起点，皮凯蒂是终点的追踪者。从别针工厂到全球财富数据库，这两本书隔着两百年，却在同一条逻辑链的两端。
+            </div>
+        </div>
+
+        <!-- 枝干2 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">《资本论》— 马克思</span>
+                <span class="branch-week">第 2 周</span>
+            </div>
+            <div class="branch-desc">
+                马克思和皮凯蒂共享同一个诊断——资本主义有系统性的不平等倾向。但两人的方法论和处方截然对立。马克思从理论出发：剩余价值论推导出剥削的必然性，然后指向革命。皮凯蒂从数据出发：三百年统计推导出 <em>r > g</em> 的经验模式，然后指向累进税。马克思的诊断更激进但数据更弱，皮凯蒂的数据更强但处方更温和。两人的张力在于：<em>利润起源</em>的对立诊断（剥削 vs 资本回报）和<em>解决方案</em>的对立路径（制度革命 vs 税收改良）。最有意思的是，两人都没能解决"处方可行性"问题——马克思的革命在发达工业国家没有发生，皮凯蒂的全球财富税在政治上不可行。
+            </div>
+        </div>
+
+        <!-- 枝干3 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">《就业、利息和货币通论》— 凯恩斯</span>
+                <span class="branch-week">第 4 周</span>
+            </div>
+            <div class="branch-desc">
+                凯恩斯关注总量问题：有效需求不足导致失业和衰退。皮凯蒂关注分配问题：增长的果实如何在资本和劳动之间分配。两人互补而非对立——凯恩斯解决"蛋糕够不够大"，皮凯蒂追问"蛋糕怎么切"。但两人有一个深层对话点：凯恩斯相信政府可以通过需求管理来稳定经济，皮凯蒂暗示政府可以通过分配政策来稳定社会。两者的结合指向一个更完整的问题：<em>政府干预的边界在哪里？</em>干预总量是凯恩斯的领域，干预分配是皮凯蒂的建议——但两者的政治经济学前提（政府有能力、有意愿、有知识做正确的事）是共享的，也是共享的脆弱点。
+            </div>
+        </div>
+
+        <!-- 枝干4 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">《竞争战略三部曲》— 波特</span>
+                <span class="branch-week">第 9 周</span>
+            </div>
+            <div class="branch-desc">
+                波特描述竞争秩序如何产生利润——位置、差异化、活动系统。皮凯蒂追踪这些利润最终去了哪里——资本所有者、继承者、顶层1%。这是一个完整的经济循环的两端：<em>竞争产生利润 → 利润流向资本 → 资本集中加剧 → 竞争基础条件改变</em>。波特的框架假设竞争是良性的、有均衡的，但皮凯蒂的数据显示：竞争秩序长期运行的结果，可能是竞争秩序的自我瓦解——当财富过度集中，有效需求下降，市场本身开始收缩。波特没有问"利润去了哪里"，皮凯蒂没有问"利润从哪里来"——两人合并，才是完整的经济图景。
+            </div>
+        </div>
+
+        <!-- 枝干5：跨频道C -->
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C · 文学感知</span>
+                <span class="branch-book">《了不起的盖茨比》— 菲茨杰拉德</span>
+            </div>
+            <div class="branch-desc">
+                盖茨比白手起家，积累巨额财富，最终死于一场由阶级壁垒引发的悲剧。菲茨杰拉德写的是一个"继承资本主义"的文学预演：在美国1920年代的镀金时代，旧的财富（东卵）和新的财富（西卵）之间有一条看不见的鸿沟——<em>新钱永远无法变成旧钱</em>。皮凯蒂用数据证明了这个鸿沟在21世纪正在重新扩大，但菲茨杰拉德用一个故事让我们<em>感受到</em>那个鸿沟里的人性代价：梦想、幻灭、无法跨越的阶级玻璃天花板。数据告诉我们"顶层1%收入占比在上升"，文学让我们问：<em>那个百分比背后，是谁的整个人生被决定了？</em> 皮凯蒂和菲茨杰拉德需要彼此——没有数据，文学只是感伤；没有文学，数据只是数字。
+            </div>
+        </div>
+
+        <!-- 知识地图 SVG -->
+        <div class="map-container">
+            <div class="map-title">📍 知识图谱 · 第10节点 · 《21世纪资本论》</div>
+            <svg viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+                <!-- Background -->
+                <rect width="640" height="420" fill="#111111" rx="8"/>
+
+                <!-- Connection arcs (draw first, below nodes) -->
+                <!-- W1 → W10 inherit -->
+                <path d="M 95 110 Q 220 50 390 110" fill="none" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+                <!-- W2 → W10 tension -->
+                <path d="M 95 175 Q 220 120 390 120" fill="none" stroke="#E94560" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.45"/>
+                <!-- W4 → W10 dialogue -->
+                <path d="M 95 240 Q 230 170 390 130" fill="none" stroke="#4A9EFF" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.45"/>
+                <!-- W9 → W10 dialogue -->
+                <path d="M 95 305 Q 230 260 390 150" fill="none" stroke="#2DD4BF" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+                <!-- W10 → Channel C -->
+                <path d="M 440 160 Q 510 200 550 265" fill="none" stroke="#B47CDC" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+                <!-- W10 → W11 next -->
+                <path d="M 460 130 Q 530 110 560 110" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+
+                <!-- Left column: connected books -->
+                <!-- W1 -->
+                <circle cx="80" cy="110" r="24" fill="#0a0a0a" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="80" y="106" text-anchor="middle" fill="#e2a355" font-size="9" font-family="sans-serif" font-weight="700">W1</text>
+                <text x="80" y="118" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">国富论</text>
+                <text x="80" y="140" text-anchor="middle" fill="#e2a355" font-size="7" font-family="sans-serif">传承</text>
+
+                <!-- W2 -->
+                <circle cx="80" cy="175" r="24" fill="#0a0a0a" stroke="#E94560" stroke-width="1.5"/>
+                <text x="80" y="171" text-anchor="middle" fill="#E94560" font-size="9" font-family="sans-serif" font-weight="700">W2</text>
+                <text x="80" y="183" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">资本论</text>
+                <text x="80" y="205" text-anchor="middle" fill="#E94560" font-size="7" font-family="sans-serif">张力</text>
+
+                <!-- W4 -->
+                <circle cx="80" cy="240" r="24" fill="#0a0a0a" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="80" y="236" text-anchor="middle" fill="#4A9EFF" font-size="9" font-family="sans-serif" font-weight="700">W4</text>
+                <text x="80" y="248" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">通论</text>
+                <text x="80" y="270" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">对话</text>
+
+                <!-- W9 -->
+                <circle cx="80" cy="305" r="24" fill="#0a0a0a" stroke="#2DD4BF" stroke-width="1.5"/>
+                <text x="80" y="301" text-anchor="middle" fill="#2DD4BF" font-size="9" font-family="sans-serif" font-weight="700">W9</text>
+                <text x="80" y="313" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">竞争战略</text>
+                <text x="80" y="335" text-anchor="middle" fill="#2DD4BF" font-size="7" font-family="sans-serif">对话</text>
+
+                <!-- Center: W10 main node -->
+                <circle cx="430" cy="140" r="44" fill="#0a0a0a" stroke="#e2a355" stroke-width="2.5"/>
+                <text x="430" y="130" text-anchor="middle" fill="#e2a355" font-size="11" font-family="sans-serif" font-weight="800">W10</text>
+                <text x="430" y="145" text-anchor="middle" fill="#f0f0f0" font-size="8.5" font-family="sans-serif" font-weight="700">21世纪</text>
+                <text x="430" y="157" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">资本论·皮凯蒂</text>
+
+                <!-- Right: Channel C -->
+                <circle cx="560" cy="275" r="28" fill="#0a0a0a" stroke="#B47CDC" stroke-width="1.5" stroke-dasharray="5,3"/>
+                <text x="560" y="269" text-anchor="middle" fill="#B47CDC" font-size="8.5" font-family="sans-serif" font-weight="700">频道C</text>
+                <text x="560" y="281" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">盖茨比</text>
+                <text x="560" y="295" text-anchor="middle" fill="#B47CDC" font-size="7" font-family="sans-serif">文学感知</text>
+
+                <!-- Right: W11 next -->
+                <circle cx="580" cy="110" r="22" fill="#0a0a0a" stroke="#333" stroke-width="1.5" stroke-dasharray="5,4"/>
+                <text x="580" y="106" text-anchor="middle" fill="#555" font-size="9" font-family="sans-serif" font-weight="700">W11</text>
+                <text x="580" y="118" text-anchor="middle" fill="#444" font-size="7.5" font-family="sans-serif">思考快与慢</text>
+
+                <!-- Labels on arcs -->
+                <text x="210" y="64" text-anchor="middle" fill="#e2a355" font-size="7" font-family="sans-serif">分工→资本积累</text>
+                <text x="220" y="133" text-anchor="middle" fill="#E94560" font-size="7" font-family="sans-serif">利润起源张力</text>
+                <text x="240" y="172" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">总量与分配</text>
+                <text x="230" y="258" text-anchor="middle" fill="#2DD4BF" font-size="7" font-family="sans-serif">竞争→利润→集中</text>
+                <text x="520" y="240" text-anchor="middle" fill="#B47CDC" font-size="7" font-family="sans-serif">跨频道C</text>
+            </svg>
+        </div>
+
+        <!-- 下周预告 -->
+        <div class="tension-box" style="border-color:var(--border);background:var(--surface-2);">
+            <div class="tension-label" style="color:var(--text-muted)">下周预告 · Week 11</div>
+            <p class="tension-text" style="color:var(--text-dim);font-size:0.9rem;">
+                第11周：《思考，快与慢》— 丹尼尔·卡尼曼<br>
+                <span style="font-size:0.82rem;color:var(--text-muted)">从资本分配到心智分配——当我们终于问完"财富去了哪里"，接下来要问的是"决策是怎么出错的"。卡尼曼将带我们进入人类心智的两套系统，揭开理性经济人假设最后的遮羞布。</span>
+            </p>
+        </div>
+
+        <!-- 导航 -->
+        <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+            <a href="./w10-d04.html" style="color:#888;text-decoration:none;">← D04 · 挑战者</a>
+            <a href="./w11-d01.html" style="color:#888;text-decoration:none;">W11 D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
