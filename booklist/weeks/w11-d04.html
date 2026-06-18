@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 11 · Day 4 · 挑战者 · 《思考，快与慢》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 挑战者专属：红调 */
+            --challenger: #E94560;
+            --challenger-dim: rgba(233,69,96,0.07);
+            --challenger-border: rgba(233,69,96,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--challenger); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--challenger-dim);
+            border: 1px solid var(--challenger-border);
+            color: var(--challenger);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        /* Role intro */
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--challenger-dim);
+            border: 1px solid var(--challenger-border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--challenger); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Body text */
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--challenger);
+            font-style: normal;
+        }
+
+        /* Opening scene block */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--challenger);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block p + p {
+            margin-top: 0.875rem;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--challenger);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Fault line card */
+        .fault-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--challenger);
+            border-radius: 0 0 0.75rem 0.75rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0 2rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .fault-card .fault-num {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: var(--challenger);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .fault-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .fault-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+            margin-bottom: 0.875rem;
+        }
+
+        .fault-card p:last-child { margin-bottom: 0; }
+
+        .fault-card .verdict {
+            background: var(--challenger-dim);
+            border: 1px solid var(--challenger-border);
+            border-radius: 0.4rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.82rem;
+            color: var(--challenger);
+            line-height: 1.6;
+            margin-top: 1rem;
+        }
+
+        .bias-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(233,69,96,0.07);
+            border: 1px solid rgba(233,69,96,0.18);
+            color: #d4657a;
+            font-size: 0.72rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.875rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        /* Refuted list */
+        .refuted-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0 2rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+        }
+
+        .refuted-table th {
+            background: var(--surface-2);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.625rem 0.875rem;
+            text-align: left;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .refuted-table th:first-child { color: var(--challenger); }
+
+        .refuted-table td {
+            padding: 0.75rem 0.875rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            line-height: 1.55;
+            vertical-align: top;
+        }
+
+        .refuted-table tr:last-child td { border-bottom: none; }
+        .refuted-table td:first-child { color: var(--white); font-weight: 500; }
+
+        .verdict-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+
+        .verdict-partial {
+            background: rgba(226,163,85,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(226,163,85,0.2);
+        }
+
+        .verdict-hold {
+            background: rgba(74,222,128,0.08);
+            color: #4ade80;
+            border: 1px solid rgba(74,222,128,0.18);
+        }
+
+        .verdict-disproven {
+            background: rgba(233,69,96,0.08);
+            color: #e06070;
+            border: 1px solid rgba(233,69,96,0.2);
+        }
+
+        /* Quote block */
+        .quote-block {
+            border-left: 2px solid var(--challenger);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+        }
+
+        /* Tension block */
+        .tension-block {
+            background: rgba(233,69,96,0.04);
+            border: 1px solid rgba(233,69,96,0.2);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--challenger);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .tension-q {
+            font-size: 0.92rem;
+            color: var(--white);
+            line-height: 1.75;
+        }
+
+        /* Fair witness box */
+        .fair-witness {
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
+            border-radius: 0.5rem;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .fair-witness .box-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .fair-witness p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            margin-bottom: 0.75rem;
+        }
+
+        .fair-witness p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span class="sep">›</span>
+            <a href="../">书单精读</a>
+            <span class="sep">›</span>
+            <span>W11 · D4 · 挑战者</span>
+        </nav>
+
+        <!-- Week Badge -->
+        <div class="week-badge">⚔️ Week 11 · Day 4 · 2026-06-18</div>
+
+        <!-- Book Title Area -->
+        <div class="book-title-area">
+            <div class="book-label">第十一周 · 本周书目</div>
+            <div class="book-name">思考，快与慢</div>
+            <div class="book-author">丹尼尔·卡尼曼 <span>Daniel Kahneman</span></div>
+        </div>
+
+        <!-- Role Intro -->
+        <div class="role-intro">
+            <div class="role-icon">⚔️</div>
+            <div>
+                <div class="role-name">挑战者 The Challenger</div>
+                <div class="role-desc">四条断层线。审问实验的边界、理论的假设、处方的可行性，以及被遗漏的变量。</div>
+            </div>
+        </div>
+
+        <!-- Opening -->
+        <div class="scene-block">
+            <div class="scene-label">挑战者导言</div>
+            <p>过去三天，叙事者讲述了卡尼曼和特沃斯基如何在1970年代的耶路撒冷重新定义了人类理性的边界，提炼者拆解了<em>系统1</em>与<em>系统2</em>的五把框架刀，应用者把偏差机制丢进了医学诊断、算法围猎和代理商KPI三个真实场景。</p>
+            <p>今天，挑战者不做卡尼曼的翻译，而要做他的<em>反方律师</em>。《思考，快与慢》是过去二十年最具影响力的认知科学著作——但它也是一座建立在1970年代实验方法、有限样本和简化模型之上的大厦。挑战者的工作不是否定直觉的力量——而是找到从实验室到真实世界之间的裂缝。</p>
+        </div>
+
+        <!-- Fault Line 1 -->
+        <h2>断层线一 · 神经科学：大脑里真的住着"两个系统"吗？</h2>
+
+        <p>卡尼曼全书的核心隐喻是<em>系统1</em>（自动、快速、直觉）和<em>系统2</em>（缓慢、费力、分析）的对抗。这个二分法让读者容易理解，但挑战者要问：它是科学描述，还是<em>教学工具</em>？</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 01</div>
+            <h3>现代神经科学没有发现"两个系统"——大脑是一个连续的多层次网络</h3>
+
+            <p>卡尼曼自己承认系统1/2是<em>"虚构的角色"</em>，不是真实的神经结构。但这个免责声明在全书400页中只出现一次，而"系统1"和"系统2"在全书中出现了超过500次。读者的认知印象已经固定：大脑里有两个部门，一个负责直觉，一个负责理性。</p>
+
+            <p>功能性磁共振成像（fMRI）和脑电图（EEG）研究显示，大脑的决策过程远比"快 vs 慢"复杂。前额叶皮层（传统上被归为"系统2"）在直觉判断中也高度活跃，而杏仁核（传统"情绪系统"）在复杂的分析决策中同样参与。神经科学家普遍批评双系统模型是<em>"过度简化到误导"</em>——它把连续的神经活动压缩成了二元对立。</p>
+
+            <div class="bias-tag">⚠️ 框架简化偏差</div>
+
+            <p>更微妙的问题是：卡尼曼描述的许多"系统1偏差"——比如锚定效应、可得性启发——在神经层面可能根本不是"错误"，而是<em>信息处理效率的优化策略</em>。当大脑面对不确定环境时，快速依赖最近可得的信号是贝叶斯理性的近似解。把贝叶斯近似称为"偏差"，等于用完美理性模型来定义"正常"，然后用偏离来定义"病态"。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：系统1/2作为教学工具极其成功，作为神经科学描述基本过时。卡尼曼的模型不是"错了"——它是1970年代认知科学能给出的最好简化，但现代神经科学已经超越了这个框架。如果教育大众时使用一个已经被科学共同体抛弃的模型，这是有效的传播还是隐性的误导？
+            </div>
+        </div>
+
+        <!-- Fault Line 2 -->
+        <h2>断层线二 · 可复制性危机：那些"经典"实验，有多少站得住？</h2>
+
+        <p>2015年，<em>《科学》</em>杂志发表了一项震撼心理学界的研究：100个已发表的心理学实验，只有39%能被成功复制。行为经济学领域——卡尼曼和特沃斯基的学术后代——是重灾区之一。</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 02</div>
+            <h3>损失厌恶的效应量被早期小样本研究系统性高估</h3>
+
+            <p>卡尼曼和特沃斯基1979年的前景理论论文中，损失厌恶系数约为2.25（损失的痛苦是同等收益快乐的2.25倍）。这个数值被广泛引用，成为行为经济学的"标准参数"。但2017年一项涵盖17个国家、超过15,000名被试的大型复制研究（<em>Behavioral and Brain Sciences</em>）发现，平均损失厌恶系数更接近1.2-1.5——<em>远低于经典数值</em>。</p>
+
+            <p>原因是什么？早期研究的样本量极小（特沃斯基的经典实验通常只有几十名被试），统计功效不足，加上发表偏误（只有显著结果才能发表论文）——导致效应量被系统性高估。这被称为<em>"小样本效应膨胀"</em>。卡尼曼书中引用的许多实验，如果按今天的统计标准，根本不足以支撑结论。</p>
+
+            <div class="bias-tag">⚠️ 发表偏误与统计功效不足</div>
+
+            <p>另一个问题：框架效应（framing effect）——卡尼曼最著名的问题之一——在大型样本中依然存在，但<em>幅度小得多</em>，且高度依赖具体措辞。经典的"亚洲疾病问题"（同样的生存概率，用"拯救生命"还是"失去生命"来描述，选择从72%骤降到22%）在复制研究中效果大幅减弱，部分研究中甚至消失。这提示框架效应不是"人类认知的结构性特征"，而是<em>特定措辞条件下的情境反应</em>。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：损失厌恶和框架效应的方向性结论（存在）仍然成立，但效应量被经典研究高估了30-50%。卡尼曼书中把这些偏差描述为"强大而普遍"，但现代证据表明它们更准确地是"微弱且条件依赖"。从"普遍存在"到"条件触发"，处方强度完全不同。
+            </div>
+        </div>
+
+        <!-- Fault Line 3 -->
+        <h2>断层线三 · WEIRD样本：87%的实验被试来自美国高校本科生</h2>
+
+        <p>2010年，心理学家约瑟夫·亨里希（Joseph Henrich）和同事发表了一篇被广泛引用的论文，标题尖锐地指出：<em>"WEIRD人群中最古怪的人"</em>——Western, Educated, Industrialized, Rich, Democratic。他们的发现是：心理学实验中87%的被试来自西方国家，其中70%来自美国，大部分是高校本科生。</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 03</div>
+            <h3>卡尼曼的偏差清单，可能只是"受过西方教育的美国大学生的偏差清单"</h3>
+
+            <p>跨文化研究提供了大量反例。一项涵盖17个国家的前景理论复制研究发现，损失厌恶在东亚文化（中国、日本、韩国）中显著<em>弱于</em>美国被试。集体主义文化中的决策框架似乎天然抑制了个人主义的得失计算。另一项关于可得性启发的研究显示，在口述文化传统更强的文化中（如西非、南亚），可得性启发<em>更强</em>——因为信息的"可得性"与文字记录社会的"可得性"完全不同。</p>
+
+            <p>卡尼曼的实验主要在以色列（他本人和特沃斯基）和美国（后续研究）进行。以色列文化中的"直接辩论风格"和"对抗性讨论传统"是否让某些偏差（如确认偏误）被放大？美国高校本科生的高认知能力、高抽象思维训练是否让系统2更容易被激活，从而掩盖了真实人群中的偏差分布？</p>
+
+            <div class="bias-tag">⚠️ 文化取样偏差</div>
+
+            <p>更深的问题：如果偏差本身有文化差异，那么"纠正偏差"的处方也应该有文化差异。但卡尼曼的框架隐含地假设了<em>普适性</em>——一种偏差是"人类的"，因此纠正方案也是"人类的"。这个假设在数据层面没有被充分验证。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：卡尼曼的偏差描述不是"人类认知的共性"，而是"WEIRD人群的局部地图"。推广到全球人口时，效应方向可能一致，但效应大小、触发条件和文化调节变量都被系统性忽略。框架的普适性声明比数据支持走得更远了。
+            </div>
+        </div>
+
+        <!-- Fault Line 4 -->
+        <h2>断层线四 · 启发式=偏差？还是启发式=适应工具？</h2>
+
+        <p>卡尼曼把<em>启发式</em>定义为"捷径"，把<em>偏差</em>定义为启发式在错误情境中产生的错误输出。但德国心理学家格尔德·吉仁泽（Gerd Gigerenzer）提出了一个根本不同的视角：启发式不是"有缺陷的推理"，而是<em>"在真实环境中有效且节俭的适应工具"</em>。</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 04</div>
+            <h3>"少即是多"效应：简单启发式在复杂环境中往往优于复杂分析</h3>
+
+            <p>吉仁泽的"快速节俭启发式"研究项目展示了令人惊讶的结果：在预测金融市场、医学诊断、运动选拔等复杂任务中，使用<em>一个或两个变量的简单规则</em>（如"再认启发式"——如果你认识A但不认识B，选A）往往优于复杂的多元回归和机器学习模型。原因不是简单规则"更聪明"，而是复杂模型在<em>小样本和高度不确定环境中过度拟合</em>——而现实环境恰恰是这样的。</p>
+
+            <p>这意味着：卡尼曼的"偏差"很多可能是<em>"对特定任务结构优化的特征"</em>。锚定效应在快速谈判中是有利的（先出价者赢得更多）；可得性启发在生态原始环境中是合理的（最近发生的事件确实更可能重复）。问题不是"人类有偏差"，而是<em>"现代环境被设计成了让古老启发式失效的结构"</em>。</p>
+
+            <div class="bias-tag">⚠️ 规范性偏见</div>
+
+            <p>更深层的哲学问题：卡尼曼用"理性选择模型"（期望效用理论）作为基准来定义"偏差"——但这个基准本身已经被证明<em>不是人类实际使用</em>的决策标准。用不现实的模型定义"正常"，然后标记偏离为"偏差"，这等于把模型的缺陷归咎于人类。吉仁泽称之为<em>"规范性偏见"</em>——研究者把自己的理论偏好伪装成了客观标准。</p>
+
+            <p>一个尖锐的例子：卡尼曼的"合取谬误"（conjunction fallacy，Linda问题）——大多数人认为"Linda是银行出纳且女权主义者"比"Linda是银行出纳"更可能。卡尼曼把这作为系统1缺陷的经典证据。但后来的研究表明，如果问题以自然频率形式呈现（而非概率），合取谬误几乎消失。问题不在人，在<em>问题格式</em>。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：卡尼曼框架的根基假设——"启发式=有缺陷的捷径"——被吉仁泽学派系统性挑战。如果启发式是适应工具而非认知错误，那么"纠正偏差"的处方就变成了"让人类放弃对真实环境有效的策略，去适应一个人为设计的不自然标准"。
+            </div>
+        </div>
+
+        <!-- Refuted Judgments -->
+        <h2>被证伪判断清单</h2>
+
+        <p>公正地审视，不是卡尼曼的所有命题都有同等缺陷。下面是一个诚实的清单：</p>
+
+        <div style="background:var(--surface);border-radius:0.5rem;overflow:hidden;margin:1.5rem 0 2rem;border:1px solid var(--border);">
+            <table class="refuted-table" style="background:transparent;margin:0;">
+                <thead>
+                    <tr>
+                        <th style="width:42%;">卡尼曼命题</th>
+                        <th style="width:38%;">证据评估</th>
+                        <th style="width:20%;">判定</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>系统1/2作为教学框架</td>
+                        <td>极其成功的科学传播工具，改变学科议程</td>
+                        <td><span class="verdict-badge verdict-hold">成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>系统1/2作为神经科学描述</td>
+                        <td>现代神经科学不支持二元结构；大脑是连续网络</td>
+                        <td><span class="verdict-badge verdict-disproven">基本证伪</span></td>
+                    </tr>
+                    <tr>
+                        <td>损失厌恶存在（方向）</td>
+                        <td>跨文化复制研究确认方向，但效应量被高估</td>
+                        <td><span class="verdict-badge verdict-hold">成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>损失厌恶系数≈2.25</td>
+                        <td>大型样本复制显示更接近1.2-1.5；发表偏误膨胀</td>
+                        <td><span class="verdict-badge verdict-disproven">高估</span></td>
+                    </tr>
+                    <tr>
+                        <td>框架效应存在（方向）</td>
+                        <td>复制确认方向，但高度依赖措辞和情境</td>
+                        <td><span class="verdict-badge verdict-partial">条件成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>偏差普遍且强大</td>
+                        <td>WEIRD样本偏差；文化调节显著；效应量中等</td>
+                        <td><span class="verdict-badge verdict-partial">部分成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>启发式=有缺陷的捷径</td>
+                        <td>吉仁泽学派：启发式是环境适应工具，"少即是多"</td>
+                        <td><span class="verdict-badge verdict-disproven">范式争议</span></td>
+                    </tr>
+                    <tr>
+                        <td>合取谬误（Linda问题）</td>
+                        <td>自然频率呈现下几乎消失；问题格式决定"谬误"</td>
+                        <td><span class="verdict-badge verdict-partial">任务依赖</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Fair Witness -->
+        <div class="fair-witness">
+            <div class="box-title">⚖️ 公道话</div>
+            <p>卡尼曼的学术成就是真实的。他和特沃斯基在1970年代撬开了一扇被理性选择理论锁死的门，让心理学家、经济学家和公共政策制定者意识到：人类不是计算器，直觉有自己的逻辑。这改变了至少三个学科的方向。</p>
+            <p>但挑战者今天的四条断层线指向一个更复杂的判断：<em>卡尼曼的洞见比他的框架更持久，他的诊断比他的处方更可靠。</em>直觉确实常常偏离形式逻辑——但"偏离"是否等于"错误"？效应存在——但"强大且普遍"吗？偏差可以纠正——但纠正的基准是什么？</p>
+            <p>挑战者最终的立场是：卡尼曼的框架是"一个时代的正确诊断"，但不是"所有人类决策的通用地图"。他用1970年代的实验方法回答了一个21世纪的问题——这个回答是有力的，但问题本身已经变得更复杂了。神经科学、文化心理学、生态理性学派对双系统模型的修正，不是否定卡尼曼，而是<em>把他的局部地图扩展成了更完整的图景</em>。</p>
+        </div>
+
+        <!-- Tension Question Echo -->
+        <div class="tension-block">
+            <div class="tension-label">🔁 张力问题回响 · 挑战者视角</div>
+            <div class="tension-q">
+                叙事者抛出：认知偏差是人类心智的可纠正漏洞，还是认知系统不可分割的组成部分？<br><br>
+                提炼者推进到：系统1负责95%的日常决策，系统2只在特定条件下启动——但系统2能否胜任"裁判"角色？<br>
+                应用者验证了：纠正偏差的环境是否存在、由谁设计、设计者利益是什么——认知偏差是环境设计问题而非心理学问题。<br><br>
+                挑战者今天把问题再推深一层：<br><br>
+                <strong style="color:var(--white)">如果"偏差"本身是用一个不切实际的理性模型定义的，那么"纠正偏差"的努力，是否也在用一个新的框架来替代旧的框架？</strong><br><br>
+                卡尼曼用期望效用理论作为"无偏差基准"，把人类实际行为标记为"偏差"。但期望效用理论本身也已被证明不是人类使用的标准。吉仁泽问了一个更根本的问题：如果"少即是多"——简单启发式在真实环境中比复杂分析更有效——那么"偏差"这个标签是否本身就是规范性偏见？<br><br>
+                挑战者最终的回响：<em>我们不是在纠正"偏差"，而是在选择"用哪个框架来定义正常"。卡尼曼的框架把人类描述为有缺陷的理性者；吉仁泽的框架把人类描述为有效的生态适应者。两个框架都部分正确，但选择哪个框架作为纠正基准——这本身就是一个价值选择，不是科学结论。</em><br><br>
+                明天，摆渡人会接住这个裂缝：如果框架本身可以选择，我们选择框架的标准是什么？
+            </div>
+        </div>
+
+        <h2>明天的视角</h2>
+
+        <p>挑战者今天从神经科学、可复制性、文化取样和范式争议四个维度解构了卡尼曼的框架——不是否定，是定位。<em>摆渡人明天</em>会接过这四条裂缝，做最后的摆渡：如果系统1/2模型是简化，如果偏差效应被高估，如果启发式是适应工具而非错误——那我们作为个人、作为组织、作为社会，应该如何与认知局限共处？</p>
+
+        <p>还有一个更深层的问题留给摆渡人：如果"认知偏差"的定义本身依赖于框架选择，那么我们追求"更理性"的过程——是否也在用一个新的认知框架来替代旧的，而新的框架同样有盲区和边界？</p>
+
+        <!-- Navigation -->
+        <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+            <a href="./w11-d03.html" style="color:#888;text-decoration:none;">← D03 · 应用者</a>
+            <a href="./w11-d05.html" style="color:#888;text-decoration:none;">D05 · 摆渡人+连接者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
