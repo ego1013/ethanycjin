@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 11 · Day 5 · 摆渡人+连接者 · 《思考，快与慢》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 摆渡人专属：蓝调 */
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            /* 连接者专属：青调 */
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Body text */
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        /* Bridge section */
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Connector section */
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Section break */
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Final tension box */
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        /* Connector branch */
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        /* Bridge passage */
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        /* SVG map container */
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+        }
+
+        /* Landing questions */
+        .landing-questions {
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .lq-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .lq-item {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.9rem;
+            align-items: flex-start;
+        }
+
+        .lq-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--bridge);
+            min-width: 1.2rem;
+            padding-top: 0.2rem;
+        }
+
+        .lq-text {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>Week 11 · Day 5</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人 · 周五</span>
+                <span class="meta-badge" style="background:var(--connector-dim);color:var(--connector);border-color:var(--connector-border);">🔗 连接者</span>
+                <span style="color:var(--text-muted)">Week 11 · Day 5</span>
+                <span style="color:var(--text-muted)">·</span>
+                <span style="color:var(--text-muted)">2026-06-19</span>
+            </div>
+            <h1>住在框架里的摆渡人</h1>
+            <p class="subtitle">《思考，快与慢》— 丹尼尔·卡尼曼 · 知识图谱第11节点</p>
+        </header>
+
+        <!-- ═══ 摆渡人部分 ═══ -->
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridger</div>
+        </div>
+
+        <p>这周我们跟随卡尼曼走进了人类心智的暗室。叙事者打开了那扇门——1970年代的耶路撒冷，两个心理学家发现直觉不是理性的敌人，而是理性的<em>另一种形态</em>。提炼者给了我们五把解剖刀，把系统1和系统2的运作机制拆解成可操作的框架。应用者把偏差机制丢进了医学诊断、算法围猎和KPI体系三个熔炉，证明<em>偏差不是个人的缺陷，而是环境的产物</em>。挑战者昨天做了最后的拆解——卡尼曼的框架本身也是选择的结果，"偏差"的定义依赖于一个不切实际的理性基准。</p>
+
+        <p>今天，摆渡人站在这一整周的废墟上，问最后一个问题：<strong>如果所有框架都有盲区，我们如何选择框架？</strong></p>
+
+        <!-- 第一段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第一段摆渡</div>
+            <div class="passage-title">从"框架选择是价值问题"到"我们如何在不确定中做相对好的选择"</div>
+            <p style="margin-bottom:0.8rem">挑战者昨天把问题推到了认识论的悬崖边：如果卡尼曼用期望效用理论定义"正常"，吉仁泽用生态适应定义"正常"，两个框架互相不能证伪——那么"纠正偏差"的努力是否只是在用一个新框架替代旧框架？</p>
+            <p style="margin-bottom:0.8rem">摆渡人的回应不是给出答案，而是<em>把问题再推深一层</em>：<strong>框架选择不是一个可以一次性解决的问题，而是一个必须持续进行的实践。</strong></p>
+            <p style="margin-bottom:0.8rem">想想这个悖论：卡尼曼教我们识别锚定效应——但"识别锚定效应"这件事本身也需要一个框架。吉仁泽教我们信任简单启发式——但"选择哪个启发式"同样需要一个元框架。我们似乎永远在"用框架审视框架"的递归循环里，没有终点。</p>
+            <p style="margin-bottom:0">摆渡人想说：<strong>这个递归不是bug，是feature。</strong>真正成熟的心智状态，不是"找到了正确的框架"，而是"知道自己在用框架，并且知道框架的边界"。卡尼曼最大的贡献也许不是那些具体的偏差清单，而是他让我们意识到<em>认知过程本身是可以被观察的</em>——这种"元认知"能力，是任何框架选择的前提。</p>
+        </div>
+
+        <!-- 第二段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第二段摆渡</div>
+            <div class="passage-title">卡尼曼遇见2026：当AI学会了你的系统1</div>
+            <p style="margin-bottom:0.8rem">让我们把卡尼曼的框架放到2026年的世界里，看看三个正在改写规则的新变量：</p>
+            <p style="margin-bottom:0.8rem"><strong>变量一：AI正在精确模拟人类的系统1。</strong>大语言模型和推荐算法的核心能力，恰恰是复现人类的直觉模式——锚定、可得性、情感联想、社会认同。不同的是，AI的系统1可以被<em>规模化部署</em>、<em>A/B测试优化</em>、<em>个性化定制</em>。卡尼曼描述的偏差在1970年代是个人层面的认知局限，在2026年是被工业化的说服基础设施。当广告平台可以用算法精确触发你的可得性启发时，"知道偏差存在"是否还有防御价值？</p>
+            <p style="margin-bottom:0.8rem"><strong>变量二：信息环境正在系统性抑制系统2。</strong>短视频、推送通知、无限滚动——这些设计不是中性的，它们的优化目标是<em>参与度</em>，而参与度的神经基础是系统1的即时满足。卡尼曼说系统2是"懒惰的"，需要主动启动。但2026年的信息环境让系统2的启动成本越来越高——注意力被碎片化的刺激持续劫持，深度思考需要对抗整个数字生态系统的引力。应用者说的"环境设计问题"在这里达到极端：<em>不是个人缺乏意志力，而是环境被设计成让意志力失效。</em></p>
+            <p style="margin-bottom:0"><strong>变量三：神经科学正在超越双系统模型。</strong>卡尼曼的系统1/2是教学工具——但2026年的脑科学研究已经展示了一个更复杂的图景：大脑不是两个系统，而是多层网络；直觉和分析不是对立，而是连续光谱；情绪在理性决策中扮演建设性角色。这意味着"纠正偏差"的处方可能需要从"激活系统2"转向"设计更好的直觉环境"——一个卡尼曼没有预见但吉仁泽暗示的方向。</p>
+        </div>
+
+        <div class="pull-quote">
+            <p>卡尼曼给了我们一张认知地图。但2026年的地形正在以他无法预见的方式变化——AI模拟系统1、信息环境抑制系统2、神经科学超越双系统模型。地图仍然是宝贵的，但住在地图里的人会错过正在发生的地震。</p>
+        </div>
+
+        <!-- 第三段摆渡 -->
+        <div class="bridge-passage">
+            <div class="passage-num">第三段摆渡</div>
+            <div class="passage-title">住在框架里的摆渡人</div>
+            <p style="margin-bottom:0.8rem">这是摆渡人每次站在这里都会想到的问题：<strong>每一个足够好的认知框架，都有把人锁进去的风险。</strong></p>
+            <p style="margin-bottom:0.8rem">卡尼曼的双系统模型是过去二十年最成功的认知科学传播工具。但它也制造了一种新的偏见——"系统2崇拜"：认为分析性思维优于直觉，认为慢思考优于快思考，认为"理性"是解决问题的终极目标。这种崇拜本身是一种框架锁定：它让我们忽视了<em>直觉在复杂决策中的价值</em>，忽视了<em>情绪作为信息源的功能</em>，忽视了<em>过度分析导致的决策瘫痪</em>。</p>
+            <p style="margin-bottom:0.8rem">更重要的是，"纠正偏差"的框架本身是一种权力工具。谁来定义什么是"偏差"？谁来设计"纠正"的机制？谁来评估"纠正"的效果？卡尼曼的框架在学术殿堂里是中性的——但一旦进入组织管理、公共政策、算法设计，它就成了<em>价值选择的载体</em>。</p>
+            <p style="margin-bottom:0">摆渡人不想否定卡尼曼。他的诊断是必要的——没有他，我们仍在黑暗中高估自己的理性。但诊断不是处方，框架不是牢笼。<strong>真正重要的决策，发生在所有框架都失效的地方。</strong>而那个地方，需要我们带着对不确定性的容忍、对多种认知方式的尊重、以及对自身盲区的清醒，才能走进去。</p>
+        </div>
+
+        <!-- 张力问题最终形态 -->
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">❓→💡</div>
+            <div class="ft-original">
+                本周最初的问题是：认知偏差是人类心智的可纠正漏洞，还是认知系统不可分割的组成部分？了解偏见本身并不能让我们免疫于偏见——我们只是在知道的情况下，仍然被说服。
+            </div>
+            <div class="ft-evolved">
+                如果所有框架都有盲区，我们如何在不确定中做相对好的选择？<br><br>
+                更深一层：<strong>选择框架的依据是什么？实用、道德、还是直觉？</strong><br><br>
+                卡尼曼给了我们一个用来理解认知偏差的框架，但挑战者证明这个框架本身也依赖选择。吉仁泽给了另一个框架，同样有盲区。神经科学正在给出第三个框架。如果我们永远无法站在框架之外审视框架——那么我们追求"更理性"的过程，是否只是不断地从一个牢笼搬进另一个牢笼？<br><br>
+                但也许问题的问法本身就是错误的。<em>重要的不是"找到没有盲区的框架"——那是不可能的。重要的是"知道自己在用框架，并且持续寻找框架的盲区"。</em>这不是认知科学问题，这是<em>智识谦逊</em>的问题。<strong>真正成熟的决策者，不是那些消除了偏差的人，而是那些知道偏差不可消除、因此永远保持警觉的人。</strong>
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次做重要决策时，依赖的是哪个认知框架？你有没有停下来问过"这个框架的盲区在哪里"？</div>
+                <div class="ft-q-item">在你的组织里，"纠正偏差"的机制（如反证报告、多元化团队、魔鬼代言人）是否本身已经成为新的权力工具？谁来纠正"纠正机制"的偏差？</div>
+                <div class="ft-q-item">如果卡尼曼是对的但框架过时了，如果吉仁泽是对的但难以操作——你能接受的"次优"决策方式是什么？你愿意为那个方式付出什么代价？</div>
+            </div>
+        </div>
+
+        <hr class="section-break">
+
+        <!-- ═══ 连接者部分 ═══ -->
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector · 知识图谱第11节点</div>
+        </div>
+
+        <p>从本周的视角出发，连接者在这张50本书的知识网络里，为卡尼曼的《思考，快与慢》找到五条枝干。卡尼曼站在一个特殊的位置：他不是第一位质疑人类理性的人，但他是第一位把认知偏差<em>系统化、清单化、操作化</em>的人——让"非理性"从哲学思辨变成了可干预的变量。</p>
+
+        <!-- 枝干1 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">《国富论》— 斯密</span>
+                <span class="branch-week">第 1 周</span>
+            </div>
+            <div class="branch-desc">
+                斯密的经济学建立在"理性经济人"假设之上：个体通过自利计算实现社会最优。这个假设支撑了两百年的经济学大厦——直到卡尼曼证明<em>人类不是计算器</em>。但有趣的是，斯密本人并非没有察觉这个问题。他在《道德情操论》中详细讨论了同情、情感和道德直觉——这些恰恰是卡尼曼后来证明的"系统1"内容。斯密把理性经济人和道德直觉者分开了两本书写，卡尼曼把他们放回了同一个大脑里。<em>张力在于</em>：如果经济人的理性假设是错的，市场"看不见的手"是否也在依赖一种错误的人类模型？斯密的分工理论也许仍然成立，但分工的<em>心理前提</em>需要重写。
+            </div>
+        </div>
+
+        <!-- 枝干2 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">《资本论》— 马克思</span>
+                <span class="branch-week">第 2 周</span>
+            </div>
+            <div class="branch-desc">
+                马克思有一个未被充分讨论的认知维度：<em>意识形态作为系统性启发式</em>。马克思说统治阶级的思想就是统治思想——这不是阴谋论，而是认知层面的结构性偏差。工人阶级被"商品拜物教"蒙蔽，看不到劳动背后的剥削关系；资产阶级被"利润正当性"锚定，看不到制度的暴力基础。卡尼曼的偏差清单描述的是<em>个体</em>的认知局限，马克思描述的是<em>阶级</em>的认知局限。但两者的机制惊人地相似：锚定（既有秩序的天然性）、可得性（统治阶级话语的普遍传播）、确认偏误（选择性注意符合阶级利益的信息）。<em>对话点</em>：如果认知偏差是社会结构的产物而非个人的缺陷，那么"纠正偏差"的处方是否也需要从心理学转向政治学？
+            </div>
+        </div>
+
+        <!-- 枝干3 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">《就业、利息和货币通论》— 凯恩斯</span>
+                <span class="branch-week">第 4 周</span>
+            </div>
+            <div class="branch-desc">
+                凯恩斯的"动物精神"（animal spirits）和卡尼曼的"系统1"是同一枚硬币的两面。凯恩斯在宏观层面描述了投资者的非理性情绪波动如何导致经济周期的放大；卡尼曼在微观层面描述了这些波动的认知机制。但两人的处方方向不同：凯恩斯说<em>政府应该在动物 spirit 低迷时充当最后买家</em>，用外部干预稳定预期；卡尼曼说<em>个体应该通过系统2的启动来纠正直觉偏差</em>。宏观干预 vs 微观纠正——两个互补的维度。<em>对话点</em>：如果个体的系统1偏差在聚集层面产生动物精神，那么凯恩斯的宏观干预是否也在间接"纠正"数百万个个体的认知偏差？反之，如果卡尼曼的个体纠正方案在聚合层面有效，是否可以减少对凯恩斯式政府干预的依赖？
+            </div>
+        </div>
+
+        <!-- 枝干4 -->
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type complement">互补</span>
+                <span class="branch-book">《乌合之众》— 勒庞</span>
+                <span class="branch-week">第 7 周</span>
+            </div>
+            <div class="branch-desc">
+                勒庞描述群体中的个体退化——匿名性、感染性、暗示性让理性思考失效。卡尼曼描述个体层面的认知偏差——锚定、可得性、损失厌恶让理性计算失效。两者互补：<em>勒庞解释"群体如何让人变蠢"，卡尼曼解释"人本身就足够蠢"</em>。但更有趣的互补在于干预方向：卡尼曼的处方（启动系统2）在个体层面有效，但在群体层面可能失效——因为群体情绪会系统性抑制系统2的启动（勒庞的"感染"机制）。反过来，勒庞的精英主义处方（让智者统治）忽视了一个卡尼曼式的问题：<em>精英也是人，也有系统1偏差</em>。群体退化和个体偏差需要被同时纳入制度设计，缺一不可。
+            </div>
+        </div>
+
+        <!-- 枝干5：跨频道C -->
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C · 文学感知</span>
+                <span class="branch-book">《罗生门》— 芥川龙之介</span>
+            </div>
+            <div class="branch-desc">
+                一个武士被杀，四个证人（强盗、妻子、武士亡灵、樵夫）给出了四个完全不同的版本。每个人的叙述都真诚地相信自己的版本——但四个版本互相矛盾。芥川龙之介在1922年写下的这个故事，是卡尼曼认知偏差理论的文学预演：<em>每个人的"真相"都是自己认知框架的产物</em>。强盗的叙述强化了他的男子气概（自我服务偏差），妻子的叙述淡化了她的背叛（认知失调的缓解），武士的亡灵叙述维护了他的尊严（面子偏差），樵夫的叙述隐藏了他偷走了匕首（动机性遗忘）。卡尼曼用实验告诉我们"人如何扭曲现实"，芥川用故事让我们<em>感受到</em>那种扭曲的必然性和悲剧性。没有卡尼曼，我们只知道罗生门是一个精巧的叙事技巧；没有芥川，我们只知道偏差是实验室里的统计显著性——但感受不到<em>那种"我明明说的是真话，为什么别人听到的完全不同"的深渊般的孤独</em>。
+            </div>
+        </div>
+
+        <!-- 知识地图 SVG -->
+        <div class="map-container">
+            <div class="map-title">📍 知识图谱 · 第11节点 · 《思考，快与慢》</div>
+            <svg viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+                <!-- Background -->
+                <rect width="640" height="420" fill="#111111" rx="8"/>
+
+                <!-- Connection arcs (draw first, below nodes) -->
+                <!-- W1 → W11 tension -->
+                <path d="M 95 110 Q 220 50 390 110" fill="none" stroke="#E94560" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.45"/>
+                <!-- W2 → W11 dialogue -->
+                <path d="M 95 175 Q 220 120 390 120" fill="none" stroke="#4A9EFF" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.45"/>
+                <!-- W4 → W11 dialogue -->
+                <path d="M 95 240 Q 230 170 390 130" fill="none" stroke="#4A9EFF" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.45"/>
+                <!-- W7 → W11 complement -->
+                <path d="M 95 305 Q 230 260 390 150" fill="none" stroke="#2DD4BF" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+                <!-- W11 → Channel C -->
+                <path d="M 440 160 Q 510 200 550 265" fill="none" stroke="#B47CDC" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+                <!-- W11 → W12 next -->
+                <path d="M 460 130 Q 530 110 560 110" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/>
+
+                <!-- Left column: connected books -->
+                <!-- W1 -->
+                <circle cx="80" cy="110" r="24" fill="#0a0a0a" stroke="#E94560" stroke-width="1.5"/>
+                <text x="80" y="106" text-anchor="middle" fill="#E94560" font-size="9" font-family="sans-serif" font-weight="700">W1</text>
+                <text x="80" y="118" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">国富论</text>
+                <text x="80" y="140" text-anchor="middle" fill="#E94560" font-size="7" font-family="sans-serif">张力</text>
+
+                <!-- W2 -->
+                <circle cx="80" cy="175" r="24" fill="#0a0a0a" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="80" y="171" text-anchor="middle" fill="#4A9EFF" font-size="9" font-family="sans-serif" font-weight="700">W2</text>
+                <text x="80" y="183" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">资本论</text>
+                <text x="80" y="205" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">对话</text>
+
+                <!-- W4 -->
+                <circle cx="80" cy="240" r="24" fill="#0a0a0a" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="80" y="236" text-anchor="middle" fill="#4A9EFF" font-size="9" font-family="sans-serif" font-weight="700">W4</text>
+                <text x="80" y="248" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">通论</text>
+                <text x="80" y="270" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">对话</text>
+
+                <!-- W7 -->
+                <circle cx="80" cy="305" r="24" fill="#0a0a0a" stroke="#2DD4BF" stroke-width="1.5"/>
+                <text x="80" y="301" text-anchor="middle" fill="#2DD4BF" font-size="9" font-family="sans-serif" font-weight="700">W7</text>
+                <text x="80" y="313" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">乌合之众</text>
+                <text x="80" y="335" text-anchor="middle" fill="#2DD4BF" font-size="7" font-family="sans-serif">互补</text>
+
+                <!-- Center: W11 main node -->
+                <circle cx="430" cy="140" r="44" fill="#0a0a0a" stroke="#e2a355" stroke-width="2.5"/>
+                <text x="430" y="130" text-anchor="middle" fill="#e2a355" font-size="11" font-family="sans-serif" font-weight="800">W11</text>
+                <text x="430" y="145" text-anchor="middle" fill="#f0f0f0" font-size="8.5" font-family="sans-serif" font-weight="700">思考快与慢</text>
+                <text x="430" y="157" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">卡尼曼</text>
+
+                <!-- Right: Channel C -->
+                <circle cx="560" cy="275" r="28" fill="#0a0a0a" stroke="#B47CDC" stroke-width="1.5" stroke-dasharray="5,3"/>
+                <text x="560" y="269" text-anchor="middle" fill="#B47CDC" font-size="8.5" font-family="sans-serif" font-weight="700">频道C</text>
+                <text x="560" y="281" text-anchor="middle" fill="#888" font-size="7.5" font-family="sans-serif">罗生门</text>
+                <text x="560" y="295" text-anchor="middle" fill="#B47CDC" font-size="7" font-family="sans-serif">文学感知</text>
+
+                <!-- Right: W12 next -->
+                <circle cx="580" cy="110" r="22" fill="#0a0a0a" stroke="#333" stroke-width="1.5" stroke-dasharray="5,4"/>
+                <text x="580" y="106" text-anchor="middle" fill="#555" font-size="9" font-family="sans-serif" font-weight="700">W12</text>
+                <text x="580" y="118" text-anchor="middle" fill="#444" font-size="7.5" font-family="sans-serif">错误的行为</text>
+
+                <!-- Labels on arcs -->
+                <text x="210" y="64" text-anchor="middle" fill="#E94560" font-size="7" font-family="sans-serif">理性经济人张力</text>
+                <text x="220" y="133" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">意识形态启发式</text>
+                <text x="240" y="172" text-anchor="middle" fill="#4A9EFF" font-size="7" font-family="sans-serif">动物精神=系统1</text>
+                <text x="230" y="258" text-anchor="middle" fill="#2DD4BF" font-size="7" font-family="sans-serif">群体退化互补</text>
+                <text x="520" y="240" text-anchor="middle" fill="#B47CDC" font-size="7" font-family="sans-serif">跨频道C</text>
+            </svg>
+        </div>
+
+        <!-- 下周预告 -->
+        <div class="tension-box" style="border-color:var(--border);background:var(--surface-2);">
+            <div class="tension-label" style="color:var(--text-muted)">下周预告 · Week 12</div>
+            <p class="tension-text" style="color:var(--text-dim);font-size:0.9rem;">
+                第12周：《错误的行为》— 理查德·塞勒<br>
+                <span style="font-size:0.82rem;color:var(--text-muted)">从卡尼曼的"偏差清单"到塞勒的"助推理论"——认知偏差不是只能被纠正的缺陷，也可以被设计用来引导更好的选择。从"人有什么错"到"如何利用人的特点"。</span>
+            </p>
+        </div>
+
+        <!-- 导航 -->
+        <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+            <a href="./w11-d04.html" style="color:#888;text-decoration:none;">← D04 · 挑战者</a>
+            <a href="./w12-d01.html" style="color:#888;text-decoration:none;">W12 D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
