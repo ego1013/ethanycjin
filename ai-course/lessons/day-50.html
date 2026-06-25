@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 50 · AI驱动的决策框架（中） — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0a05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--yellow), var(--red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .section { margin-bottom: 2.5rem; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .label-fire { background: var(--red-dim); color: var(--red); }
+  .label-why { background: var(--blue-dim); color: var(--blue); }
+  .label-what { background: var(--purple-dim); color: var(--purple); }
+  .label-sowhat { background: var(--green-dim); color: var(--green); }
+  .label-check { background: var(--gold-dim); color: var(--gold); }
+  .label-card { background: var(--cyan-dim); color: var(--cyan); }
+  .label-link { background: var(--teal-dim); color: var(--teal); }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--text);
+  }
+
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+    color: var(--accent);
+  }
+
+  p { margin-bottom: 1rem; color: var(--text); }
+
+  strong { color: var(--accent); font-weight: 600; }
+
+  .callout {
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout-blue { border-left-color: var(--blue); }
+  .callout-green { border-left-color: var(--green); }
+  .callout-purple { border-left-color: var(--purple); }
+  .callout-gold { border-left-color: var(--gold); }
+  .callout-red { border-left-color: var(--red); }
+  .callout-cyan { border-left-color: var(--cyan); }
+  .callout-teal { border-left-color: var(--teal); }
+  .callout-yellow { border-left-color: var(--yellow); }
+
+  .insight-box {
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .insight-box h4 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background: var(--surface-2);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td { color: var(--text); }
+  tr:nth-child(even) td { background: var(--surface); }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.5rem;
+    color: var(--text);
+  }
+
+  li { margin-bottom: 0.4rem; }
+
+  .checkpoint-box {
+    background: var(--surface-2);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .checkpoint-box h4 {
+    color: var(--gold);
+    margin-top: 0;
+  }
+
+  .option {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.88rem;
+  }
+
+  .option-label {
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+
+  .knowledge-card {
+    background: var(--surface-2);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .knowledge-card ul { margin-left: 1.25rem; }
+
+  .link-section {
+    background: var(--surface);
+    border: 1px solid var(--teal);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .small { font-size: 0.85rem; }
+
+  .stage-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .stage-card h4 {
+    margin-top: 0;
+    color: var(--yellow);
+  }
+
+  .before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .before-after > div {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.88rem;
+  }
+
+  .before-after .label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .before-after .label-before { color: var(--red); }
+  .before-after .label-after { color: var(--green); }
+
+  .score-example {
+    background: var(--surface-2);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .score-example .score-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .score-example p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+
+  .highlight-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .chart-bar {
+    display: flex;
+    align-items: center;
+    margin: 0.4rem 0;
+    font-size: 0.85rem;
+  }
+  .chart-bar-label {
+    width: 120px;
+    flex-shrink: 0;
+  }
+  .chart-bar-fill {
+    height: 20px;
+    border-radius: 4px;
+    background: var(--accent);
+    margin-right: 0.5rem;
+    min-width: 4px;
+  }
+  .chart-bar-value {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  .step-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+
+  .step-card .step-num {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .step-card h4 {
+    display: inline;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .step-card .step-time {
+    float: right;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 1rem 0;
+  }
+
+  .prompt-box .prompt-tag {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .prompt-box .prompt-comment {
+    color: #666;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .before-after { grid-template-columns: 1fr; }
+    .chart-bar-label { width: 90px; }
+    .step-card .step-time { float: none; display: block; margin-top: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">&larr; Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 50
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">&#x1F7E1; 第五-六模块 &#183; 整合篇</div>
+  <h1>AI 驱动的决策框架（中）</h1>
+  <p class="subtitle">"决策流程设计"：把理论框架变成可落地的工作流</p>
+  <div class="meta">
+    <span>&#x1F4C5; 2026-06-25 &#183; Day 50</span>
+    <span>&#x23F1; 预计 40 分钟</span>
+    <span>&#x1F4CD; 第五-六模块 &#183; 整合篇 &#183; 第 8 课</span>
+    <span>&#x1F3F7; 通用方法论 &#183; 流程设计</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 开场 ==================== -->
+<div class="section">
+  <span class="section-label label-fire">&#x1F525; OPENING</span>
+  <h2>两家公司都用 AI 做决策，为什么一家决策质量提升了 30%，另一家反而下降了？</h2>
+
+  <p>想象两个真实场景：</p>
+
+  <div class="before-after">
+    <div>
+      <div class="label label-before">公司 A：AI 决策"失败"</div>
+      <p>销售总监小李买了某 AI 决策工具，号称"用 AI 做渠道预算分配"。</p>
+      <p>他用了一个月后的感受：<strong>"AI 给的建议，我一半不敢采纳，另一半采纳了发现效果一般。"</strong></p>
+      <p>问题出在哪？他直接把 Excel 数据丢给 AI，问"怎么分配预算最优"——没有定义约束、没有交代背景、没有设定自己的判断边界。</p>
+      <p>AI 给了一个数学上"最优"的方案，但忽略了渠道关系、团队士气、战略优先级——这些小李知道但 AI 不知道的信息。</p>
+    </div>
+    <div>
+      <div class="label label-after">公司 B：AI 决策"成功"</div>
+      <p>渠道经理老王用 AI 辅助做续约决策，设计了一套标准流程：</p>
+      <p>① 每次决策前，先填一张"决策信息卡"（交代背景+约束+假设）；② AI 只做分析不做推荐，明确标注"基于哪些数据"；③ 老王自己做最终判断，但要求 AI 提供"如果我的判断错了，最可能的原因是什么"。</p>
+      <p>三个月后，老王的续约决策准确率从 65% 提升到 82%——<strong>提升的不是 AI 的能力，而是"人使用 AI 的流程"</strong>。</p>
+    </div>
+  </div>
+
+  <p>关键区别：<strong>"有 AI 工具"和"有 AI 决策流程"是两回事</strong>。</p>
+
+  <p>Day 49 我们建立了"人机决策分工"的底层框架——知道了 AI 该做什么、人该做什么。但知道和做到之间，隔着一条巨大的鸿沟。今天的课，就是要填平这条鸿沟。</p>
+
+  <div class="callout callout-gold">
+    <strong>学完今天这节课，你应该能回答</strong>：
+    <ul style="margin-bottom:0">
+      <li>如何把"AI 辅助决策"从"偶尔用一下"变成"可复用的标准流程"？</li>
+      <li>设计一个 AI 决策流程时，哪些环节最容易被遗漏？</li>
+      <li>如何设计高质量的"决策输入"，让 AI 给出真正有用的分析？</li>
+      <li>如何建立决策的复盘机制，让每一次决策都变成下一次的养分？</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== WHY ==================== -->
+<div class="section">
+  <span class="section-label label-why">第一段 &#183; 10 分钟 &#183; WHY</span>
+  <h2>为什么"框架"不够，还需要"流程"？</h2>
+
+  <h3>类比：健身计划 vs 实际训练</h3>
+
+  <p>想象你请了一个顶级私教，给你制定了完美的健身计划：</p>
+
+  <div class="callout callout-blue">
+    <strong>框架</strong>（知道做什么）：每周练 4 次，每次 60 分钟，分化训练（胸/背/腿/肩），渐进超负荷。<br><br>
+    <strong>流程</strong>（知道怎么做）：周一早上 7:00 到健身房 → 先热身 10 分钟 → 平板卧推 4 组×8 次 → 上斜哑铃 3 组×10 次 → …… → 拉伸 5 分钟 → 记录当日数据 → 拍照对比。<br><br>
+    <strong>没有流程的框架 = 收藏了等于练了</strong>。
+  </div>
+
+  <p>Day 49 的"决策质量四维模型"和"人机协作四种模式"是框架。它们告诉你<strong>"应该怎么做"</strong>。但如果每次做决策都要重新思考"用哪种模式"、"怎么设计输入"、"怎么设定边界"—— friction 太高，最终你会回到老路。</p>
+
+  <p>流程的价值，是把"每一次都要重新发明轮子"变成"按模板填空"。</p>
+
+  <h3>为什么 AI 决策特别需要流程化？</h3>
+
+  <p>因为 AI 决策有三个天然缺陷，<strong>没有流程约束就会失控</strong>：</p>
+
+  <div class="stage-card">
+    <h4>缺陷 1：AI 的"默认回答"可能不是你要的</h4>
+    <p>你问 AI"怎么优化渠道预算"，AI 默认按"总流水最大化"来回答。但你的真实目标可能是"利润最大化"或"市场份额增长"或"风险最小化"。</p>
+    <p style="margin-bottom:0"><strong>没有流程约束</strong> = 你拿到一个"答非所问"的方案，还要花额外精力去发现。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>缺陷 2：AI 不会主动告诉你"我忽略了什么"</h4>
+    <p>AI 的分析基于你提供的数据。如果遗漏了关键变量（如"竞争对手下个月要上市新品"），AI 的分析再漂亮也是错的。</p>
+    <p style="margin-bottom:0"><strong>没有流程约束</strong> = 每次都要人主动检查"有没有遗漏"——而人的检查能力也是有限的。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>缺陷 3：AI 的输出质量高度依赖输入质量</h4>
+    <p>同样的数据，用不同的 Prompt，AI 给出的分析质量天差地别。好的输入 = 高质量分析；差的输入 = 垃圾进，垃圾出。</p>
+    <p style="margin-bottom:0"><strong>没有流程约束</strong> = 每次输入质量靠运气，决策质量也靠运气。</p>
+  </div>
+
+  <h3>核心洞察：流程不是限制，是解放</h3>
+
+  <div class="insight-box">
+    <h4>&#127919; 核心规律</h4>
+    <p>一个好的决策流程，把<strong>认知负担</strong>从"每次都要重新思考"变成"按清单执行"。</p>
+    <p>把<strong>创造性精力</strong>留给真正需要判断力的环节——"这个假设是否成立？""这个权衡是否合理？"</p>
+    <p style="margin-bottom:0"><strong>流程化 = 把 AI 的能力标准化，把人的精力集中在机器做不到的地方</strong>。</p>
+  </div>
+</div>
+
+<!-- ==================== WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-what">第二段 &#183; 20 分钟 &#183; WHAT</span>
+  <h2>六步决策流程设计法：从"用 AI"到"用好 AI"</h2>
+
+  <p>以下六步流程，是 Day 49 框架的<strong>落地化操作手册</strong>。每步都有明确的输入、输出和检查点。</p>
+
+  <!-- Step 1 -->
+  <div class="step-card">
+    <span class="step-num">1</span>
+    <h4>识别决策类型</h4>
+    <span class="step-time">2 分钟</span>
+    <p style="margin-top:0.75rem">用 Day 49 的框架，快速判断这个决策属于哪一类：</p>
+    <table>
+      <tr><th>快速判断</th><th>决策类型</th><th>协作模式</th></tr>
+      <tr><td>数据完整 + 规则明确 + 影响小</td><td>事务型</td><td>模式 C（AI 自主）</td></tr>
+      <tr><td>数据较完整 + 有判断空间</td><td>分析型</td><td>模式 A（AI 辅助）</td></tr>
+      <tr><td>影响大 + 需确认</td><td>审批型</td><td>模式 B（人确认）</td></tr>
+      <tr><td>信息不足 + 创新需求</td><td>战略型</td><td>模式 D（人机共创）</td></tr>
+    </table>
+    <p><strong>关键动作</strong>：不要跳过这步。很多"用 AI 没效果"的问题，根源是<strong>模式选错了</strong>——把战略型决策交给 AI 自主做，或把事务型决策每次都要人确认。</p>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-card">
+    <span class="step-num">2</span>
+    <h4>设计决策信息包</h4>
+    <span class="step-time">5 分钟</span>
+    <p style="margin-top:0.75rem">这是整个流程中<strong>最关键的一步</strong>，也是最容易被敷衍的一步。</p>
+
+    <p>一个好的决策信息包包含五个要素：</p>
+
+    <div class="prompt-box">
+<span class="prompt-tag">[Context]</span> 背景信息 <span class="prompt-comment">// 这个决策的商业背景是什么？谁在什么情况下需要做这个决策？</span><br>
+<span class="prompt-tag">[Goal]</span> 决策目标 <span class="prompt-comment">// 优化什么指标？不是"最优"而是"最大化/最小化什么"</span><br>
+<span class="prompt-tag">[Constraints]</span> 约束条件 <span class="prompt-comment">// 预算上限？时间窗口？政策红线？不能碰的底线？</span><br>
+<span class="prompt-tag">[Assumptions]</span> 已知假设 <span class="prompt-comment">// 哪些信息你认为是事实但 AI 可能不知道？哪些历史规律你假设会延续？</span><br>
+<span class="prompt-tag">[Output]</span> 输出格式 <span class="prompt-comment">// 不要只说"分析一下"——要"给出三个方案，每个方案标注风险和前提假设"</span>
+    </div>
+
+    <p><strong>类比</strong>：这相当于你写需求文档时的"背景+目标+约束+验收标准"——没有这些，开发（AI）只能猜。</p>
+
+    <div class="callout callout-red">
+      <strong>常见错误</strong>：只给数据不给背景。比如把渠道流水 Excel 丢给 AI，问"怎么优化"。AI 不知道你的战略优先级、不知道预算上限、不知道哪些渠道有政治关系不能动——它的"优化"方案自然不可用。
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-card">
+    <span class="step-num">3</span>
+    <h4>选择并配置协作模式</h4>
+    <span class="step-time">2 分钟</span>
+    <p style="margin-top:0.75rem">根据 Step 1 的分类，选择对应的协作模式，并<strong>明确配置</strong>：</p>
+    <ul>
+      <li><strong>AI 的权限边界</strong>：AI 可以建议到什么程度？哪些输出需要人确认？</li>
+      <li><strong>人的介入节点</strong>：在流程的哪些步骤人必须参与？哪些可以自动？</li>
+      <li><strong>异常处理规则</strong>：如果 AI 的输出超出预期范围（比如推荐了一个从未考虑过的方案），触发什么流程？</li>
+    </ul>
+
+    <p><strong>类比</strong>：这和渠道管理的"审批权限分级"完全一样——A 级渠道经理可以批 50 万以内，B 级 20 万，超权限必须升级。AI 的权限也需要分级。</p>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step-card">
+    <span class="step-num">4</span>
+    <h4>执行 AI 分析 + 人的判断</h4>
+    <span class="step-time">10 分钟</span>
+    <p style="margin-top:0.75rem">这是真正的"人机协作"环节。核心原则：</p>
+
+    <div class="callout callout-purple">
+      <strong>AI 做"发散"，人做"收敛"</strong>：让 AI 提供尽可能多的视角、假设、方案——然后人用自己的判断力做筛选和权衡。<br><br>
+      <strong>AI 做"计算"，人做"选择"</strong>：AI 算概率、算 ROI、算风险——人决定"这个风险我能不能接受"。<br><br>
+      <strong>AI 展示"推理"，人检验"假设"</strong>：要求 AI 展示思维链（CoT），但重点不是看它推了什么，而是看它<strong>基于什么假设推的</strong>。
+    </div>
+
+    <p><strong>一个关键技巧</strong>：让 AI 做"反向分析"——</p>
+
+    <div class="prompt-box">
+<span class="prompt-comment">// 不要只问"这个方案好不好"</span><br>
+"请分析：<strong>在什么条件下，你的推荐会是错误的？</strong><br>
+列出 3 个最可能导致推荐失效的场景，并给出每个场景的概率估计和预警信号。"
+    </div>
+
+    <p>这个技巧能暴露 AI 的"隐含假设"——<strong>一个不敢告诉你"我可能错在哪"的 AI 建议，不值得信任</strong>。</p>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step-card">
+    <span class="step-num">5</span>
+    <h4>设定监控与预警机制</h4>
+    <span class="step-time">3 分钟</span>
+    <p style="margin-top:0.75rem">决策不是一锤子买卖。执行过程中，需要监控"假设是否仍然成立"。</p>
+    <ul>
+      <li><strong>关键假设清单</strong>：把 AI 分析中依赖的核心假设列出来，设定"如果 X 发生，重新评估决策"的触发条件。</li>
+      <li><strong>早期预警信号</strong>：哪些指标的变化会告诉你"决策可能出问题了"？</li>
+      <li><strong>熔断机制</strong>：如果实际结果偏离预期超过某个阈值，启动重新决策流程。</li>
+    </ul>
+
+    <div class="callout callout-yellow">
+      <strong>类比</strong>：这和渠道管理的"预警系统"一样——不是等渠道流失了才反应，而是在健康度评分下降 10% 时就预警。<strong>决策也需要"健康度监控"</strong>。
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="step-card">
+    <span class="step-num">6</span>
+    <h4>复盘与迭代</h4>
+    <span class="step-time">持续</span>
+    <p style="margin-top:0.75rem">每次决策完成后，记录一个简版的"决策日志"：</p>
+
+    <table>
+      <tr><th>记录项</th><th>内容</th><th>作用</th></tr>
+      <tr><td>决策背景</td><td>当时面临什么问题？</td><td>避免 hindsight bias（事后诸葛亮）</td></tr>
+      <tr><td>AI 输入</td><td>给了 AI 什么数据？什么约束？</td><td>复盘输入质量</td></tr>
+      <tr><td>AI 输出</td><td>AI 给了什么建议？基于什么假设？</td><td>复盘分析质量</td></tr>
+      <tr><td>人的判断</td><td>最终采纳/修改/否决了哪些？为什么？</td><td>复盘判断质量</td></tr>
+      <tr><td>实际结果</td><td>3 个月后结果如何？</td><td>验证假设有效性</td></tr>
+      <tr><td>迭代改进</td><td>下次同类决策，输入/流程/边界如何优化？</td><td>积累经验资产</td></tr>
+    </table>
+
+    <p><strong>关键认知</strong>：复盘的目标不是"追究对错"，而是<strong>"积累可复用的决策模板"</strong>。每个决策日志都是下一次决策的"训练数据"。</p>
+  </div>
+
+  <h3>六步流程总览图</h3>
+
+  <div class="callout callout-green">
+    <strong>六步速查</strong>：识别类型 → 设计信息包 → 配置模式 → 人机协作 → 监控预警 → 复盘迭代<br><br>
+    <strong>时间分配</strong>：Step 1+2（准备，7 分钟）→ Step 3+4（执行，12 分钟）→ Step 5+6（跟进，长期）<br><br>
+    <strong>核心原则</strong>：<strong>准备时间应该不少于执行时间</strong>。好的输入 = 好的输出。
+  </div>
+</div>
+
+<!-- ==================== SO WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-sowhat">第三段 &#183; 8 分钟 &#183; SO WHAT</span>
+  <h2>渠道管理场景中的"决策流程模板"</h2>
+
+  <h3>模板一：月度预算分配决策</h3>
+
+  <div class="score-example">
+    <div class="score-header">Step 1 · 识别类型</div>
+    <p><strong>分析型</strong>（数据较完整，有判断空间）→ 模式 A（AI 辅助）</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Step 2 · 决策信息包</div>
+    <p><strong>Context</strong>：Q3 渠道预算 ¥800 万，覆盖 50 家核心渠道，目标是总流水增长 15% 同时维持利润率 ≥ 25%。</p>
+    <p><strong>Goal</strong>：在预算约束内，找到 ROI 最高的分配方案。</p>
+    <p><strong>Constraints</strong>：单渠道预算上下限（最低 ¥5 万，最高 ¥80 万）；不能削减已签约渠道的返点（合同约束）；新增预算优先给增速 > 30% 的渠道。</p>
+    <p><strong>Assumptions</strong>：历史 ROI 数据能预测未来 3 个月；市场大环境没有剧变；渠道配合度不变。</p>
+    <p><strong>Output</strong>：给出 3 个分配方案，每个方案标注：预期总流水、预期利润率、最大风险渠道、假设失效的预警信号。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Step 3 · 配置模式</div>
+    <p>AI 权限：可以建议分配方案、计算 ROI、模拟 What-if。</p>
+    <p>人的介入：AI 输出后，人必须确认"约束条件是否被遵守"；对 Top 5 渠道的调整必须人确认。</p>
+    <p>异常处理：如果 AI 推荐砍某个渠道预算超过 30%，触发"专项审核"流程。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Step 4 · 人机协作</div>
+    <p>AI 输出三个方案 + 每个方案的风险假设。</p>
+    <p>人做判断：选哪个方案？是否需要微调？</p>
+    <p>反向分析：让 AI 回答"在什么条件下这三个方案都会失效"。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Step 5 · 监控预警</div>
+    <p>关键假设：历史 ROI 预测未来、市场无剧变。</p>
+    <p>预警信号：如果某渠道实际流水连续 2 周低于预测的 80%，重新评估该渠道预算。</p>
+    <p>熔断：如果整体流水增速低于 5% 持续 1 个月，启动紧急复盘。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Step 6 · 复盘</div>
+    <p>3 个月后对比：AI 预测 vs 实际结果，分析偏差原因，更新假设库。</p>
+  </div>
+
+  <h3>模板二：渠道异常处理决策</h3>
+
+  <p>这个决策类型和模板一不同——它是<strong>触发式</strong>而非<strong>周期性</strong>的。</p>
+
+  <div class="callout callout-blue">
+    <strong>触发条件</strong>：AI 监控系统的预警（如某渠道健康度评分下降 15%）<br><br>
+    <strong>决策类型</strong>：审批型（影响大，需确认）→ 模式 B（人确认）<br><br>
+    <strong>信息包</strong>：异常指标详情 + 历史同期对比 + 可能原因列表（AI 生成）+ 类似案例处理记录<br><br>
+    <strong>人的判断</strong>：AI 给出"风险等级"和"建议行动"，人决定：是否干预？如何干预？什么时限？<br><br>
+    <strong>监控</strong>：干预后每周跟踪，直到指标恢复正常或转入长期管理流程。
+  </div>
+
+  <h3>核心洞察：从"决策工具"到"决策系统"</h3>
+
+  <div class="insight-box">
+    <h4>&#127919; 关键跃迁</h4>
+    <p><strong>Level 1</strong>：偶尔用 AI 问"这个决策怎么做"——每次从零开始，质量不稳定。</p>
+    <p><strong>Level 2</strong>：有固定的决策模板——按流程执行，质量稳定，但每个决策独立。</p>
+    <p><strong>Level 3</strong>：建立"决策系统"——每次决策的日志成为下一次的输入，AI 分析历史决策模式，主动发现"你经常忽略什么""你的判断偏差在哪"。</p>
+    <p style="margin-bottom:0"><strong>Level 3 才是真正的 AI Native 决策方式</strong>——不是"用 AI 做决策"，而是"让 AI 帮你成为一个更好的决策者"。</p>
+  </div>
+
+  <h3>一周行动清单</h3>
+
+  <div class="callout callout-teal">
+    <strong>Day 1-2</strong>：选一个你每周都要做的重复决策（预算分配、异常处理、渠道评估等），用今天的六步流程设计一个"最小可行模板"——不用完美，能用就行。<br><br>
+    <strong>Day 3-4</strong>：用模板执行一次真实决策，记录决策日志（哪怕只有 100 字）。<br><br>
+    <strong>Day 5</strong>：复盘——这次决策中，哪一步最顺畅？哪一步最卡？输入质量如何？下次怎么优化？
+  </div>
+</div>
+
+<!-- ==================== CHECKPOINT ==================== -->
+<div class="section">
+  <span class="section-label label-check">CHECKPOINT &#183; 2 分钟</span>
+  <h2>&#128161; 检验时间</h2>
+
+  <div class="checkpoint-box">
+    <h4>&#127919; 场景：设计一个"渠道续约决策"的 AI 辅助流程</h4>
+
+    <p>你正在设计一个渠道续约决策的 AI 辅助流程。以下四个方案，哪个最符合今天讲的六步流程设计原则？</p>
+
+    <div class="option"><span class="option-label">A.</span> 把渠道过去 12 个月的流水、返点、投诉记录打包发给 AI，问"这个渠道要不要续约"——AI 说续就续，AI 说不续就不续。</div>
+    <div class="option"><span class="option-label">B.</span> 给 AI 提供数据，但不交代背景（比如战略优先级、合同约束、渠道关系），让 AI 做纯数据分析，然后你凭经验做最终决策。</div>
+    <div class="option"><span class="option-label">C.</span> 设计完整的六步流程：识别类型（审批型，模式 B）→ 信息包（含背景、目标、约束、假设、输出格式）→ AI 做分析+风险假设+反向分析 → 人确认关键决策 → 设定监控（3 个月跟踪）→ 复盘日志。但流程过于复杂，执行一次要 2 小时，团队抱怨"还不如以前快"。</div>
+    <div class="option"><span class="option-label">D.</span> 先设计一个"最小可行流程"（MVP）：核心 3 步（信息包 → AI 分析 → 人确认），把执行时间控制在 15 分钟以内；同时记录简单的决策日志。运行 2 周后，根据实际痛点迭代增加监控和复盘环节。</div>
+
+    <p class="small dim" style="margin-top: 1rem;">&#x1F4AC; <strong>追问</strong>：选完之后，再想一个关键问题——<strong>"如果团队里有人说'用 AI 做决策太麻烦，还不如我直接拍板'，你怎么回应？"</strong>（提示：想想今天的核心洞察——流程不是限制，是解放。你可以反问对方一个问题。）</p>
+  </div>
+
+  <h3>&#128302; 明日悬念</h3>
+
+  <div class="callout callout-purple">
+    今天，我们把"人机决策框架"变成了"可落地的六步流程"——从"知道"到"做到"的关键一步。<br><br>
+    明天，我们将进入这个框架的最后一个维度：<strong>"个人 AI 决策能力"的成熟度模型</strong>——如何评估自己"用 AI 做决策"的水平？如何制定提升路径？<br><br>
+    Day 51：<strong>AI 驱动的决策框架（下）</strong><br>
+    ——"决策成熟度模型"：从"偶尔用 AI 问问题"到"建立个人 AI 决策系统"的四个阶段
+  </div>
+</div>
+
+<!-- ==================== 知识卡片 ==================== -->
+<div class="section">
+  <span class="section-label label-card">&#x1F4CC; KNOWLEDGE CARDS</span>
+
+  <div class="knowledge-card">
+    <h4>今日知识卡片</h4>
+    <ul>
+      <li><strong>六步决策流程</strong>：识别类型 → 设计信息包 → 配置模式 → 人机协作 → 监控预警 → 复盘迭代。准备时间（Step 1+2）应该不少于执行时间（Step 3+4）。</li>
+      <li><strong>决策信息包五要素</strong>：Context（背景）+ Goal（目标）+ Constraints（约束）+ Assumptions（假设）+ Output（输出格式）。缺少任何一项，AI 的输出质量都会大幅下降。</li>
+      <li><strong>反向分析技巧</strong>：不要只问"这个方案好不好"，要问"在什么条件下你的推荐会是错的？"——一个不敢告诉你"我可能错在哪"的 AI 建议，不值得信任。</li>
+      <li><strong>监控的核心是"假设管理"</strong>：不是监控结果，而是监控"AI 分析依赖的核心假设是否仍然成立"。假设失效比结果偏离更危险，因为前者意味着后者的原因。</li>
+      <li><strong>决策日志 = 经验资产</strong>：每次决策记录"背景→输入→输出→判断→结果→改进"，积累 10 次后就能发现自己的判断模式偏差。AI 可以帮你分析这些日志，发现"你经常忽略什么"。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== 前序连接 ==================== -->
+<div class="section">
+  <span class="section-label label-link">&#x1F517; CONNECTIONS</span>
+
+  <div class="link-section">
+    <h4>前序知识连接</h4>
+    <ul>
+      <li><strong>Day 49（决策框架上）</strong>→ 今天的六步流程是 Day 49"决策质量四维模型"和"人机协作四种模式"的<strong>落地操作手册</strong>。Day 49 告诉你"应该怎么做"，今天告诉你"具体怎么一步步做"。</li>
+      <li><strong>Day 48（渠道策略规划）</strong>→ 今天"预算分配决策模板"直接继承了 Day 48 的 What-if 模拟和边际 ROI 分析，但增加了"流程化"和"监控预警"环节。</li>
+      <li><strong>Day 46（异常诊断干预）</strong>→ 今天"渠道异常处理决策模板"是 Day 46 三级干预模型的<strong>流程化升级</strong>——从"知道有三级"到"每次触发按什么流程走"。</li>
+      <li><strong>Day 20（Verifiable Problem）</strong>→ 今天 Step 2"决策信息包"中的 Assumptions 和 Output 格式，直接应用了 Verifiable Problem 框架——要求 AI 明确假设、可验证输出。</li>
+      <li><strong>Day 16（CoT 思维链）</strong>→ 今天 Step 4"人机协作"要求 AI 展示推理链，但重点不是看逻辑，而是检验<strong>假设</strong>——这是 CoT 在决策场景中的高阶应用。</li>
+      <li><strong>Day 43（AI Native 工作方式）</strong>→ 今天"从 Level 1 到 Level 3"的决策能力跃迁，与 Day 43 的"AI Native 三层定义"一脉相承——从任务层到决策层到系统层。</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- container -->
+
+</body>
+</html>
