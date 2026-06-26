@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 12 · Day 5 · 摆渡人+连接者 · 《错误的行为》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 摆渡人专属：蓝调 */
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            /* 连接者专属：青调 */
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Body text */
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        /* Bridge section */
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Connector section */
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Section break */
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Final tension box */
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        /* Connector branch */
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        /* Bridge passage */
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        /* SVG map container */
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        /* Page nav */
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .page-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W12 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <!-- Header -->
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 12 · Day 5 · 2026-06-26</span>
+            </div>
+            <h1>住在助推里的摆渡人</h1>
+            <div class="subtitle">如果认知偏差可预测且权力无法被完全监督，我们追求的究竟是"更理性的选择"，还是"更透明的选择架构"？</div>
+        </div>
+
+        <!-- 摆渡人部分 -->
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了塞勒如何在1975年的罗切斯特大学课堂上问出那个"错误"的问题；应用者把助推工具丢进了英国税收催缴、中国数字平台默认选项和腾讯渠道KPI三个真实场景；挑战者从形式自由的幻觉、效果异质性、价值多元主义盲区和安全机制缺失四个维度解构了塞勒的自由家长主义。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"自由是修辞安慰剂"到"默认选项不可能不存在"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控：自由家长主义里的"自由"只是修辞安慰剂。当退出需要认知努力，而认知努力被设计为行为引导工具时，形式自由不等于实质自由。这个指控成立。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果助推不存在，那什么存在？</em></p>
+
+        <p>塞勒的一个核心洞见被低估了：他反复强调，<strong>选择架构不可能不存在</strong>。任何决策场景都有默认选项——不是这个默认，就是那个默认。401(k)计划不是"有默认选项"和"没有默认选项"的选择，而是"默认不参加"和"默认参加"的选择。菜单不是"有排序"和"没有排序"的选择，而是"按价格排序"还是"按人气排序"的选择。</p>
+
+        <div class="pull-quote">
+            <p>"助推无法被禁止，只能被选择。问题不是'要不要选择架构'，而是'谁来设计，谁受益，谁监督'。"</p>
+            <div class="attribution">—— 塞勒的潜台词，从未被充分展开</div>
+        </div>
+
+        <p>挑战者正确地指出了塞勒的框架缺陷，但摆渡人要指出挑战者的盲点：<em>完全放弃设计选择架构，不等于放弃了控制，而是把控制权交给了随机性和既有权力结构。</em>如果政府不设计退休储蓄的默认选项，那雇主会设计。如果雇主不设计，那金融机构会设计。如果没有任何人设计，那现状偏见本身会设计——人们只是不做任何选择，而这本身也是一种选择架构（"默认什么都不做"）。</p>
+
+        <p>所以摆渡人的第一个渡口是：塞勒的问题不是"他不应该设计选择架构"，而是<em>他设计的架构没有嵌入足够的透明度和问责机制</em>。真正的问题不是"要不要助推"，而是"什么样的助推值得信任"。</p>
+
+        <h2>第二段摆渡：塞勒遇见2026</h2>
+
+        <p>如果塞勒在2026年重写《助推》，他会看到什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">AI选择架构：从"设计默认选项"到"动态生成选项空间"</div>
+            <p>塞勒的助推理论假设了一个有限的、静态的选择空间——菜单上的选项是给定的，助推只是改变它们的呈现方式。但2026年的算法平台做的不止于此：它们动态生成选项空间本身。短视频推荐算法决定你"能看到什么"，电商个性化排序决定你"先看到什么"，社交媒体的注意力分配决定你"会关注什么"。</p>
+            <p>这不是助推的增强版，这是助推的范式超越。塞勒理论中的"选项仍然可以自由选择"在算法时代变成了"选项本身由算法决定"——<em>选择自由的前提（存在可选项）被 quietly 侵蚀了</em>。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">算法默认选项：从"一次性设计"到"持续性实时优化"</div>
+            <p>塞勒的助推是"设计一次，执行多次"——比如把401(k)默认设为"参加"，然后每年自动执行。但算法平台的助推是"每秒实时优化"——A/B测试、用户画像、行为预测模型，让选择架构本身变成了一个动态博弈过程。</p>
+            <p>更关键的是，算法平台的优化目标不是"帮助用户做出更好的选择"，而是"最大化用户停留时长/交易完成率/广告点击率"。当"更好"被定义为"对平台更好"时，塞勒的"善意家长"假设被系统性 violated。这不是塞勒的助推被滥用了——<em>这是塞勒的助推框架根本没有覆盖这个维度</em>。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">平台捕获机制：从"选择引导"到"行为锁定"</div>
+            <p>塞勒的助推理论有一个隐含前提：助推的效果是温和的、可逆的、一次性的。但平台经济的行为设计（behavioral design）追求的是<em>锁定</em>——不是引导一次选择，而是塑造一整套习惯、偏好和依赖。</p>
+            <p>无限滚动、自动播放、即时通知、社交验证——这些不是助推，这是<em>行为工程</em>（behavioral engineering）。塞勒警告过"黑暗助推"（Dark Nudges），但他想象的黑暗是"用助推做坏事"，而现实是"用超越助推的工具做结构性捕获"。</p>
+        </div>
+
+        <h2>第三段摆渡：住在助推里的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果塞勒是对的——认知偏差可预测、选择架构不可避免、设计者权力无法被完全消除——那么摆渡人作为"把思想带到当下"的角色，本身也是在一个选择架构中运作。这篇推送的标题选择、结构安排、问题排序，都在引导读者的注意力。摆渡人自己也在助推。</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在选择架构之外。</em>塞勒不能，挑战者不能，摆渡人也不能。问题不是"谁能设计无偏见的选择架构"——答案是没有人。问题是：<strong>我们是否愿意承认自己的选择架构也有偏见，并为此承担责任。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的透明度不是展示所有选项，而是承认'展示选项的方式本身是一种权力'，并让这个权力被审视、被问责、被挑战。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>塞勒在晚年（2018年后）开始批评科技平台的"黑暗助推"，但他给出的解决方案是"增加透明度标签"——这又回到了同一个递归问题：谁来确保透明度标签本身不是另一种选择架构？摆渡人认为，唯一的出路不是更好的助推，而是<em>助推的设计过程本身被民主化</em>——让被助推者参与设计，让选择架构的底层逻辑可审查，让"更好的选择"的定义权不被垄断。</p>
+
+        <p>但这又带来了一个更深的问题：如果大多数人都有认知偏差，让"有偏差的人"参与设计选择架构，会不会让结果更差？这是一个没有完美答案的悖论。摆渡人不会假装有答案。摆渡人只会说：<em>承认这个悖论的存在，本身就是进步。</em></p>
+
+        <!-- 张力问题最终形态 -->
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果人的非理性是可预测的，"利用"这些非理性来引导更好的选择——是解放还是另一种操纵？选择架构本身是否在悄悄改变人们的选择？谁来决定"更好的选择"是什么？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果认知偏差可预测且利用它的权力无法被完全监督，我们追求的究竟是"更理性的选择"还是"更透明的选择架构"？真正重要的不是选择本身，而是<em>选择背后的权力结构是否可被审视和问责</em>。塞勒发现了非理性的可预测性，但问题是：当可预测性遇上不对称权力，"帮助人们做出更好选择"的理想主义承诺，是否必然滑向"让权力更高效地运作"的实用主义现实？
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次做出"自由选择"时，那个选择的选项空间是谁设计的？</div>
+                <div class="ft-q-item">你所在的组织（公司/社区/平台）是否有一个机制，让被选择架构影响的人能够审查和挑战这个架构？</div>
+                <div class="ft-q-item">如果"更好的选择"无法被客观定义，你愿意接受一种"有争议的选择架构"——即公开承认设计者的价值观，而不是假装价值中立吗？</div>
+            </div>
+        </div>
+
+        <!-- 分隔线 -->
+        <div class="section-break"></div>
+
+        <!-- 连接者部分 -->
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第12周《错误的行为》的位置是什么？塞勒的行为经济学如何与前面的11本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第12节点</h2>
+
+        <p>连接者今天的工作不是"塞勒说了什么"，而是"塞勒站在哪里"。四条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">国富论</span>
+                <span class="branch-week">W1</span>
+            </div>
+            <div class="branch-desc">
+                斯密在《国富论》中假设了<em>理性经济人</em>——个体追求自利，市场通过"看不见的手"实现社会最优。塞勒用了四十年证明这个假设在描述层面基本错误。但张力不在于"谁对谁错"，而在于：斯密把理性和直觉分成了两本书（《国富论》vs《道德情操论》），而塞勒试图把两者统一进经济学模型。问题是——斯密的分裂是故意的还是无意识的？他是否比塞勒更早知道"人不是理性的"，只是选择在一个地方讲理性、在另一个地方讲同情？
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">资本论</span>
+                <span class="branch-week">W2</span>
+            </div>
+            <div class="branch-desc">
+                马克思讲<em>意识形态</em>——统治阶级的思想在每一个时代都是占统治地位的思想。塞勒讲<em>认知偏差</em>——系统性的非理性判断影响个体决策。一个讲宏观结构，一个讲微观机制。但两者的深层对话是：阶级意识和认知偏差，哪个更"真实"？如果工人做出不利于自己的经济选择是因为认知偏差，那还是不是因为"虚假意识"？塞勒的框架让马克思主义者困惑：如果偏差是普遍的人类特征，不是阶级特有的，那阶级分析还有必要吗？
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">思考，快与慢</span>
+                <span class="branch-week">W11</span>
+            </div>
+            <div class="branch-desc">
+                从卡尼曼到塞勒的传承是直接的：卡尼曼打开认知偏差实验室的门，塞勒把偏差发现转化为经济学语言和政策工具。但传承中有漂移：卡尼曼的核心洞见是"系统1不可靠，系统2不可靠，知道偏差不等于免疫偏差"；塞勒的框架则隐含了一个更乐观的假设——<em>如果偏差可预测，就可以被利用来做好事</em>。这个漂移从"理解心智"滑向了"设计心智"，从诊断滑向了处方。挑战者指出这个漂移有风险。传承中隐藏着继承者的野心。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">乌合之众</span>
+                <span class="branch-week">W7</span>
+            </div>
+            <div class="branch-desc">
+                勒庞解释群体如何变蠢，塞勒解释个体如何变蠢。两个理论互补但不兼容：如果个体本来就有很多认知偏差，那群体退化是"个体偏差的加总"还是"群体 emergent 的新属性"？如果助推可以纠正个体偏差，那它能否纠正群体退化？还是说，助推在个体层面有效，在群体层面可能反而加剧极化（因为算法助推会让相似的个体更相似，压缩多样性）？塞勒没有回答这个问题，因为助推理论设计于个体选择场景，对群体动力学基本沉默。
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">美丽新世界</span>
+                <span class="branch-week">文学感知</span>
+            </div>
+            <div class="branch-desc">
+                赫胥黎在《美丽新世界》中描绘了一个比《1984》更可怕的 dystopia：人们不是被强迫服从，而是被<em>设计得愿意服从</em>——通过基因工程、条件反射、娱乐麻醉和药物（"索麻"），让每个人都"快乐"地生活在自己的阶级位置上。没有暴力，没有压迫，甚至没有不满。这是助推的终极噩梦：不是"引导更好的选择"，而是"让选择本身消失"。塞勒警告过"黑暗助推"，但赫胥黎让我们看到：<em>当选择架构设计者拥有生物学和心理学双重工具时，"自由"可能只是一个历史遗迹。</em>
+            </div>
+        </div>
+
+        <!-- 知识地图 SVG -->
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第12节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <!-- 背景 -->
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W12</text>
+
+                <!-- 连接线 -->
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <!-- W1 -->
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+                <text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+
+                <!-- W2 -->
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text>
+                <text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+
+                <!-- W3 -->
+                <circle cx="140" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="140" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W3</text>
+                <text x="140" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">新教伦理</text>
+
+                <!-- W4 -->
+                <circle cx="180" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="180" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W4</text>
+                <text x="180" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">通论</text>
+
+                <!-- W5 -->
+                <circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W5</text>
+                <text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">奴役之路</text>
+
+                <!-- W6 -->
+                <circle cx="260" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="260" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W6</text>
+                <text x="260" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本主义</text>
+
+                <!-- W7 -->
+                <circle cx="300" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="300" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W7</text>
+                <text x="300" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">乌合之众</text>
+
+                <!-- W8 -->
+                <circle cx="340" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="340" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W8</text>
+                <text x="340" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">影响力</text>
+
+                <!-- W9 -->
+                <circle cx="380" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="380" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W9</text>
+                <text x="380" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">竞争战略</text>
+
+                <!-- W10 -->
+                <circle cx="420" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="420" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W10</text>
+                <text x="420" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">21世纪资本</text>
+
+                <!-- W11 -->
+                <circle cx="460" cy="100" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="460" y="104" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W11</text>
+                <text x="460" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">快与慢</text>
+
+                <!-- W12 当前节点 -->
+                <circle cx="500" cy="100" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="500" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W12</text>
+                <text x="500" y="130" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">错误的行为</text>
+
+                <!-- W13 待读 -->
+                <circle cx="540" cy="100" r="14" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="540" y="104" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="9" font-weight="600">W13</text>
+                <text x="540" y="130" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="8">娱乐至死</text>
+
+                <!-- 跨频道C -->
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+                <text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+                <text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+
+                <!-- 连接弧线 -->
+                <path d="M 500 118 Q 500 200 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 500 118 Q 400 180 300 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 500 118 Q 450 180 460 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 300 118 Q 400 180 500 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <!-- 图例 -->
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <!-- 下周预告 -->
+        <h2>下周预告</h2>
+        <p>第13周，我们将翻开尼尔·波兹曼的《<em>娱乐至死</em>》（<em>Amusing Ourselves to Death</em>）。</p>
+        <p>从塞勒的"选择架构"到波兹曼的"媒介即隐喻"——如果塞勒关心的是"选项如何被呈现"，波兹曼关心的是"当所有信息都被包装成娱乐时，严肃思考是否还有生存空间"。这是从认知偏差到媒介环境的自然过渡：我们不仅被选择架构引导，还被<em>信息环境的整体结构</em>塑造。</p>
+        <p>波兹曼1985年的警告在2026年听起来像预言：电视杀死了印刷文化，而社交媒体正在杀死电视文化。但"杀死"的不是媒介本身，而是<em>媒介所承载的思维模式</em>。</p>
+
+        <div class="pull-quote">
+            <p>"我们将毁于我们所热爱的东西。"</p>
+            <div class="attribution">—— 尼尔·波兹曼，《娱乐至死》</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="page-nav">
+            <a href="./w12-d04.html">← D04 · 挑战者</a>
+            <a href="./w13-d01.html">D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
