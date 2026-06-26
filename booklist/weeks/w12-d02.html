@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 12 · Day 2 · 提炼者 · 《错误的行为》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Framework card */
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        /* SVG info container */
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Contrast box */
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        /* Pullquote */
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        /* Misread block */
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        /* Bias note */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Footer nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第12周 · 第2天</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W12-D02</div>
+        <div class="meta">
+            <span>📅 2026-06-23</span>
+            <span>📖 第 12 周 · Day 2 / 5</span>
+            <span>🔢 《错误的行为》</span>
+        </div>
+        <h1>从"人错了"到"模型错了"：行为经济学的五把框架刀</h1>
+        <div class="subtitle">塞勒用四十年时间，把心理学实验室里的"认知偏差"翻译成了一把把能切开市场、政策和制度的经济学手术刀</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把塞勒散落在回忆录和论文里的行为经济学逻辑，拼成一张可理解的地图。塞勒的方法论非常明确：<strong>从真实的人类行为出发，修正经济学的模型假设</strong>。但他不是简单地说"人不理性"——他证明的是，<em>人的非理性是可预测的、系统性的、且可以被制度设计的</em>。今天这五把框架刀，每一把都从一个具体的心理现象出发，指向一个让传统经济学不安的结论。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <!-- Knife 1: Mental Accounting -->
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title">心理账户 <em>Mental Accounting</em> · 金钱不是 fungible 的</div>
+            <div class="card-body">
+                传统经济学假设金钱是<em>可替代的</em>（fungible）——一元钱就是一元钱，不管它来自哪里、花在哪里。但塞勒证明，人们在头脑中把金钱划分到不同的"心理盒子"里：工资盒、奖金盒、储蓄盒、娱乐盒、投资盒。<br><br>
+                这些盒子之间不可通融。一个经典实验：拿到年终奖金的人，花掉它的速度比拿到同等数额工资的人快三倍。同样的100元，贴上"奖金"标签就被归入了"意外之财"账户，花起来没有心理负担。而如果贴上"工资"标签，它会被小心翼翼地归入"生活必需"账户。<br><br>
+                更深层的是，人们还会为同一笔钱设立"心理预算"——"这个月吃饭只能花2000元"，即使银行账户里有足够的存款。这种预算规则在理性上毫无意义，但在行为上是真实的。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>金钱的"标签"决定了它的命运。当政府把税收返还称为"<em>奖金</em>"而非"<em>税收减免</em>"时，人们的消费行为会发生系统性变化——这不是修辞，是选择架构。
+            </div>
+        </div>
+
+        <!-- Knife 2: Endowment Effect -->
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">禀赋效应 <em>Endowment Effect</em> · 拥有改变价值</div>
+            <div class="card-body">
+                这是塞勒最著名的实验发现之一。康奈尔大学的马克杯实验：随机把一群学生分成"拥有者"和"非拥有者"，然后询问他们愿意以什么价格交易。<br><br>
+                结果：<em>拥有者</em>对杯子的平均估价（愿意卖出的价格）是<em>非拥有者</em>平均估价（愿意购买的价格）的两倍左右。杯子是完全相同的，唯一的区别是"拥有"这个状态。<br><br>
+                这直接推翻了传统经济学的一个核心假设：支付意愿（WTP, Willingness to Pay）应该等于接受意愿（WTA, Willingness to Accept）。在标准模型里，这两个值是同一个效用函数的镜像。但实验数据反复证明：<strong>WTP < WTA</strong>，而且差距巨大。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>"拥有"本身创造了价值。这意味着市场交易不是中性的——<em>初始产权分配会影响最终资源配置</em>。科斯定理"产权分配不影响效率"的结论，在禀赋效应面前需要被重新审视。
+            </div>
+        </div>
+
+        <!-- Knife 3: Status Quo Bias -->
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">现状偏见 <em>Status Quo Bias</em> · 默认选项的力量</div>
+            <div class="card-body">
+                人们倾向于维持当前状态，即使改变带来的收益大于成本。这种偏见的驱动力不是"喜欢现状"，而是<em>改变的认知成本</em>——做出选择需要精力、时间和心理努力，而维持现状不需要。<br><br>
+                塞勒的导师、诺奖得主丹尼尔·卡尼曼把这解释为损失厌恶的一种表现：改变现状意味着可能失去已有的东西，而人类对损失的痛苦感受约是同等收益带来快乐的<strong>2.5倍</strong>。所以"什么都不做"天然比"做点什么"更安全。<br><br>
+                但现状偏见最惊人的地方在于它的规模效应。在器官捐献的默认选项实验中，把默认从"不参加"（opt-in）改为"参加"（opt-out），捐献率从<strong>12%</strong>跃升到<strong>80%</strong>以上。人们没有变得更关心器官捐献——他们甚至不需要"做出选择"。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>默认选项不是"中性的"，它是选择架构中最强大的杠杆。当政策制定者把退休金默认设为"不参加"时，他们实际上是在选择让大多数人不储蓄——<em>默认即政策</em>。
+            </div>
+        </div>
+
+        <!-- Knife 4: Nudge -->
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">助推 <em>Nudge</em> · 不改变激励，只改变架构</div>
+            <div class="card-body">
+                塞勒和桑斯坦在2008年《助推》中给出的定义是：<strong>不禁止任何选项，不改变任何经济激励，只通过改变选择的呈现方式（选择架构），来引导人们做出对自己更好的决策。</strong><br><br>
+                选择架构包含多个维度：默认选项的设置（opt-in vs opt-out）、信息的呈现顺序（先显示健康食品还是垃圾食品）、选项的数量（"选择过多"会导致决策瘫痪）、反馈机制（实时能耗显示是否会让人们更节能）、以及"助推"的物理位置（把水果放在视线水平，把糖果放在不显眼的位置）。<br><br>
+                但助推不是万能药。它只在人们的偏差<em>可预测</em>且<em>单一方向</em>时有效。如果不同人群的偏差方向相反，统一的助推可能伤害一部分人。而且助推的效果会随时间衰减——人们可能学会"对抗"助推，或者助推的设计者可能失去更新动力。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>助推的有效性取决于一个隐藏前提：<em>设计者知道"什么是对人们更好的选择"</em>。当这个前提被质疑时，整个助推理论的地基开始摇晃。谁来定义"更好"？
+            </div>
+        </div>
+
+        <!-- Knife 5: Libertarian Paternalism -->
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">自由家长主义 <em>Libertarian Paternalism</em> · 不矛盾的政治哲学</div>
+            <div class="card-body">
+                这是塞勒和桑斯坦理论中最具争议的板块。两个词看似矛盾：<em>自由主义</em>（不剥夺任何人的选择自由）+ <em>家长主义</em>（承认人可能做出非理性选择，需要被引导）。<br><br>
+                他们的核心论点：选择架构<em>不可避免</em>。任何制度——从菜单的排版到退休计划的默认选项——都在呈现选择。"不设计"本身就是一种设计。既然如此，我们至少应该让选择架构<em>对人们有利</em>。<br><br>
+                但批评者指出："对人们有利"的定义权在谁手里？当政府定义"多储蓄"是更好的选择，它是在假设人们现在的储蓄率"错误"。当平台定义"多消费"是更好的选择，它是在假设人们现在的消费欲望"不足"。<strong>自由家长主义的善意，取决于"家长"的动机和"善意"的标准。</strong>
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>自由家长主义不是中性的技术工具，它是一套隐含价值观的政治哲学。<em>不禁止任何选项</em>不等于<em>不塑造任何选择</em>——当默认选项能让80%的人跟随它，"自由选择"在很大程度上变成了修辞安慰剂。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 从"非理性"到"选择架构"的逻辑链</div>
+
+        <!-- SVG Infographic -->
+        <div class="svg-container">
+            <div class="svg-label">塞勒框架逻辑链 · 从心理学发现到政策工具</div>
+            <svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                </defs>
+
+                <!-- Background -->
+                <rect width="720" height="520" fill="#111" rx="8"/>
+
+                <!-- Title -->
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">塞勒框架逻辑链 · 从"人错了"到"模型错了"</text>
+
+                <!-- ── Left: Discovery chain ── -->
+                <rect x="16" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">心理学发现 · 认知偏差</text>
+
+                <!-- Box 1: Mental Accounting -->
+                <rect x="32" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #1 · 心理账户</text>
+                <text x="184" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">金钱被分类到不同心理"盒子"，标签决定命运</text>
+
+                <line x1="184" y1="116" x2="184" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 2: Endowment Effect -->
+                <rect x="32" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #2 · 禀赋效应</text>
+                <text x="184" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">拥有改变价值，WTP ≠ WTA</text>
+
+                <line x1="184" y1="172" x2="184" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 3: Status Quo Bias -->
+                <rect x="32" y="188" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #3 · 现状偏见</text>
+                <text x="184" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">维持现状比改变更安全，默认选项即政策</text>
+
+                <line x1="184" y1="228" x2="184" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 4: Convergence -->
+                <rect x="32" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="184" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">核心结论</text>
+                <text x="184" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">人的非理性是系统性的、可预测的</text>
+
+                <!-- ── Right: Application chain ── -->
+                <rect x="368" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">经济学应用 · 选择架构</text>
+
+                <!-- Box 5: Nudge -->
+                <rect x="384" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #4 · 助推</text>
+                <text x="536" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">不改变激励，只改变选择的呈现方式</text>
+
+                <line x1="536" y1="116" x2="536" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 6: Libertarian Paternalism -->
+                <rect x="384" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #5 · 自由家长主义</text>
+                <text x="536" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">不禁止选项，只引导选择——但"善意"由谁定义？</text>
+
+                <line x1="536" y1="172" x2="536" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 7: Policy output -->
+                <rect x="384" y="188" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">政策输出</text>
+                <text x="536" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">英国"助推小组"·退休储蓄默认·器官捐献opt-out</text>
+
+                <line x1="536" y1="228" x2="536" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 8: Ethical tension -->
+                <rect x="384" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="536" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">伦理张力</text>
+                <text x="536" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">利用非理性是解放还是操纵？</text>
+
+                <!-- Bridge arrow between left and right -->
+                <line x1="340" y1="264" x2="380" y2="264" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+                <text x="360" y="256" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="8">可预测</text>
+
+                <!-- ── Bottom: Comparison ── -->
+                <rect x="16" y="316" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="336" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两种经济学范式 · 对人类行为的根本假设</text>
+
+                <!-- Traditional Economics -->
+                <rect x="28" y="348" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="368" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">传统经济学</text>
+                <text x="188" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">人是理性计算者 · 效用最大化</text>
+                <text x="188" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">WTP = WTA · 金钱可替代</text>
+                <text x="188" y="416" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">偏差是噪音，不是信号</text>
+
+                <!-- Behavioral Economics -->
+                <rect x="372" y="348" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="368" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">行为经济学</text>
+                <text x="532" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">人是可预测的非理性者 · 有限理性</text>
+                <text x="532" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">WTP < WTA · 心理账户分隔</text>
+                <text x="532" y="416" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">偏差是信号，可被制度利用</text>
+
+                <!-- ── Red dashed boxes: Preconditions ── -->
+                <rect x="16" y="448" width="688" height="56" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="468" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 前提条件</text>
+                <text x="360" y="490" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 A：偏差方向在所有人群中一致（否则统一助推会伤害一部分人）</text>
+                <text x="360" y="504" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 B：设计者知道"更好的选择"是什么（谁来定义"更好"？）</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图底部的两个红色虚线框是提炼者要特别强调的。左边的前提A问的是：如果不同人群对同一助推的反应不同——比如年轻人欢迎默认储蓄，而老年人需要现金流——统一的助推会伤害谁？右边的前提B问的是更深层的：<em>如果"更好的选择"本身由设计者定义，那么选择架构是否在预设某种"正确"的人类行为模型？</em>明天应用者会把这个框架带进三个真实场景，看看这两个前提在哪里成立、在哪里被挑战。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条范式对比</div>
+
+        <h2>传统经济学 vs 行为经济学：从模型到人的范式转移</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">传统经济学</div>
+                <div class="col-name" style="color:#6fb5e0;">理性人模型</div>
+                <div class="col-text">
+                    人是效用最大化的计算者<br><br>
+                    偏好稳定、一致、可传递<br><br>
+                    金钱可替代（fungible）<br><br>
+                    WTP = WTA（支付=接受）<br><br>
+                    市场会纠正个体偏差<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：个体非理性会被市场汇总抹平。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">行为经济学</div>
+                <div class="col-name" style="color:#E94560;">可预测的非理性</div>
+                <div class="col-text">
+                    人是有限理性的启发式使用者<br><br>
+                    偏好受情境、框架、默认选项影响<br><br>
+                    心理账户分隔金钱<br><br>
+                    WTP < WTA（禀赋效应）<br><br>
+                    个体偏差可预测，可被制度放大或修正<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：偏差不是噪音，是可利用的信号。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种范式的分歧，不只是方法论的差异，更是关于<strong>"经济学应该研究什么"</strong>的根本分歧。传统经济学问："如果人是理性的，市场会怎样运行？"行为经济学问："如果人是真实的，政策应该怎样设计？"<br><br>
+            塞勒的立场不是全盘否定传统经济学——他多次承认标准模型在解释大规模市场行为时仍然有力量。他的问题是：当模型在预测个体行为时系统性失败，而且失败模式是可预测的，经济学是否应该把"预测失败"本身纳入理论框架？
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：传统经济学模型在预测<strong>聚合市场行为</strong>时往往出人意料地准确（"好像"每个人都是理性的）。塞勒的解释是：当个体偏差方向随机时，它们确实会在聚合中抵消；但当偏差方向一致（如泡沫时期的追涨行为），聚合结果也会系统性偏离。行为经济学的真正贡献不是"否定模型"，而是"定义模型的边界"。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：助推 = 改变默认选项，是一个简单的技巧</strong>
+                    <span>媒体和政策界把助推简化成了"默认选项魔术"，但塞勒的理论远比这复杂。选择架构涉及信息呈现、选项排序、反馈机制、物理环境、社会规范等多个维度。而且助推效果在不同文化、人群、情境下差异极大。把助推等同于"默认选项技巧"，是对理论深度的严重压缩。</span>
+                    <div class="misread-correction">✓ 准确理解：助推是一套选择架构设计的理论框架，默认选项只是其中一个杠杆。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：自由家长主义 = 政府操控的遮羞布</strong>
+                    <span>批评者认为"自由家长主义"是自相矛盾的——如果80%的人跟随默认选项，"自由选择"就是空话。但这个批评过度简化了。塞勒确实承认这个问题，并在后期著作中提出需要"透明助推"（disclosure）和"审计选择架构"的机制。他的回应不是否认问题，而是提出制度化的监督方案。</span>
+                    <div class="misread-correction">✓ 准确理解：自由家长主义不是完美方案，而是一套需要持续伦理审计和民主监督的实用框架。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：行为经济学 = 证明人愚蠢</strong>
+                    <span>很多人把行为经济学理解为"人是不理性的，所以需要被专家引导"。但塞勒的原始意图恰恰相反：人的偏差不是"愚蠢"，而是进化适应的副产品。损失厌恶在原始社会是生存优势，心理账户帮助人们在信息不足时简化决策。偏差不是缺陷，是<em>在特定情境下的合理启发式</em>。</span>
+                    <div class="misread-correction">✓ 准确理解：行为经济学不是"人有多蠢"，而是"人在什么条件下表现出什么样的系统性偏差，以及如何利用这些知识改善制度"。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <!-- Tension echo -->
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                如果人的非理性是可预测的，"利用"这些非理性来引导更好的选择——是解放，还是另一种操纵？选择架构本身是否在悄悄改变人们的选择？谁来决定"更好的选择"是什么？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，塞勒的逻辑链在描述层面是闭合的：心理账户 → 禀赋效应 → 现状偏见 → 助推 → 自由家长主义。但<strong>除了那两个红色虚线框</strong>，还有一个更深层的问题：<em>选择架构的设计者本身也是人</em>，也有认知偏差，也有利益立场。<br><br>
+                英国"助推小组"（Nudge Unit）的设计者不是中立的科学家——他们是公务员，有绩效目标，有政治上级。当他们的目标（提高税收遵从率）和公民的目标（减少税收负担）不一致时，"助推"就变成了谁的选择？<br><br>
+                更精确的问题变成：<strong>选择架构的设计权力和定义"更好选择"的权力，是同一个权力还是两个权力？</strong>如果是同一个，那么我们面对的不是"自由家长主义"，而是"精致的家长主义"——自由只是修辞。如果是两个，谁来监督设计者？谁来确保"助推"不是为了设计者的利益，而是为了被助推者的利益？<br><br>
+                数据和心理实验证明偏差存在，但"存在"不等于"应该被利用"。<em>从"是"到"应该"之间，有一道价值观的鸿沟。</em>这道鸿沟，行为经济学的框架刀无法切开。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "助推不会取代法律、规章或经济激励。它只是补充这些工具。但正因为它是'补充'，它常常被忽视——而忽视本身就是一种权力。"
+            <br>— 塞勒，《助推》后记
+        </div>
+
+        <p>
+            这句话是塞勒给自己的框架设下的边界。他清楚选择架构的锋利，也清楚它的局限。明天，应用者会把这五把框架刀放进三个真实场景——历史的、中国的、和Ethan每天面对的商业世界——看看心理账户、禀赋效应和助推的力学在什么样的土壤里生效，在什么样的容器里可以被改变。
+        </p>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w12-d01.html">← 叙事者 · 那个在课堂上问"错误"问题的人</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w12-d03.html">应用者 · 三场景拆解 →</a>
+        </div>
+    </nav>
+
+    <!-- Page Nav (required) -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w12-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w12-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>
