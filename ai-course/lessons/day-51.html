@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 51 · AI驱动的决策框架（下） — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0a05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--yellow), var(--red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .section { margin-bottom: 2.5rem; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .label-fire { background: var(--red-dim); color: var(--red); }
+  .label-why { background: var(--blue-dim); color: var(--blue); }
+  .label-what { background: var(--purple-dim); color: var(--purple); }
+  .label-sowhat { background: var(--green-dim); color: var(--green); }
+  .label-check { background: var(--gold-dim); color: var(--gold); }
+  .label-card { background: var(--cyan-dim); color: var(--cyan); }
+  .label-link { background: var(--teal-dim); color: var(--teal); }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--text);
+  }
+
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+    color: var(--accent);
+  }
+
+  p { margin-bottom: 1rem; color: var(--text); }
+
+  strong { color: var(--accent); font-weight: 600; }
+
+  .callout {
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout-blue { border-left-color: var(--blue); }
+  .callout-green { border-left-color: var(--green); }
+  .callout-purple { border-left-color: var(--purple); }
+  .callout-gold { border-left-color: var(--gold); }
+  .callout-red { border-left-color: var(--red); }
+  .callout-cyan { border-left-color: var(--cyan); }
+  .callout-teal { border-left-color: var(--teal); }
+  .callout-yellow { border-left-color: var(--yellow); }
+  .callout-pink { border-left-color: var(--pink); }
+
+  .insight-box {
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .insight-box h4 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background: var(--surface-2);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td { color: var(--text); }
+  tr:nth-child(even) td { background: var(--surface); }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.5rem;
+    color: var(--text);
+  }
+
+  li { margin-bottom: 0.4rem; }
+
+  .checkpoint-box {
+    background: var(--surface-2);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .checkpoint-box h4 {
+    color: var(--gold);
+    margin-top: 0;
+  }
+
+  .option {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.88rem;
+  }
+
+  .option-label {
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+
+  .knowledge-card {
+    background: var(--surface-2);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .knowledge-card ul { margin-left: 1.25rem; }
+
+  .link-section {
+    background: var(--surface);
+    border: 1px solid var(--teal);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .small { font-size: 0.85rem; }
+
+  .stage-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .stage-card h4 {
+    margin-top: 0;
+    color: var(--yellow);
+  }
+
+  .before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .before-after > div {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.88rem;
+  }
+
+  .before-after .label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .before-after .label-before { color: var(--red); }
+  .before-after .label-after { color: var(--green); }
+
+  .level-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+
+  .level-card .level-num {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .level-card h4 {
+    display: inline;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .level-card .level-tag {
+    float: right;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .level-card .level-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0.75rem 0;
+  }
+  .level-card .level-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 1rem 0;
+  }
+
+  .prompt-box .prompt-tag {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .prompt-box .prompt-comment {
+    color: #666;
+    font-style: italic;
+  }
+
+  .score-example {
+    background: var(--surface-2);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .score-example .score-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .score-example p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+
+  .highlight-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .before-after { grid-template-columns: 1fr; }
+    .level-card .level-tag { float: none; display: block; margin-top: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">&larr; Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 51
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🟡 第五-六模块 · 整合篇</div>
+  <h1>AI 驱动的决策框架（下）</h1>
+  <p class="subtitle">"个人 AI 决策成熟度模型"：从"偶尔用 AI 问问题"到"建立个人 AI 决策系统"</p>
+  <div class="meta">
+    <span>📅 2026-06-26 · Day 51</span>
+    <span>⏱ 预计 40 分钟</span>
+    <span>📍 第五-六模块 · 整合篇 · 第 9 课</span>
+    <span>🏷 通用方法论 · 能力评估</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 开场 ==================== -->
+<div class="section">
+  <span class="section-label label-fire">🔥 OPENING</span>
+  <h2>为什么有人用了 3 年 AI 还在"新手村"，有人 1 年就建立了系统？</h2>
+
+  <p>两个真实场景：</p>
+
+  <div class="before-after">
+    <div>
+      <div class="label label-before">老张：用了 3 年 ChatGPT</div>
+      <p>老张从 2023 年就开始用 ChatGPT，算是"老用户"。</p>
+      <p>但他每次用 AI 都是<strong>"想起来才问，每次从零开始"</strong>——今天问"怎么写周报"，明天问"这个渠道数据怎么看"，后天问"帮我润色这封邮件"。</p>
+      <p>3 年过去了，他的工作方式几乎没有变化。AI 对他而言，是一个"更聪明的搜索引擎"。</p>
+    </div>
+    <div>
+      <div class="label label-after">小李：用了 1 年 AI</div>
+      <p>小李 2024 年底才开始认真用 AI。</p>
+      <p>但他做了三件事：①给每周重复决策建立了标准模板；②每次决策后写 100 字日志；③每月让 AI 分析一次自己的决策日志。</p>
+      <p>1 年后，小李的续约决策准确率提升了 25%——<strong>不是因为他用的 AI 更高级，而是因为他把自己变成了"更好的决策者"</strong>。</p>
+    </div>
+  </div>
+
+  <p>关键区别：<strong>"使用 AI 工具"和"用 AI 升级自己的决策能力"是两回事</strong>。</p>
+
+  <p>Day 49 我们建立了"人机决策框架"——知道 AI 该做什么、人该做什么。Day 50 我们把它变成了"六步流程"——知道怎么一步步落地。但今天的课要回答一个更深层的问题：</p>
+
+  <div class="callout callout-gold">
+    <strong>你个人"用 AI 做决策"的能力，目前处于什么水平？</strong><br><br>
+    从"知道框架"到"真正改变习惯"，中间还有多远？怎么缩短这段距离？
+  </div>
+</div>
+
+<!-- ==================== WHY ==================== -->
+<div class="section">
+  <span class="section-label label-why">第一段 · 10 分钟 · WHY</span>
+  <h2>为什么"框架"和"流程"还不够？</h2>
+
+  <h3>类比：为什么健身计划不等于好身材</h3>
+
+  <p>这是 Coach M 的老本行，我们用最熟悉的类比：</p>
+
+  <div class="callout callout-blue">
+    <strong>有健身计划</strong>（= Day 49 框架）：知道分化训练、渐进超负荷、蛋白质摄入量。<br><br>
+    <strong>有训练流程</strong>（= Day 50 流程）：每次到健身房按清单执行——热身→主项→辅项→拉伸→记录。<br><br>
+    <strong>但为什么有人执行了一年，身材变化不明显？</strong><br><br>
+    因为缺少第三层——<strong>对自己的训练状态有觉察，能根据反馈调整</strong>。记录了数据但不分析、按计划执行但不评估效果、练了但不思考"为什么最近平台期"——<strong>计划是死的，人是活的</strong>。
+  </div>
+
+  <p>AI 决策能力也一样。Day 49-50 给了你"计划"和"流程"，但如果你：</p>
+  <ul>
+    <li>用了模板但从不评估"这个模板是否适合我"</li>
+    <li>记录了决策日志但从不回看</li>
+    <li>每次都按流程执行但从不思考"哪些步骤可以优化"</li>
+  </ul>
+
+  <p>那么你只是在<strong>"机械执行"</strong>，而不是<strong>"持续进化"</strong>。</p>
+
+  <h3>"成熟度模型"解决什么问题？</h3>
+
+  <p>三个核心问题：</p>
+
+  <div class="stage-card">
+    <h4>问题 1：知道自己现在在哪</h4>
+    <p>很多人高估了自己的 AI 决策能力。"我用 ChatGPT 两年了"不等于"我会用 AI 辅助决策"。</p>
+    <p style="margin-bottom:0">成熟度模型给你一个<strong>客观的锚点</strong>——不是"你用多久了"，而是"你的决策能力到了哪个阶段"。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>问题 2：知道下一步该做什么</h4>
+    <p>L1 的人学 L4 的招式是浪费——他连"有规律地用"都还没做到，就想让 AI 分析自己的决策模式。</p>
+    <p style="margin-bottom:0">每个阶段都有明确的<strong>跃迁路径</strong>，告诉你"现在最重要的是练什么"。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>问题 3：知道怎么验证进步</h4>
+    <p>"我感觉我 AI 用得更好了"不是证据。成熟度模型给出可验证的指标——你的决策日志质量、复盘频率、AI 建议采纳率的变化。</p>
+    <p style="margin-bottom:0"><strong>可测量 = 可改进</strong>。</p>
+  </div>
+
+  <div class="insight-box">
+    <h4>🎯 核心洞察</h4>
+    <p>Day 49 解决"<strong>什么是对的</strong>"，Day 50 解决"<strong>怎么做是对的</strong>"，今天解决"<strong>你怎么知道自己正在变对</strong>"。</p>
+    <p style="margin-bottom:0">框架让你知道方向，流程让你稳定执行，<strong>成熟度模型让你持续进化</strong>。</p>
+  </div>
+</div>
+
+<!-- ==================== WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-what">第二段 · 20 分钟 · WHAT</span>
+  <h2>个人 AI 决策成熟度：四个阶段</h2>
+
+  <p>以下四个阶段，从"工具使用者"到"系统构建者"。<strong>诚实评估自己目前在哪——大多数人高估了自己</strong>。</p>
+
+  <!-- Level 1 -->
+  <div class="level-card">
+    <span class="level-num">1</span>
+    <h4>工具使用者</h4>
+    <span class="level-tag">特征：偶尔用 · 无积累</span>
+    <div class="level-bar"><div class="level-bar-fill" style="width:25%"></div></div>
+
+    <p><strong>典型表现</strong>：</p>
+    <ul>
+      <li>想起来才用 AI，想不起来就不用</li>
+      <li>每次提问都从零开始，没有固定模板</li>
+      <li>对 AI 输出"选择性采纳"——好就听，不好就忽略</li>
+      <li>没有记录，无法追溯"上次 AI 说了什么"</li>
+      <li>决策质量波动大——取决于当天提问的运气</li>
+    </ul>
+
+    <p><strong>类比</strong>：偶尔去健身房，每次问"今天练什么？"练完不记录，下次来再问一遍。3 年后，和 3 个月前没区别。</p>
+
+    <p><strong>瓶颈</strong>：<span class="dim">没有建立"用 AI 做决策"的习惯，AI 只是偶尔的外挂。每次决策的 cognitive load 都在"重新发明轮子"。</span></p>
+
+    <p><strong>跃迁到 L2 的关键动作</strong>：选一个每周重复 2 次以上的决策场景，建立一个<strong>最小可行模板</strong>（MVP 流程）。不要求完美，只要求"每次都用这个模板"。</p>
+  </div>
+
+  <!-- Level 2 -->
+  <div class="level-card">
+    <span class="level-num">2</span>
+    <h4>流程遵循者</h4>
+    <span class="level-tag">特征：有规律 · 标准化</span>
+    <div class="level-bar"><div class="level-bar-fill" style="width:50%"></div></div>
+
+    <p><strong>典型表现</strong>：</p>
+    <ul>
+      <li>对高频决策有固定模板（如 Day 50 的"决策信息包"）</li>
+      <li>每次按流程执行，输入质量稳定</li>
+      <li>AI 输出质量因此也稳定——好的输入 = 好的输出</li>
+      <li>但每个决策仍是独立的，不积累历史</li>
+      <li>能回答"这次决策怎么做的"，但回答不了"我做这类决策有什么规律"</li>
+    </ul>
+
+    <p><strong>类比</strong>：有固定训练计划了，按计划执行。力量在涨，但不知道"为什么这周进步快、上周慢"——没有数据驱动的洞察。</p>
+
+    <p><strong>瓶颈</strong>：<span class="dim">稳定但不进化。流程是"死的"——不会根据你的反馈自动优化。你可能执行了 100 次同样的流程，但第 100 次和第 1 次一样。</span></p>
+
+    <p><strong>跃迁到 L3 的关键动作</strong>：开始写<strong>决策日志</strong>——每次决策后花 2 分钟记录"背景→输入→输出→我的判断→结果"。积累 10 次后，你就有了分析自己的原材料。</p>
+  </div>
+
+  <!-- Level 3 -->
+  <div class="level-card">
+    <span class="level-num">3</span>
+    <h4>模式识别者</h4>
+    <span class="level-tag">特征：会反思 · 能优化</span>
+    <div class="level-bar"><div class="level-bar-fill" style="width:75%"></div></div>
+
+    <p><strong>典型表现</strong>：</p>
+    <ul>
+      <li>有系统的决策日志，定期回看（如每月一次）</li>
+      <li>能识别自己的判断偏差——"我发现我每次都高估新渠道的潜力"</li>
+      <li>能优化自己的流程——"上次漏了竞品信息，这次模板加一项"</li>
+      <li>能判断"哪些决策适合 AI，哪些不适合"</li>
+      <li>开始有自己的"决策原则"——比如"涉及人际关系的决策不交给 AI"</li>
+    </ul>
+
+    <p><strong>类比</strong>：看训练数据发现自己的深蹲进步总是比卧推慢，分析发现是"腿训练频率太低"，调整计划后突破平台期。这是<strong>数据驱动的自我优化</strong>。</p>
+
+    <p><strong>瓶颈</strong>：<span class="dim">分析靠自己，速度有限。10 次日志能看出一些模式，但 100 次呢？人的模式识别能力有上限，尤其是面对多变量交叉影响时。</span></p>
+
+    <p><strong>跃迁到 L4 的关键动作</strong>：让<strong>AI 分析你的决策日志</strong>——把过去 3 个月的日志丢给 AI，问"我的决策模式有什么特征？有什么盲区？和 AI 建议不一致时，我通常是对的吗？"</p>
+  </div>
+
+  <!-- Level 4 -->
+  <div class="level-card">
+    <span class="level-num">4</span>
+    <h4>系统构建者</h4>
+    <span class="level-tag">特征：AI 帮你进化 · 自我增强</span>
+    <div class="level-bar"><div class="level-bar-fill" style="width:100%"></div></div>
+
+    <p><strong>典型表现</strong>：</p>
+    <ul>
+      <li>AI 定期分析你的决策历史，主动发现你的盲点</li>
+      <li>你有"个人决策知识库"——积累的原则、模板、教训、成功案例</li>
+      <li>AI 能基于你的历史模式，给出<strong>个性化</strong>建议——"根据你过去 20 次决策，你在类似场景下通常高估风险，建议再考虑"</li>
+      <li>你的决策系统会<strong>自我增强</strong>——每次决策都让这个系统更了解你</li>
+      <li>你不再只是"用 AI 做决策"，而是"<strong>AI 在帮你成为一个更好的决策者</strong>"</li>
+    </ul>
+
+    <p><strong>类比</strong>：你有了私人教练 + 数据分析师。教练不仅带你练，还分析你的训练数据，发现"你每次腿日都跳过股四头肌"，然后针对性调整。你进步的<strong>加速度</strong>在提升——不是线性增长，是指数增长。</p>
+
+    <p><strong>关键特征</strong>：<span class="dim">系统构建者的决策能力曲线不是线性上升的——前期慢（L1→L2），中期快（L2→L3），后期加速（L3→L4）。因为 L4 的本质是<strong>复利</strong>：每次决策都在增加系统的"训练数据"。</span></p>
+  </div>
+
+  <h3>四阶段对比总览</h3>
+
+  <table>
+    <tr><th>维度</th><th>L1 工具使用者</th><th>L2 流程遵循者</th><th>L3 模式识别者</th><th>L4 系统构建者</th></tr>
+    <tr><td><strong>使用频率</strong></td><td>偶尔</td><td>规律</td><td>规律+主动</td><td>融入系统</td></tr>
+    <tr><td><strong>输入质量</strong></td><td>不稳定</td><td>稳定</td><td>稳定+优化</td><td>自动优化</td></tr>
+    <tr><td><strong>记录习惯</strong></td><td>无</td><td>无/偶尔</td><td>系统记录</td><td>自动记录</td></tr>
+    <tr><td><strong>复盘机制</strong></td><td>无</td><td>无</td><td>定期人工</td><td>AI 辅助</td></tr>
+    <tr><td><strong>进化速度</strong></td><td>停滞</td><td>线性</td><td>加速</td><td>复利</td></tr>
+    <tr><td><strong>典型耗时</strong></td><td>3 年仍在 L1</td><td>1-2 月到 L2</td><td>2-3 月到 L3</td><td>3-6 月到 L4</td></tr>
+  </table>
+
+  <h3>跃迁路径：从 L1 到 L4 的实战路线图</h3>
+
+  <div class="score-example">
+    <div class="score-header">L1 → L2（第 1-2 周）· 建立最小可行模板</div>
+    <p><strong>目标</strong>：从"偶尔用"到"每次都用模板"</p>
+    <p><strong>行动</strong>：选一个每周做 2 次以上的决策（如周报、预算分配、渠道评估），设计一个"信息包+AI 分析+人确认"的三步模板。不追求完美，先用起来。</p>
+    <p><strong>验证标准</strong>：连续 2 周，每次这个决策都用了模板，而不是"直接问 AI"。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">L2 → L3（第 3-6 周）· 建立决策日志+月度复盘</div>
+    <p><strong>目标</strong>：从"机械执行"到"有觉察的执行"</p>
+    <p><strong>行动</strong>：每次决策后花 2 分钟写日志（背景/输入/输出/判断/结果）。每周五花 10 分钟回顾本周日志。每月让 AI 分析一次"我的决策有什么模式"。</p>
+    <p><strong>验证标准</strong>：能说出自己至少一个判断偏差（如"我总高估新渠道"），并调整了模板。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">L3 → L4（第 7-12 周）· 让 AI 成为你的决策分析师</div>
+    <p><strong>目标</strong>：从"自己分析"到"AI 帮你分析"</p>
+    <p><strong>行动</strong>：把 3 个月的决策日志整理成结构化数据，让 AI 做三件事：①找出你的决策模式偏差；②对比"AI 建议"vs"你的最终选择"的准确率；③建议模板优化方向。</p>
+    <p><strong>验证标准</strong>：AI 发现了一个你自己没意识到的盲区，并且你根据建议调整后有可验证的改善。</p>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>总时间线</strong>：从 L1 到 L4，<strong>最快 3 个月</strong>（不是 3 年）。关键是每个阶段只做该阶段的事——L1 的人不要急着学 L4 的"让 AI 分析日志"，先把"有规律地用模板"做到位。
+  </div>
+</div>
+
+<!-- ==================== SO WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-sowhat">第三段 · 8 分钟 · SO WHAT</span>
+  <h2>渠道管理场景：如何评估和提升你的决策成熟度</h2>
+
+  <h3>自测：你在哪个 Level？</h3>
+
+  <p>以下 6 个问题，快速定位你的当前阶段：</p>
+
+  <table>
+    <tr><th>问题</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th></tr>
+    <tr><td>你做渠道预算分配时，用 AI 吗？</td><td>偶尔想</td><td>每次用模板</td><td>用+优化</td><td>系统</td></tr>
+    <tr><td>上次 AI 建议和你判断不一致，你记录了原因吗？</td><td>没有</td><td>偶尔记</td><td>每次都记</td><td>自动</td></tr>
+    <tr><td>你能说出自己过去一年做渠道决策的 3 个盲区吗？</td><td>不能</td><td>1个</td><td>3个</td><td>5+</td></tr>
+    <tr><td>你的决策模板优化过几次？</td><td>0</td><td>0-1</td><td>2-3</td><td>每月迭代</td></tr>
+    <tr><td>AI 分析过你的决策历史吗？</td><td>没有</td><td>没有</td><td>偶尔</td><td>定期</td></tr>
+    <tr><td>你的同事找你请教 AI 决策经验吗？</td><td>没有</td><td>偶尔</td><td>有时</td><td>经常</td></tr>
+  </table>
+
+  <p><strong>计分</strong>：每题选对应的分值（L1=1, L2=2, L3=3, L4=4），总分 ÷ 6 取整：</p>
+  <ul>
+    <li><strong>1-1.5</strong>：L1 — 先把一个场景模板化</li>
+    <li><strong>1.6-2.5</strong>：L2 — 开始写决策日志</li>
+    <li><strong>2.6-3.5</strong>：L3 — 让 AI 分析你的日志</li>
+    <li><strong>3.6+</strong>：L4 — 你已经走在前面，思考如何帮团队升级</li>
+  </ul>
+
+  <h3>90 天个人提升计划模板</h3>
+
+  <div class="score-example">
+    <div class="score-header">Week 1-2 · 锁场景+建模板</div>
+    <p><strong>选一个场景</strong>：我每周都要做的重复决策（如：月度渠道预算分配 / 周报数据解读 / 异常渠道处理）</p>
+    <p><strong>设计模板</strong>：用 Day 50 的"决策信息包"格式，设计一个 3 步流程（信息包 → AI 分析 → 人确认）</p>
+    <p><strong>承诺</strong>：连续 2 周，每次这个决策都用模板。不追求完美，先用起来。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Week 3-4 · 写日志+找模式</div>
+    <p><strong>每次决策后</strong>：花 2 分钟写决策日志（背景 / 给 AI 的输入 / AI 输出 / 我的最终判断 / 实际结果）</p>
+    <p><strong>每周五</strong>：花 10 分钟回顾本周日志，问自己"这次决策和上次有什么不同？""我忽略了什么？"</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Week 5-8 · 月度复盘+AI 分析</div>
+    <p><strong>每月底</strong>：把本月所有决策日志整理给 AI，让它分析：</p>
+    <div class="prompt-box">
+"分析我这 8 次渠道决策日志，回答：<br>
+1. 我的决策有哪些重复模式？<br>
+2. 我和 AI 建议不一致时，谁的准确率更高？<br>
+3. 我忽略了什么关键信息？<br>
+4. 我的模板应该怎么优化？"
+    </div>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Week 9-12 · 迭代+扩展</div>
+    <p><strong>优化模板</strong>：根据 AI 分析建议，迭代你的决策模板</p>
+    <p><strong>扩展场景</strong>：把成熟的模板复制到第 2 个、第 3 个决策场景</p>
+    <p><strong>建立知识库</strong>：开始积累"决策原则"——如"涉及渠道关系的决策，必须加人际关系评估项"</p>
+  </div>
+
+  <h3>核心洞察：从"用 AI 的人"到"被 AI 升级的人"</h3>
+
+  <div class="insight-box">
+    <h4>🎯 关键跃迁</h4>
+    <p>L1-L2 是<strong>习惯养成</strong>——从随机到规律。</p>
+    <p>L2-L3 是<strong>觉察觉醒</strong>——从执行到反思。</p>
+    <p>L3-L4 是<strong>杠杆放大</strong>——从人力到算力。</p>
+    <p style="margin-bottom:0"><strong>最终目标不是"成为用 AI 的高手"，而是"成为被 AI 持续升级的高手"</strong>——AI 负责发现和提醒，你负责判断和行动。</p>
+  </div>
+</div>
+
+<!-- ==================== CHECKPOINT ==================== -->
+<div class="section">
+  <span class="section-label label-check">CHECKPOINT · 2 分钟</span>
+  <h2>💡 检验时间</h2>
+
+  <div class="checkpoint-box">
+    <h4>🎯 场景：你刚完成自测，发现自己处于 L2（流程遵循者）</h4>
+
+    <p>你的 90 天提升计划第一步，优先级最高的是什么？</p>
+
+    <div class="option"><span class="option-label">A.</span> 立刻收集过去 3 个月的所有决策记录，让 AI 做全面分析，一次性跳到 L4。</div>
+    <div class="option"><span class="option-label">B.</span> 把现有模板优化到"完美"——加更多字段、更复杂的分析逻辑、更详细的输出格式——然后再开始使用。</div>
+    <div class="option"><span class="option-label">C.</span> 从下周开始，每次用模板执行决策后，花 2 分钟写决策日志。先坚持 2 周，不追求分析深度，只追求"每次都记"。</div>
+    <div class="option"><span class="option-label">D.</span> 先评估当前模板的质量——有没有遗漏关键信息？AI 输出是否稳定？先用 1 周时间调试模板，确保输入质量稳定后再开始写日志。</div>
+
+    <p class="small dim" style="margin-top: 1rem;">💬 <strong>追问</strong>：选完之后，再想一个关键问题——<strong>"如果 3 个月后你发现自己还在原地踏步，最可能的原因是什么？"</strong>（提示：想想今天四个阶段的核心瓶颈——L1 是"不用"，L2 是"不记"，L3 是"不分析"，L4 是"不复利"。哪个环节最容易被忽略？）</p>
+  </div>
+
+  <h3>🔮 明日悬念</h3>
+
+  <div class="callout callout-purple">
+    今天，我们把"个人 AI 决策能力"从模糊的"用得好不好"变成了可衡量的四个阶段——从 L1 到 L4，每一步都有明确的特征、瓶颈和跃迁路径。<br><br>
+    明天，我们将从"个人"转向"团队"：<strong>AI 团队建设与管理（上）</strong>——当不是你一个人用 AI，而是整个团队都要用 AI 时，怎么建？怎么管？怎么推？<br><br>
+    Day 52：<strong>AI 团队建设与管理（上）</strong><br>
+    ——"团队 AI 化"的第一性原理：从"推工具"到"建系统"
+  </div>
+</div>
+
+<!-- ==================== 知识卡片 ==================== -->
+<div class="section">
+  <span class="section-label label-card">📌 KNOWLEDGE CARDS</span>
+
+  <div class="knowledge-card">
+    <h4>今日知识卡片</h4>
+    <ul>
+      <li><strong>四个成熟度阶段</strong>：L1 工具使用者（偶尔用）→ L2 流程遵循者（规律用模板）→ L3 模式识别者（写日志+复盘）→ L4 系统构建者（AI 分析你的日志，持续进化）。大多数人高估了自己——诚实评估。</li>
+      <li><strong>L2 的关键跃迁</strong>：不是"优化模板"而是"稳定使用"。L1 的瓶颈是"不用"，不是"用不好"。最小可行模板（3 步，15 分钟）比完美模板更重要。</li>
+      <li><strong>L3 的关键跃迁</strong>：不是"记笔记"而是"有结构地记+定期分析"。决策日志五要素（背景→输入→输出→判断→结果），积累 10 次就有模式可找。</li>
+      <li><strong>L4 的关键跃迁</strong>：从"人力分析"到"算力分析"。把决策日志给 AI，让它发现你的盲区——人很难发现自己的盲区，但 AI 可以从数据中看到。</li>
+      <li><strong>90 天路线图</strong>：Week 1-2 锁场景建模板 → Week 3-4 写日志找模式 → Week 5-8 月度复盘+AI 分析 → Week 9-12 迭代+扩展。每阶段只做该阶段的事，不要跳级。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== 前序连接 ==================== -->
+<div class="section">
+  <span class="section-label label-link">🔗 CONNECTIONS</span>
+
+  <div class="link-section">
+    <h4>前序知识连接</h4>
+    <ul>
+      <li><strong>Day 50（决策框架中）</strong>→ 今天的四个阶段是 Day 50"六步流程"的<strong>使用者视角</strong>——Day 50 讲"怎么设计流程"，今天讲"你执行流程的能力到了什么水平"。</li>
+      <li><strong>Day 49（决策框架上）</strong>→ 今天的 L1-L4 对应 Day 49"人机协作四种模式"的<strong>内化程度</strong>——L1 还在"模式 A 偶尔用"，L4 已经能在四种模式间自如切换。</li>
+      <li><strong>Day 43（AI Native 工作方式）</strong>→ 今天的 L4"系统构建者"就是 Day 43"AI Native 三层定义"中的<strong>决策层到组织层</strong>——个人决策系统成熟后，自然延伸到团队。</li>
+      <li><strong>Day 20（Verifiable Problem）</strong>→ 今天"决策日志五要素"直接应用了 Verifiable Problem 框架——记录可验证的信息，才能做可验证的复盘。</li>
+      <li><strong>Day 16（CoT 思维链）</strong>→ 今天 L4 让 AI 分析决策日志时，要求 AI 展示推理链（"你为什么认为我有这个偏差？"），这是 CoT 在自我分析中的应用。</li>
+      <li><strong>Day 5（Temperature）</strong>→ 今天 L3-L4 的"让 AI 分析自己的模式"本质上是一种<strong>元认知</strong>——和 Temperature 控制的"探索 vs 利用"同构，只是对象变成了"自己的决策"。</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- container -->
+
+</body>
+</html>
