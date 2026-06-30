@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 53 · AI团队建设与管理（中） — AI & 大模型课程</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface-2: #242424;
+    --border: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #f97316;
+    --accent-dim: #f9731633;
+    --red: #ef4444;
+    --red-dim: #ef444422;
+    --green: #22c55e;
+    --green-dim: #22c55e22;
+    --blue: #3b82f6;
+    --blue-dim: #3b82f622;
+    --purple: #a855f7;
+    --purple-dim: #a855f722;
+    --yellow: #eab308;
+    --yellow-dim: #eab30822;
+    --cyan: #06b6d4;
+    --cyan-dim: #06b6d422;
+    --gold: #d4a706;
+    --gold-dim: #d4a70622;
+    --teal: #14b8a6;
+    --teal-dim: #14b8a622;
+    --pink: #ec4899;
+    --pink-dim: #ec489922;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav.course-nav {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  nav.course-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav.course-nav a:hover { color: var(--accent); }
+  nav.course-nav .sep { margin: 0 0.4rem; opacity: 0.5; }
+
+  .hero {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f0f0f 30%, #1a0a05 70%, #0f0f0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), var(--yellow), var(--red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .section { margin-bottom: 2.5rem; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .label-fire { background: var(--red-dim); color: var(--red); }
+  .label-why { background: var(--blue-dim); color: var(--blue); }
+  .label-what { background: var(--purple-dim); color: var(--purple); }
+  .label-sowhat { background: var(--green-dim); color: var(--green); }
+  .label-check { background: var(--gold-dim); color: var(--gold); }
+  .label-card { background: var(--cyan-dim); color: var(--cyan); }
+  .label-link { background: var(--teal-dim); color: var(--teal); }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--text);
+  }
+
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+    color: var(--accent);
+  }
+
+  p { margin-bottom: 1rem; color: var(--text); }
+
+  strong { color: var(--accent); font-weight: 600; }
+
+  .callout {
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout-blue { border-left-color: var(--blue); }
+  .callout-green { border-left-color: var(--green); }
+  .callout-purple { border-left-color: var(--purple); }
+  .callout-gold { border-left-color: var(--gold); }
+  .callout-red { border-left-color: var(--red); }
+  .callout-cyan { border-left-color: var(--cyan); }
+  .callout-teal { border-left-color: var(--teal); }
+  .callout-yellow { border-left-color: var(--yellow); }
+  .callout-pink { border-left-color: var(--pink); }
+
+  .insight-box {
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .insight-box h4 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background: var(--surface-2);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td { color: var(--text); }
+  tr:nth-child(even) td { background: var(--surface); }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.5rem;
+    color: var(--text);
+  }
+
+  li { margin-bottom: 0.4rem; }
+
+  .checkpoint-box {
+    background: var(--surface-2);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .checkpoint-box h4 {
+    color: var(--gold);
+    margin-top: 0;
+  }
+
+  .option {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.88rem;
+  }
+
+  .option-label {
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+
+  .knowledge-card {
+    background: var(--surface-2);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .knowledge-card ul { margin-left: 1.25rem; }
+
+  .link-section {
+    background: var(--surface);
+    border: 1px solid var(--teal);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .small { font-size: 0.85rem; }
+
+  .stage-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .stage-card h4 {
+    margin-top: 0;
+    color: var(--yellow);
+  }
+
+  .before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .before-after > div {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.88rem;
+  }
+
+  .before-after .label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .before-after .label-before { color: var(--red); }
+  .before-after .label-after { color: var(--green); }
+
+  .level-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+
+  .level-card .level-num {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .level-card h4 {
+    display: inline;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .level-card .level-tag {
+    float: right;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .level-card .level-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0.75rem 0;
+  }
+  .level-card .level-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 1rem 0;
+  }
+
+  .prompt-box .prompt-tag {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .prompt-box .prompt-comment {
+    color: #666;
+    font-style: italic;
+  }
+
+  .score-example {
+    background: var(--surface-2);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .score-example .score-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .score-example p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+
+  .highlight-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .hero { padding: 2rem 1rem 1.5rem; }
+    .before-after { grid-template-columns: 1fr; }
+    .level-card .level-tag { float: none; display: block; margin-top: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="course-nav">
+  <a href="https://ego1013.github.io/ethanycjin/">&larr; Ethan's Lab</a>
+  <span class="sep">/</span>
+  <a href="https://ego1013.github.io/ethanycjin/ai-course/">AI 大模型课程</a>
+  <span class="sep">/</span>
+  Day 53
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🟡 第五-六模块 · 整合篇</div>
+  <h1>AI 团队建设与管理（中）</h1>
+  <p class="subtitle">从"推广"到"管理"：团队 AI 化的长效机制</p>
+  <div class="meta">
+    <span>📅 2026-07-01 · Day 53</span>
+    <span>⏱ 预计 40 分钟</span>
+    <span>📍 第五-六模块 · 整合篇 · 第 11 课</span>
+    <span>🏷 通用方法论 · 团队变革</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 开场 ==================== -->
+<div class="section">
+  <span class="section-label label-fire">🔥 OPENING</span>
+  <h2>你成功推广了 AI 工具，3 个月后使用率却从 80% 掉回 30%——为什么？</h2>
+
+  <p>这是 Day 52 的"续集"，也是大多数团队 AI 化的真实剧本。</p>
+
+  <div class="before-after">
+    <div>
+      <div class="label label-before">3 个月前</div>
+      <p>团队 8 个人里有 6 个在用 AI 辅助写周报。种子用户主动分享，同事纷纷效仿。你暗暗得意："这次推广成了。"</p>
+    </div>
+    <div>
+      <div class="label label-after">3 个月后</div>
+      <p>使用率掉到 3 个人。周报还是交了，但仔细看，内容跟以前几乎一样——只是前面加了"AI 生成"的标签。当初最积极的种子用户也回到了老方法："改 AI 的输出比我自己写还慢。"</p>
+    </div>
+  </div>
+
+  <p>这不是工具的问题。也不是人的问题。<strong>这是"管理机制"的问题</strong>。</p>
+
+  <div class="callout callout-gold">
+    <strong>Day 52 讲的是"怎么让团队开始用"。今天讲的是"怎么让团队持续用、用得好、用得深"。</strong><br><br>
+    推广只是发令枪。没有管理机制，枪响之后就是自由落体。
+  </div>
+</div>
+
+<!-- ==================== WHY ==================== -->
+<div class="section">
+  <span class="section-label label-why">第一段 · 10 分钟 · WHY</span>
+  <h2>团队 AI 化的"蜜月期陷阱"</h2>
+
+  <h3>类比：健身的"蜜月期"</h3>
+
+  <p>Ethan 做 Coach M 的这么多年，见过太多这样的画面：</p>
+
+  <div class="callout callout-blue">
+    <strong>第 1 周</strong>：买了年卡，每天打卡，朋友圈发健身照。<br><br>
+    <strong>第 2 周</strong>：开始找"高效训练法"，研究蛋白粉。<br><br>
+    <strong>第 4 周</strong>："今天开会，改天练"——第一次找借口。<br><br>
+    <strong>第 8 周</strong>：年卡成了洗澡卡。<br><br>
+    <strong>第 12 周</strong>：回到原点，体重跟办卡那天一样。
+  </div>
+
+  <p>团队 AI 化一模一样。前两周 excitement，第四周 friction，第八周 abandonment。</p>
+
+  <h3>三个失败信号</h3>
+
+  <p>如果你看到以下任何一个信号，说明团队已经进入了"蜜月期后"：</p>
+
+  <div class="stage-card">
+    <h4>🚨 信号一：使用频率下降</h4>
+    <p>不是"从每天用变成每周用"——而是<strong>"从主动用变成任务式用"</strong>。周报来了才打开 AI，平时想不起来。这不是"习惯"，这是"负担"。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>🚨 信号二：质量回退到"走过场"</h4>
+    <p>输出还是交了，但质量跟以前没区别。AI 成了"格式化工具"——把原来的内容套进一个新模板，没有任何增量分析。</p>
+    <p>最危险的版本：用户把旧报告复制粘贴进 AI，让 AI "润色一下"，然后标上"AI 辅助生成"。<strong>这不是 AI 化，这是标签化</strong>。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>🚨 信号三：老用户不再分享经验</h4>
+    <p>种子用户最初 enthusiasm 满满，现在沉默。为什么？因为<strong>分享没有回报</strong>——教了同事，同事也没用好；自己摸索的经验，没人在意。</p>
+    <p>知识分享的衰减是团队 AI 化失败的<strong> leading indicator</strong>（领先指标），不是 lagging indicator（滞后指标）。</p>
+  </div>
+
+  <h3>核心原因：没有"管理机制"</h3>
+
+  <p>推广阶段（Day 52）的核心动作是"点燃"。但火点着了，不添柴，会灭。</p>
+
+  <div class="insight-box">
+    <h4>🎯 核心洞察</h4>
+    <p><strong>推广 = 让团队"开始用"</strong>。解决的是"从 0 到 1"。</p>
+    <p><strong>管理 = 让团队"持续用、用得好"</strong>。解决的是"从 1 到 N，而且不掉回来"。</p>
+    <p style="margin-bottom:0">大多数团队 AI 化失败，不是因为推广不够用力，而是<strong>推广之后没有运营</strong>——没有角色、没有反馈、没有迭代、没有防走过场的机制。</p>
+  </div>
+</div>
+
+<!-- ==================== WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-what">第二段 · 20 分钟 · WHAT</span>
+  <h2>管理机制设计：四个机制</h2>
+
+  <h3>机制一：角色重新定义</h3>
+
+  <p>团队 AI 化不是"多买个工具"，而是<strong>"多了一套协作流程"</strong>。新流程需要新角色——但不需要新 headcount。</p>
+
+  <div class="score-example">
+    <div class="score-header">AI 协作设计师</div>
+    <p><strong>职责</strong>：设计团队 AI 协作流程和模板，确保输入标准化、输出可用。</p>
+    <p><strong>谁来做</strong>：可以是团队里的"流程敏感型"成员——不一定是技术最强的人，但一定是最清楚"大家怎么工作"的人。</p>
+    <p><strong>渠道管理场景</strong>：设计"渠道信息包"模板——哪些数据必须输入、哪些判断必须人工做、AI 输出格式怎么统一。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">AI 使用质量审核</div>
+    <p><strong>职责</strong>：定期检查 AI 输出质量，发现"走过场"行为，给出改进建议。</p>
+    <p><strong>谁来做</strong>：团队负责人或资深成员。不是"质量警察"，而是"质量教练"。</p>
+    <p><strong>渠道管理场景</strong>：每月抽查 3 份 AI 生成的渠道周报，对比原始数据和最终输出，看 AI 是否真正做了分析（还是只是重排了格式）。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">AI 知识管理员</div>
+    <p><strong>职责</strong>：维护团队知识库——模板、FAQ、最佳实践、失败案例。</p>
+    <p><strong>谁来做</strong>：可以是团队里最爱整理文档的人。关键不是"写得多"，而是"找得到"。</p>
+    <p><strong>渠道管理场景</strong>：维护一个"渠道 AI 协作手册"——包含：信息包模板、常见 AI 错误及修正方法、不同场景下的 prompt 示例。</p>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>关键原则</strong>：这些角色<strong>不需要专人，可以兼职</strong>，但必须有明确责任。没有明确责任，就没有人真正在乎。
+  </div>
+
+  <h3>机制二：质量反馈闭环</h3>
+
+  <p>怎么知道 AI 用得好不好？<strong>感觉不行，数据才行</strong>。</p>
+
+  <table>
+    <tr><th>维度</th><th>指标</th><th>怎么追踪</th><th>渠道管理示例</th></tr>
+    <tr><td><strong>输入质量</strong></td><td>信息包完整度、数据准确性</td><td>抽查输入模板，打分</td><td>渠道周报的信息包是否包含所有 required 字段？</td></tr>
+    <tr><td><strong>输出质量</strong></td><td>采纳率、修改率、满意度</td><td>对比 AI 输出 vs 最终版本</td><td>AI 生成的分析，有多少被保留在最终周报中？</td></tr>
+    <tr><td><strong>过程指标</strong></td><td>使用频率、分享次数、新场景提出数</td><td>日志或自报</td><td>每周使用 AI 的次数？本月提出的新场景有几个？</td></tr>
+  </table>
+
+  <div class="score-example">
+    <div class="score-header">示例：渠道周报的 AI 辅助质量追踪</div>
+    <p><strong>追踪链路</strong>：AI 生成 → 人工修改 → 最终采纳</p>
+    <p><strong>核心指标</strong>："转化率" = 最终版中保留的 AI 内容 / AI 生成总内容</p>
+    <p><strong>解读</strong>：</p>
+    <ul>
+      <li>转化率 > 80%：AI 分析质量高，人主要在润色</li>
+      <li>转化率 50-80%：正常范围，AI 提供框架，人补充判断</li>
+      <li>转化率 < 50%：AI 输出质量有问题，或者人在"走过场"（直接不用 AI 的内容）</li>
+    </ul>
+    <p><strong>注意</strong>：转化率不是越高越好。如果 100% 采纳，说明人没有在思考——这和 0% 采纳一样危险。</p>
+  </div>
+
+  <h3>机制三：持续迭代制度</h3>
+
+  <p>最怕的不是"用得不好"，而是<strong>"用一次就永远不变"</strong>。模板固化、流程僵化、思维退化——这是团队 AI 化的隐形杀手。</p>
+
+  <div class="stage-card">
+    <h4>🔄 双周 15 分钟 AI 复盘会</h4>
+    <p><strong>不是培训</strong>。不是请讲师来讲课。</p>
+    <p><strong>是经验分享 + 问题讨论</strong>。每人 2 分钟："我这两周用 AI 遇到的一个问题和我的解法"。</p>
+    <p>Ethan 的教练经验：小组分享比大课培训有效 10 倍，因为"同龄人遇到的问题和我一样"。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>🔄 季度模板优化</h4>
+    <p>根据实际使用情况更新模板。谁提出改进建议？使用最多的人。谁决定是否采纳？AI 协作设计师 + 质量审核。</p>
+    <p>关键原则：<strong>模板是"活的"</strong>。每个季度至少 review 一次，不优化就退化。</p>
+  </div>
+
+  <div class="stage-card">
+    <h4>🔄 年度能力评估</h4>
+    <p>把 AI 协作能力纳入绩效——不是"用了几次"，而是<strong>"用 AI 提升了什么结果"</strong>。</p>
+    <p>渠道管理示例：年度评估中增加"AI 协作能力"维度——是否能独立设计新场景的 AI 流程？是否能指导新人使用？是否有质量改进贡献？</p>
+  </div>
+
+  <h3>机制四：防止"走过场"</h3>
+
+  <p>当 AI 变成"任务"而不是"工具"，团队就死了。</p>
+
+  <div class="callout callout-red">
+    <strong>"走过场"的典型信号</strong>：<br><br>
+    周报内容跟 3 个月前一模一样，只是格式变了，前面加了"AI 生成"标签。<br><br>
+    用户把同样的 prompt 复制粘贴了 20 次，从不调整。<br><br>
+    AI 输出明显有错，但用户直接提交，不检查。
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">对策：抽查机制</div>
+    <p><strong>每月随机抽查 3 份 AI 输出</strong>，检查：</p>
+    <ol>
+      <li>AI 是否真正做了分析（还是只是重排了格式）？</li>
+      <li>关键数据是否人工确认过？</li>
+      <li>输出相比不用 AI 是否有增量价值？</li>
+    </ol>
+    <p><strong>目的不是惩罚</strong>，而是发现"系统性问题"——是模板设计有问题？还是培训不到位？还是这个场景本身不适合 AI？</p>
+  </div>
+
+  <div class="insight-box">
+    <h4>🎯 本质认知</h4>
+    <p>用 AI 不是为了"完成任务"，而是为了"提升质量"。</p>
+    <p style="margin-bottom:0">如果团队用 AI 后，产出质量没有提升，那 AI 化就是失败的——无论使用率达到多少。</p>
+  </div>
+</div>
+
+<!-- ==================== SO WHAT ==================== -->
+<div class="section">
+  <span class="section-label label-sowhat">第三段 · 8 分钟 · SO WHAT</span>
+  <h2>渠道管理团队的 12 周 AI 化运营计划</h2>
+
+  <p>接上 Day 52 的 12 周推广计划，今天给出<strong>第 5-12 周的管理运营细节</strong>。</p>
+
+  <div class="score-example">
+    <div class="score-header">Week 1-4 · 推广期（Day 52 内容）</div>
+    <p>识别黄金场景 → 选种子用户 → 最小可行流程 → 自然扩散。</p>
+    <p>目标：3-5 人稳定使用，完成"从 0 到 1"。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Week 5-6 · 稳定期：建立角色</div>
+    <p><strong>指定三个角色</strong>（兼职，明确责任）：</p>
+    <ul>
+      <li>AI 协作设计师：优化"渠道信息包"模板，确保输入标准化</li>
+      <li>AI 使用质量审核：每月抽查 3 份输出，给出反馈</li>
+      <li>AI 知识管理员：整理 FAQ 和最佳实践到团队文档</li>
+    </ul>
+    <p><strong>建立质量追踪</strong>：开始记录"AI 生成 → 人工修改 → 最终采纳"的转化率。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Week 7-8 · 稳定期：首次复盘</div>
+    <p><strong>第一次双周 AI 复盘会</strong>（15 分钟）：</p>
+    <ul>
+      <li>种子用户分享："用 AI 两个月后，我发现了什么新问题？"</li>
+      <li>新用户提问："我遇到的问题，有人解决过吗？"</li>
+      <li>收集模板改进建议，进入季度优化 backlog</li>
+    </ul>
+    <p><strong>检查"走过场"信号</strong>：抽查 3 份输出，对比 Week 1 和 Week 8 的质量是否有提升。</p>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Week 9-10 · 进化期：迭代模板</div>
+    <p><strong>第一次季度模板优化</strong>：</p>
+    <ul>
+      <li>根据 8 周的数据，调整信息包模板（增加/删除字段）</li>
+      <li>优化 prompt 设计（根据实际输出质量反馈）</li>
+      <li>新增 1 个场景（从种子场景扩展到第二个高频场景）</li>
+    </ul>
+  </div>
+
+  <div class="score-example">
+    <div class="score-header">Week 11-12 · 进化期：扩展 + 纳入考核</div>
+    <p><strong>扩展场景</strong>：从"周报"扩展到"渠道评估"或"异常处理"。</p>
+    <p><strong>纳入年度考核</strong>：在年度绩效中增加"AI 协作能力"维度（权重 5-10%，不要太高）。</p>
+    <p><strong>评估团队 AI 成熟度</strong>：对照 Day 52 的 L1-L4 模型，团队现在在哪一级？</p>
+  </div>
+
+  <div class="callout callout-purple">
+    <strong>关键提醒</strong>：12 周不是终点，是起点。团队 AI 化是<strong>持续运营</strong>，不是一次性项目。推广期的 excitement 会消退，管理机制的作用就是<strong>把 excitement 转化为制度</strong>。
+  </div>
+</div>
+
+<!-- ==================== CHECKPOINT ==================== -->
+<div class="section">
+  <span class="section-label label-check">CHECKPOINT · 2 分钟</span>
+  <h2>💡 检验时间</h2>
+
+  <div class="checkpoint-box">
+    <h4>🎯 场景：团队 AI 使用 3 个月后，使用率从 80% 掉到 30%</h4>
+
+    <p>你是团队负责人。你需要诊断问题。以下哪个诊断路径最全面？</p>
+
+    <div class="option"><span class="option-label">A.</span> 组织一次" refresher 培训"，重新培训所有人使用 AI 工具，强调使用率的重要性。</div>
+    <div class="option"><span class="option-label">B.</span> 检查三个信号：①使用频率是否下降 ②输出质量是否回退 ③老用户是否还分享经验。然后针对性看是哪个机制缺失——角色？反馈？迭代？还是走过场？</div>
+    <div class="option"><span class="option-label">C.</span> 直接约谈掉回老方法的同事，了解他们的困难，然后一对一解决。</div>
+    <div class="option"><span class="option-label">D.</span> 换一个新工具，可能是当前工具不够好用，新工具能重新激发兴趣。</div>
+
+    <p class="small dim" style="margin-top: 1rem;">💬 <strong>追问</strong>：如果你发现"质量回退到走过场"是最主要的问题，你会先启动哪个机制？（提示：想想今天讲的四个机制——角色、反馈、迭代、防走过场。哪个机制最直接解决这个问题？）</p>
+  </div>
+
+  <h3>🔮 明日悬念</h3>
+
+  <div class="callout callout-cyan">
+    今天，我们建立了四个管理机制——角色、反馈、迭代、防走过场。但机制设计是"理想状态"。<br><br>
+    现实中，你会遇到<strong>老员工的抵触、中层管理者的犹豫、以及"我们用 Excel 干了 20 年，凭什么换？"</strong>的灵魂拷问。<br><br>
+    明天，我们将深入：<strong>AI 团队建设与管理（下）</strong>——变革阻力与持续进化：从试点到制度。<br><br>
+    Day 54：<strong>变革阻力与持续进化：从试点到制度</strong><br>
+    ——Kotter 八步模型的 AI 化版本，以及你的团队 AI 化 12 个月路线图
+  </div>
+</div>
+
+<!-- ==================== 知识卡片 ==================== -->
+<div class="section">
+  <span class="section-label label-card">📌 KNOWLEDGE CARDS</span>
+
+  <div class="knowledge-card">
+    <h4>今日知识卡片</h4>
+    <ul>
+      <li><strong>蜜月期陷阱</strong>：团队 AI 化前 2 周 excitement，第 4 周开始找借口，第 8 周回到原点。三个失败信号：使用频率下降、质量回退到走过场、老用户不再分享。</li>
+      <li><strong>角色重新定义</strong>：团队 AI 化需要三个新角色（兼职即可）：AI 协作设计师（流程模板）、AI 使用质量审核（抽查反馈）、AI 知识管理员（知识库维护）。没有明确责任，就没有人真正在乎。</li>
+      <li><strong>质量反馈闭环</strong>：追踪输入质量（信息包完整度）、输出质量（采纳率/修改率）、过程指标（使用频率/分享次数）。核心指标："AI 生成→人工修改→最终采纳"的转化率。</li>
+      <li><strong>持续迭代制度</strong>：双周 15 分钟复盘会（经验分享，不是培训）、季度模板优化（模板是活的）、年度能力评估（纳入绩效，看结果提升而非使用次数）。</li>
+      <li><strong>防止走过场</strong>：每月随机抽查 3 份 AI 输出，检查是否真正做了分析。用 AI 不是为了"完成任务"，而是为了"提升质量"。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== 前序连接 ==================== -->
+<div class="section">
+  <span class="section-label label-link">🔗 CONNECTIONS</span>
+
+  <div class="link-section">
+    <h4>前序知识连接</h4>
+    <ul>
+      <li><strong>Day 52（上）</strong>→ 今天的管理机制是 Day 52"推广期"的直接延续——Day 52 解决"从 0 到 1"，今天解决"从 1 到 N 且不掉回来"。12 周计划 Week 1-4 来自 Day 52，Week 5-12 来自今天。</li>
+      <li><strong>Day 50（决策框架中）</strong>→ 今天"质量反馈闭环"中的"信息包完整度"直接应用了 Day 50 的"决策信息包"模板——输入质量决定输出质量，模板标准化是管理的基础。</li>
+      <li><strong>Day 43（AI Native 工作方式）</strong>→ 今天"防止走过场"的本质是确保 AI 真正提升了工作质量，而不是变成了形式——这正是 Day 43 强调的"AI Native 不是用 AI 做同样的事，而是做更好的事"。</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- container -->
+
+</body>
+</html>
