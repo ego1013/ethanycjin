@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>国家命运100讲 · The Anatomy of Nations</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+    :root {
+      --navy: #0d1b2a;
+      --navy-mid: #112236;
+      --navy-light: #1a3350;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-dim: rgba(201,168,76,0.15);
+      --amber: #d4813a;
+      --text-primary: #e8e0d0;
+      --text-secondary: #a09880;
+      --text-dim: #5a5448;
+      --border: rgba(201,168,76,0.2);
+      --border-bright: rgba(201,168,76,0.5);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--navy);
+      color: var(--text-primary);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(201,168,76,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 80% at 20% 70%, rgba(17,50,80,0.6) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 0 48px;
+      height: 56px;
+      background: rgba(13,27,42,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .breadcrumb a {
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover { color: var(--gold); }
+
+    .breadcrumb .sep {
+      margin: 0 12px;
+      color: var(--text-dim);
+      opacity: 0.5;
+    }
+
+    .breadcrumb .current {
+      color: var(--gold);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 120px 48px 64px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .hero h1 span { color: var(--gold); }
+
+    .hero-en {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(16px, 2vw, 22px);
+      font-style: italic;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      line-height: 2;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 24px;
+    }
+
+    .stat-num {
+      font-family: 'EB Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── Group Tabs ── */
+    .nav-section {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    .group-tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+
+    .group-tabs::-webkit-scrollbar { display: none; }
+
+    .group-tab {
+      flex-shrink: 0;
+      padding: 14px 24px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      cursor: pointer;
+      border: none;
+      border-right: 1px solid var(--border);
+      background: transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .group-tab:last-child { border-right: none; }
+    .group-tab:hover { color: var(--text-primary); background: var(--gold-dim); }
+    .group-tab.active { color: var(--gold); background: var(--gold-dim); border-bottom: 2px solid var(--gold); }
+
+    /* ── Group Section ── */
+    .group-section {
+      margin-bottom: 56px;
+    }
+
+    .group-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .group-name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .group-range {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+    }
+
+    .group-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    /* ── Course Cards Grid ── */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .course-card {
+      background: var(--navy);
+      padding: 28px;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: block;
+    }
+
+    .course-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--gold);
+      transition: height 0.3s;
+    }
+
+    .course-card:hover { background: var(--navy-mid); }
+    .course-card:hover::before { height: 100%; }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .card-num {
+      font-family: 'EB Garamond', serif;
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+    }
+
+    .card-status {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      border: 1px solid;
+      text-transform: uppercase;
+    }
+
+    .card-status.ready { border-color: rgba(100,200,150,0.4); color: rgba(100,200,150,0.8); }
+    .card-status.coming { border-color: rgba(255,255,255,0.1); color: var(--text-dim); }
+
+    .card-country {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .card-verdict {
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .card-footer span { color: var(--gold); }
+
+    .card-arrow {
+      color: var(--text-dim);
+      transition: all 0.2s;
+    }
+
+    .course-card:hover .card-arrow {
+      color: var(--gold);
+      transform: translateX(4px);
+    }
+
+    .course-card.locked {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 48px;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      border-top: 1px solid var(--border);
+      margin-top: 64px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    @media (max-width: 768px) {
+      .breadcrumb, .hero, .nav-section { padding-left: 20px; padding-right: 20px; }
+      .courses-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="https://ego1013.github.io/ethanycjin/">Ethan's Lab</a>
+    <span class="sep">/</span>
+    <span class="current">国家命运100讲</span>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">Ethan's Lab · 比较政治经济学</div>
+    <h1>国家<span>命运</span>100讲</h1>
+    <div class="hero-en">The Anatomy of Nations</div>
+    <p class="hero-desc">
+      每个国家都是一次自然实验。<br>
+      地理给了它什么牌，制度如何打出这手牌，<br>
+      历史在哪个节点走向了另一条路——<br>
+      100个国家，100面照见人类命运的镜子。
+    </p>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">100</div>
+        <div class="stat-label">国家案例</div>
+      </div>
+      <div>
+        <div class="stat-num">6</div>
+        <div class="stat-label">分析角色</div>
+      </div>
+      <div>
+        <div class="stat-num">7</div>
+        <div class="stat-label">命运类型</div>
+      </div>
+      <div>
+        <div class="stat-num">7K+</div>
+        <div class="stat-label">每讲字数</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nav Section -->
+  <section class="nav-section">
+
+    <!-- Group Tabs -->
+    <div class="group-tabs">
+      <button class="group-tab active" data-group="all">全部 100讲</button>
+      <button class="group-tab" data-group="miracle">🌟 奇迹解剖</button>
+      <button class="group-tab" data-group="curse">💀 诅咒解码</button>
+      <button class="group-tab" data-group="transition">🔄 转型实验室</button>
+      <button class="group-tab" data-group="institution">⚖️ 制度实验</button>
+      <button class="group-tab" data-group="history">📚 历史的重量</button>
+      <button class="group-tab" data-group="geography">🧭 地理的命运</button>
+      <button class="group-tab" data-group="future">🔭 未来预言</button>
+    </div>
+
+    <!-- ═══ Group 1: Miracle ═══ -->
+    <div class="group-section" data-group="miracle">
+      <div class="group-header">
+        <span class="group-name">🌟 奇迹解剖</span>
+        <span class="group-range">第1-15讲</span>
+      </div>
+      <p class="group-desc">那些「不应该成功」却成功了的国家</p>
+      <div class="courses-grid">
+        <a href="./lectures/001-korea.html" class="course-card">
+          <div class="card-meta">
+            <span class="card-num">No. 001</span>
+            <span class="card-status ready">已发布</span>
+          </div>
+          <div class="card-country">韩国</div>
+          <div class="card-verdict">被地理诅咒的国家，用制度意志把诅咒变成燃料</div>
+          <div class="card-footer">
+            对照国：<span>菲律宾</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 002</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">新加坡</div>
+          <div class="card-verdict">一座没有腹地的城市，如何成为世界的枢纽神经</div>
+          <div class="card-footer">
+            对照国：<span>中国香港</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 003</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">以色列</div>
+          <div class="card-verdict">在永恒威胁中建立的创新生态，恐惧如何转化为创造力</div>
+          <div class="card-footer">
+            对照国：<span>约旦</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 004</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">博茨瓦纳</div>
+          <div class="card-verdict">非洲唯一的钻石没有变成诅咒的国家</div>
+          <div class="card-footer">
+            对照国：<span>塞拉利昂</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 005</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">爱尔兰</div>
+          <div class="card-verdict">从饥荒流亡到凯尔特之虎，教育如何重写一个国家的代码</div>
+          <div class="card-footer">
+            对照国：<span>希腊</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 006</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">芬兰</div>
+          <div class="card-verdict">与强邻共存的生存智慧——小国如何把地缘劣势变成制度优势</div>
+          <div class="card-footer">
+            对照国：<span>乌克兰</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 007</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">卢旺达（战后）</div>
+          <div class="card-verdict">种族灭绝30年后，非洲最整洁的国家是如何做到的</div>
+          <div class="card-footer">
+            对照国：<span>布隆迪</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 008</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">毛里求斯</div>
+          <div class="card-verdict">多元族群、小岛经济——为什么它没有成为斯里兰卡</div>
+          <div class="card-footer">
+            对照国：<span>斯里兰卡</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 009</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">越南</div>
+          <div class="card-verdict">战争废墟上的革新开放——另一个「中国模式」？</div>
+          <div class="card-footer">
+            对照国：<span>古巴</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 010</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">波兰</div>
+          <div class="card-verdict">夹在德俄之间消失三次，却每次都能复活的国家</div>
+          <div class="card-footer">
+            对照国：<span>乌克兰</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 011</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">智利</div>
+          <div class="card-verdict">拉美最接近发达国家的经济体，芝加哥男孩实验的光与影</div>
+          <div class="card-footer">
+            对照国：<span>阿根廷</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 012</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">阿联酋</div>
+          <div class="card-verdict">石油国家中唯一认真思考「后石油时代」的那个</div>
+          <div class="card-footer">
+            对照国：<span>科威特</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 013</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">日本（战后）</div>
+          <div class="card-verdict">从废墟到经济奇迹再到「失去的三十年」——完整的抛物线</div>
+          <div class="card-footer">
+            对照国：<span>德国（战后）</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 014</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">德国（战后）</div>
+          <div class="card-verdict">集体罪责如何变成制度免疫力——记忆政治的奇迹</div>
+          <div class="card-footer">
+            对照国：<span>日本</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="course-card locked">
+          <div class="card-meta">
+            <span class="card-num">No. 015</span>
+            <span class="card-status coming">即将发布</span>
+          </div>
+          <div class="card-country">台湾</div>
+          <div class="card-verdict">地缘夹缝中的半导体堡垒——技术如何成为存亡的筹码</div>
+          <div class="card-footer">
+            对照国：<span>韩国</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Group 2: Curse ═══ -->
+    <div class="group-section" data-group="curse">
+      <div class="group-header">
+        <span class="group-name">💀 诅咒解码</span>
+        <span class="group-range">第16-30讲</span>
+      </div>
+      <p class="group-desc">那些「应该成功」却失败了的国家</p>
+      <div class="courses-grid">
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 016</span><span class="card-status coming">即将发布</span></div><div class="card-country">委内瑞拉</div><div class="card-verdict">石油让它富有，石油让它崩溃——资源诅咒的教科书</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 017</span><span class="card-status coming">即将发布</span></div><div class="card-country">阿根廷</div><div class="card-verdict">一百年前的富国，如何把所有好牌打成烂局</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 018</span><span class="card-status coming">即将发布</span></div><div class="card-country">刚果民主共和国</div><div class="card-verdict">世界最富的地下矿藏，世界最穷的地上人民</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 019</span><span class="card-status coming">即将发布</span></div><div class="card-country">尼日利亚</div><div class="card-verdict">两亿人口的巨人，为什么永远「即将崛起」</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 020</span><span class="card-status coming">即将发布</span></div><div class="card-country">利比亚</div><div class="card-verdict">推翻独裁者之后——当国家能力归零</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 021</span><span class="card-status coming">即将发布</span></div><div class="card-country">伊拉克</div><div class="card-verdict">文明摇篮如何变成地缘政治的靶心</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 022</span><span class="card-status coming">即将发布</span></div><div class="card-country">缅甸</div><div class="card-verdict">军方掌控60年——封闭如何腐蚀一切可能性</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 023</span><span class="card-status coming">即将发布</span></div><div class="card-country">津巴布韦</div><div class="card-verdict">从非洲粮仓到超级通胀——解放者如何变成诅咒</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 024</span><span class="card-status coming">即将发布</span></div><div class="card-country">玻利维亚</div><div class="card-verdict">内陆国的宿命——丢失海岸线的代价</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 025</span><span class="card-status coming">即将发布</span></div><div class="card-country">厄瓜多尔</div><div class="card-verdict">美元化拯救还是囚禁了这个国家？</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 026</span><span class="card-status coming">即将发布</span></div><div class="card-country">赞比亚</div><div class="card-verdict">铜矿的兴衰如何书写一个国家的心电图</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 027</span><span class="card-status coming">即将发布</span></div><div class="card-country">安哥拉</div><div class="card-verdict">内战结束二十年，石油依然是唯一的语言</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 028</span><span class="card-status coming">即将发布</span></div><div class="card-country">苏丹</div><div class="card-verdict">分裂的代价——当国家认同撕裂为二</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 029</span><span class="card-status coming">即将发布</span></div><div class="card-country">海地</div><div class="card-verdict">第一个黑人共和国的永恒悲剧</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 030</span><span class="card-status coming">即将发布</span></div><div class="card-country">巴布亚新几内亚</div><div class="card-verdict">800种语言的国家——当多元性超过制度承载力</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ Group 3: Transition ═══ -->
+    <div class="group-section" data-group="transition">
+      <div class="group-header">
+        <span class="group-name">🔄 转型实验室</span>
+        <span class="group-range">第31-45讲</span>
+      </div>
+      <p class="group-desc">那些正在「从X变成Y」的国家，结果未定</p>
+      <div class="courses-grid">
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 031</span><span class="card-status coming">即将发布</span></div><div class="card-country">中国</div><div class="card-verdict">人类历史上最大规模的发展实验，正在进入最难的章节</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 032</span><span class="card-status coming">即将发布</span></div><div class="card-country">印度</div><div class="card-verdict">民主与混乱共存——14亿人的慢速实验</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 033</span><span class="card-status coming">即将发布</span></div><div class="card-country">巴西</div><div class="card-verdict">永远的「未来之国」——为什么明天从不到来</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 034</span><span class="card-status coming">即将发布</span></div><div class="card-country">印度尼西亚</div><div class="card-verdict">万岛之国——地理碎片化如何挑战国家建设</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 035</span><span class="card-status coming">即将发布</span></div><div class="card-country">土耳其</div><div class="card-verdict">东西之间的身份撕裂——凯末尔遗产的终局</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 036</span><span class="card-status coming">即将发布</span></div><div class="card-country">墨西哥</div><div class="card-verdict">与超级大国为邻是祝福还是诅咒</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 037</span><span class="card-status coming">即将发布</span></div><div class="card-country">南非</div><div class="card-verdict">彩虹国度的褪色——曼德拉之后怎么办</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 038</span><span class="card-status coming">即将发布</span></div><div class="card-country">埃及</div><div class="card-verdict">7000年文明为什么无法转化为现代国力</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 039</span><span class="card-status coming">即将发布</span></div><div class="card-country">伊朗</div><div class="card-verdict">神权与现代性的永恒拉锯</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 040</span><span class="card-status coming">即将发布</span></div><div class="card-country">沙特阿拉伯</div><div class="card-verdict">MBS的豪赌——石油王国能转型为后石油帝国吗</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 041</span><span class="card-status coming">即将发布</span></div><div class="card-country">乌克兰</div><div class="card-verdict">在大国博弈中寻找自我——代价与觉醒</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 042</span><span class="card-status coming">即将发布</span></div><div class="card-country">哈萨克斯坦</div><div class="card-verdict">后苏联空间里最务实的平衡者</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 043</span><span class="card-status coming">即将发布</span></div><div class="card-country">埃塞俄比亚</div><div class="card-verdict">非洲人口第二大国的野心与裂痕</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 044</span><span class="card-status coming">即将发布</span></div><div class="card-country">孟加拉国</div><div class="card-verdict">从「篮子案例」到制造业新星——小额信贷和成衣厂的故事</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 045</span><span class="card-status coming">即将发布</span></div><div class="card-country">菲律宾</div><div class="card-verdict">民主的外壳、寡头的内核——为什么制度移植总是失败</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ Group 4: Institution ═══ -->
+    <div class="group-section" data-group="institution">
+      <div class="group-header">
+        <span class="group-name">⚖️ 制度实验</span>
+        <span class="group-range">第46-60讲</span>
+      </div>
+      <p class="group-desc">那些用「极端制度实验」定义自己命运的国家</p>
+      <div class="courses-grid">
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 046</span><span class="card-status coming">即将发布</span></div><div class="card-country">苏联/俄罗斯</div><div class="card-verdict">70年计划经济实验的完整档案——从乌托邦到崩溃</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 047</span><span class="card-status coming">即将发布</span></div><div class="card-country">美国</div><div class="card-verdict">制度弹性的极限测试——当民主本身成为战场</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 048</span><span class="card-status coming">即将发布</span></div><div class="card-country">英国</div><div class="card-verdict">帝国的缓慢退场——如何优雅地失去一切</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 049</span><span class="card-status coming">即将发布</span></div><div class="card-country">法国</div><div class="card-verdict">中央集权的艺术——从路易十四到马克龙的制度连续性</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 050</span><span class="card-status coming">即将发布</span></div><div class="card-country">瑞典</div><div class="card-verdict">高税收高福利模型的可持续性实验</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 051</span><span class="card-status coming">即将发布</span></div><div class="card-country">古巴</div><div class="card-verdict">革命的保质期——当理想主义遇见物质匮乏</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 052</span><span class="card-status coming">即将发布</span></div><div class="card-country">朝鲜</div><div class="card-verdict">极端封闭的制度实验——人类能被管控到什么程度</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 053</span><span class="card-status coming">即将发布</span></div><div class="card-country">瑞士</div><div class="card-verdict">直接民主+永久中立——小国如何用制度设计抵消地缘风险</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 054</span><span class="card-status coming">即将发布</span></div><div class="card-country">新西兰</div><div class="card-verdict">世界尽头的治理实验室——为什么它总是「第一个」</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 055</span><span class="card-status coming">即将发布</span></div><div class="card-country">冰岛</div><div class="card-verdict">36万人的国家——规模极限下的制度可能性</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 056</span><span class="card-status coming">即将发布</span></div><div class="card-country">卢森堡</div><div class="card-verdict">人均GDP全球第一——制度套利的极致案例</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 057</span><span class="card-status coming">即将发布</span></div><div class="card-country">丹麦</div><div class="card-verdict">信任经济学——为什么高信任社会增长更快</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 058</span><span class="card-status coming">即将发布</span></div><div class="card-country">荷兰</div><div class="card-verdict">与水共存的民族——工程思维如何塑造制度基因</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 059</span><span class="card-status coming">即将发布</span></div><div class="card-country">加拿大</div><div class="card-verdict">永远活在超级邻居阴影下的温和实验</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 060</span><span class="card-status coming">即将发布</span></div><div class="card-country">以色列（制度维度）</div><div class="card-verdict">军事-技术-移民三角——制度如何将危机常态化</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ Group 5: History ═══ -->
+    <div class="group-section" data-group="history">
+      <div class="group-header">
+        <span class="group-name">📚 历史的重量</span>
+        <span class="group-range">第61-75讲</span>
+      </div>
+      <p class="group-desc">那些被历史深深塑造、难以挣脱的国家</p>
+      <div class="courses-grid">
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 061</span><span class="card-status coming">即将发布</span></div><div class="card-country">印度（种姓）</div><div class="card-verdict">3000年等级制度如何嵌入现代经济的每一个毛孔</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 062</span><span class="card-status coming">即将发布</span></div><div class="card-country">日本（明治维新）</div><div class="card-verdict">150年前的制度选择如何决定今天的一切</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 063</span><span class="card-status coming">即将发布</span></div><div class="card-country">德国（纳粹记忆）</div><div class="card-verdict">集体记忆如何成为制度免疫系统</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 064</span><span class="card-status coming">即将发布</span></div><div class="card-country">西班牙</div><div class="card-verdict">内战创伤——「遗忘契约」的代价与智慧</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 065</span><span class="card-status coming">即将发布</span></div><div class="card-country">柬埔寨</div><div class="card-verdict">红色高棉之后——当一代知识分子被消灭</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 066</span><span class="card-status coming">即将发布</span></div><div class="card-country">波兰（历史维度）</div><div class="card-verdict">三次被瓜分三次复活——创伤如何锻造韧性</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 067</span><span class="card-status coming">即将发布</span></div><div class="card-country">以色列/巴勒斯坦</div><div class="card-verdict">两个正义的碰撞——当双方都是受害者</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 068</span><span class="card-status coming">即将发布</span></div><div class="card-country">黎巴嫩</div><div class="card-verdict">教派分权的精巧设计如何走向崩溃</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 069</span><span class="card-status coming">即将发布</span></div><div class="card-country">阿富汗</div><div class="card-verdict">帝国坟场——为什么外部干预在这里永远失败</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 070</span><span class="card-status coming">即将发布</span></div><div class="card-country">索马里</div><div class="card-verdict">国家消失之后——无政府状态的真实面貌</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 071</span><span class="card-status coming">即将发布</span></div><div class="card-country">利比里亚</div><div class="card-verdict">美国「复制品」在非洲——制度移植为什么失败</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 072</span><span class="card-status coming">即将发布</span></div><div class="card-country">塞拉利昂</div><div class="card-verdict">血钻与童兵——资源如何资助战争</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 073</span><span class="card-status coming">即将发布</span></div><div class="card-country">卢旺达（种族灭绝）</div><div class="card-verdict">100天100万人——人类理性的极限在哪里</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 074</span><span class="card-status coming">即将发布</span></div><div class="card-country">南斯拉夫/巴尔干</div><div class="card-verdict">多民族联邦的瓦解——认同政治的终极教训</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 075</span><span class="card-status coming">即将发布</span></div><div class="card-country">爱尔兰（饥荒记忆）</div><div class="card-verdict">大饥荒如何塑造了一个民族的集体人格</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ Group 6: Geography ═══ -->
+    <div class="group-section" data-group="geography">
+      <div class="group-header">
+        <span class="group-name">🧭 地理的命运</span>
+        <span class="group-range">第76-88讲</span>
+      </div>
+      <p class="group-desc">那些被地理位置深刻决定命运的国家</p>
+      <div class="courses-grid">
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 076</span><span class="card-status coming">即将发布</span></div><div class="card-country">蒙古</div><div class="card-verdict">夹在中俄之间的永恒内陆国</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 077</span><span class="card-status coming">即将发布</span></div><div class="card-country">巴拿马</div><div class="card-verdict">一条运河如何定义一个国家的存在意义</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 078</span><span class="card-status coming">即将发布</span></div><div class="card-country">格鲁吉亚</div><div class="card-verdict">文明断层线上的小国——在帝国缝隙中呼吸</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 079</span><span class="card-status coming">即将发布</span></div><div class="card-country">乌兹别克斯坦</div><div class="card-verdict">丝绸之路的十字路口——地理红利为何没有兑现</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 080</span><span class="card-status coming">即将发布</span></div><div class="card-country">马尔代夫</div><div class="card-verdict">当你的整个国家即将沉入海中</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 081</span><span class="card-status coming">即将发布</span></div><div class="card-country">图瓦卢</div><div class="card-verdict">气候变化的第一批受害者——国家消亡倒计时</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 082</span><span class="card-status coming">即将发布</span></div><div class="card-country">新加坡（地缘）</div><div class="card-verdict">马六甲海峡的守门人——位置就是一切</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 083</span><span class="card-status coming">即将发布</span></div><div class="card-country">以色列（战略纵深）</div><div class="card-verdict">没有战略纵深的国家如何生存</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 084</span><span class="card-status coming">即将发布</span></div><div class="card-country">芬兰（地缘）</div><div class="card-verdict">与俄罗斯为邻1300公里——如何活在巨人旁边</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 085</span><span class="card-status coming">即将发布</span></div><div class="card-country">澳大利亚</div><div class="card-verdict">最孤立的大陆——距离是保护还是牢笼</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 086</span><span class="card-status coming">即将发布</span></div><div class="card-country">挪威</div><div class="card-verdict">北海石油如何没有变成诅咒——制度设计的胜利</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 087</span><span class="card-status coming">即将发布</span></div><div class="card-country">巴西（亚马逊）</div><div class="card-verdict">世界之肺——当生态资本与经济增长对撞</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 088</span><span class="card-status coming">即将发布</span></div><div class="card-country">刚果（资源地理）</div><div class="card-verdict">地下的财富如何制造地上的贫困</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ Group 7: Future ═══ -->
+    <div class="group-section" data-group="future">
+      <div class="group-header">
+        <span class="group-name">🔭 未来预言</span>
+        <span class="group-range">第89-100讲</span>
+      </div>
+      <p class="group-desc">那些将在未来20年定义世界格局的国家</p>
+      <div class="courses-grid">
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 089</span><span class="card-status coming">即将发布</span></div><div class="card-country">中国（未来走向）</div><div class="card-verdict">超越中等收入陷阱——制度调适的终极测试</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 090</span><span class="card-status coming">即将发布</span></div><div class="card-country">印度（人口红利）</div><div class="card-verdict">14亿人的赌注——人口红利还是人口负担</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 091</span><span class="card-status coming">即将发布</span></div><div class="card-country">美国（未来）</div><div class="card-verdict">衰退还是转型——帝国的第三幕</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 092</span><span class="card-status coming">即将发布</span></div><div class="card-country">非洲联盟</div><div class="card-verdict">下一个世纪是非洲的世纪吗</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 093</span><span class="card-status coming">即将发布</span></div><div class="card-country">印度尼西亚</div><div class="card-verdict">被低估的巨人——万岛之国的觉醒</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 094</span><span class="card-status coming">即将发布</span></div><div class="card-country">沙特（Vision 2030）</div><div class="card-verdict">MBS的豪赌——30年能改造一个文明吗</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 095</span><span class="card-status coming">即将发布</span></div><div class="card-country">土耳其（新奥斯曼）</div><div class="card-verdict">帝国记忆的复活——历史能被重新激活吗</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 096</span><span class="card-status coming">即将发布</span></div><div class="card-country">巴西（未来）</div><div class="card-verdict">永远的未来之国——这次不一样？</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 097</span><span class="card-status coming">即将发布</span></div><div class="card-country">越南（下一个中国？）</div><div class="card-verdict">供应链转移的最大受益者——但天花板在哪里</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 098</span><span class="card-status coming">即将发布</span></div><div class="card-country">孟加拉国</div><div class="card-verdict">制造业接力棒的下一站——1.7亿人的机会窗口</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 099</span><span class="card-status coming">即将发布</span></div><div class="card-country">埃塞俄比亚</div><div class="card-verdict">非洲之角的工业化梦想——能成功吗</div></div>
+        <div class="course-card locked"><div class="card-meta"><span class="card-num">No. 100</span><span class="card-status coming">即将发布</span></div><div class="card-country">欧盟</div><div class="card-verdict">终章：超国家实验的存亡——人类命运的最终洞见</div></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    国家命运100讲 · Ethan's Lab · 2026<br>
+    <span style="opacity:0.5; font-size: 10px;">The Anatomy of Nations</span>
+  </footer>
+
+  <!-- Tab Switching Script -->
+  <script>
+    const tabs = document.querySelectorAll('.group-tab');
+    const sections = document.querySelectorAll('.group-section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const group = tab.dataset.group;
+        sections.forEach(s => {
+          if (group === 'all') {
+            s.style.display = '';
+          } else {
+            s.style.display = s.dataset.group === group ? '' : 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
