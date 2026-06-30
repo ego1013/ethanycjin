@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 47 · Day 5 · 摆渡人+连接者 · 《巴菲特致股东的信》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .page-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W47 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <!-- Header -->
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 47 · Day 5 · 2027-02-26</span>
+            </div>
+            <h1>住在安全边际里的摆渡人</h1>
+            <div class="subtitle">如果价值投资的框架需要特定的制度土壤，那么在数字化和全球化的2027年，我们是否需要一种超越巴菲特的新投资哲学？</div>
+        </div>
+
+        <!-- 摆渡人部分 -->
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了巴菲特如何在奥马哈的客厅里写下第一封合伙人信；提炼者拆解了安全边际、护城河、能力圈、市场先生和复利的五把框架刀；应用者把价值投资工具丢进了喜诗糖果、A股市场和腾讯渠道KPI三个真实场景；挑战者从制度依赖、技术颠覆、心理偏误和道德包装四个维度解构了巴菲特的框架。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"巴菲特对不对"到"巴菲特在什么条件下对"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控：价值投资是特定历史条件下的产物，不是普适哲学。这个指控在边界层面成立——安全边际不保护国家层面的系统性风险，护城河在技术颠覆中可能失效，长期主义是资本的特权。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果巴菲特的框架有边界，那么边界之内还有什么？</em></p>
+
+        <p>摆渡人认为，挑战者正确指出了框架的局限性，但可能低估了框架在边界内的持久价值。即使在2027年，以下命题仍然成立：</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">安全边际作为"对不确定性的谦卑"——永不过时</div>
+            <p>无论技术如何变化、市场如何波动，"为未来留有余地"都是一种理性的决策方式。安全边际不是"买便宜货"，而是<em>对无知付折扣</em>。在AI预测未来越来越精确的时代，这种谦卑反而更加重要——因为当模型自信时，往往是偏差最大的时候。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">能力圈作为"诚实"——不是知识边界，而是认知边界</div>
+            <p>巴菲特的"能力圈"不是"我只懂这些"，而是"我愿意承认自己不懂这些"。在信息爆炸的时代，这种诚实的自我认知比任何分析工具都稀缺。知道你不知道什么——这是元认知能力，不是专业知识。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">复利作为"时间的杠杆"——前提是"不中断"</div>
+            <p>复利的数学是永恒的，但复利的前提（持续的高回报、不中断、不犯致命错误）越来越难以满足。摆渡人认为，复利的核心洞见不是"追求20%回报"，而是<em>避免致命错误</em>。一次50%的亏损需要100%的回报才能弥补——这个数学在任何时代都成立。</p>
+        </div>
+
+        <h2>第二段摆渡：巴菲特遇见2027</h2>
+
+        <p>如果巴菲特在2027年重写他的投资哲学，他会看到什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 04</div>
+            <div class="passage-title">AI与数据驱动的"新护城河"</div>
+            <p>传统护城河（品牌、特许经营权、成本优势）在AI时代面临重新定义。数据本身是不是一种护城河？OpenAI的护城河是算法还是数据？特斯拉的护城河是品牌还是自动驾驶数据闭环？巴菲特 himself 在近年投资了 Snowflake 和苹果——他是否也在悄悄更新自己的能力圈？</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 05</div>
+            <div class="passage-title">全球分散化：从"美国国运"到"多市场配置"</div>
+            <p>如果巴菲特出生于1970年的中国，他可能会投资茅台、腾讯、宁德时代——在各自的时代找到中国版本的"可口可乐"。摆渡人认为，价值投资的本质不是"美国优质企业"，而是<em>在任何市场中找到拥有护城河的企业</em>。但前提是：你必须理解那个市场的制度逻辑、文化语境和商业生态。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 06</div>
+            <div class="passage-title">从"投资企业"到"投资生态"</div>
+            <p>巴菲特投资的是单个企业。但2027年的商业竞争越来越是生态之间的竞争——苹果生态 vs 安卓生态，微信生态 vs TikTok生态。单个企业的护城河正在被"生态锁定"取代。投资者需要评估的不是一家公司，而是一个网络的价值。</p>
+        </div>
+
+        <h2>第三段摆渡：住在安全边际里的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果巴菲特是对的——安全边际是对不确定性的谦卑，能力圈是对无知的诚实，复利是时间的杠杆——那么摆渡人作为"把思想带到当下"的角色，本身也生活在一个选择架构中。这篇推送的结构、问题的排序、案例的选择，都在引导读者的注意力。摆渡人自己也在做"投资"——投资于读者的认知时间。</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在框架之外。</em>巴菲特不能，挑战者不能，摆渡人也不能。问题不是"谁能设计无偏见的选择架构"——答案是没有人。问题是：<strong>我们是否愿意承认自己的框架也有边界，并为此保持更新。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的安全边际不是价格折扣，而是对框架本身的持续怀疑。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>巴菲特在晚年（近年信中）开始承认：找到"大象级"投资机会越来越难。他是否也在经历摆渡人所说的"框架边界收窄"？也许最好的投资者不是那些"始终坚持原则"的人，而是那些<em>知道原则何时适用、何时需要更新</em>的人。</p>
+
+        <p>但这又带来了一个悖论：如果原则不断更新，它还是原则吗？还是只是一套临时启发式？摆渡人不会假装解决这个悖论。摆渡人只会说：<em>承认这个悖论的存在，本身就是安全边际。</em></p>
+
+        <!-- 张力问题最终形态 -->
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果价值投资的本质是"长期主义"和"安全边际"，那么在短期主义主导的市场中，巴菲特的方法是否只是幸存者的偏见？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果价值投资的有效性依赖于特定的制度环境和历史条件，那么我们追求的不应该是"复制巴菲特"，而是<em>理解他框架的边界，并在边界内保持谦卑，在边界外保持更新</em>。安全边际不仅适用于价格，也适用于框架本身——任何框架都需要为"我错了"留有余地。
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次做重大决策时，是否为"我错了"留出了安全边际？</div>
+                <div class="ft-q-item">你所在的组织是否有一个机制，让季度考核不妨碍长期价值的积累？</div>
+                <div class="ft-q-item">如果你最喜欢的投资框架（或商业框架）是错的，你能接受这个可能性吗？</div>
+            </div>
+        </div>
+
+        <!-- 分隔线 -->
+        <div class="section-break"></div>
+
+        <!-- 连接者部分 -->
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第47周《巴菲特致股东的信》的位置是什么？巴菲特的价值投资如何与前面的46本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第47节点</h2>
+
+        <p>连接者今天的工作不是"巴菲特说了什么"，而是"巴菲特站在哪里"。四条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">国富论</span>
+                <span class="branch-week">W1</span>
+            </div>
+            <div class="branch-desc">
+                斯密在《国富论》中假设了"看不见的手"——市场通过自利行为实现社会最优。巴菲特证明了在特定条件下（优质企业、长期持有、复利），自利投资确实可以创造巨大财富。但张力在于：斯密的框架是宏观的，巴菲特的框架是微观的。当所有人都试图"价值投资"时，市场效率会提高，安全边际会消失——<em>巴菲特的成功部分依赖于大多数人不是价值投资者</em>。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">黑天鹅</span>
+                <span class="branch-week">W10</span>
+            </div>
+            <div class="branch-desc">
+                塔勒布说极端事件是不可预测的，巴菲特说安全边际可以保护你。两者的对话是：安全边际在<em>已知风险</em>面前有效（企业估值错误），但在<em>未知风险</em>（黑天鹅）面前可能无效。2008年的金融危机是两者交锋的真实战场：巴菲特在危机中反向投资（安全边际），但他也承认精密铸件的投资因COVID-19而失败（黑天鹅）。两者不是矛盾，而是互补——覆盖不同维度的风险。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">影响力</span>
+                <span class="branch-week">W8</span>
+            </div>
+            <div class="branch-desc">
+                西奥迪尼讲说服的六种武器，巴菲特讲价值投资的五大原则。传承中的张力：西奥迪尼揭示的是"如何利用人性弱点"，巴菲特揭示的是"如何利用人性弱点来赚钱"——市场先生的情绪。但巴菲特比西奥迪尼更诚实：他承认自己也被情绪影响。影响力是外部工具，价值投资是内部纪律——两者都需要对人性的深刻理解。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">娱乐至死</span>
+                <span class="branch-week">W13</span>
+            </div>
+            <div class="branch-desc">
+                波兹曼说电视杀死了深度思考，社交媒体正在杀死电视文化。巴菲特的价值投资需要的恰恰是深度思考和长期耐心——在波兹曼所描述的"娱乐至死"的媒介环境中，价值投资越来越难以被实践。当投资信息被压缩成15秒的短视频、当"买入并持有"被嘲笑为"过时"，巴菲特的框架本身正在与媒介环境发生根本冲突。这是价值投资在2027年面临的最大挑战：不是市场不对，而是<em>注意力经济让"长期"变得不可能</em>。
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">奥德赛</span>
+                <span class="branch-week">文学感知</span>
+            </div>
+            <div class="branch-desc">
+                荷马史诗中的奥德修斯用二十年才从特洛伊回到家乡。他的旅程充满诱惑（塞壬的歌声）、陷阱（独眼巨人）和干扰（卡吕普索的挽留）。巴菲特的六十年投资旅程也是一场奥德赛——抵御市场先生的诱惑、避免致命错误、坚持回家的路（复利）。但两者的深层张力是：奥德修斯最终回到了家，而巴菲特的旅程没有终点——只要他还在投资，诱惑就永远存在。价值投资不是一次回家的旅程，而是<em>永远在路上的纪律</em>。
+            </div>
+        </div>
+
+        <!-- 知识地图 SVG -->
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第47节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W47</text>
+
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+                <text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text>
+                <text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+
+                <circle cx="140" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="140" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W3</text>
+                <text x="140" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">新教伦理</text>
+
+                <circle cx="180" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="180" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W4</text>
+                <text x="180" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">通论</text>
+
+                <circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W5</text>
+                <text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">奴役之路</text>
+
+                <circle cx="260" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="260" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W6</text>
+                <text x="260" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本主义</text>
+
+                <circle cx="300" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="300" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W7</text>
+                <text x="300" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">乌合之众</text>
+
+                <circle cx="340" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="340" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W8</text>
+                <text x="340" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">影响力</text>
+
+                <circle cx="380" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="380" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W9</text>
+                <text x="380" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">竞争战略</text>
+
+                <circle cx="420" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="420" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W10</text>
+                <text x="420" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">黑天鹅</text>
+
+                <circle cx="460" cy="100" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="460" y="104" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W11</text>
+                <text x="460" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">快与慢</text>
+
+                <circle cx="500" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="500" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W12</text>
+                <text x="500" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">错误的行为</text>
+
+                <circle cx="540" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="540" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W13</text>
+                <text x="540" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">娱乐至死</text>
+
+                <text x="300" y="200" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="9">...</text>
+
+                <circle cx="460" cy="280" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="460" y="284" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W47</text>
+                <text x="460" y="310" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">巴菲特</text>
+
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+                <text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+                <text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+
+                <path d="M 460 298 Q 460 340 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 460 298 Q 400 340 340 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 460 298 Q 440 200 460 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 420 118 Q 440 200 460 280" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <!-- 下周预告 -->
+        <h2>下周预告</h2>
+        <p>第48周，我们将翻开沃尔特·艾萨克森的《<em>史蒂夫·乔布斯传</em>》（<em>Steve Jobs</em>）。</p>
+        <p>从巴菲特的"安全边际"到乔布斯的"现实扭曲力场"——如果巴菲特代表了"理性的极致"，乔布斯代表了"疯狂的极致"。但两者的深层张力是：他们都在各自领域创造了不可复制的成功，却给出了完全相反的处方。巴菲特说"不要犯错"，乔布斯说"犯错要快"。巴菲特说"护城河保护你"，乔布斯说"护城河会杀死你——你必须不断摧毁自己"。</p>
+        <p>下周，我们走进那个穿着黑色高领衫、站在斯坦福演讲台上的男人——他用"Stay hungry, stay foolish"激励了整整一代人，但他的"混蛋天才"模式是否值得效仿？</p>
+
+        <div class="pull-quote">
+            <p>"活着就是为了改变世界，难道还有其他原因吗？"</p>
+            <div class="attribution">—— 史蒂夫·乔布斯</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="page-nav">
+            <a href="./w47-d04.html">← D04 · 挑战者</a>
+            <a href="./w48-d01.html">D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>

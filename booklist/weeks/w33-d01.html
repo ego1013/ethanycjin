@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 33 · Day 1 · 叙事者 · 《大分流》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        /* Role intro */
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Body text */
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        /* Scene opening block */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Compare grid */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Concept cards */
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        /* Bias tag */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Tension question */
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        /* Footer nav */
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第33周 · 第1天</span>
+    </nav>
+
+    <!-- Badge -->
+    <div class="week-badge">📚 Week 33 · Day 1 · 2026-11-16</div>
+
+    <!-- Book title area -->
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">大分流</div>
+        <div class="book-author">肯尼斯·彭慕兰 <span>Kenneth Pomeranz</span></div>
+    </div>
+
+    <!-- Role intro -->
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲彭慕兰是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <!-- Opening scene -->
+    <h2>那个说"工业革命只是地理运气"的经济史学家</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 2000年，加州大学尔湾分校</div>
+        <p>2000年春天，加州大学尔湾分校历史系的一间办公室里，一位四十七岁的教授正在整理他的手稿。书稿的标题是《大分流》。书的核心论点让每一个相信"欧洲优越性"的人都感到不安：</p>
+        <p>"1800年以前，中国最发达的地区（长江三角洲）和欧洲最发达的地区（英国）在经济发展水平上几乎没有差异。工业革命之所以发生在英国而不是中国，不是因为欧洲更先进、更理性或更有创新精神，而是因为两个偶然因素：煤炭的地理分布和美洲殖民地的资源输入。"</p>
+        <p>2000年的学术界正处于"欧洲中心论"的黄昏。冷战结束后的乐观主义与福山的"历史终结论"相呼应，西方发展模式被视为唯一正确的发展路径。彭慕兰在这本书中写道：你们错了。如果中国在1800年拥有英国的煤炭资源和海外殖民地，工业革命很可能发生在中国。</p>
+        <p>他的出版商担心这本书会激怒西方读者。但彭慕兰坚持：<em>这不是对欧洲的攻击，而是对历史偶然性的诚实。</em>如果欧洲人把自己的成功归因于"优越性"，那么他们不仅误解了历史，也在制造一种危险的文化傲慢。</p>
+    </div>
+
+    <p>彭慕兰在书中反复提到一个概念："<em>大分流</em>"（<em>The Great Divergence</em>）。在传统的经济史叙事中，欧洲从1500年起就开始"领先"于亚洲——因为科学革命、启蒙运动、产权制度、资本主义精神。但彭慕兰用数据反转了这个叙事：<strong>1800年以前，欧洲并没有领先。</strong>中国和欧洲的核心区域在生活水平、预期寿命、市场发育程度、技术创新能力上几乎持平。分流不是发生在1500年，而是发生在<em>1800年之后</em>——而且原因不是欧洲的"内在优势"，而是<em>地理偶然</em>。</p>
+
+    <p>上周我们跟随亨廷顿分析了文明冲突的文化逻辑。本周，我们跟随彭慕兰——<em>那个说"工业革命只是地理运气"的经济史学家</em>。他做的事情比亨廷顿更颠覆：亨廷顿告诉我们文化差异是冲突的根源，彭慕兰告诉我们<em>地理差异是繁荣的根源</em>——而且地理差异是偶然的、不可复制的。</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">2000</div>
+            <div class="data-label">出版元年</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">1800</div>
+            <div class="data-label">分流关键年</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">1400-1800</div>
+            <div class="data-label">核心比较时段</div>
+        </div>
+    </div>
+
+    <!-- Person biography -->
+    <h2>彭慕兰是谁：一个从西方史学内部颠覆西方史学的"偶然论者"</h2>
+
+    <p>肯尼斯·彭慕兰1958年出生于美国纽约。他的学术训练完全在西方史学传统内部——耶鲁大学历史学本科，耶鲁大学博士，研究中国史。这种" insider "的位置给了他一种独特的颠覆能力：他不是站在外部批判西方，而是<em>从西方史学的内部找到它的逻辑漏洞</em>。</p>
+
+    <p>1980年代，彭慕兰开始研究中国清代经济史。他的最初动机是传统的：了解中国的"前现代"经济是什么样的。但当他深入研究长江三角洲的农业、手工业和市场时，他发现了一个让他震惊的事实：<em>这个"前现代"经济在很多指标上与同时期的欧洲不相上下。</em></p>
+
+    <div class="pull-quote">
+        "当我看到1750年的长江三角洲和英国在人均寿命、消费水平、纺织品质量上几乎持平时，我意识到一个问题：我们讲述的'欧洲领先'的故事可能不是一个事实，而是一个叙事。"
+    </div>
+
+    <p>1990年代，彭慕兰开始与欧洲经济史学家合作，比较中国和欧洲的区域经济数据。他使用的方法不是传统的"文化比较"（如韦伯的"新教伦理"），而是<em>物质比较</em>——卡路里摄入、纺织品消费、家庭结构、土地利用、市场整合度。数据告诉他一个清晰的模式：1800年之前，欧洲和中国最发达地区的发展轨迹是<em>平行</em>的，而不是分岔的。</p>
+
+    <p>2000年，《大分流》出版。彭慕兰在书中不仅比较了经济数据，还解释了为什么分流发生在1800年之后。他的答案不是一个因素，而是两个<em>地理偶然</em>：英国煤矿靠近工业区（而中国煤炭主要分布在西北，远离经济中心），以及美洲殖民地为欧洲提供了大量土地密集型资源（棉花、木材、糖），从而释放了欧洲的土地压力。这两个因素都是<em>地理的、外在的、不可复制的</em>。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1958</div>
+            <div class="timeline-text">生于美国纽约</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1980</div>
+            <div class="timeline-text">耶鲁大学历史学本科毕业</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1988</div>
+            <div class="timeline-text">耶鲁大学博士，研究中国清代经济史</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1990s</div>
+            <div class="timeline-text">开始系统比较中国和欧洲的区域经济数据</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2000</div>
+            <div class="timeline-text">出版《大分流》，颠覆"欧洲领先"叙事</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2000s-2010s</div>
+            <div class="timeline-text">推动"加州学派"经济史研究，重新定义全球比较框架</div>
+        </div>
+    </div>
+
+    <!-- Time context -->
+    <h2>为什么是彭慕兰：从"欧洲为什么成功"到"欧洲为什么幸运"</h2>
+
+    <p>理解彭慕兰的位置，需要先理解他站在谁的肩膀上、又推开了哪扇门。</p>
+
+    <p>韦伯在《新教伦理》中问：为什么资本主义出现在欧洲？他的答案是：新教伦理创造了一种"理性计算"的精神。麦克法兰在《英国个人主义的起源》中问：为什么现代个人主义出现在英国？他的答案是：英国的产权制度和家庭结构。这些理论都假设欧洲的成功有某种<em>内在的文化或制度优势</em>。</p>
+
+    <p>彭慕兰做了第二份工作：他不是说这些理论完全错误，而是说<em>它们解释不了时间线</em>。如果欧洲真的从1500年起就"更先进"，那么为什么1800年之前欧洲和中国的生活水平几乎相同？如果新教伦理是资本主义的关键，为什么天主教地区（如法国、意大利）也在工业化？如果产权制度是英国独有的，为什么中国清代的土地买卖制度同样高效？</p>
+
+    <p>这就是"大分流"的核心洞见：<strong>1800年之前的欧洲并没有系统性优势。</strong>分流发生在1800年之后，而且驱动力不是欧洲的"内在品质"，而是<em>外在资源</em>——煤炭和殖民地。这两个因素都是地理的偶然，不是文化的必然。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">传统欧洲中心论提问</div>
+            <div class="compare-row">欧洲为什么成功？</div>
+            <div class="compare-row">欧洲有什么独特的优势？</div>
+            <div class="compare-row">为什么其他文明没有发展出资本主义？</div>
+            <div class="compare-row">框架：文化/制度优越性</div>
+            <div class="compare-row">目标：解释欧洲的独特性</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">彭慕兰的提问</div>
+            <div class="compare-row">欧洲为什么"突然"成功？</div>
+            <div class="compare-row">1800年之前欧洲真的领先吗？</div>
+            <div class="compare-row">分流是文化决定的还是地理偶然的？</div>
+            <div class="compare-row">框架：数据比较 + 地理偶然</div>
+            <div class="compare-row">目标：解释分流的时机和原因</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>英雄起源叙事偏差</strong>：彭慕兰的故事常被包装成"一个学者挑战了整个西方史学界"的叙事，但这过度简化了《大分流》的影响。彭慕兰是"加州学派"的一员，这个学派还包括王国斌、安德烈·贡德·弗兰克等人，他们共同推动了对欧洲中心论的批判。彭慕兰是站在一群人肩膀上的，而非独自开辟道路。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>框架简化偏差</strong>："大分流"被媒体和政策界简化成了"工业革命只是运气"的公式，但彭慕兰的理论远比这复杂。他承认欧洲在科学方法、金融机构和产权制度上有某些优势，但他认为这些优势不足以解释分流的<em>时机</em>和<em>规模</em>。把大分流等同于"运气"，是对理论深度的严重压缩。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>后见之明偏差</strong>：彭慕兰在2000年提出"大分流"时，中国刚刚加入WTO，还没有成为全球经济强国。今天的中国崛起让彭慕兰的框架看起来更有预见性——但这不是因为彭慕兰"预测"了中国崛起，而是因为他的框架揭示了<em>历史可能性</em>：如果条件不同，中国本可以在1800年就工业化。
+    </div>
+
+    <!-- Book's birth -->
+    <h2>一本书如何从"学术争议"变成"范式革命"</h2>
+
+    <p>《大分流》不是一本传统的历史著作。它更像是一部"经济史的比较解剖报告"——彭慕兰带着读者重新比较了欧洲和中国在1400-1800年的经济轨迹。</p>
+
+    <p>书的核心方法是比较两个"核心区域"：英国和长江三角洲。彭慕兰选择的不是国家整体，而是<em>最发达的区域</em>——因为国家平均数会掩盖区域差异。他发现，这两个区域在1750年左右的生活水平惊人地接近：人均卡路里摄入、纺织品消费、家庭结构、预期寿命都相差无几。</p>
+
+    <p>但1800年之后，轨迹分岔了。英国通过工业革命实现了持续的经济增长，而中国陷入了"内卷"——劳动力越来越便宜，技术创新停滞，生活水平停滞。传统的解释是：欧洲有"科学精神"，中国有"文化保守"。但彭慕兰提出了两个替代解释：</p>
+
+    <p><strong>第一，煤炭的地理分布。</strong> 英国的工业革命依赖蒸汽机，蒸汽机依赖煤炭。英国的煤矿恰好位于工业中心附近（英格兰中部），运输成本极低。中国的煤炭主要分布在西北（山西、陕西），远离长江三角洲的经济中心。如果中国的煤炭分布在江南，蒸汽革命可能率先在中国发生。</p>
+
+    <p><strong>第二，美洲殖民地的生态缓解。</strong> 英国工业化的一个关键瓶颈是土地——种植棉花、纺织、造船都需要土地。如果没有美洲殖民地的棉花、木材和糖，英国就需要在国内种植这些作物，从而挤占粮食生产的土地。美洲殖民地为英国提供了<em>生态空间</em>——一个中国没有的"外部资源池"。</p>
+
+    <p>这本书出版后，在西方学术界引起了巨大争议。欧洲经济史学家批评彭慕兰"低估了欧洲的制度优势"，中国史学家批评他"高估了清代中国的经济效率"。但彭慕兰在书的结尾提出了一个警告：<strong>把欧洲的成功归因于"优越性"，不仅是对历史的误解，也是对全球南方的傲慢。</strong></p>
+
+    <!-- Concept preview -->
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">大分流 <span>The Great Divergence</span></div>
+            <div class="concept-desc">1800年前后，欧洲（特别是英国）和亚洲（特别是中国）的经济轨迹突然分岔。传统解释认为是欧洲的文化/制度优势，彭慕兰认为是地理偶然和资源禀赋的差异。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">地理偶然 <span>Geographic Contingency</span></div>
+            <div class="concept-desc">历史发展不是由文化或制度决定的，而是由地理条件（资源分布、气候、位置）偶然决定的。英国的煤矿位置和美洲殖民地的存在都是"运气"，不是欧洲人的"努力"或"智慧"。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">生态缓解 <span>Ecological Relief</span></div>
+            <div class="concept-desc">美洲殖民地为欧洲提供了土地密集型资源（棉花、木材、糖），从而释放了欧洲本土的土地压力。这种"外部生态空间"让中国无法复制欧洲的工业化路径——不是因为中国不够聪明，而是因为中国没有"新大陆"。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">内卷 <span>Involution</span></div>
+            <div class="concept-desc">当人口增长超过技术增长时，劳动力变得越来越便宜，技术创新失去经济动力。中国清代的"内卷"表现为：每个劳动力投入更多工时，但边际产出递减。这是"没有发展的增长"——总量增加，但人均停滞。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">欧洲中心论 <span>Eurocentrism</span></div>
+            <div class="concept-desc">一种历史叙事偏差：把欧洲的发展视为"正常"的、"先进"的，把其他文明的发展视为"异常"的、"落后"的。彭慕兰认为，这种叙事不是基于数据，而是基于一种文化优越感的投射。</div>
+        </div>
+    </div>
+
+    <!-- Tension question -->
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">为什么工业革命发生在欧洲而不是中国？如果答案是"地理偶然"，那么"发展"的话语权是否应该被重新分配？</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+        <div class="footer-info">Week 33 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解大分流与地理偶然的框架逻辑 →</div>
+    </div>
+
+    <!-- Page Nav -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w32-d05.html" style="color:#888;text-decoration:none;">← W32 · D05</a>
+        <a href="./w33-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 50 · Day 1 · 叙事者 · 《穷查理宝典》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第50周 · 第1天</span>
+    </nav>
+
+    <div class="week-badge">📚 Week 50 · Day 1 · 2027-03-15</div>
+
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">穷查理宝典</div>
+        <div class="book-author">查理·芒格 <span>Charlie Munger</span></div>
+    </div>
+
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲芒格是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <h2>那个在理发店阅读财务报表的法律系辍学生</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1940年代，奥马哈，内布拉斯加</div>
+        <p>1940年代，奥马哈的一家理发店里，一位十几岁的年轻人正在等待理发。与同龄人不同，他没有读漫画或体育新闻——他在读一本关于美国铁路公司的财务报表。理发师问他："小伙子，你为什么要读这个？"他抬起头说："因为这里面有真相。数字不会说谎。"</p>
+        <p>这个年轻人就是查理·芒格。他后来进入密歇根大学学习数学，二战期间加入美国陆军航空队，在加州理工学院学习气象学。战后，他进入哈佛法学院，以优异成绩毕业，成为了一名律师。</p>
+        <p>但芒格的命运在1959年发生了转折。那一年，他35岁，回到奥马哈处理父亲的遗产。一位共同的朋友安排他与29岁的沃伦·巴菲特见面。据说，两人一见如故，聊了整整八个小时。巴菲特后来回忆："我第一次见到查理时，就知道他比我聪明。"</p>
+        <p>这次会面改变了两人的人生轨迹。芒格后来放弃了律师职业，转向投资。1978年，他成为伯克希尔·哈撒韦的副董事长，与巴菲特并肩作战近半个世纪。但芒格不是巴菲特的配角——他是<em>巴菲特的"思维搭档"</em>，是那个问"但是，如果……呢？"的人，是那个引入心理学、物理学和工程学思维来补充财务分析的人。</p>
+    </div>
+
+    <p>芒格的投资成就被巴菲特的光芒部分遮蔽，但他的思想独立性远超"巴菲特的合伙人"这个标签。他是<em>跨学科思维</em>的倡导者——认为每个决策者都应该掌握心理学、数学、物理学、生物学、经济学和工程学的核心模型，然后把它们组合成一个"思维格栅"（latticework of mental models）。他说："如果你只有一把锤子，你会把所有问题都看成钉子。"</p>
+
+    <p>上周我们跟随稻盛和夫走过了敬天爱人的东方哲学之路。本周，在50本书精读旅程的最后一周，我们走进芒格——<em>那个用理性格栅来对抗认知盲点的老人</em>。稻盛和夫用心灵来回答"作为人，何谓正确"，芒格用模型来回答"作为人，如何不犯愚蠢的错误"。在旅程的终点，我们面对最后一个问题：50本书之后，我们是否真的变得更有智慧？</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">50+</div>
+            <div class="data-label">年伯克希尔副董事长</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">100+</div>
+            <div class="data-label">个思维模型</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">99</div>
+            <div class="data-label">岁辞世</div>
+        </div>
+    </div>
+
+    <h2>芒格是谁：一个从哈佛法学院叛逃到投资界的"通才怪物"</h2>
+
+    <p>查理·芒格1924年出生于内布拉斯加州奥马哈市——和巴菲特同一个城市。他的祖父是一位联邦法官，父亲是一位律师。芒格从小表现出对阅读的狂热——他读遍了父亲书房里的所有书，从传记到科学，从历史到工程学。</p>
+
+    <p>1948年，芒格从哈佛法学院毕业，加入了洛杉矶的一家律师事务所。但他很快发现，法律工作的收入远不及投资。1962年，他成立了自己的投资公司——惠勒·芒格公司（Wheeler, Munger & Co.）。从1962年到1975年，他的投资复合年回报率达到约19.8%——远超同期标普500的约5%.</p>
+
+    <p>1978年，芒格正式加入伯克希尔·哈撒韦，担任副董事长。但他与巴菲特的分工不是传统的"CEO+COO"模式，而是<em>"两个独立思考者的对话"</em>。巴菲特负责寻找"大象级"投资机会，芒格负责质疑和补充。芒格引入了心理学视角（"人类误判心理学"），让巴菲特认识到认知偏差对投资决策的影响；芒格倡导"以合理价格买入优质企业"（而不是格雷厄姆的"以便宜价格买入平庸企业"），推动了伯克希尔投资哲学的升级。</p>
+
+    <div class="pull-quote">
+        "在我这漫长的一生中，没有什么比持续学习对我帮助更大。"
+    </div>
+
+    <p>1994年，芒格在南加州大学商学院发表了著名的演讲——"人类误判心理学"（The Psychology of Human Misjudgment）。在这篇演讲中，他系统性地梳理了25种人类认知偏差——从奖励和惩罚的超级反应倾向，到社会认同、对比错误反应、权威影响等。这篇演讲后来被收录进《穷查理宝典》，成为行为金融学领域的经典文献。</p>
+
+    <p>2005年，《穷查理宝典》（Poor Charlie's Almanack）出版。这本书不是芒格自己写的——它是芒格的朋友彼得·考夫曼（Peter Kaufman）编辑的，收录了芒格的演讲、文章、评论和格言。书名致敬了本杰明·富兰克林的《穷理查年鉴》（Poor Richard's Almanack）——芒格 lifelong 崇拜富兰克林，视他为"跨学科思维"的先驱。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1924</div>
+            <div class="timeline-text">生于奥马哈，祖父为联邦法官，父亲为律师</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1948</div>
+            <div class="timeline-text">哈佛法学院毕业，加入洛杉矶律师事务所</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1959</div>
+            <div class="timeline-text">与巴菲特在奥马哈初次见面，一见如故</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1962</div>
+            <div class="timeline-text">成立惠勒·芒格投资公司，开始独立投资</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1978</div>
+            <div class="timeline-text">加入伯克希尔·哈撒韦，担任副董事长</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1994</div>
+            <div class="timeline-text">发表"人类误判心理学"演讲，系统梳理25种认知偏差</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2005</div>
+            <div class="timeline-text">《穷查理宝典》出版，成为跨学科思维的经典读物</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2023</div>
+            <div class="timeline-text">在加州辞世，享年99岁，留下"思维格栅"的终身遗产</div>
+        </div>
+    </div>
+
+    <h2>为什么是芒格：从"专业分工"到"通才思维"</h2>
+
+    <p>理解芒格的位置，需要理解他站在谁的肩膀上、又推开了哪扇门。</p>
+
+    <p>现代学术体系建立在专业分工之上：经济学家研究市场，心理学家研究心智，物理学家研究物质，工程师研究系统。每个学科都有自己的语言、假设和方法论。芒格认为，这种分工虽然提高了效率，但创造了一个致命的问题：<em>每个专家都只有一把锤子，而真实世界的问题需要多种工具</em>。</p>
+
+    <p>芒格做的不是第三套投资方法，而是<em>一套思维操作系统</em>——他追问的不是"如何投资"，而是"<strong>如何思考</strong>"，进而"如何不犯愚蠢的错误"。他的答案是：建立一个由多个学科核心模型组成的"思维格栅"，在面对任何问题时，调用多个模型来交叉验证。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">专业分工思维</div>
+            <div class="compare-row">在一个领域内深入专精</div>
+            <div class="compare-row">用单一模型解释复杂问题</div>
+            <div class="compare-row">专家知道越来越多关于越来越少</div>
+            <div class="compare-row">学科壁垒保护知识主权</div>
+            <div class="compare-row">目标：成为领域权威</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">芒格栅格思维</div>
+            <div class="compare-row">在多个领域中掌握核心模型</div>
+            <div class="compare-row">用多元模型交叉验证问题</div>
+            <div class="compare-row">通才知道越来越少关于越来越多</div>
+            <div class="compare-row">学科边界是人为的、可穿透的</div>
+            <div class="compare-row">目标：避免愚蠢错误</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>"通才优越"叙事偏差</strong>：芒格的成功常被用来证明"通才优于专家"。但这忽略了关键事实：芒格首先是在法律和财务领域成为专家，然后才扩展为通才。没有专业基础，"通才"只是"什么都懂一点，什么都不精"。芒格 himself 警告："先掌握一个学科，然后再扩展到其他领域。"
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>后见之明偏差</strong>：芒格的思维格栅在描述成功时非常有力，但它是否能够帮助预测成功？格栅思维告诉你"不要做什么"（避免错误），但它不能总是告诉你"应该做什么"（创造价值）。在创新、艺术和创业领域，"避免错误"不等于"创造成功"。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>模型崇拜偏差</strong>：芒格的框架可能导致"模型迷恋"——认为只要掌握足够多的模型，就能理解一切。但复杂系统（如人类社会、金融市场、生态系统）的涌现性质，可能超越任何现有模型的解释能力。模型是地图，不是领土——而地图永远有盲区。
+    </div>
+
+    <h2>一本书如何成为"跨学科思维的《圣经》"</h2>
+
+    <p>《穷查理宝典》不是一本传统意义上的投资书。它更像是一本"智慧语录"——收录了芒格数十年间的演讲、文章、评论和私人对话。</p>
+
+    <p>全书的核心篇章是芒格在1994年南加州大学商学院的演讲"人类误判心理学"。在这篇演讲中，他系统性地梳理了25种人类认知偏差，每一种都配有真实世界的案例和生物学解释。这是卡尼曼（W11）和塞勒（W12）的行为经济学在投资者教育中的最直接应用。</p>
+
+    <p>但书的真正独特之处在于它的<em>结构</em>。考夫曼不是按时间顺序排列演讲，而是按主题重新编排——从"思维格栅"到"人类误判心理学"到"投资原则"到"人生智慧"。这种编排让芒格的碎片化洞见变成了一张可理解的地图。读者可以从任何一页开始，都能找到独立的智慧颗粒，也可以从整体上把握芒格的思维体系。</p>
+
+    <p>芒格在书中反复强调一个主题：<strong>"invert, always invert"</strong>（反过来想，总是反过来想）。这是他从数学家雅可比（Carl Jacobi）那里学到的——如果你想解决一个问题，先试着把它反过来。如果你想知道如何成功，先研究如何失败；如果你想知道如何幸福，先研究如何变得痛苦。这种"逆向思维"是芒格格栅中最锋利的工具之一。</p>
+
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">思维格栅 <span>Latticework of Mental Models</span></div>
+            <div class="concept-desc">决策者应该掌握多个学科的核心模型（如物理学的临界质量、生物学的自然选择、心理学的认知偏差、数学的复利、工程学的冗余备份），然后像格栅一样把它们编织在一起。面对任何问题时，调用多个模型来交叉验证，避免单一模型的盲点。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">人类误判心理学 <span>Psychology of Human Misjudgment</span></div>
+            <div class="concept-desc">芒格系统梳理的25种认知偏差：奖励和惩罚的超级反应、喜欢/热爱倾向、讨厌/憎恨倾向、避免怀疑倾向、避免不一致倾向、好奇心倾向、康德式公平倾向、艳羡/嫉妒倾向、回馈倾向、受简单联想影响倾向、简单的、避免痛苦的心理否认、自视过高倾向、过度乐观倾向、社会认同倾向、对比错误反应倾向、错误衡量易得性倾向、权威影响错误、重视理由倾向等。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">逆向思维 <span>Inversion</span></div>
+            <div class="concept-desc">从数学家雅可比那里学到的技巧：如果你想解决一个问题，先把它反过来。想知道如何成功，先研究如何失败；想知道如何幸福，先研究如何痛苦。这种"反向思考"能够揭示正向思维看不到的盲点。芒格说："如果我知道我会死在哪里，我就永远不去那里。"</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">能力圈 <span>Circle of Competence</span></div>
+            <div class="concept-desc">巴菲特和芒格共同强调的原则：只投资于你能够真正理解的领域。但芒格比巴菲特更进一步——他主张"扩展能力圈"，通过跨学科学习来不断扩大你能够理解的领域。能力圈不是固定边界，而是动态增长的认知疆域。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">复利与长期主义 <span>Compounding & Long-termism</span></div>
+            <div class="concept-desc">芒格和巴菲特共同信仰的核心。但芒格的独特贡献是：他把复利从"财务概念"扩展为"知识概念"——每天学习一点点，持续数十年，知识的复利效应会让人获得巨大的认知优势。"每天睡觉前比早上醒来时聪明一点点"——这是芒格版本的长期主义。</div>
+        </div>
+    </div>
+
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果跨学科思维模型（多元思维框架）是避免愚蠢的最佳武器，那么为什么我们花了50本书才走到这里？芒格的格栅理论是否适用于一切？50本书之后，我们是否真的变得更有智慧？还是我们只是拥有了更多"知道但做不到"的知识？格栅思维是通往智慧的桥梁，还是另一种形式的"知识囤积"？</div>
+    </div>
+
+    <div class="page-footer">
+        <div class="footer-info">Week 50 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解思维格栅与逆向思维的逻辑链 →</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w49-d05.html" style="color:#888;text-decoration:none;">← W49 D05 · 摆渡人</a>
+        <a href="./w50-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

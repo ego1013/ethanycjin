@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 31 · Day 5 · 摆渡人+连接者 · 《大国的兴衰》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 摆渡人专属：蓝调 */
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            /* 连接者专属：青调 */
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Body text */
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        /* Bridge section */
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Connector section */
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Section break */
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Final tension box */
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        /* Connector branch */
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        /* Bridge passage */
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        /* SVG map container */
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        /* Page nav */
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .page-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W31 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <!-- Header -->
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 31 · Day 5 · 2026-11-06</span>
+            </div>
+            <h1>住在帝国里的摆渡人</h1>
+            <div class="subtitle">如果过度扩张不是必然，但收缩又极其困难，我们追求的究竟是"永恒的霸权"，还是"有尊严的转型"？</div>
+        </div>
+
+        <!-- 摆渡人部分 -->
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了肯尼迪如何在1987年冷战巅峰预言美国"过度扩张"；应用者把理论丢进了西班牙白银诅咒、中国崛起和腾讯渠道KPI三个真实场景；挑战者从案例选择偏差、金融帝国盲区、技术变量低估和修昔底德陷阱工具化四个维度解构了肯尼迪的框架。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"过度扩张是陷阱"到"收缩也是一种选择"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控：肯尼迪的框架是一个"衰落博物馆"，只记录了失败的帝国，忽略了成功的收缩案例。这个指控成立。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果收缩是可能的，为什么它如此罕见？</em></p>
+
+        <p>肯尼迪的一个核心洞见被低估了：他反复强调，<strong>帝国的维持成本一旦形成，就具有极强的制度惯性</strong>。军事基地、联盟条约、官僚机构、利益集团——这些都不是可以随时开关的阀门。俾斯麦可以收缩，因为他在位；威廉二世不能收缩，因为他被民族主义情绪裹挟。</p>
+
+        <div class="pull-quote">
+            <p>"帝国的真正成本不是金钱，而是选择的丧失。当你拥有帝国时，你失去了'不干预'的选项。"</p>
+            <div class="attribution">—— 肯尼迪的潜台词，从未被充分展开</div>
+        </div>
+
+        <p>挑战者正确地指出了肯尼迪的案例偏差，但摆渡人要指出挑战者的盲点：<em>完全放弃帝国，不等于放弃了影响力，而是把影响力从"军事"转移到了"经济"和"制度"。</em>如果国家不追求领土控制，那贸易规则、技术标准、金融网络会设计。如果没有人设计，那现状本身会设计——人们只是不主动选择，而这本身也是一种选择。</p>
+
+        <p>所以摆渡人的第一个渡口是：肯尼迪的问题不是"他不应该分析帝国"，而是<em>他没有充分探索"非帝国型影响力"的可能性</em>。真正的问题不是"要不要扩张"，而是"什么样的影响力值得追求"。</p>
+
+        <h2>第二段摆渡：肯尼迪遇见2026</h2>
+
+        <p>如果肯尼迪在2026年重写《大国的兴衰》，他会看到什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">数字帝国：从"领土控制"到"数据控制"</div>
+            <p>肯尼迪的框架假设了一个有形的帝国——殖民地、军事基地、贸易航线。但2026年的霸权争夺更多发生在无形领域：数据基础设施、AI标准、芯片供应链、数字货币。中国和美国不是在争夺领土，而是在争夺<em>技术标准的制定权</em>。</p>
+            <p>这不是帝国的终结，而是帝国的变形。当美国限制华为、当中国推动数字人民币，它们在做的事情与西班牙建立殖民地没有本质区别——都是<em>控制关键资源以获取战略优势</em>。但数字帝国的"过度扩张"更难测量：它没有军费/GDP比例，只有<em>供应链脆弱性</em>和<em>技术依赖度</em>。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">气候约束：从"枪炮与黄油"到"枪炮与气候"</div>
+            <p>肯尼迪的"枪炮与黄油"框架假设国家只需要在军事和民用之间分配资源。但2026年的现实是：气候变化的应对成本正在成为第三极。极端天气、能源转型、粮食安全——这些都不是传统意义上的"黄油"，但它们对财政的压力与军费相当。</p>
+            <p>如果一个国家必须在"枪炮"、"黄油"和"气候"三者之间分配资源，那么"过度扩张"的阈值就会更低。美国的基础设施老化、中国的能源转型、欧洲的地缘政治重组——这些都在压缩传统意义上的"战略空间"。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">内部分裂：从"大国竞争"到"国内极化"</div>
+            <p>肯尼迪的框架几乎完全关注国际竞争。但2026年的大国面临的最大威胁可能不是外部对手，而是<em>内部分裂</em>。美国的政治极化、中国的人口老龄化、欧洲的民族主义回潮——这些内部压力对"帝国可持续性"的侵蚀，可能远大于外部竞争。</p>
+            <p>罗马帝国的衰落不是因为它遇到了更强大的敌人，而是因为它的内部凝聚力崩溃了。肯尼迪的框架需要被扩展为"国内-国际"双向模型：过度扩张不仅消耗财政资源，还消耗<em>社会信任和政治合法性</em>。</p>
+        </div>
+
+        <h2>第三段摆渡：住在帝国里的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果肯尼迪是对的——帝国的诱惑不可抗拒、收缩的政治成本极高、制度的惯性压倒理性——那么摆渡人作为"把思想带到当下"的角色，本身也在一个"微缩帝国"中运作。这篇推送的读者群、影响力范围、知识边界，都在某种程度上模仿着帝国的逻辑。</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在权力结构之外。</em>肯尼迪不能，挑战者不能，摆渡人也不能。问题不是"谁能设计无偏见的分析"——答案是没有人。问题是：<strong>我们是否愿意承认自己的分析也有盲区，并为此承担责任。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的智慧不是预测哪个帝国会衰落，而是承认所有帝国都会衰落——包括你自己的。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>肯尼迪在晚年（2000年代后）开始批评美国在中东的"新帝国主义冒险"，但他给出的解决方案仍然是"回归财政理性"——这又回到了同一个递归问题：谁来确保"财政理性"不被政治情绪淹没？摆渡人认为，唯一的出路不是更好的政策分析，而是<em>让"长期视角"本身被制度化</em>——让跨越选举周期的战略评估成为制度惯例，让帝国的成本被透明化，让"收缩"不再被视为失败。</p>
+
+        <p>但这又带来了一个更深的问题：如果大多数人更关心短期利益，让"短期利益"服从"长期理性"，会不会让民主本身受到威胁？这是一个没有完美答案的悖论。摆渡人不会假装有答案。摆渡人只会说：<em>承认这个悖论的存在，本身就是进步。</em></p>
+
+        <!-- 张力问题最终形态 -->
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果帝国的衰落总是因为"过度扩张"，那么今天的超级大国是否正在重复同样的错误？"修昔底德陷阱"是历史规律还是自我实现的预言？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果过度扩张不是必然，但收缩又极其困难，我们追求的究竟是"永恒的霸权"还是"有尊严的转型"？真正重要的不是帝国是否衰落，而是<em>衰落的方式是否可被社会承受</em>。肯尼迪发现了过度扩张的财政力学，但问题是：当帝国的成本被制度惯性隐藏、被民族主义美化、被短期利益合理化时，"理性收缩"是否还有政治空间？
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你所在的组织（公司/团队/社区）是否存在"过度扩张"的信号——承诺增长超过能力增长？</div>
+                <div class="ft-q-item">当"收缩"在文化上被视为失败时，你如何为"健康度"争取同等的评价权重？</div>
+                <div class="ft-q-item">如果你知道自己正在做的事情在长期来看不可持续，你愿意在什么时候、以什么方式停止？</div>
+            </div>
+        </div>
+
+        <!-- 分隔线 -->
+        <div class="section-break"></div>
+
+        <!-- 连接者部分 -->
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第31周《大国的兴衰》的位置是什么？肯尼迪的帝国病理学如何与前面的30本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第31节点</h2>
+
+        <p>连接者今天的工作不是"肯尼迪说了什么"，而是"肯尼迪站在哪里"。五条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">丝绸之路</span>
+                <span class="branch-week">W30</span>
+            </div>
+            <div class="branch-desc">
+                弗兰科潘在《丝绸之路》中重新定位了世界地图的中心——从西方转向欧亚大陆的心脏地带。肯尼迪则分析了这个"中心"如何被不同的帝国争夺和消耗。张力在于：弗兰科潘让我们看到地缘的流动性，肯尼迪让我们看到地缘的沉重性。如果所有帝国都注定要衰落，那么"中心"本身是否也在不断转移？丝绸之路的复兴是历史的轮回，还是全新的变量？
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">国富论</span>
+                <span class="branch-week">W1</span>
+            </div>
+            <div class="branch-desc">
+                斯密在《国富论》中论证了自由贸易和分工的效率优势。肯尼迪则展示了当"自由贸易"被帝国逻辑绑架时会发生什么——殖民地贸易不是自由贸易，而是垄断。两人的深层对话是：经济理性主义（斯密）和帝国现实主义（肯尼迪）哪个更"真实"？如果大国总是倾向于用政治力量扭曲经济关系，那么斯密的理想是否只是一个没有帝国的世界才能实现？
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">竞争战略</span>
+                <span class="branch-week">W9</span>
+            </div>
+            <div class="branch-desc">
+                波特的竞争战略框架（五力模型）在微观层面分析了企业的竞争环境。肯尼迪的框架是波特的宏观版本——分析国家的竞争环境。但传承中有漂移：波特假设竞争是良性的、可以创造价值的；肯尼迪假设大国竞争是零和的、最终会导致资源耗竭。这个漂移从"商业乐观主义"滑向了"政治悲观主义"。企业可以退出一个市场，但国家不能"退出"地缘政治。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">乌合之众</span>
+                <span class="branch-week">W7</span>
+            </div>
+            <div class="branch-desc">
+                勒庞解释群体如何被情绪驱动，肯尼迪解释帝国如何被惯性驱动。两个理论互补：帝国的过度扩张不仅是理性的计算错误，更是<em>集体情绪</em>的结果——民族主义、荣誉文化、恐惧心理。如果群体是非理性的，那么指望帝国"理性收缩"是否本身就是一个幻觉？勒庞让我们看到：肯尼迪的"财政理性"在面对群体情绪时，可能根本没有政治可行性。
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">1984</span>
+                <span class="branch-week">文学感知</span>
+            </div>
+            <div class="branch-desc">
+                奥威尔在《1984》中描绘了一个永远处于战争状态的帝国——不是为了胜利，而是为了维持内部控制。肯尼迪的"过度扩张"框架有一个奥威尔式的变体：如果帝国的真正目的不是外部安全，而是<em>内部纪律</em>，那么"过度扩张"就不是一个错误，而是一个<em>功能</em>。永远的外部敌人让公民接受永远的国内监控。肯尼迪没有发现这个维度，因为他假设帝国的目标是"繁荣"，而不是"控制"。
+            </div>
+        </div>
+
+        <!-- 知识地图 SVG -->
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第31节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <!-- 背景 -->
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W31</text>
+
+                <!-- 连接线 -->
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <!-- W1 -->
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+                <text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+
+                <!-- W7 -->
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W7</text>
+                <text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">乌合之众</text>
+
+                <!-- W9 -->
+                <circle cx="140" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="140" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W9</text>
+                <text x="140" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">竞争战略</text>
+
+                <!-- W21-29 -->
+                <circle cx="300" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="300" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">...</text>
+                <text x="300" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">W21-W29</text>
+
+                <!-- W30 -->
+                <circle cx="340" cy="100" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="340" y="104" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W30</text>
+                <text x="340" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">丝绸之路</text>
+
+                <!-- W31 当前节点 -->
+                <circle cx="380" cy="100" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="380" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W31</text>
+                <text x="380" y="130" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">大国的兴衰</text>
+
+                <!-- W32 待读 -->
+                <circle cx="420" cy="100" r="14" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="420" y="104" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="9" font-weight="600">W32</text>
+                <text x="420" y="130" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="8">文明的冲突</text>
+
+                <!-- 跨频道C -->
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+                <text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+                <text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+
+                <!-- 连接弧线 -->
+                <path d="M 380 118 Q 380 200 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 380 118 Q 300 180 340 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 380 118 Q 260 180 140 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 380 118 Q 240 180 100 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <!-- 图例 -->
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <!-- 下周预告 -->
+        <h2>下周预告</h2>
+        <p>第32周，我们将翻开塞缪尔·亨廷顿的《<em>文明的冲突</em>》（<em>The Clash of Civilizations</em>）。</p>
+        <p>从肯尼迪的"帝国兴衰"到亨廷顿的"文明断层"——如果肯尼迪关心的是"国家为什么衰落"，亨廷顿关心的是"什么比国家更持久"。文明不是帝国，它不依赖财政；但文明之间的张力，可能比帝国之间的竞争更难调和。</p>
+        <p>亨廷顿1996年的预言在2026年听起来既遥远又迫近：冷战后的世界不再是意识形态的对抗，而是文明的碰撞。但"文明"本身是一个稳定的分析单位吗？</p>
+
+        <div class="pull-quote">
+            <p>"在即将到来的时代，避免文明间战争的关键，在于核心国家避免干涉其他文明的冲突。"</p>
+            <div class="attribution">—— 塞缪尔·亨廷顿，《文明的冲突》</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="page-nav">
+            <a href="./w31-d04.html">← D04 · 挑战者</a>
+            <a href="./w32-d01.html">D01 · 叙事者 W32 →</a>
+        </div>
+
+    </div>
+</body>
+</html>

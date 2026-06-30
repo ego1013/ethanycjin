@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 49 · Day 5 · 摆渡人+连接者 · 《活法》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .page-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W49 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 49 · Day 5 · 2027-03-12</span>
+            </div>
+            <h1>住在敬天爱人里的摆渡人</h1>
+            <div class="subtitle">如果"道德"不能独立于"利益"而被坚持，那么"道德"是否还有独立的价值？无条件的利他是否可能？</div>
+        </div>
+
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了稻盛和夫如何在破瓷瓶中烧出世界500强；提炼者拆解了敬天爱人、阿米巴经营、经营十二条和利他之心的框架刀；应用者把稻盛和夫工具丢进了日航重生、中国阿米巴移植和腾讯广告渠道三个真实场景；挑战者从循环论证、文化特殊主义、道德包装和阿米巴局限四个维度解构了稻盛和夫哲学。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"稻盛和夫对不对"到"无条件的利他是否可能"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控："利他带来成功"是不可证伪的循环论证，"敬天爱人"可能被用作权力控制的修辞。这个指控在边界层面成立——稻盛和夫的哲学确实难以在经验层面被验证，且在权力结构中可能被滥用。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果"利他"不能独立于"自利"而存在，那么道德本身是否还有意义？</em></p>
+
+        <p>摆渡人认为，挑战者正确指出了稻盛和夫哲学的实证局限性，但可能忽略了另一种可能性：道德的价值不在于它是否能"带来成功"，而在于它是否是<em>正确的事情</em>。以下是摆渡人的三个观察：</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">康德的"定言命令"：道德的独立性</div>
+            <p>哲学家康德提出"定言命令"：道德行为的价值在于行为本身，而不在于它的后果。如果你诚实是因为诚实带来信任，那么诚实只是工具；如果你诚实是因为"诚实是对的"，那么诚实就是道德。稻盛和夫哲学的真正价值不在于"利他带来成功"，而在于<em>"利他本身就是对的"</em>——即使它不带来成功。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">佛教的"布施"：无条件的给予</div>
+            <p>稻盛和夫的哲学深受佛教影响。佛教中的"布施"（dāna）强调<em>无条件的给予</em>——不求回报，不求功德。这与"利他带来成功"的商业逻辑完全不同。摆渡人认为，稻盛和夫的哲学在深层是佛教的世俗化表达，但在传播过程中被简化为"管理鸡汤"——因为"无条件的给予"对商业读者来说太抽象，而"利他带来成功"更容易被接受。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">亚里士多德的"实践智慧"：在具体情境中做正确的事</div>
+            <p>亚里士多德认为，道德不是遵循抽象规则，而是在具体情境中运用"实践智慧"（phronesis）来判断什么是正确的。稻盛和夫的"作为人，何谓正确"正是这种实践智慧的东方版本——它不是一套固定答案，而是一种面对具体问题时的心态。摆渡人认为，这个框架的真正价值不在于它的答案，而在于<em>它提出的问题</em>——它迫使决策者暂停计算，问一个更根本的问题。</p>
+        </div>
+
+        <h2>第二段摆渡：稻盛和夫遇见2027</h2>
+
+        <p>如果稻盛和夫在2027年重新审视他的经营哲学，他会看到什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 04</div>
+            <div class="passage-title">远程工作与分布式组织的挑战</div>
+            <p>稻盛和夫的哲学高度依赖于物理共处和面对面互动——晨会、走访、直接对话。但在2027年的远程工作时代，员工分布在不同的城市、甚至不同的国家。"敬天爱人"如何在虚拟环境中被传递？当Zoom会议取代了车间对话，当Slack取代了走廊偶遇，<em>物理共处在道德传递中的作用是否不可替代</em>？</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 05</div>
+            <div class="passage-title">AI与自动化的伦理困境</div>
+            <p>当AI可以替代大量人类工作时，"敬天爱人"是否意味着<em>不采用自动化</em>？如果采用自动化可以提高效率但导致裁员，稻盛和夫会如何选择？他在京瓷的全球化过程中也面临过类似问题，他的答案是"尽量减少伤害"——但"尽量减少"的边界在哪里？在AI时代，这个边界越来越模糊。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 06</div>
+            <div class="passage-title">Z世代与价值观的多元化</div>
+            <p>稻盛和夫的哲学假设了一种共享的价值观——"诚实、勤奋、利他"。但2027年的Z世代员工成长于多元文化环境中，他们对"什么是正确"有不同的理解。当一部分员工认为"远程工作是对家庭的责任"，另一部分认为"办公室工作是对团队的责任"时，"作为人，何谓正确"变成了<em>谁的人？哪个正确？</em></p>
+        </div>
+
+        <h2>第三段摆渡：住在敬天爱人里的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果稻盛和夫是对的——道德本身是目的，不是手段——那么摆渡人作为"把思想带到当下"的角色，本身也生活在一个道德选择中。这篇推送的标题、结构、案例选择，都在传达某种价值观。摆渡人自己也在做"选择"——而选择背后有利益（读者的注意力、项目的声誉）。摆渡人是否也在用"道德"来包装"自利"？</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在利益之外。</em>稻盛和夫不能，挑战者不能，摆渡人也不能。问题不是"谁是无私的"——答案是没有人。问题是：<strong>我们是否愿意承认自己的选择也有利益动机，并为此保持透明。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的道德不是假装无私，而是承认自己的自私，然后选择做正确的事。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>稻盛和夫在《活法》中说"人生的意义在于磨练灵魂，提升心性"。摆渡人认为，这句话的真正含义不是"成为圣人"，而是<em>"成为更诚实的人"</em>——诚实面对自己的动机，诚实面对自己的局限，诚实面对自己可能犯的错误。磨练灵魂不是追求完美，而是追求真实。</p>
+
+        <p>但这又带来了一个悖论：如果"真实"意味着承认自己的自私，那么"道德"是否还有超越性的价值？摆渡人不会假装解决这个悖论。摆渡人只会说：<em>承认这个悖论的存在，本身就是一种道德进步。</em></p>
+
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果企业的成功源于经营者的"利他之心"，那么"利润"和"道德"之间真的存在正相关吗？稻盛和夫的哲学是东方智慧还是管理鸡汤？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果道德的价值不依赖于它是否能带来成功，那么我们追求的不应该是"道德是否有用"，而是<em>"我们是否有勇气在知道道德可能无用的情况下，仍然坚持它"</em>。真正的问题不是"利他是否带来利润"，而是"如果利他不能带来利润，我们是否仍然愿意利他"。
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次做"正确的事"时，是否考虑了它是否有回报？如果知道没有回报，你还会做吗？</div>
+                <div class="ft-q-item">你所在的组织是否有一种文化，让人可以在不追求利润的情况下，追求正确？</div>
+                <div class="ft-q-item">如果"道德"不能给你任何优势，你是否还愿意坚持它？</div>
+            </div>
+        </div>
+
+        <div class="section-break"></div>
+
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第49周《活法》的位置是什么？稻盛和夫的哲学如何与前面的48本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第49节点</h2>
+
+        <p>连接者今天的工作不是"稻盛和夫说了什么"，而是"稻盛和夫站在哪里"。四条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">新教伦理与资本主义精神</span>
+                <span class="branch-week">W3</span>
+            </div>
+            <div class="branch-desc">
+                韦伯说清教徒的"天职观"驱动了资本主义精神——工作是为了荣耀上帝。稻盛和夫说"工作的意义是磨练灵魂"——工作是为了提升心性。两者都把工作从"经济交易"提升为"精神修行"。但深层张力在于：韦伯的"天职"最终服务于资本积累，而稻盛和夫的"灵魂"最终服务于什么？如果"磨练灵魂"不能产生可验证的结果，它是否只是另一种形式的"心理安慰"？
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">史蒂夫·乔布斯传</span>
+                <span class="branch-week">W48</span>
+            </div>
+            <div class="branch-desc">
+                乔布斯说"改变世界"，稻盛和夫说"敬天爱人"。乔布斯追求个人愿景，稻盛和夫追求集体和谐。两者的对话是：极端的个人主义和极端的集体主义，哪个更能创造持久的价值？乔布斯的产品改变了世界，但稻盛和夫的企业持续经营了半个世纪。深度和长度——哪个是更好的衡量标准？两者都不是完美的答案，但它们的对话揭示了"创造"与"守护"之间的永恒张力。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">巴菲特致股东的信</span>
+                <span class="branch-week">W47</span>
+            </div>
+            <div class="branch-desc">
+                巴菲特和稻盛和夫都是长期主义者。巴菲特说"以合理价格买入优质企业并长期持有"，稻盛和夫说"付出不亚于任何人的努力"。但两者的长期主义来自不同的源头：巴菲特来自对复利的数学信仰，稻盛和夫来自对灵魂磨练的精神信仰。一个是理性的，一个是感性的。但他们共享同一个洞见：<em>时间是最强大的杠杆，但前提是方向正确。</em>
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">资本论</span>
+                <span class="branch-week">W2</span>
+            </div>
+            <div class="branch-desc">
+                马克思说资本主义的本质是剥削——工人被剥夺剩余价值。稻盛和夫说资本主义的本质可以是"利他"——当经营者真心为员工服务时，剥削可以被消除。两者的深层张力是：马克思把剥削视为结构性的（资本制度的必然结果），稻盛和夫把剥削视为选择性的（经营者的道德选择）。如果稻盛和夫是对的，那么资本主义可以被道德拯救；如果马克思是对的，那么稻盛和夫只是资本主义的道德遮羞布。
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">论语</span>
+                <span class="branch-week">哲学经典</span>
+            </div>
+            <div class="branch-desc">
+                孔子说"己欲立而立人，己欲达而达人"——这与稻盛和夫的"利他之心"遥相呼应。但两者的深层差异是：孔子的"仁"是在人际关系中实现的，而稻盛和夫的"敬天爱人"是在与"天"（宇宙规律）的关系中实现的。儒家是人文主义的，稻盛和夫是带有形而上学色彩的。当"敬天"被解释为"遵循宇宙规律"时，它是否变成了一种不可证伪的信仰？孔子不会回答这个问题，因为他不谈"天"的规律，只谈"人"的伦理。
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第49节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W49</text>
+
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+                <text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text>
+                <text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+
+                <circle cx="140" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="140" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W3</text>
+                <text x="140" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">新教伦理</text>
+
+                <circle cx="180" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="180" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W4</text>
+                <text x="180" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">通论</text>
+
+                <circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W5</text>
+                <text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">奴役之路</text>
+
+                <circle cx="260" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="260" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W6</text>
+                <text x="260" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本主义</text>
+
+                <circle cx="300" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="300" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W7</text>
+                <text x="300" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">乌合之众</text>
+
+                <circle cx="340" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="340" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W8</text>
+                <text x="340" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">影响力</text>
+
+                <circle cx="380" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="380" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W9</text>
+                <text x="380" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">竞争战略</text>
+
+                <circle cx="420" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="420" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W10</text>
+                <text x="420" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">黑天鹅</text>
+
+                <circle cx="460" cy="100" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="460" y="104" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W11</text>
+                <text x="460" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">快与慢</text>
+
+                <circle cx="500" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="500" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W12</text>
+                <text x="500" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">错误的行为</text>
+
+                <text x="300" y="200" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="9">...</text>
+
+                <circle cx="500" cy="280" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="500" y="284" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W49</text>
+                <text x="500" y="310" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">活法</text>
+
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+                <text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+                <text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">哲学经典</text>
+
+                <path d="M 500 298 Q 500 340 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 500 298 Q 400 340 340 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 500 298 Q 440 200 460 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 420 118 Q 460 200 500 280" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <h2>下周预告</h2>
+        <p>第50周，我们将翻开查理·芒格的《<em>穷查理宝典</em>》（Poor Charlie's Almanack）。</p>
+        <p>从稻盛和夫的"敬天爱人"到芒格的"多元思维模型"——如果稻盛和夫代表了"道德直觉的极致"，芒格代表了"理性思维的极致"。但两者的深层连接是：他们都在试图回答同一个问题——如何在复杂世界中做出正确决策？稻盛和夫用心灵来回答，芒格用格栅来回答。在最后一周，我们站在最后一个十字路口：直觉 vs 模型，信仰 vs 理性，东方 vs 西方。</p>
+        <p>下周，也是这个50本书精读旅程的最后一周。我们将用芒格的跨学科思维，来回顾整个旅程——50本书之后，我们是否真的变得更有智慧？</p>
+
+        <div class="pull-quote">
+            <p>"如果我知道我会死在哪里，我就永远不去那里。"</p>
+            <div class="attribution">—— 查理·芒格</div>
+        </div>
+
+        <div class="page-nav">
+            <a href="./w49-d04.html">← D04 · 挑战者</a>
+            <a href="./w50-d01.html">D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
