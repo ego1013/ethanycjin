@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 41 · Day 5 · 摆渡人+连接者 · 《美国与中国》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #0a0a0a; --surface: #111111; --surface-2: #161616; --border: #1e1e1e; --border-light: #2a2a2a; --text: #d4d4d4; --text-dim: #888; --text-muted: #555; --white: #f0f0f0; --accent: #e2a355; --accent-dim: rgba(226,163,85,0.08); --accent-border: rgba(226,163,85,0.2); --bridge: #4A9EFF; --bridge-dim: rgba(74,158,255,0.07); --bridge-border: rgba(74,158,255,0.2); --connector: #2DD4BF; --connector-dim: rgba(45,212,191,0.07); --connector-border: rgba(45,212,191,0.2); }
+        body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.9; }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2rem; font-size: 0.78rem; color: var(--text-muted); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .nav a { color: var(--text-dim); text-decoration: none; } .nav a:hover { color: var(--accent); }
+        .article-header { padding: 2rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+        .meta-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; }
+        .meta-badge { background: var(--bridge-dim); color: var(--bridge); border: 1px solid var(--bridge-border); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; }
+        .article-header h1 { font-size: 1.8rem; font-weight: 800; color: var(--white); line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 0.8rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .article-header .subtitle { font-size: 0.92rem; color: var(--text-dim); line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        p { margin-bottom: 1.4rem; }
+        h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin: 2.5rem 0 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; letter-spacing: -0.01em; }
+        h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin: 1.8rem 0 0.8rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; }
+        em { font-style: italic; color: #b8b8b8; } strong { color: var(--white); font-weight: 700; }
+        .bridge-section { border-left: 3px solid var(--bridge); padding: 1.5rem 1.5rem; background: var(--bridge-dim); border-radius: 0 10px 10px 0; margin: 2rem 0; }
+        .bridge-section .section-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.6rem; }
+        .connector-section { border-left: 3px solid var(--connector); padding: 1.5rem 1.5rem; background: var(--connector-dim); border-radius: 0 10px 10px 0; margin: 2rem 0; }
+        .connector-section .section-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--connector); margin-bottom: 0.6rem; }
+        .section-break { margin: 3rem 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border-light), transparent); }
+        .tension-box { background: var(--surface); border: 1px solid var(--bridge-border); border-radius: 10px; padding: 1.5rem 1.6rem; margin: 2rem 0; }
+        .tension-box .tension-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.6rem; }
+        .tension-box .tension-text { font-size: 1rem; color: var(--white); line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .final-tension { background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05)); border: 1px solid rgba(74,158,255,0.25); border-radius: 12px; padding: 2rem; margin: 2.5rem 0; }
+        .final-tension .ft-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.8rem; }
+        .final-tension .ft-arrow { font-size: 1.5rem; margin-bottom: 0.8rem; }
+        .final-tension .ft-original { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .final-tension .ft-evolved { font-size: 1rem; color: var(--white); line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-weight: 600; }
+        .final-tension .ft-questions { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(74,158,255,0.15); }
+        .final-tension .ft-q-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+        .final-tension .ft-q-item { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 0.4rem; padding-left: 1rem; position: relative; }
+        .final-tension .ft-q-item::before { content: '→'; position: absolute; left: 0; color: var(--bridge); }
+        .branch-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1rem 0; position: relative; }
+        .branch-item.active { border-color: var(--connector-border); background: var(--connector-dim); }
+        .branch-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .branch-type { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.5rem; border-radius: 4px; }
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; } .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); } .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); } .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); } .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+        .branch-book { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--white); }
+        .branch-week { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.7rem; color: var(--text-muted); }
+        .branch-desc { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.84rem; color: var(--text-dim); line-height: 1.6; }
+        .pull-quote { border-left: 3px solid var(--accent); padding: 1rem 1.5rem; margin: 2rem 0; background: var(--accent-dim); border-radius: 0 8px 8px 0; }
+        .pull-quote p { font-size: 1rem; color: var(--white); line-height: 1.7; margin: 0; font-style: italic; }
+        .pull-quote .attribution { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; font-style: normal; }
+        .bridge-passage { border: 1px solid var(--bridge-border); border-radius: 10px; padding: 1.5rem 1.6rem; margin: 1.5rem 0; background: var(--surface); }
+        .passage-num { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--bridge); margin-bottom: 0.5rem; }
+        .passage-title { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.8rem; }
+        .map-container { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0; overflow-x: auto; }
+        .map-title { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem; text-align: center; letter-spacing: 0.08em; }
+        .page-nav { display: flex; justify-content: space-between; margin-top: 2rem; font-size: 0.82rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .page-nav a { color: #888; text-decoration: none; transition: color 0.2s; } .page-nav a:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a><span>›</span><a href="../">书单精读</a><span>›</span><span>W41 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 41 · Day 5 · 2027-01-15</span>
+            </div>
+            <h1>在理解的渡口</h1>
+            <div class="subtitle">如果理解本身就是一种权力关系，那我们是否还能追求一种"更公平的理解"？</div>
+        </div>
+
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了费正清如何在1930年代的北京学习中文、研究清朝外交；提炼者拆解了冲击-回应、条约口岸、朝贡体系、中国中心观和政策困境的框架刀；应用者把费正清工具丢进了美国对华政策七十年、中国中心观的21世纪验证和跨国企业理解困境三个真实场景；挑战者从知识殖民、利益工具化、冷战简化和理解鸿沟四个维度解构了费正清的框架。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"理解不可能"到"理解仍然值得"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控：理解本身就是一种权力关系，费正清的"理解中国"在"理解"的伪装下为西方利益服务。这个指控成立。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果因为理解不可能，我们就放弃理解吗？</em></p>
+
+        <p>摆渡人的回答是：不。理解的局限性不是放弃理解的理由，而是<em>更谦逊地理解</em>的理由。费正清的问题不是他尝试理解中国，而是他可能没有充分承认自己的局限。挑战者的问题不是他揭示了局限，而是他可能暗示了"既然有局限，就不要尝试"。</p>
+
+        <div class="pull-quote">
+            <p>"理解的不可能性不是理解的敌人，而是理解的导师——它教我们在局限中尽可能地接近真实。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>摆渡人认为，真正重要的不是"谁的理解更接近真实"，而是<em>我们是否愿意在理解的过程中保持自我批判</em>。费正清如果能在"理解中国"的同时说"这是我的理解，它可能是不完整的"，那么他的框架就会更可靠。费孝通如果能在"理解传统"的同时说"传统中有压迫，我不能忽视"，那么他的框架也会更可靠。</p>
+
+        <p>摆渡人的第一个渡口是：理解的关键不是"消除偏见"（因为偏见不可能被完全消除），而是<em>承认偏见并在偏见中工作</em>。</p>
+
+        <h2>第二段摆渡：两个"费先生"的相遇</h2>
+
+        <p>如果费孝通（内部视角）和费正清（外部视角）在2027年相遇，他们会说什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">费孝通会批评费正清：你的"冲击"概念忽略了中国内部的动力</div>
+            <p>费孝通会说：你把1840年后的中国变迁全部归因于西方冲击，但你在开弦弓村看到的是什么？是人口增长、土地兼并、家族分裂——这些内部动力在没有西方的情况下也会推动社会变革。西方只是加速，不是创造。</p>
+            <p>费正清会回应：我承认内部动力存在，但问题是——如果没有西方的条约口岸和商品倾销，中国的传统秩序会自行崩溃吗？你的乡村工业方案在1930年代就已经失败了，因为日本工业丝织品的竞争。西方冲击不是唯一的原因，但它是决定性的催化剂。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">费正清会批评费孝通：你的"乡土社会"框架无法解释中国在国际体系中的位置</div>
+            <p>费正清会说：你研究的是一个村庄的人际关系，但1930年代的中国面临的最紧迫问题是什么？是日本的侵略、是西方列强的特权、是民族存亡的危机。你的差序格局和礼治秩序在解释这些问题时几乎无能为力。</p>
+            <p>费孝通会回应：国际关系是重要，但理解国际关系的基础是理解中国社会。如果你不理解差序格局，你就无法理解为什么中国官员在谈判中总是试图建立个人关系而不是遵守条约。如果你不理解礼治秩序，你就无法理解为什么中国对外交程序的重视程度低于对"面子"的重视。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">摆渡人的判断：两个视角都是必要的，但都不充分</div>
+            <p>费孝通给了我们理解中国社会内部逻辑的工具，但没有解释中国如何被外部力量改变。费正清给了我们理解中西互动的框架，但低估了中国内部的能动性。真正的理解需要两个视角的互补——不是二选一，而是同时持有两种视角，并在它们的张力中做出判断。</p>
+            <p>但这种"双重视角"的持有者需要承受一种认知负担：两种视角常常给出矛盾的结论。当内部视角说"中国有自己的逻辑"，外部视角说"中国需要改变"——你如何仲裁？摆渡人认为：没有简单的仲裁方法。只有在具体的情境中，根据具体的问题，判断哪个视角更适用。</p>
+        </div>
+
+        <h2>第三段摆渡：理解作为一种伦理实践</h2>
+
+        <p>摆渡人今天最后一个问题，是关于理解的伦理维度。</p>
+
+        <p>如果理解本身就是一种权力关系，那么"更公平的理解"是否可能？</p>
+
+        <p>摆渡人认为，"更公平的理解"不是指"完全中立的理解"（这不可能），而是指<em>一种特定的伦理姿态</em>：</p>
+
+        <p><strong>第一，承认自己的位置。</strong> 费正清作为美国学者，他的理解天然带有美国利益的色彩。这不是缺陷，而是现实。关键是承认它，而不是假装自己是"客观的"。</p>
+
+        <p><strong>第二，倾听被理解者的声音。</strong> 费孝通的方法论——田野调查、参与观察、倾听农民的故事——本身就是一种伦理实践。它要求研究者把被研究者当作"主体"而不是"对象"。费正清如果能在研究中更多地纳入中国学者的声音，他的框架可能会更少西方中心主义。</p>
+
+        <p><strong>第三，接受理解的不完整。</strong> 任何理解都是局部的、暂时的、带有偏见的。真正的理解不是"掌握真相"，而是<em>持续地接近真相，同时知道自己永远无法完全到达</em>。</p>
+
+        <div class="pull-quote">
+            <p>"理解不是终点，而是旅程。在这个旅程中，最重要的不是目的地，而是我们是否愿意在路途中保持谦逊。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果美国看中国和中国看自己用的是完全不同的镜头，那么谁的理解更接近真实？"冲击-回应"框架是否低估了中国自身的能动性？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果理解本身就是一种权力关系，那我们是否还能追求一种"更公平的理解"？也许真正的问题不是"谁的理解更接近真实"，而是<em>我们是否愿意在理解的过程中保持自我批判，承认自己的局限，并倾听被理解者的声音</em>。费正清和费孝通分别从外部和内部给了我们两种视角，但真正的智慧在于：不选择其中之一，而是在两种视角的张力中，持续地、谦逊地、具体地做出判断。
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次试图理解一个与你完全不同的文化/群体时，你是否意识到了自己的偏见和权力位置？</div>
+                <div class="ft-q-item">你所在的组织（公司/社区/平台）中，是否存在"一种视角垄断"的问题——即只有内部视角或只有外部视角？</div>
+                <div class="ft-q-item">如果"理解"本身就是一种权力，你愿意放弃这种权力来换取更真实的理解吗？</div>
+            </div>
+        </div>
+
+        <div class="section-break"></div>
+
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第41周《美国与中国》的位置是什么？费正清的西方视角如何与前面的40本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第41节点</h2>
+
+        <p>连接者今天的工作不是"费正清说了什么"，而是"费正清站在哪里"。四条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">江村经济</span>
+                <span class="branch-week">W40</span>
+            </div>
+            <div class="branch-desc">费孝通从内向外看，费正清从外向内看。两个"费先生"——一个研究一个村庄，一个研究一个帝国；一个关注人际关系，一个关注国际关系。张力在于：费孝通的框架能解释为什么中国官员在外交谈判中重视"关系"（差序格局），但费正清的框架能解释为什么这种"关系"外交在西方眼中是"不可预测的"。两种视角的互补，是理解中国外交的完整图景。</div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">资本论</span>
+                <span class="branch-week">W2</span>
+            </div>
+            <div class="branch-desc">马克思讲帝国主义——西方资本对殖民地的剥削。费正清描述的中西关系在马克思看来是典型的帝国主义关系：条约口岸、治外法权、鸦片贸易——这些都是剥削的形式。但费正清不是马克思主义者——他不认为帝国主义是资本主义发展的必然阶段，而是认为它是特定历史情境下的产物。两个框架的对话：帝国主义是结构性的（马克思），还是情境性的（费正清）？</div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">第三次浪潮</span>
+                <span class="branch-week">W39</span>
+            </div>
+            <div class="branch-desc">托夫勒讲信息文明的分散化和全球化。费正清描述的中西关系在托夫勒看来可能是"第二次浪潮"的冲突——工业文明（西方）与农业文明（中国）的碰撞。但2027年的现实是：中国正在成为信息时代的主要塑造者之一（5G、AI、数字支付）。托夫勒的"第三次浪潮"框架是否预言了费正清框架的过时？当中国从"被动承受者"变成"主动塑造者"时，"冲击-回应"是否变成了"双向冲击"？</div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">乌合之众</span>
+                <span class="branch-week">W7</span>
+            </div>
+            <div class="branch-desc">勒庞解释群体如何被操纵。费正清描述的中国社会运动（如义和团、五四运动）在勒庞看来都是典型的群体心理现象。但费正清增加了历史维度：群体运动不是孤立的心理事件，而是特定社会结构（如士绅阶层、农民经济、外国压迫）的产物。勒庞的群体心理学+费正清的历史社会学=更完整的理解。</div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">1984</span>
+                <span class="branch-week">文学感知</span>
+            </div>
+            <div class="branch-desc">奥威尔在《1984》中描绘了一个极权国家如何通过控制历史叙述来控制人民。费正清的中国研究——无论是冲击-回应还是中国中心观——都涉及"历史叙述的权力"。当中国政府控制关于鸦片战争的历史教育时，它是在进行奥威尔式的"历史修正"。费正清试图提供"客观"的历史叙述，但奥威尔提醒我们：所有历史叙述都是权力斗争的一部分。没有"客观"的历史，只有"被争夺"的历史。</div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第41节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W41</text>
+
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text><text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text><text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+                <circle cx="140" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="140" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W3</text><text x="140" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">新教伦理</text>
+                <circle cx="180" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="180" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W4</text><text x="180" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">通论</text>
+                <circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W5</text><text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">奴役之路</text>
+                <circle cx="260" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="260" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W6</text><text x="260" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本主义</text>
+                <circle cx="300" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="300" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W7</text><text x="300" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">乌合之众</text>
+                <circle cx="340" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="340" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W8</text><text x="340" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">影响力</text>
+                <circle cx="380" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="380" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W9</text><text x="380" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">竞争战略</text>
+                <circle cx="420" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="420" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W10</text><text x="420" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">21世纪资本</text>
+                <circle cx="460" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="460" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W11</text><text x="460" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">快与慢</text>
+                <circle cx="500" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="500" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W12</text><text x="500" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">错误的行为</text>
+                <circle cx="540" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="540" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W38</text><text x="540" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">寂静的春天</text>
+                <circle cx="580" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="580" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W39</text><text x="580" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">第三次浪潮</text>
+                <circle cx="620" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/><text x="620" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W40</text><text x="620" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">江村经济</text>
+                <circle cx="660" cy="100" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/><text x="660" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W41</text><text x="660" y="130" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">美国与中国</text>
+
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/><text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text><text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+                <path d="M 660 118 Q 660 200 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 660 118 Q 600 180 540 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 660 118 Q 580 180 500 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 660 118 Q 400 180 100 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <h2>本周结束</h2>
+        <p>第41周，也是2026-2027年度书单精读的第41周，到这里结束了。我们从W38《寂静的春天》的生态保护，到W39《第三次浪潮》的信息文明，到W40《江村经济》的乡土中国，再到W41《美国与中国》的中西理解——四周的旅程，四个不同的视角，但同一个追问：我们如何在理解世界的同时理解自己？</p>
+        <p>2027年的书单精读将继续。但在此之前，摆渡人想留给你一个问题：</p>
+
+        <div class="pull-quote">
+            <p>"如果50本书的旅程最终让你只记住一件事，那应该是什么？"</p>
+            <div class="attribution">—— 摆渡人留给读者的问题</div>
+        </div>
+
+        <div class="page-nav">
+            <a href="./w41-d04.html">← D04 · 挑战者</a>
+            <a href="./w42-d01.html">D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>

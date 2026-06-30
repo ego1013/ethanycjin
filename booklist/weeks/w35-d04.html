@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 35 · Day 4 · 挑战者 · 《非理性繁荣》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616; --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d4d4d4; --text-dim: #888; --text-muted: #555; --white: #f0f0f0;
+            --accent: #e2a355; --accent-dim: rgba(226,163,85,0.08); --accent-border: rgba(226,163,85,0.2);
+            --challenger: #E94560; --challenger-dim: rgba(233,69,96,0.07); --challenger-border: rgba(233,69,96,0.2);
+        }
+        body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.9; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2.5rem; font-size: 0.78rem; color: var(--text-muted); font-family: -apple-system, system-ui, sans-serif; }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--challenger); }
+        .nav .sep { color: #333; }
+        .week-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--challenger-dim); border: 1px solid var(--challenger-border); color: var(--challenger); font-size: 0.72rem; font-family: -apple-system, system-ui, sans-serif; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 2rem; margin-bottom: 1.5rem; }
+        .book-title-area { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        .book-label { font-size: 0.75rem; color: var(--text-muted); font-family: -apple-system, system-ui, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .book-name { font-size: 2rem; font-weight: 800; color: var(--white); letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.4rem; font-family: -apple-system, system-ui, sans-serif; }
+        .book-author { font-size: 0.95rem; color: var(--text-dim); font-family: -apple-system, system-ui, sans-serif; }
+        .book-author span { color: var(--accent); }
+        .role-intro { display: flex; align-items: center; gap: 0.75rem; background: var(--challenger-dim); border: 1px solid var(--challenger-border); border-radius: 0.5rem; padding: 0.875rem 1.125rem; margin-bottom: 2.5rem; font-family: -apple-system, system-ui, sans-serif; font-size: 0.82rem; }
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--challenger); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+        h2 { font-size: 1.1rem; font-weight: 700; color: var(--white); font-family: -apple-system, system-ui, sans-serif; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        p { margin-bottom: 1.2rem; font-size: 0.97rem; color: var(--text); }
+        em { color: var(--challenger); font-style: normal; }
+        .scene-block { background: var(--surface); border-left: 3px solid var(--challenger); padding: 1.25rem 1.5rem; margin: 1.5rem 0 2rem; border-radius: 0 0.5rem 0.5rem 0; }
+        .scene-block p { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 0; line-height: 2; }
+        .scene-block p + p { margin-top: 0.875rem; }
+        .scene-block .scene-label { font-size: 0.68rem; font-family: -apple-system, system-ui, sans-serif; color: var(--challenger); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.75rem; }
+        .fault-card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--challenger); border-radius: 0 0 0.75rem 0.75rem; padding: 1.5rem; margin: 1.5rem 0 2rem; font-family: -apple-system, system-ui, sans-serif; }
+        .fault-card .fault-num { font-size: 0.62rem; font-weight: 700; color: var(--challenger); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .fault-card h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.875rem; line-height: 1.4; }
+        .fault-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.75; margin-bottom: 0.875rem; }
+        .fault-card p:last-child { margin-bottom: 0; }
+        .fault-card .verdict { background: var(--challenger-dim); border: 1px solid var(--challenger-border); border-radius: 0.4rem; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--challenger); line-height: 1.6; margin-top: 1rem; }
+        .bias-tag { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(233,69,96,0.07); border: 1px solid rgba(233,69,96,0.18); color: #d4657a; font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 2rem; font-weight: 600; margin-bottom: 0.875rem; font-family: -apple-system, system-ui, sans-serif; }
+        .refuted-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-family: -apple-system, system-ui, sans-serif; font-size: 0.79rem; }
+        .refuted-table th { background: var(--surface-2); color: var(--text-muted); font-weight: 600; padding: 0.625rem 0.875rem; text-align: left; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.68rem; border-bottom: 1px solid var(--border); }
+        .refuted-table th:first-child { color: var(--challenger); }
+        .refuted-table td { padding: 0.75rem 0.875rem; border-bottom: 1px solid var(--border); color: var(--text-dim); line-height: 1.55; vertical-align: top; }
+        .refuted-table tr:last-child td { border-bottom: none; }
+        .refuted-table td:first-child { color: var(--white); font-weight: 500; }
+        .verdict-badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 2rem; font-weight: 600; }
+        .verdict-partial { background: rgba(226,163,85,0.1); color: var(--accent); border: 1px solid rgba(226,163,85,0.2); }
+        .verdict-hold { background: rgba(74,222,128,0.08); color: #4ade80; border: 1px solid rgba(74,222,128,0.18); }
+        .verdict-disproven { background: rgba(233,69,96,0.08); color: #e06070; border: 1px solid rgba(233,69,96,0.2); }
+        .quote-block { border-left: 2px solid var(--challenger); padding: 1rem 1.5rem; margin: 1.5rem 0; font-style: italic; color: var(--text-dim); font-size: 0.92rem; }
+        .tension-block { background: rgba(233,69,96,0.04); border: 1px solid rgba(233,69,96,0.2); border-radius: 0.625rem; padding: 1.5rem 1.75rem; margin: 2.5rem 0; font-family: -apple-system, system-ui, sans-serif; }
+        .tension-label { font-size: 0.68rem; font-weight: 700; color: var(--challenger); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.875rem; }
+        .tension-q { font-size: 0.92rem; color: var(--white); line-height: 1.75; }
+        .fair-witness { background: var(--surface-2); border: 1px solid var(--border-light); border-radius: 0.5rem; padding: 1.25rem 1.5rem; margin: 1.5rem 0; font-family: -apple-system, system-ui, sans-serif; font-size: 0.85rem; }
+        .fair-witness .box-title { font-size: 0.72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+        .fair-witness p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.75rem; }
+        .fair-witness p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span class="sep">›</span>
+            <a href="../">书单精读</a>
+            <span class="sep">›</span>
+            <span>W35 · D4 · 挑战者</span>
+        </nav>
+
+        <div class="week-badge">⚔️ Week 35 · Day 4 · 2026-12-03</div>
+
+        <div class="book-title-area">
+            <div class="book-label">第三十五周 · 本周书目</div>
+            <div class="book-name">非理性繁荣</div>
+            <div class="book-author">罗伯特·席勒 <span>Robert J. Shiller</span></div>
+        </div>
+
+        <div class="role-intro">
+            <div class="role-icon">⚔️</div>
+            <div>
+                <div class="role-name">挑战者 The Challenger</div>
+                <div class="role-desc">四条断层线。审问实验的边界、理论的假设、处方的可行性，以及被遗漏的变量。</div>
+            </div>
+        </div>
+
+        <div class="scene-block">
+            <div class="scene-label">挑战者导言</div>
+            <p>过去三天，叙事者讲述了席勒如何两次精准预警市场泡沫，提炼者拆解了<em>CAPE比率</em>、<em>反馈循环</em>、<em>动物精神</em>和<em>叙事经济学</em>的框架刀，应用者把泡沫机制丢进了郁金香/比特币、中国房地产和腾讯广告渠道三个真实场景。</p>
+            <p>今天，挑战者要做席勒的<em>反方律师</em>。《非理性繁荣》是行为金融学的奠基之作——但席勒对"有效市场"的批判，是否从"市场不总是有效"跳跃到了"市场几乎从不有效"？他对"动物精神"的描述，是否掩盖了市场理性的一面？</p>
+            <p>挑战者的工作不是否定行为金融学——席勒的泡沫预警是真实的。挑战者的工作是找到从"描述非理性"到"否定市场有效性"之间的<em>前提跳跃</em>。</p>
+        </div>
+
+        <h2>断层线一 · CAPE比率的预测能力被过度放大</h2>
+
+        <p>席勒的CAPE比率是最著名的估值工具之一，也是他被视为"先知"的核心证据。但挑战者要问：CAPE比率真的能有效预测市场回报吗？</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 01</div>
+            <h3>统计显著 vs 实际可用：CAPE的预测窗口太长</h3>
+
+            <p>学术研究表明，CAPE比率确实与未来10年的股市回报有统计相关性。当CAPE处于历史高位时，未来10年的平均回报确实较低。但挑战者指出两个关键问题：</p>
+
+            <p>第一，CAPE的预测力主要来自于<em>极端值</em>——当CAPE处于历史最高或最低分位数时，预测相对可靠。但在中等估值区间（CAPE在15-25之间），CAPE对未来回报的预测能力几乎为零。而市场大多数时候处于中等估值区间。这意味着CAPE不是一个"日常使用"的工具，而是一个"极端警报"工具。</p>
+
+            <p>第二，CAPE的预测<em>时间窗口</em>是10年。一个投资者如果因为CAPE高而退出市场，他可能需要等待3-5年（甚至更久）才能看到市场调整。在这段时间内，市场可能继续上涨50%或更多。对于大多数投资者和基金经理来说，这种"长期正确但短期错误"的预测是无法承受的——因为客户会在三年内把你开除。</p>
+
+            <p>第三，CAPE在结构上存在"向后看"偏差。它使用过去10年的平均收益，当经济刚刚经历衰退（如2009年），过去10年收益被人为压低，CAPE被人为抬高——即使市场实际上已经合理。这种技术偏差让CAPE在周期转折点容易给出错误信号。</p>
+
+            <div class="bias-tag">⚠️ 预言者光环</div>
+
+            <p>席勒在2000年和2008年的成功预警被广泛宣传，但CAPE在1990年代中期就已经显示高估，而市场继续上涨到2000年。如果投资者在1996年格林斯潘说"非理性繁荣"时就退出，他们将错过接下来四年的巨大涨幅。"长期正确"不等于"时机正确"——而投资中最昂贵的一句话就是"这次不一样"，但第二昂贵的就是"我早知道了"。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：CAPE在极端估值时有一定预测力，但预测窗口太长、信号噪音比太低、不适合作为投资决策的主要依据。把它包装成"先知工具"是对其统计特性的夸大。
+            </div>
+        </div>
+
+        <h2>断层线二 · "动物精神"的对立面：市场理性的证据被忽视</h2>
+
+        <p>席勒的框架强调市场的非理性，但挑战者要问：如果市场真的如此非理性，为什么专业投资者（对冲基金、养老金、主权基金）无法系统性地利用这些非理性来战胜市场？</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 02</div>
+            <h3>有效市场假说的韧性：大多数主动投资者确实无法战胜市场</h3>
+
+            <p>席勒的批评者（如尤金·法玛）有一个强有力的反驳：如果市场真的如此"非理性"，那么识别非理性的人应该能够持续获得超额收益。但数据显示，绝大多数主动管理基金在扣除费用后无法战胜指数基金。这不是因为基金经理不聪明，而是因为<em>市场虽然在微观层面有非理性，但在宏观层面难以被系统性地预测和利用</em>。</p>
+
+            <p>更精确的表述是：市场存在"短期可预测的非理性"（如动量效应、反转效应）和"长期不可预测的理性"。行为金融学在识别前者上取得了成功，但后者仍然占主导地位。席勒描述的是"泡沫如何形成"，但法玛描述的是"为什么泡沫难以被利用"。两者不是非此即彼，而是描述了同一枚硬币的两面。</p>
+
+            <p>挑战者更深层的批评是：席勒的叙事框架有一个"叙事偏差"——它倾向于选择性地强调"疯狂"的故事，而忽略"正常"的日常。市场大多数时间不是在泡沫或崩溃中，而是在"合理地"反映可获得信息。把少数极端案例当作市场的"本质"，是一种认知偏差。</p>
+
+            <div class="bias-tag">⚠️ 选择性注意</div>
+
+            <p>席勒在《叙事经济学》中分析了大量"经济叙事"如何驱动市场。但他分析的主要是那些"成功的"叙事——即确实导致了重大经济后果的叙事。而那些传播了但失败了的经济叙事（如多次"末日预测"、"崩溃警告"）被系统性忽略。这类似于"发表偏误"：只有"说中"的故事被记住，"说错"的故事被遗忘。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：席勒的框架倾向于用极端案例（泡沫）来定义市场，忽略了市场"大多数时候"是有效的事实。两种描述不是互斥的——市场有时有效、有时无效——但席勒的叙事权重可能过度偏向了"无效"的一面。
+            </div>
+        </div>
+
+        <h2>断层线三 · 监管处方：监管者也有自己的动物精神</h2>
+
+        <p>席勒认为，通过更好的监管和制度设计，可以降低泡沫的破坏性。但挑战者要问：谁来设计这些制度？监管者是否免疫于动物精神？</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 03</div>
+            <h3>监管者偏差：制度设计者的认知局限和利益冲突</h3>
+
+            <p>2008年金融危机之前，美国的金融监管体系被认为是"世界上最完善的"。格林斯潘被尊为"大师"，美联储的模型被认为是"科学的"。但危机发生后，人们发现监管者同样陷入了"这次不一样"的叙事——他们相信金融衍生品的风险已经被"分散"，房地产价格不会全国性下跌，银行自有资本足够吸收损失。</p>
+
+            <p>席勒的回应可能是：监管者不够聪明或不够信息充分。但挑战者认为问题更深：监管者面临<em>激励结构</em>的问题。在繁荣期，严格的监管会被批评为"阻碍经济增长"、"扼杀创新"。监管者如果过早收紧政策，可能在政治上被孤立。格林斯潘在1996年说"非理性繁荣"后，并没有采取实质性紧缩措施——因为他知道，如果市场继续上涨，他会被视为"错误的警告者"。</p>
+
+            <p>更深的问题：即使监管者完美地识别了泡沫，他们应该如何应对？提高利率？会伤害正常经济。收紧信贷？会影响无辜企业。直接干预市场？会被指控为政府越权。席勒的"重新设计制度"处方，在面对政治现实时变得极其模糊。</p>
+
+            <div class="bias-tag">⚠️ 监管者理性假设</div>
+
+            <p>席勒的框架假设监管者可以站在市场之外、客观地识别非理性并设计矫正制度。但公共选择经济学（Buchanan, Tullock）告诉我们：监管者也是人，也有认知偏差、利益冲突和政治压力。把市场问题交给"更聪明的监管者"来解决，只是把问题转移到了另一个层面。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：席勒的制度设计处方依赖于一个理想化的监管者形象——全知、无私、有权力。但现实世界中的监管者面临信息不对称、政治激励和认知偏差。在没有解决"谁来监督监督者"的问题之前，监管处方是不完整的。
+            </div>
+        </div>
+
+        <h2>断层线四 · 叙事经济学：从"叙事影响经济"到"叙事决定经济"的跳跃</h2>
+
+        <p>席勒晚年的"叙事经济学"认为，经济事件（如泡沫、衰退）的传播类似于病毒传播。但挑战者要问：叙事的"感染力"是否可以被测量和预测？叙事经济学提供了工具还是只是隐喻？</p>
+
+        <div class="fault-card">
+            <div class="fault-num">断层线 04</div>
+            <h3>叙事经济学的方法论困境：描述性丰富但预测性薄弱</h3>
+
+            <p>席勒在《叙事经济学》中展示了大量案例："1929年大萧条"的叙事如何导致1930年代的投资萎缩，"房地产只涨不跌"的叙事如何推动泡沫。但这些分析都是<em>后见之明</em>的——它们在事件发生后识别了关键叙事，但无法在事件发生前预测哪些叙事会成为"主导叙事"。</p>
+
+            <p>挑战者问：如果叙事经济学不能预测，那它和传统的历史叙事有什么区别？传统历史学家也会分析"思想如何影响经济"（如韦伯的《新教伦理与资本主义精神》）。席勒的"创新"是引入了流行病学模型（SIR模型）来描述叙事传播。但问题是：叙事的"传染率"、"恢复率"和"免疫率"如何测量？目前的方法主要是通过搜索频率和媒体报道来 proxy，但这些数据与真正的"信念传播"之间还有巨大差距。</p>
+
+            <p>更根本的问题：如果叙事是"自发的"、"涌现的"，那么试图"管理"叙事本身就是矛盾的。席勒似乎希望政策制定者能够识别和 counter 有害的叙事——但叙事管理（narrative management）是否等同于宣传（propaganda）？如果政府试图"纠正"市场的"错误叙事"，它是在做公共服务还是在操纵认知？</p>
+
+            <div class="bias-tag">⚠️ 隐喻膨胀</div>
+
+            <p>"病毒式传播"是一个强大的隐喻，但隐喻不是理论。SIR模型在流行病学中有效，因为它基于可测量的生物参数（感染率、恢复率、接触率）。叙事的对应参数是什么？"信念的强度"？"叙事的吸引力"？这些概念目前还没有被操作化。叙事经济学在描述层面非常丰富，但在预测层面还非常薄弱。</p>
+
+            <div class="verdict">
+                ⚖️ 断层深度：叙事经济学是一个有价值的描述框架，但它从"描述"到"预测"的跳跃尚未完成。把叙事经济学当作政策工具来使用，需要首先解决测量和预测的方法论问题。目前，它更像是一个启发式的视角，而不是一个可操作的科学工具。
+            </div>
+        </div>
+
+        <h2>被证伪判断清单</h2>
+
+        <p>公正地审视，不是席勒的所有命题都有同等缺陷。下面是一个诚实的清单：</p>
+
+        <div style="background:var(--surface);border-radius:0.5rem;overflow:hidden;margin:1.5rem 0 2rem;border:1px solid var(--border);">
+            <table class="refuted-table" style="background:transparent;margin:0;">
+                <thead>
+                    <tr>
+                        <th style="width:42%;">席勒命题</th>
+                        <th style="width:38%;">证据评估</th>
+                        <th style="width:20%;">判定</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>市场会出现泡沫（价格系统性偏离基本面）</td>
+                        <td>历史案例丰富（郁金香、铁路、互联网、房地产）</td>
+                        <td><span class="verdict-badge verdict-hold">成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>反馈循环和叙事传播驱动泡沫</td>
+                        <td>心理学和经济学证据支持</td>
+                        <td><span class="verdict-badge verdict-hold">成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>CAPE比率可以有效预测长期回报</td>
+                        <td>极端值时有预测力，但时间窗口太长、信号噪音比低</td>
+                        <td><span class="verdict-badge verdict-partial">部分成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>市场"大多数时候"是无效的</td>
+                        <td>大多数主动投资者无法战胜市场，短期预测极其困难</td>
+                        <td><span class="verdict-badge verdict-disproven">过度推广</span></td>
+                    </tr>
+                    <tr>
+                        <td>更好的监管可以防止泡沫</td>
+                        <td>监管者同样面临认知偏差和激励问题</td>
+                        <td><span class="verdict-badge verdict-disproven">理想化</span></td>
+                    </tr>
+                    <tr>
+                        <td>叙事经济学可以预测经济事件</td>
+                        <td>目前主要提供后见之明，预测能力尚未验证</td>
+                        <td><span class="verdict-badge verdict-partial">部分成立</span></td>
+                    </tr>
+                    <tr>
+                        <td>"动物精神"不可被消灭</td>
+                        <td>人类心理结构确实稳定，制度设计只能缓冲而非消除</td>
+                        <td><span class="verdict-badge verdict-hold">成立</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="fair-witness">
+            <div class="box-title">⚖️ 公道话</div>
+            <p>席勒的学术成就是真实的。他把心理学和叙事分析引入金融学，让市场不再被当作一个抽象的数学对象，而是一个由人类情绪、故事和制度构成的复杂系统。他两次预警泡沫，帮助了无数人避免了损失。</p>
+            <p>但挑战者今天的四条断层线指向一个更复杂的判断：<em>席勒的诊断比他的处方更可靠，他的描述比他的预测更持久。</em> 市场确实会非理性，动物精神确实不可消灭——但市场"大多数时候"仍然是有效的，监管者不可能免疫于认知偏差，叙事经济学还需要更多的方法论发展。</p>
+            <p>挑战者最终的立场是：席勒不是错了——他是在一个有限的范围内对了，然后把这个范围扩大成了对整个市场有效性的否定。他用泡沫案例来描述市场，但市场不只是泡沫。真正的问题不是"市场是否有效"，而是<em>"市场在什么条件下有效，在什么条件下失效"</em>——而席勒的框架对这个边界问题的回答还不够精确。</p>
+        </div>
+
+        <div class="tension-block">
+            <div class="tension-label">🔁 张力问题回响 · 挑战者视角</div>
+            <div class="tension-q">
+                叙事者抛出：如果市场的非理性是系统性的，那么我们还能相信市场的有效性吗？"动物精神"能被理性驯服吗？还是需要重新设计金融制度？<br><br>
+                应用者推进到：动物精神不是市场的bug，而是feature；制度缓冲比消灭非理性更现实；但谁来监管监管者？<br><br>
+                挑战者今天把问题再推深一层：<br><br>
+                <strong style="color:var(--white)">席勒的"非理性繁荣"是否只是一个更精致的叙事——一个关于"市场疯狂"的叙事本身？</strong><br><br>
+                如果叙事经济学是对的，那么"非理性繁荣"这个概念也是一个叙事。它传播了、被接受了、影响了政策——但它是否比它所批评的叙事更"真实"？如果市场参与者的"这次不一样"是一种叙事偏差，那么监管者的"我们能设计更好的制度"是否也是一种叙事偏差？<br><br>
+                挑战者最终的回响：<em>"非理性繁荣"不是对市场的终极诊断，而是诊断市场的一种视角。它让我们看到了一些重要的东西，但也让我们忽略了另一些同样重要的东西。真正的问题不是"市场是否理性"，而是"我们是否有足够多的视角来理解市场"。</em>
+            </div>
+        </div>
+
+        <h2>明天的视角</h2>
+
+        <p>挑战者今天从CAPE的预测局限、市场理性的被忽视证据、监管者的认知偏差和叙事经济学的方法论困境四个维度解构了席勒的框架——不是否定，是定位。<em>摆渡人明天</em>会接过这四条裂缝，做最后的摆渡：如果市场既不是完全有效也不是完全无效，那我们作为投资者、作为政策制定者、作为普通人，应该如何与"不确定的市场"共处？</p>
+
+        <p>还有一个更深层的问题留给摆渡人：如果"理解市场"本身也是一种叙事——那么我们追求的究竟是"更准确的市场模型"，还是"更谦逊的市场态度"？</p>
+
+        <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+            <a href="./w35-d03.html" style="color:#888;text-decoration:none;">← D03 · 应用者</a>
+            <a href="./w35-d05.html" style="color:#888;text-decoration:none;">D05 · 摆渡人+连接者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 29 · Day 5 · 摆渡人+连接者 · 《人类简史》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616; --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d4d4d4; --text-dim: #888; --text-muted: #555; --white: #f0f0f0;
+            --accent: #e2a355; --accent-dim: rgba(226,163,85,0.08); --accent-border: rgba(226,163,85,0.2);
+            --bridge: #4A9EFF; --bridge-dim: rgba(74,158,255,0.07); --bridge-border: rgba(74,158,255,0.2);
+            --connector: #2DD4BF; --connector-dim: rgba(45,212,191,0.07); --connector-border: rgba(45,212,191,0.2);
+        }
+        body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.9; }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2rem; font-size: 0.78rem; color: var(--text-muted); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+        .article-header { padding: 2rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+        .meta-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; }
+        .meta-badge { background: var(--bridge-dim); color: var(--bridge); border: 1px solid var(--bridge-border); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; }
+        .article-header h1 { font-size: 1.8rem; font-weight: 800; color: var(--white); line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 0.8rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .article-header .subtitle { font-size: 0.92rem; color: var(--text-dim); line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        p { margin-bottom: 1.4rem; }
+        h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin: 2.5rem 0 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; letter-spacing: -0.01em; }
+        h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin: 1.8rem 0 0.8rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; }
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+        .bridge-section { border-left: 3px solid var(--bridge); padding: 1.5rem 1.5rem; background: var(--bridge-dim); border-radius: 0 10px 10px 0; margin: 2rem 0; }
+        .bridge-section .section-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.6rem; }
+        .connector-section { border-left: 3px solid var(--connector); padding: 1.5rem 1.5rem; background: var(--connector-dim); border-radius: 0 10px 10px 0; margin: 2rem 0; }
+        .connector-section .section-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--connector); margin-bottom: 0.6rem; }
+        .section-break { margin: 3rem 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border-light), transparent); }
+        .tension-box { background: var(--surface); border: 1px solid var(--bridge-border); border-radius: 10px; padding: 1.5rem 1.6rem; margin: 2rem 0; }
+        .tension-box .tension-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.6rem; }
+        .tension-box .tension-text { font-size: 1rem; color: var(--white); line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .final-tension { background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05)); border: 1px solid rgba(74,158,255,0.25); border-radius: 12px; padding: 2rem; margin: 2.5rem 0; }
+        .final-tension .ft-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.8rem; }
+        .final-tension .ft-arrow { font-size: 1.5rem; margin-bottom: 0.8rem; }
+        .final-tension .ft-original { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .final-tension .ft-evolved { font-size: 1rem; color: var(--white); line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-weight: 600; }
+        .final-tension .ft-questions { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(74,158,255,0.15); }
+        .final-tension .ft-q-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+        .final-tension .ft-q-item { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 0.4rem; padding-left: 1rem; position: relative; }
+        .final-tension .ft-q-item::before { content: '→'; position: absolute; left: 0; color: var(--bridge); }
+        .branch-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1rem 0; position: relative; }
+        .branch-item.active { border-color: var(--connector-border); background: var(--connector-dim); }
+        .branch-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .branch-type { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.5rem; border-radius: 4px; }
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+        .branch-book { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--white); }
+        .branch-week { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.7rem; color: var(--text-muted); }
+        .branch-desc { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.84rem; color: var(--text-dim); line-height: 1.6; }
+        .pull-quote { border-left: 3px solid var(--accent); padding: 1rem 1.5rem; margin: 2rem 0; background: var(--accent-dim); border-radius: 0 8px 8px 0; }
+        .pull-quote p { font-size: 1rem; color: var(--white); line-height: 1.7; margin: 0; font-style: italic; }
+        .pull-quote .attribution { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; font-style: normal; }
+        .bridge-passage { border: 1px solid var(--bridge-border); border-radius: 10px; padding: 1.5rem 1.6rem; margin: 1.5rem 0; background: var(--surface); }
+        .passage-num { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--bridge); margin-bottom: 0.5rem; }
+        .passage-title { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.8rem; }
+        .map-container { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0; overflow-x: auto; }
+        .map-title { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem; text-align: center; letter-spacing: 0.08em; }
+        .page-nav { display: flex; justify-content: space-between; margin-top: 2rem; font-size: 0.82rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .page-nav a { color: #888; text-decoration: none; transition: color 0.2s; }
+        .page-nav a:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W29 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 29 · Day 5 · 2026-10-24</span>
+            </div>
+            <h1>住在虚构里的摆渡人</h1>
+            <div class="subtitle">如果虚构既是基础设施又有解释局限，我们如何在"相信"与"清醒"之间找到平衡？</div>
+        </div>
+
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了赫拉利在耶路撒冷课堂上的顿悟；提炼者拆开了认知革命、农业革命、想象的秩序、科学革命和幸福悖论五把框架刀；应用者把虚构的力学丢进了民族主义、人民币和公司文化三个真实场景；挑战者从因果力、个体经验、价值中立和证据基础四个维度解构了赫拉利的"虚构决定论"。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"虚构的裂缝"到"虚构的必然性"</h2>
+
+        <p>挑战者昨天提出了四条裂缝：虚构的因果力被夸大、个体经验被忽视、价值中立无法维持、认知革命的证据薄弱。这些指控都成立。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果虚构有裂缝，那替代方案是什么？</em></p>
+
+        <p>赫拉利的一个核心洞见被低估了：他反复强调，<strong>虚构不可能不存在</strong>。人类不是在有"虚构"和"没有虚构"之间选择，而是在"这种虚构"和"那种虚构"之间选择。不相信民族主义的人，会相信人道主义；不相信宗教的人，会相信科学；不相信国家的人，会相信市场。没有一个"无虚构"的立场——因为任何试图"超越虚构"的立场，本身也会成为一种新的虚构。</p>
+
+        <div class="pull-quote">
+            <p>"虚构无法被禁止，只能被选择。问题不是'要不要虚构'，而是'选择什么样的虚构，以及如何让这个选择被审视'。"</p>
+            <div class="attribution">—— 赫拉利的潜台词，从未被充分展开</div>
+        </div>
+
+        <p>挑战者正确地指出了赫拉利的框架缺陷，但摆渡人要指出挑战者的盲点：<em>完全放弃"虚构"框架，不等于获得了更真实的视角，而是把控制权交给了更隐蔽的虚构。</em>如果不用"虚构"来解释民族主义，你会用什么？生物学决定论？经济利益？心理分析？每一种替代框架都有自己的虚构性——都有自己的假设、自己的盲区、自己的价值预设。</p>
+
+        <p>所以摆渡人的第一个渡口是：赫拉利的问题不是"他不应该使用虚构框架"，而是<em>他把自己的框架伪装成了唯一真实的框架</em>。真正的问题不是"要不要虚构"，而是"我们能否在选择虚构的同时，保持对它虚构性的清醒"。</p>
+
+        <h2>第二段摆渡：从"认知革命"到"持续的认知演化"</h2>
+
+        <p>如果认知革命不是一个7万年前的突变事件，而是一个<em>持续至今的演化过程</em>，那么我们今天是否仍然处于认知革命之中？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">语言作为虚构：从口头神话到书面法律</div>
+            <p>7万年前的智人用口头语言讲述神话，组织150人以上的群体。今天的人类用书面法律、合同、代码和算法来组织70亿人的群体。工具的复杂度在增长，但底层逻辑没有变：都是通过<em>共同相信的符号系统</em>来实现合作。认知革命不是一次完成的——它在每一个技术转折点都被重新激活。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">技术作为虚构的放大器：从篝火到互联网</div>
+            <p>赫拉利写《人类简史》时（2011-2014年），互联网还是一个"工具"。但在2026年，互联网已经成为<em>一种全新的虚构环境</em>——不是传播虚构的媒介，而是生成虚构的基础设施。社交媒体不是"让你看到更多虚构"，而是<em>改变了虚构的生产方式</em>——从少数故事讲述者到数十亿内容创作者。认知革命在2026年不是在重演，而是在加速。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">AI作为虚构的新主体：当故事开始自己讲述</div>
+            <p>赫拉利在《未来简史》中担心算法会取代人类决策，但他没有追问一个更深层的问题：如果AI也开始"讲述"虚构（生成新闻、创作艺术、设计叙事），那么"虚构"的定义是否需要扩展？当AI生成的内容比人类创作的内容更"可信"时，谁才是"虚构"的主体？认知革命的下一个阶段，可能是人类不再是唯一的虚构讲述者。</p>
+        </div>
+
+        <h2>第三段摆渡：住在虚构里的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果赫拉利是对的——虚构是基础设施，认知革命从未结束，所有叙事都有盲区——那么摆渡人作为"把思想带到当下"的角色，本身也是在一个虚构中运作。这篇推送的标题选择、结构安排、问题排序，都在引导读者的注意力。摆渡人自己也在讲述一个关于"如何读书"的故事。</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在虚构之外。</em>赫拉利不能，挑战者不能，摆渡人也不能。问题不是"谁能设计无偏见的框架"——答案是没有人。问题是：<strong>我们是否愿意承认自己的框架也有偏见，并为此承担责任。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的清醒不是'知道一切都是虚构'——因为这句话本身也是虚构。真正的清醒是：在充分投入一个虚构的同时，保持对它边界的觉知，并愿意在边界被挑战时调整自己的位置。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>赫拉利在书的结尾暗示了一种出路：佛教。通过冥想，个体可以超越"虚构"的束缚，直接体验"意识本身"。但摆渡人认为，这仍然是一种<em>虚构的转换</em>——从"社会虚构"转向"精神虚构"，而不是从"虚构"转向"真实"。佛教关于"无我"的教义，本身就是一种高度复杂的叙事建构。</p>
+
+        <p>摆渡人最终的立场是：不要追求"超越虚构"——那是不可能的。要追求<em>"在虚构中保持灵活"</em>——能够深入投入一个叙事，也能够随时抽身；能够相信一个故事，也能够质疑它；能够在"相信"和"清醒"之间自由切换，而不是被锁定在任何一个位置。</p>
+
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果人类的成功只是因为会讲故事和相信虚构，那么"真理"和"意义"是否也是虚构？认知革命给我们的是力量还是幻觉？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果虚构是基础设施且无法被超越，我们追求的究竟是"更真实的叙事"还是"更灵活的叙事能力"？真正重要的不是选择哪个虚构，而是<em>选择虚构的能力本身是否可被反思和修正</em>。认知革命给了我们创造虚构的力量，但真正的挑战是：我们能否创造一种"关于虚构的虚构"——一种让虚构保持开放、可被挑战、可被更新的元叙事？
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你当前最相信的一个"故事"（关于国家、公司、自我）是什么？你是否能清晰地描述它的虚构性？</div>
+                <div class="ft-q-item">当你发现一个你深信的叙事有缺陷时，你是选择修补它、替换它，还是保持对它的矛盾态度？</div>
+                <div class="ft-q-item">如果"意义"只能来自你自己创造的虚构，你愿意承担这个创造的责任，还是希望有一个"现成的"意义框架？</div>
+            </div>
+        </div>
+
+        <div class="section-break"></div>
+
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第26-29周的四本书构成了一个关于"人类秩序如何形成和维持"的深层对话。从托克维尔的制度变革到赫拉利的认知革命，四本书在方法论和问题意识上形成了张力、互补和传承。</p>
+        </div>
+
+        <h2>知识地图：第26-29节点</h2>
+
+        <p>连接者今天的工作不是"赫拉利说了什么"，而是"赫拉利站在哪里"——以及他与前三个星期的对话关系。四条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">旧制度与大革命</span>
+                <span class="branch-week">W26</span>
+            </div>
+            <div class="branch-desc">
+                托克维尔解释了<em>制度变革</em>的悖论：改革往往引发革命，而不是预防革命。赫拉利把这个问题推到了更底层：为什么人类会创造"制度"这种虚构？因为制度是<em>大规模合作的脚手架</em>——没有制度，人类无法组织超过150人的群体。但托克维尔观察到，制度一旦建立，就会产生自己的惯性（既得利益、路径依赖），最终成为变革的阻力。两人的对话：制度是虚构的产物，但虚构一旦制度化，就获得了<em>超越设计者的生命力</em>。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">历史的终结与最后的人</span>
+                <span class="branch-week">W27</span>
+            </div>
+            <div class="branch-desc">
+                福山认为自由民主是历史的终点，是一种<em>元叙事</em>。赫拉利会怎么评价？他会说：自由民主本身就是一种"想象的秩序"——它不比民族主义或神权政治更"真实"，只是目前被更多人相信。但福山的反驳可能是：即使自由民主是虚构，它也是一种"更好的虚构"——因为它比之前的虚构提供了更稳定的合作框架和更少的暴力。两人的对话：福山在<em>比较虚构</em>，赫拉利在<em>解构虚构</em>。前者关心"哪个故事更好"，后者关心"故事的本质是什么"。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">枪炮、病菌与钢铁</span>
+                <span class="branch-week">W28</span>
+            </div>
+            <div class="branch-desc">
+                从戴蒙德到赫拉利的传承是<em>方法论上的</em>：两者都试图从"非个人因素"来解释人类历史。戴蒙德选择了<em>地理和环境</em>，赫拉利选择了<em>认知和虚构</em>。但传承中有张力：戴蒙德强调物质条件的约束，赫拉利强调观念能力的解放。谁在"更底层"？挑战者今天指出，赫拉利低估了物质因素——但戴蒙德是否又低估了观念因素？两人的对话提示：完整的历史解释需要<em>同时包含地理和虚构</em>，而不是非此即彼。
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type complement">互补</span>
+                <span class="branch-book">人类简史</span>
+                <span class="branch-week">W29</span>
+            </div>
+            <div class="branch-desc">
+                赫拉利在W29的位置是什么？它是前三个星期的<em>元框架</em>——托克维尔讲的制度、福山讲的意识形态、戴蒙德讲的地理优势，在赫拉利的框架中都被还原为"虚构的变体"。但这种还原既是力量（提供了统一的解释语言），也是弱点（失去了每个框架的特殊性和精确性）。连接者最终的判断：赫拉利不是替代了前三本书，而是<em>提供了一个读取它们的透镜</em>——通过这个透镜，你可以看到制度、意识形态和地理优势背后的"相信机制"。
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第26-29节点</div>
+            <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <rect width="760" height="360" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W26-W29</text>
+
+                <line x1="140" y1="120" x2="280" y2="120" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="280" y1="120" x2="420" y2="120" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="420" y1="120" x2="560" y2="120" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="140" y1="120" x2="280" y2="220" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <line x1="280" y1="120" x2="420" y2="220" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <line x1="420" y1="120" x2="560" y2="220" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <line x1="560" y1="120" x2="280" y2="220" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <circle cx="140" cy="120" r="18" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="140" y="124" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W26</text>
+                <text x="140" y="150" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">旧制度</text>
+
+                <circle cx="280" cy="120" r="18" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="280" y="124" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W27</text>
+                <text x="280" y="150" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">历史终结</text>
+
+                <circle cx="420" cy="120" r="18" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="420" y="124" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W28</text>
+                <text x="420" y="150" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">枪炮病菌</text>
+
+                <circle cx="560" cy="120" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="560" y="124" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W29</text>
+                <text x="560" y="150" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">人类简史</text>
+
+                <text x="380" y="240" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="9">— 线性传承</text>
+                <text x="380" y="260" text-anchor="middle" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="380" y="280" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9">★ 当前节点</text>
+
+                <text x="380" y="320" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="10" font-style="italic">"从制度的悖论到虚构的力学——四周追问人类秩序的起源"</text>
+            </svg>
+        </div>
+
+        <h2>四周回望</h2>
+
+        <p>第26-29周的四本书，从托克维尔的制度洞察到赫拉利的认知革命，构成了一个关于<em>"人类如何被秩序塑造"</em>的深层追问。</p>
+
+        <p>托克维尔问：为什么改革引发革命？福山问：历史是否有终点？戴蒙德问：为什么欧洲统治了世界？赫拉利问：为什么人类统治了地球？</p>
+
+        <p>四个问题，四个层面。托克维尔在<em>制度层面</em>，福山在<em>意识形态层面</em>，戴蒙德在<em>地理层面</em>，赫拉利在<em>认知层面</em>。它们不是相互替代的关系，而是<em>相互嵌套</em>——认知能力使虚构成为可能，虚构使意识形态成为可能，意识形态使制度成为可能，而制度在地理条件中生根。</p>
+
+        <div class="pull-quote">
+            <p>"四周不是终点，而是中继站。每一本书都留下了一个未完成的追问，而追问本身，比答案更接近真实。"</p>
+            <div class="attribution">—— 连接者的立场</div>
+        </div>
+
+        <div class="section-break"></div>
+
+        <p style="text-align:center;color:#555;font-size:0.85rem;margin-top:2rem;">— 第29周 · 完结 · 2026年10月24日 —</p>
+
+        <div class="page-nav">
+            <a href="./w29-d04.html">← D04 · 挑战者</a>
+            <a href="../../">返回首页 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
