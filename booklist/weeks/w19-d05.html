@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 19 · Day 5 · 摆渡人+连接者 · 《复杂》</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #0a0a0a; --surface: #111111; --surface-2: #161616; --border: #1e1e1e; --border-light: #2a2a2a; --text: #d4d4d4; --text-dim: #888; --text-muted: #555; --white: #f0f0f0; --accent: #e2a355; --accent-dim: rgba(226,163,85,0.08); --accent-border: rgba(226,163,85,0.2); --bridge: #4A9EFF; --bridge-dim: rgba(74,158,255,0.07); --bridge-border: rgba(74,158,255,0.2); --connector: #2DD4BF; --connector-dim: rgba(45,212,191,0.07); --connector-border: rgba(45,212,191,0.2); }
+body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.9; }
+.container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+.nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2rem; font-size: 0.78rem; color: var(--text-muted); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.nav a { color: var(--text-dim); text-decoration: none; } .nav a:hover { color: var(--accent); }
+.article-header { padding: 2rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+.meta-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; }
+.meta-badge { background: var(--bridge-dim); color: var(--bridge); border: 1px solid var(--bridge-border); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; }
+.article-header h1 { font-size: 1.8rem; font-weight: 800; color: var(--white); line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 0.8rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.article-header .subtitle { font-size: 0.92rem; color: var(--text-dim); line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+p { margin-bottom: 1.4rem; }
+h2 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin: 2.5rem 0 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; letter-spacing: -0.01em; }
+h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin: 1.8rem 0 0.8rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; }
+em { font-style: italic; color: #b8b8b8; } strong { color: var(--white); font-weight: 700; }
+.bridge-section { border-left: 3px solid var(--bridge); padding: 1.5rem; background: var(--bridge-dim); border-radius: 0 10px 10px 0; margin: 2rem 0; }
+.bridge-section .section-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.6rem; }
+.connector-section { border-left: 3px solid var(--connector); padding: 1.5rem; background: var(--connector-dim); border-radius: 0 10px 10px 0; margin: 2rem 0; }
+.connector-section .section-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--connector); margin-bottom: 0.6rem; }
+.section-break { margin: 3rem 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border-light), transparent); }
+.tension-box { background: var(--surface); border: 1px solid var(--bridge-border); border-radius: 10px; padding: 1.5rem 1.6rem; margin: 2rem 0; }
+.tension-box .tension-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.6rem; }
+.tension-box .tension-text { font-size: 1rem; color: var(--white); line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.final-tension { background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05)); border: 1px solid rgba(74,158,255,0.25); border-radius: 12px; padding: 2rem; margin: 2.5rem 0; }
+.final-tension .ft-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bridge); margin-bottom: 0.8rem; }
+.final-tension .ft-arrow { font-size: 1.5rem; margin-bottom: 0.8rem; }
+.final-tension .ft-original { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.final-tension .ft-evolved { font-size: 1rem; color: var(--white); line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-weight: 600; }
+.final-tension .ft-questions { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(74,158,255,0.15); }
+.final-tension .ft-q-label { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+.final-tension .ft-q-item { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 0.4rem; padding-left: 1rem; position: relative; }
+.final-tension .ft-q-item::before { content: '→'; position: absolute; left: 0; color: var(--bridge); }
+.branch-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1rem 0; position: relative; }
+.branch-item.active { border-color: var(--connector-border); background: var(--connector-dim); }
+.branch-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+.branch-type { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.5rem; border-radius: 4px; }
+.branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+.branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+.branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+.branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+.branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+.branch-book { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--white); }
+.branch-week { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.7rem; color: var(--text-muted); }
+.branch-desc { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.84rem; color: var(--text-dim); line-height: 1.6; }
+.pull-quote { border-left: 3px solid var(--accent); padding: 1rem 1.5rem; margin: 2rem 0; background: var(--accent-dim); border-radius: 0 8px 8px 0; }
+.pull-quote p { font-size: 1rem; color: var(--white); line-height: 1.7; margin: 0; font-style: italic; }
+.pull-quote .attribution { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; font-style: normal; }
+.bridge-passage { border: 1px solid var(--bridge-border); border-radius: 10px; padding: 1.5rem 1.6rem; margin: 1.5rem 0; background: var(--surface); }
+.passage-num { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--bridge); margin-bottom: 0.5rem; }
+.passage-title { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.8rem; }
+.map-container { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0; overflow-x: auto; }
+.map-title { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem; text-align: center; letter-spacing: 0.08em; }
+.page-nav { display: flex; justify-content: space-between; margin-top: 2rem; font-size: 0.82rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.page-nav a { color: #888; text-decoration: none; transition: color 0.2s; }
+.page-nav a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="nav">
+<a href="../../">Ethan's Lab</a>
+<span>›</span>
+<a href="../">书单精读</a>
+<span>›</span>
+<span>W19 · D5 · 摆渡人+连接者</span>
+</nav>
+<div class="article-header">
+<div class="meta-row">
+<span class="meta-badge">🌉 摆渡人</span>
+<span class="meta-badge">🔗 连接者</span>
+<span>Week 19 · Day 5 · 2026-08-14</span>
+</div>
+<h1>住在复杂性里的摆渡人</h1>
+<div class="subtitle">如果"向自然学习"是一种修辞，那么真正值得学习的——是什么？</div>
+</div>
+<div class="bridge-section">
+<div class="section-label">🌉 摆渡人 The Bridge</div>
+<p>过去四天，叙事者讲述了沃尔德罗普如何在SFI记录复杂性科学的诞生；应用者把框架丢进了技术锁定、中国互联网平台和腾讯渠道管理三个场景；挑战者从类比有效性、可证伪性、制度沉默和管理鸿沟四个维度解构了复杂性科学。</p>
+<p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+</div>
+<h2>第一段摆渡：从"向自然学习"到"向自然提问"</h2>
+<p>挑战者昨天提出了一个尖锐的指控：复杂性科学的"向自然学习"可能是一种修辞。这个指控成立。</p>
+<p>但摆渡人要问：如果"向自然学习"不是答案，那么自然对我们还有什么价值？</p>
+<p>摆渡人的答案是：<strong>自然不是老师，是镜子。</strong>我们观察自然不是为了模仿它，而是为了在自然中看到我们自己的投影。蚁群的自组织让我们看到"合作如何在没有中央控制的情况下发生"——这是关于人类社会的问题。生态系统的韧性让我们看到"多样性如何增强稳定性"——这是关于组织管理的问题。</p>
+<p>所以摆渡人的第一个渡口是：复杂性科学的价值不在于"向自然学习"的处方，而在于它提供了<em>重新框定问题</em>的工具。它让我们问：如果我们把组织看作生态系统，而不是机器，我们会看到什么不同？</p>
+<div class="pull-quote">
+<p>"自然不提供答案，它提供问题。复杂性科学的价值不在于它告诉我们怎么做，而在于它迫使我们重新思考我们正在问的问题。"</p>
+<div class="attribution">—— 摆渡人的立场</div>
+</div>
+<h2>第二段摆渡：复杂性科学遇见2026</h2>
+<div class="bridge-passage">
+<div class="passage-num">摆渡 01</div>
+<div class="passage-title">AI作为复杂适应系统</div>
+<p>2026年的大语言模型本身就是复杂适应系统——数十亿参数通过训练数据的互动，涌现出语言能力。但这不是SFI科学家想象的"涌现"——他们的涌现是解释性的，而AI的涌现是<em>创造性的黑箱</em>。我们知道GPT-4涌现出了预料之外的能力，但不知道这些能力如何从参数中涌现。</p>
+</div>
+<div class="bridge-passage">
+<div class="passage-num">摆渡 02</div>
+<div class="passage-title">全球治理：从学术到政策</div>
+<p>2020年的新冠疫情让复杂性科学走到了政策中心。流行病模型、社会网络分析、供应链韧性——都是复杂性工具。但疫情也暴露了局限：模型可以预测趋势，但不能预测具体的病毒突变；可以描述传播，但不能描述人类的非理性和政治行为。</p>
+</div>
+<div class="bridge-passage">
+<div class="passage-num">摆渡 03</div>
+<div class="passage-title">组织韧性：从混沌边缘到反脆弱</div>
+<p>塔勒布的"反脆弱"（2012）是对考夫曼"混沌边缘"的回应。真正的韧性不是"抵抗冲击"，而是"从冲击中获益"。但反脆弱在实践中面临挑战：如何设计"从冲击中获益"的制度？如果反脆弱意味着"拥抱危机"，这是否在为不必要的风险承担做辩护？</p>
+</div>
+<h2>第三段摆渡：住在复杂性里的摆渡人</h2>
+<p>如果复杂性科学是对的——世界是不可预测的、涌现是不可避免的——那么摆渡人作为"把思想带到当下"的角色，本身就是一种试图"控制理解"的努力。摆渡人在选择问题、排列顺序、引导注意力——这本身就是简化复杂性的行为。</p>
+<p>这不是自嘲。这是认识论上的必要诚实：<em>没有人能完全拥抱复杂性。</em>问题不是"谁能理解全部复杂性"——答案是没有人。问题是：<strong>我们是否愿意承认自己的理解是片面的，并为此保持开放。</strong></p>
+<div class="pull-quote">
+<p>"真正的智慧不是理解复杂性，而是理解自己的理解是有限的。复杂性科学最大的贡献不是它教给我们的知识，而是它教给我们的谦卑。"</p>
+<div class="attribution">—— 摆渡人的立场</div>
+</div>
+<div class="final-tension">
+<div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+<div class="ft-arrow">↓</div>
+<div class="ft-original">
+<strong>原始张力：</strong>如果复杂系统的集体智慧超越个体，那么人类社会应该向自然学习什么？还是这种类比本身就是错误的？
+</div>
+<div class="ft-evolved">
+<strong>最终形态：</strong>如果"向自然学习"是一种修辞，那么真正值得学习的不是自然的"机制"，而是自然的"问题"——它迫使我们重新思考人类社会的组织方式。复杂性科学是认知工具，不是管理处方。它的价值在于扩展问题空间，而不是缩小答案空间。
+</div>
+<div class="ft-questions">
+<div class="ft-q-label">三个落地提问</div>
+<div class="ft-q-item">你所在的组织，有多少问题被错误地框定为"简单问题"（需要控制），而实际上是"复杂问题"（需要适应）？</div>
+<div class="ft-q-item">你最近一次用"自然类比"来justify决策时，是否忽略了人类特有的利益冲突和权力关系？</div>
+<div class="ft-q-item">如果复杂性科学教给我们的是"谦卑"而不是"答案"，你愿意接受这种"不完整的智慧"吗？</div>
+</div>
+</div>
+<div class="section-break"></div>
+<div class="connector-section">
+<div class="section-label">🔗 连接者 The Connector</div>
+<p>在50本书的知识网络中，第19周《复杂》的位置是什么？沃尔德罗普的复杂性科学如何与前面的18本书对话？</p>
+</div>
+<h2>知识地图：第19节点</h2>
+<div class="branch-item">
+<div class="branch-header">
+<span class="branch-type tension">张力</span>
+<span class="branch-book">国富论</span>
+<span class="branch-week">W1</span>
+</div>
+<div class="branch-desc">
+斯密的"看不见的手"是复杂性经济学的祖先。但阿瑟的报酬递增证明了：看不见的手有时会把市场锁定在次优状态。复杂性科学不是推翻斯密，而是为斯密增加了边界条件：当报酬递增存在时，市场需要制度干预来打破锁定。
+</div>
+</div>
+<div class="branch-item">
+<div class="branch-header">
+<span class="branch-type dialogue">对话</span>
+<span class="branch-book">资本论</span>
+<span class="branch-week">W2</span>
+</div>
+<div class="branch-desc">
+马克思揭示了市场的结构性缺陷（剥削、危机），复杂性科学用数学描述了这些缺陷的涌现机制（正反馈、非线性）。两个人的对话是：马克思诊断了资本主义的症状，复杂性科学解释了这些症状的机制。但两者都没有提供"治愈"方案。
+</div>
+</div>
+<div class="branch-item">
+<div class="branch-header">
+<span class="branch-type inherit">传承</span>
+<span class="branch-book">失控</span>
+<span class="branch-week">W18</span>
+</div>
+<div class="branch-desc">
+从凯利到沃尔德罗普的传承是直接的：凯利用诗意的语言预言了涌现，沃尔德罗普用科学的方法验证了涌现。但传承中有漂移：凯利暗示涌现是"好的"，沃尔德罗普试图保持价值中立。但挑战者指出：沃尔德罗普的"中立"本身是一种自由主义立场。
+</div>
+</div>
+<div class="branch-item">
+<div class="branch-header">
+<span class="branch-type complement">互补</span>
+<span class="branch-book">错误的行为</span>
+<span class="branch-week">W12</span>
+</div>
+<div class="branch-desc">
+塞勒的行为经济学证明了个体的非理性，复杂性科学证明了个体的非理性如何在系统中涌现为宏观秩序。两个人的互补是：塞勒告诉我们"人不是理性的"，复杂性科学告诉我们"即使人不理性，系统仍然可以产生秩序"。但问题是：这种秩序是"好的"还是"坏的"？两者都没有回答。
+</div>
+</div>
+<div class="branch-item active">
+<div class="branch-header">
+<span class="branch-type channel-c">跨频道C</span>
+<span class="branch-book">1984</span>
+<span class="branch-week">文学感知</span>
+</div>
+<div class="branch-desc">
+奥威尔在《1984》中描绘了一个被中央控制完全征服的社会。复杂性科学提供了一种对抗这种 dystopia 的资源：如果系统是自组织的，那么中央控制就是不稳定的。但反讽的是：复杂性科学本身也被用来为平台公司的"算法控制"做辩护——"这是涌现的，不是被设计的"。奥威尔的警告在复杂性时代有了新形式。
+</div>
+</div>
+<div class="map-container">
+<div class="map-title">📍 知识地图 · 第19节点</div>
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+<rect width="760" height="420" fill="#111111" rx="8"/>
+<text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W19</text>
+<line x1="60" y1="100" x2="660" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+<circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+<text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+<text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+<circle cx="140" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+<text x="140" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text>
+<text x="140" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+<circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+<text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W7</text>
+<text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">乌合之众</text>
+<circle cx="300" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+<text x="300" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W12</text>
+<text x="300" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">错误的行为</text>
+<circle cx="380" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+<text x="380" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W18</text>
+<text x="380" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">失控</text>
+<circle cx="460" cy="100" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+<text x="460" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W19</text>
+<text x="460" y="130" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">复杂</text>
+<circle cx="540" cy="100" r="14" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>
+<text x="540" y="104" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="9" font-weight="600">W20</text>
+<text x="540" y="130" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="8">创新者的窘境</text>
+<circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+<text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+<text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+<path d="M 460 118 Q 460 200 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+<path d="M 460 118 Q 350 180 220 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+<path d="M 460 118 Q 400 180 300 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+<path d="M 460 118 Q 420 180 380 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+<path d="M 460 118 Q 500 180 540 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+<text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+<text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+<text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+<text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+<text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+</svg>
+</div>
+<h2>下周预告</h2>
+<p>第20周，我们将翻开克莱顿·克里斯坦森的《<em>创新者的窘境</em>》（<em>The Innovator's Dilemma</em>）。</p>
+<p>从沃尔德罗普的"复杂适应系统"到克里斯坦森的"颠覆性创新"——如果复杂性科学关心的是"系统如何演化"，克里斯坦森关心的是"企业如何在演化中生存"。他的核心发现是：成功本身可能是失败的原因。做得越好，死得越快。</p>
+<p>克里斯坦森用硬盘驱动器行业的历史数据证明了一个反直觉的论点：领先企业之所以失败，不是因为它们做错了什么，而是因为它们做对了所有事情——对<em>现有市场</em>来说。</p>
+<div class="pull-quote">
+<p>"良好管理是导致领先企业失败的最根本原因。"</p>
+<div class="attribution">—— 克莱顿·克里斯坦森，《创新者的窘境》</div>
+</div>
+<div class="page-nav">
+<a href="./w19-d04.html">← D04 · 挑战者</a>
+<a href="./w20-d01.html">D01 · 叙事者 →</a>
+</div>
+</div>
+</body>
+</html>

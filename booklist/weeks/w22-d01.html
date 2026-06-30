@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 22 · Day 1 · 叙事者 · 《君主论》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        /* Role intro */
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Body text */
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        /* Scene opening block */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Compare grid */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Concept cards */
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        /* Bias tag */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Tension question */
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        /* Footer nav */
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第22周 · 第1天</span>
+    </nav>
+
+    <!-- Badge -->
+    <div class="week-badge">📚 Week 22 · Day 1 · 2026-08-31</div>
+
+    <!-- Book title area -->
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">君主论</div>
+        <div class="book-author">尼科洛·马基雅维利 <span>Niccolò Machiavelli</span></div>
+    </div>
+
+    <!-- Role intro -->
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲马基雅维利是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <!-- Opening scene -->
+    <h2>那个在监狱里写完政治手册的人</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1513年，圣安德里亚监狱</div>
+        <p>1513年春天，佛罗伦萨城外的一座监狱里，一位四十四岁的前外交官正在写一本书。他刚刚经历了人生中最黑暗的几个月：美第奇家族复辟，他服务的共和国政府被推翻，他本人被指控参与反美第奇阴谋，遭受酷刑——被绑在刑架上，绳索拉扯着肩膀，直到关节脱臼。</p>
+        <p>他在狱中给朋友的信中写道："我遭受了一切酷刑，但仍然活着。" torture 结束后，他被释放出狱，流放到佛罗伦萨城外十几公里的圣卡夏诺小农庄。白天，他在葡萄园里劳作；晚上，他换上外交礼服，与古代伟人们对话——西塞罗、李维、色诺芬。</p>
+        <p>在农庄的小书房里，他写下了一本不到一百页的手稿。这本手稿没有使用拉丁文——当时的学术语言——而是用了通俗的意大利语。他不是写给学者看的，而是写给一位具体的读者：洛伦佐·德·美第奇，佛罗伦萨的新统治者。</p>
+        <p>这位前外交官就是<em>尼科洛·马基雅维利</em>。这本手稿就是《<em>君主论</em>》（<em>Il Principe</em>）。它后来成为政治思想史上最具争议性的著作之一——不是因为它最邪恶，而是因为它<em>最诚实</em>。</p>
+    </div>
+
+    <p>马基雅维利在《君主论》的开篇就表明了自己的立场："一直以来，关于统治的著作，都是描绘理想中的共和国，而非实际统治的样子。我要做的是<em>描述真实的政治</em>。"这句话本身就是对传统政治哲学的宣战。柏拉图、亚里士多德、奥古斯丁、阿奎那——所有这些思想家都在问"政治应该是什么样子"，而马基雅维利问的是"政治实际上在发生什么"。</p>
+
+    <p>这个转变看似只是方法论的调整，实际上是一场革命。当马基雅维利说"我要描述真实的政治"时，他实际上是把政治从<em>道德哲学</em>的框架中解放出来，放进了<em>权力技术</em>的框架。政治不再是如何实现正义的问题，而是如何获得和维持权力的问题。道德不是政治的指南针，而是政治的<em>工具之一</em>——有时有用，有时有害，需要被战略性地使用。</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">1513</div>
+            <div class="data-label">《君主论》成书</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">26</div>
+            <div class="data-label">章 短小精悍</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">1532</div>
+            <div class="data-label">首次出版（死后）</div>
+        </div>
+    </div>
+
+    <!-- Person biography -->
+    <h2>马基雅维利是谁：一个被佛罗伦萨共和国解雇的外交官</h2>
+
+    <p>尼科洛·马基雅维利1469年出生于佛罗伦萨一个没落的律师家庭。他的父亲贝尔纳多是一位法律学者，但家境贫寒，无法为儿子提供正式的高等教育。马基雅维利主要通过自学和父亲的藏书获得了古典教育——他读遍了李维、塔西佗、普鲁塔克和西塞罗的著作。</p>
+
+    <p>1498年，二十九岁的马基雅维利迎来了人生的转折点。佛罗伦萨共和国在萨伏纳罗拉被处决后重组政府，马基雅维利被任命为<em>第二国务秘书</em>（Second Chancellor），负责外交和军事事务。这个职位让他走进了欧洲政治的核心舞台。</p>
+
+    <p>在随后的十四年里，马基雅维利作为佛罗伦萨共和国的外交使节，出访了法国、德国、教廷和意大利各城邦。他见证了<em>切萨雷·博尔贾</em>（Cesare Borgia）——教皇亚历山大六世的儿子——如何在意大利中部建立一个短暂的军事帝国。他近距离观察了教皇权力的运作、雇佣兵制度的腐败、以及小国在大国博弈中的生存策略。这些经历成为《君主论》中最生动的案例来源。</p>
+
+    <div class="pull-quote">
+        "我亲眼所见的一切，让我明白了一个道理：政治不是关于美德的竞赛，而是关于权力的生存游戏。"
+    </div>
+
+    <p>1512年，美第奇家族在西班牙军队的支持下重新夺回佛罗伦萨政权。马基雅维利作为前共和国的核心官员，被指控参与反美第奇阴谋，遭到逮捕和酷刑。尽管最终被释放，但他失去了所有官职，被流放到乡下。正是在这段流亡岁月里，他写下了《君主论》——试图通过向新统治者展示政治才能，重新获得公职。</p>
+
+    <p>讽刺的是，美第奇家族从未认真对待这本书。马基雅维利在1527年去世时，仍然是一个被政治抛弃的人。但他的手稿在死后被出版，迅速传播到整个欧洲，成为政治思想史上无法绕过的里程碑。教皇把《君主论》列为禁书，但每一位君主都在秘密阅读它。马基雅维利可能失败了，但他的书<em>永生了</em>。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1469</div>
+            <div class="timeline-text">生于佛罗伦萨，父亲是法律学者，家境贫寒但藏书丰富</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1498</div>
+            <div class="timeline-text">被任命为佛罗伦萨共和国第二国务秘书，开启十四年外交生涯</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1502–1503</div>
+            <div class="timeline-text">近距离观察切萨雷·博尔贾的军事征服，成为《君主论》核心案例</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1512</div>
+            <div class="timeline-text">美第奇复辟，失去官职，被指控阴谋，遭受酷刑</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1513</div>
+            <div class="timeline-text">流放圣卡夏诺农庄，撰写《君主论》，试图以此重新获得美第奇青睐</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1519–1520</div>
+            <div class="timeline-text">撰写《论李维》，呈现共和主义的一面，与《君主论》形成张力</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1527</div>
+            <div class="timeline-text">去世，仍未获得任何公职；《君主论》在他死后出版并迅速传播</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1559</div>
+            <div class="timeline-text">被天主教廷列入《禁书目录》，但欧洲君主和政治家秘密传阅</div>
+        </div>
+    </div>
+
+    <!-- Time context -->
+    <h2>为什么是马基雅维利：从"应该"到"是"的范式断裂</h2>
+
+    <p>理解马基雅维利的位置，需要先理解他打破了什么传统。从柏拉图到阿奎那，政治哲学一直在问同一个问题：什么是<em>好的政治</em>？政治应该由正义、美德、上帝的律令来引导。这个传统在中世纪达到了顶峰：政治权力被嵌套在一个更大的宇宙秩序中，国王是上帝的代理人，政治的目的是实现神圣秩序在人间。</p>
+
+    <p>马基雅维利彻底打破了这一框架。他的政治不是关于"应该"，而是关于"<em>如何</em>"。他著名的"<em>virtù</em>"（能力/德能）不是基督教的谦卑或仁慈，而是统治者维持权力所需的<em>全部能力和意志</em>——包括勇气、狡诈、决断力、冷酷和必要的残忍。</p>
+
+    <p>这就是"马基雅维利主义"这个词的来源。它不再指代一种哲学体系，而是指一种<em>政治现实主义</em>：政治必须按它实际运作的规则来玩，而不是按道德理想来运作。马基雅维利不是第一个看到政治黑暗面的人，但他是第一个<em>系统地、公开地、不道歉地</em>把它写下来的人。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">传统政治哲学</div>
+            <div class="compare-row">政治应该追求正义和美德</div>
+            <div class="compare-row">道德约束政治行为</div>
+            <div class="compare-row">君主的权力来自上帝或自然法</div>
+            <div class="compare-row">政治是道德的应用</div>
+            <div class="compare-row">理想：哲学家-王统治</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">马基雅维利</div>
+            <div class="compare-row">政治是权力的生存与扩张</div>
+            <div class="compare-row">道德是政治的工具之一</div>
+            <div class="compare-row">君主的权力来自能力和运气</div>
+            <div class="compare-row">政治是自主的领域，有自己的规则</div>
+            <div class="compare-row">理想：有能力维持权力的君主</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>恶魔化叙事偏差</strong>：马基雅维利常被描绘成"邪恶的导师"，但这种标签忽略了他同时撰写的《论李维》——一本热情赞美共和主义的著作。马基雅维利不是简单的权力崇拜者，他关心的是<em>佛罗伦萨的生存</em>。在一个弱肉强食的意大利城邦时代，他认为只有强有力的君主才能统一意大利、驱逐外国入侵者。他的"现实主义"可能是绝望中的策略，而非价值立场。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>还原论偏差</strong>：把《君主论》简化为"不择手段"是对原著深度的压缩。马基雅维利详细讨论了什么时候应该遵守承诺、什么时候应该打破，什么时候应该使用暴力、什么时候应该赢得民心。他的判断不是"一切手段都合法"，而是"<em>在不同情境下，什么手段最有效</em>"。这是一个复杂的策略分析，不是道德虚无主义。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>后见之明偏差</strong>：《君主论》后来被列入禁书目录，但马基雅维利写这本书时，它只是一份求职信。我们今天看到的"邪恶智慧"，在当时的语境下是一个失业外交官试图重新获得政治影响力的努力。如果美第奇家族给了马基雅维利一个职位，他可能永远不会成为"马基雅维利主义"的代言人。
+    </div>
+
+    <!-- Book's birth -->
+    <h2>一本书如何从求职信变成禁书</h2>
+
+    <p>《君主论》不是一本传统意义上的学术著作。它是马基雅维利在流放中写给洛伦佐·德·美第奇的"建议信"——一份试图证明自己有政治价值的简历。全书只有26章，不到一百页，但每一章都充满了<em>从外交实践中提炼出来的冷酷观察</em>。</p>
+
+    <p>书的开篇就显示出马基雅维利的独特性。第一章讨论"君主国有多少种类"，不是从哲学分类出发，而是从<em>权力获取的方式</em>出发：世袭的、混合的、全新的。这个分类本身就是政治现实主义的宣言——政治分析应该从权力如何运作开始，而不是从理想应该如何开始。</p>
+
+    <p>书中最著名的章节是第15章："论那些使君主受人褒贬的事情"。马基雅维利在这里写下了整个政治思想史上最著名的段落之一：</p>
+
+    <div class="pull-quote">
+        "一个人如果在所有事情上都想以善胜恶，那么他生活在一个恶人横行的世界里，必将自取灭亡。因此，一位君主如果想保全自己，就必须学会不做一个善人，并在必要时知道如何运用不善的手段。"
+    </div>
+
+    <p>这段话不是道德虚无主义的宣言，而是一个<em>战术建议</em>：在充满敌意的环境中，过度的道德纯洁是自杀。马基雅维利没有说"善是坏的"——他说的是"在特定情境下，善可能是有害的"。这种情境化的判断，正是《君主论》的智慧所在，也是它被误解的根源。</p>
+
+    <p>马基雅维利把全书献给了洛伦佐·德·美第奇，但美第奇从未认真对待这本书。直到1532年——马基雅维利去世五年后——《君主论》才正式出版。出版后，它迅速引发了轩然大波。天主教会将其列为禁书，新教改革者约翰·加尔文在秘密引用它，伊丽莎白一世的顾问们在翻译它，而法国国王亨利四世据说把它放在枕头下。</p>
+
+    <p>但《君主论》最大的悖论在于：它既是最"邪恶"的政治书，也是最"诚实"的政治书。马基雅维利没有发明权力的残酷性——他只是第一个把它写下来的人。在他之前，君主们也在撒谎、背叛和谋杀，但他们同时声称自己是上帝的代理人。马基雅维利撕掉了这层伪装，这让所有人都不舒服。</p>
+
+    <!-- Concept preview -->
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">Virtù <span>能力/德能</span></div>
+            <div class="concept-desc">不是道德美德，而是统治者维持权力所需的全部能力和意志——包括勇气、狡诈、决断力、冷酷和必要的残忍。Virtù是对抗命运（Fortuna）的武器，是马基雅维利政治理论的核心概念。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">Fortuna <span>命运/机运</span></div>
+            <div class="concept-desc">政治中不可控的外部因素——战争、瘟疫、经济波动、对手的行动。马基雅维利认为命运控制了一半的人类事务，另一半由virtù控制。好的君主不是被命运控制的，而是能够与命运搏斗的人。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">狮子与狐狸 <span>The Lion and the Fox</span></div>
+            <div class="concept-desc">君主必须同时具备狮子的力量和狐狸的狡诈。仅靠力量无法识破陷阱，仅靠狡诈无法抵御狼群。这是马基雅维利对政治手段最经典的比喻——道德不能只有一种面孔。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">被人畏惧 vs 被人爱戴 <span>Fear vs Love</span></div>
+            <div class="concept-desc">马基雅维利最著名的二选一：如果必须在被人畏惧和被人爱戴之间选择，选择被人畏惧——因为爱是不稳定的，而恐惧是可靠的。但他补充了一个关键限定：不要让人恨你。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">权力的剧场 <span>Theater of Power</span></div>
+            <div class="concept-desc">马基雅维利强调"表象"的重要性：君主不需要真正拥有所有美德，但需要在公众面前展现这些美德。政治是一场表演，观众（人民）看到的是舞台上的形象，而不是后台的现实。</div>
+        </div>
+    </div>
+
+    <!-- Tension question -->
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果权力本质上是一种技术，而马基雅维利只是诚实地描述了它的运作逻辑，那么"道德"是否是政治的必要装饰？还是说政治必须被道德约束，否则权力会摧毁一切？</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+        <div class="footer-info">Week 22 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解马基雅维利的权力逻辑链 →</div>
+    </div>
+
+    <!-- Page Nav -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w21-d05.html" style="color:#888;text-decoration:none;">← W21 · D05</a>
+        <a href="./w22-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

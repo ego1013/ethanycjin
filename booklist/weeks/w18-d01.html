@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 18 · Day 1 · 叙事者 · 《失控》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第18周 · 第1天</span>
+    </nav>
+
+    <div class="week-badge">📚 Week 18 · Day 1 · 2026-08-03</div>
+
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">失控</div>
+        <div class="book-author">凯文·凯利 <span>Kevin Kelly</span></div>
+    </div>
+
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲凯文·凯利是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <h2>那个在亚洲骑自行车的美国人</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1990年代，旧金山</div>
+        <p>1992年的一个下午，旧金山湾区的一间办公室里，一位刚过四十岁的美国男人正在整理一堆手写笔记。这些笔记来自他在亚洲近十年的旅行、在加州伯克利郊外的棚屋里与自然主义者的讨论、以及与一群计算机黑客和生物学家在WELL（Whole Earth 'Lectronic Link）论坛上的深夜辩论。</p>
+        <p>他的桌上堆着几本关于蜜蜂行为、热带雨林生态、神经网络和计算机病毒的书籍。一个念头在他脑海中盘旋：<strong>机器和生命正在融合，而我们对"控制"的理解从根本上就是错的。</strong></p>
+        <p>这个人叫凯文·凯利。他刚刚被任命为《连线》（Wired）杂志的创始执行主编。在接下来的一年里，他将把这些零散的笔记写成一本书，名为《失控》（Out of Control）。1994年出版时，它被当作一本关于计算机和生物学的古怪书。二十年后，人们才发现它预言了分布式网络、群体智能、机器学习和云计算的几乎全部轮廓。</p>
+    </div>
+
+    <p>凯文·凯利1952年出生于宾夕法尼亚州一个普通家庭。1970年代，他进入罗格斯大学学习，但很快辍学——不是因为学不下去，而是因为"课堂太慢"。他用父亲的人寿保险赔偿金买了一张机票，开始了长达七年的亚洲背包旅行。他骑自行车穿越了伊朗、阿富汗、巴基斯坦、印度、尼泊尔、泰国、印度尼西亚、日本。他在加尔各答的贫民窟做志愿者，在日本的寺院里禅修，在巴厘岛的稻田里观察水循环系统。</p>
+
+    <p>这段经历给了他一个核心洞见：<em>秩序不需要被设计，它可以自发涌现。</em>一个稻田不是被某个人规划出来的——它是千百个农民在各自土地上做出局部决策后，自然形成的宏观秩序。一座蚁穴不是被蚁后指挥的——它是无数工蚁根据简单规则互动后，涌现出来的建筑奇迹。</p>
+
+    <div class="pull-quote">
+        "蜂群思维是一种由许多简单个体组成的群体，它们之间通过简单的互动规则产生复杂的全局行为。没有中央控制，却有条不紊。这不是魔法，是数学。"
+    </div>
+
+    <p>1980年代，凯利回到美国，加入了斯图尔特·布兰德（Stewart Brand）创办的《全球概览》（Whole Earth Catalog）团队。1984年，他参与创办了WELL——世界上最早的在线社区之一。在那里，他目睹了一群分散在各地的陌生人如何通过文字交流形成自组织、自调节的社区生态。WELL成了他的第一个实验室：一个<strong>没有中央控制的秩序</strong>如何运转。</p>
+
+    <p>1993年，《连线》杂志创刊。凯利担任执行主编。他在这个位置上做了八年，但更重要的是，他在1994年出版了《失控》。这本书不是一本传统的科技书——它是一本关于<em>复杂系统、涌现秩序、分布式控制和机器与生命融合</em>的哲学书。它用八百页的篇幅论证了一个核心论点：<strong>控制正在让位于复杂性，而复杂性是未来的语言。</strong></p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">800+</div>
+            <div class="data-label">页探讨机器与生命融合</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">1994</div>
+            <div class="data-label">出版，预言了互联网未来</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">30+</div>
+            <div class="data-label">年预言验证周期</div>
+        </div>
+    </div>
+
+    <h2>凯利是谁：一个从背包客到科技先知的非典型知识分子</h2>
+
+    <p>凯利的学术背景几乎为零。他没有博士学位，没有在大学任教的履历，没有发表过同行评审论文。他的训练来自自行车、寺院、稻田和在线论坛。但正是这种<em>非正统</em>，让他能够看到学院派科学家看不到的东西。</p>
+
+    <p>在《失控》中，凯利是一个热情的观察者和记录者，而不是一个严格的方法论者。他采访了麻省理工学院的人工生命研究者、圣达菲研究所的复杂性科学家、昆虫学家、机器人学家和经济学家。他不是在论证一个理论，而是在<em>绘制一张地图</em>——一张关于机器和生命如何走向融合的地图。</p>
+
+    <p>凯利的个人信仰也值得关注。他是一个基督教神秘主义者（虽然非常非正统），也是一个技术乐观主义者。他相信技术有它自己的"意志"——不是人类意志的延伸，而是一种独立的进化力量。他后来把这个观点称为"<em>技术元素</em>"（Technium）——一个与生命元素并列的宇宙力量。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1952</div>
+            <div class="timeline-text">生于宾夕法尼亚州，普通家庭背景</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1972</div>
+            <div class="timeline-text">从罗格斯大学辍学，用父亲保险金开始亚洲自行车旅行</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1979–1984</div>
+            <div class="timeline-text">加入《全球概览》团队；参与创办WELL在线社区</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1993</div>
+            <div class="timeline-text">成为《连线》杂志创始执行主编</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1994</div>
+            <div class="timeline-text">出版《失控》，提出蜂群思维、分布式控制、机器与生命融合</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1999–2008</div>
+            <div class="timeline-text">继续《连线》主编工作；开始全球摄影项目</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2010</div>
+            <div class="timeline-text">出版《技术想要什么》，提出"技术元素"概念</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2016</div>
+            <div class="timeline-text">出版《必然》，预言12种科技趋势</div>
+        </div>
+    </div>
+
+    <h2>为什么是凯利：1994年的互联网，一个没人听懂的预言</h2>
+
+    <p>1994年，互联网还是一个小众的学术和军事工具。World Wide Web 刚诞生三年。Netscape Navigator 刚发布。亚马逊还在杰弗里·贝佐斯的车库里。中国还没有接入国际互联网。硅谷还没有成为"硅谷"。</p>
+
+    <p>在这样的背景下，凯利写了什么？他写了：</p>
+
+    <p><em>分布式网络</em>——没有一个中心的网络比有一个中心的网络更强大、更 resilient。他的原话是："连接在一起的网络的可靠性，比任何一个节点的可靠性都要高。"</p>
+
+    <p><em>蜂群思维</em>——当足够多的简单节点通过简单规则连接起来，它们会产生集体智慧。这种智慧不是任何一个节点的智慧，而是整个网络 emergent 的属性。</p>
+
+    <p><em>机器和生命的融合</em>——"机器正在变得像生物，生物正在变得像机器。"两者之间的界限正在消失，而我们还在用旧的分类法看待它们。</p>
+
+    <p><em>控制的让位</em>——"控制的未来是失控。"最 robust 的复杂系统不是被设计的，而是被进化的。试图通过中央控制来管理复杂系统，只会导致系统更脆弱。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">1994年的主流观点</div>
+            <div class="compare-row">互联网是信息高速公路</div>
+            <div class="compare-row">机器和生物是两类东西</div>
+            <div class="compare-row">中央控制是效率的保证</div>
+            <div class="compare-row">智能是大脑的属性</div>
+            <div class="compare-row">未来是线性预测</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">凯利的预言</div>
+            <div class="compare-row">互联网是涌现生态系统</div>
+            <div class="compare-row">机器和生物正在融合</div>
+            <div class="compare-row">分布式控制比中央更 robust</div>
+            <div class="compare-row">智能是网络的 emergent 属性</div>
+            <div class="compare-row">未来是非线性演化</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>后见之明偏差</strong>：凯利的预言在2026年看起来像是"显而易见的常识"，但在1994年，这些观点被大多数计算机科学家和经济学家视为科幻。我们不能用今天的认知框架来低估他当时的远见——正如我们不能用今天的标准来衡量一个古代航海家的勇气。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>技术乐观主义偏差</strong>：凯利的叙事有一个贯穿始终的假设——涌现秩序是好的，分布式是好的，复杂性是好的。但他很少讨论：涌现出来的秩序可能是坏的（如网络暴力、算法极化、金融泡沫）。他的框架对"涌现的负面"缺乏系统性的分析。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>西方中心主义偏差</strong>：凯利的亚洲经历是他思想的重要来源，但他在《失控》中把这些经验抽象成了普遍的"复杂系统原理"，而没有充分处理不同文化对"控制"和"秩序"的不同理解。他的"失控"概念在西方个人主义语境中更成立，在东亚集体主义语境中可能含义不同。
+    </div>
+
+    <h2>一本书如何从"边缘"变成"先知之书"</h2>
+
+    <p>《失控》出版后，在学术界反响平平。它的文字风格过于文学化，论证不够严谨，例子横跨昆虫学、计算机科学和哲学，没有统一的方法论。学术期刊很少引用它，经济学家认为它"不科学"，计算机科学家认为它"不够技术"。</p>
+
+    <p>但它的读者在另一个地方：硅谷的创业者、黑客、艺术家和独立研究者。这本书在 1990 年代末到 2000 年代初的硅谷地下文化中流传，影响了一代人对"互联网应该是什么"的想象。李开复后来回忆，他在1990年代末读《失控》时，感到"被一种全新的世界观击中"。</p>
+
+    <p>2010年之后，随着云计算、深度学习、区块链、物联网和群体智能的爆发，《失控》突然从"边缘书"变成了"先知书"。它的英文版在2010年再版，中文版在2010年翻译出版后迅速成为畅销书。2015年，马化腾在一次公开演讲中特别提到了《失控》对他的影响。</p>
+
+    <p>但这本书的接受史也揭示了它的局限：<em>人们只引用它"对了"的部分，而忽略了它"错了"或"没讲"的部分。</em>凯利预测了分布式系统的力量，但没有预测分布式系统带来的脆弱性（如僵尸网络、信息疫情）。他预测了机器和生命的融合，但没有预测融合带来的伦理困境（如基因编辑、AI 意识）。</p>
+
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">蜂群思维 <span>Hive Mind</span></div>
+            <div class="concept-desc">由大量简单个体通过简单规则互动，涌现出集体智能。蚁群、蜂群、鸟群、鱼群、互联网用户——它们的共同特征是：没有一个中央指挥者，但群体行为却高度协调。这种智能不是任何个体的智能，而是网络结构的属性。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">涌现秩序 <span>Emergent Order</span></div>
+            <div class="concept-desc">复杂系统的宏观秩序不是被设计出来的，而是从微观互动中自发涌现的。交通秩序不是交警指挥出来的，而是每个司机在局部决策中自然形成的。市场秩序不是计划经济设计的，而是无数交易互动 emergent 的结果。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">分布式控制 <span>Distributed Control</span></div>
+            <div class="concept-desc">把控制权力分散到网络的每一个节点，而不是集中在中央。分布式系统的优势：没有单点故障、更具韧性、更难被攻击。但代价：效率较低、难以统一目标、可能出现局部最优而非全局最优。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">共同进化 <span>Co-evolution</span></div>
+            <div class="concept-desc">物种不是孤立进化的，而是与其他物种共同进化的。捕食者和猎物、寄生虫和宿主、植物和传粉昆虫——它们在相互适应中不断演化。凯利把这个概念扩展到了机器和生物之间：人类和技术也在共同进化。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">机器与生命的融合 <span>Machine/Biology Convergence</span></div>
+            <div class="concept-desc">机器人正在变得像生物（自适应、自修复、学习），生物正在被工程化（基因编辑、合成生物学）。两者的边界正在消失。凯利认为这不是威胁，而是进化的新阶段——一个"机器生物学"（machine biology）的时代。</div>
+        </div>
+    </div>
+
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果复杂系统的秩序是从混沌中自发涌现的，那么"控制"是否本身就是一种幻觉？在"失控"的世界里，人类的选择权还剩多少？</div>
+    </div>
+
+    <div class="page-footer">
+        <div class="footer-info">Week 18 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解蜂群思维与涌现秩序的逻辑链 →</div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w18-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>
