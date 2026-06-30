@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 17 · Day 1 · 叙事者 · 《技术的本质》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        /* Role intro */
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Body text */
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        /* Scene opening block */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Compare grid */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Concept cards */
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        /* Bias tag */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Tension question */
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        /* Footer nav */
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第17周 · 第1天</span>
+    </nav>
+
+    <!-- Badge -->
+    <div class="week-badge">📚 Week 17 · Day 1 · 2026-07-27</div>
+
+    <!-- Book title area -->
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">技术的本质</div>
+        <div class="book-author">布莱恩·阿瑟 <span>W. Brian Arthur</span></div>
+    </div>
+
+    <!-- Role intro -->
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不讲结论，只讲阿瑟是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <!-- Opening scene -->
+    <h2>那个在圣塔菲研究所重新定义"技术"的人</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 2009年，新墨西哥州圣塔菲研究所</div>
+        <p>2009年春天，新墨西哥州圣塔菲研究所（Santa Fe Institute）的一间演讲厅里，一位六十多岁的经济学家正在做一场报告。听众中有物理学家、生物学家、计算机科学家和经济学家——这是一个跨学科的场合，每个人带着自己的理论框架来，期待着被挑战。</p>
+        <p>布莱恩·阿瑟站在台上，背后没有复杂的数学公式，没有均衡分析的图表。他提出了一个看似简单的问题：</p>
+        <p>"我们都说技术'进化'——但技术真的是进化的吗？如果是，它的进化机制是什么？达尔文式的自然选择？还是某种我们尚未理解的组合逻辑？"</p>
+        <p>他停顿了一下，然后说出了那个让全场安静下来的结论：<em>技术不是被发明的，技术是被组合出来的。每一个新技术都是已有技术的组合，而技术本身在自我创造。</em></p>
+        <p>这个结论颠覆了两种传统认知：一种是经济学把技术当作"外生给定的生产函数"，另一种是创新研究把技术突破归功于个别天才的"灵光一现"。阿瑟说：<em>都不是。技术是一个自我递归的组合系统，而经济只是技术的一种表达。</em></p>
+    </div>
+
+    <p>阿瑟在回忆录中反复提到一个观察：<em>技术不是人类意志的简单产物，它有它自己的逻辑。</em>在经济学传统的语境里，技术是"生产要素"——像劳动和资本一样，是外生给定的、可以投入生产过程的东西。但阿瑟反转了这个视角：<strong>不是经济决定了技术，而是技术决定了经济。</strong>经济是技术的一种组织形式，一种让技术得以运转和演化的社会装置。</p>
+
+    <p>上上周我们跟随麦克卢汉走进了媒介理论的世界，看到技术如何重塑人类感知。本周，我们跟随阿瑟——<em>那个把技术从"工具"还原为"现象"的人</em>。他做的事情比麦克卢汉更根本：麦克卢汉问"技术如何改变人"，阿瑟问"<strong>技术是什么</strong>"。</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">20+</div>
+            <div class="data-label">年持续思考技术演化</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">1946</div>
+            <div class="data-label">阿瑟出生年份</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">2009</div>
+            <div class="data-label">《技术的本质》出版</div>
+        </div>
+    </div>
+
+    <!-- Person biography -->
+    <h2>阿瑟是谁：一个从爱尔兰农场走到复杂性科学前沿的经济学家</h2>
+
+    <p>沃尔夫拉姆·布莱恩·阿瑟（Wolfram Brian Arthur）1946年出生于北爱尔兰的一个农场家庭。他的童年与科技和学术几乎无关——那是一个农业社会，技术意味着拖拉机和化肥。但阿瑟从小表现出一种对"系统"的天然好奇：为什么某些农场比其他农场更成功？为什么技术一旦进入某个社区就会迅速扩散？</p>
+
+    <p>他在贝尔法斯特女王大学获得工程学和经济学学位，然后前往加州大学伯克利分校攻读运筹学博士学位。这段工程学训练给了阿瑟一个独特的视角：他不像传统经济学家那样把技术视为"黑箱"，而是像一个工程师一样，试图拆开技术，理解它的内部结构。</p>
+
+    <p>1980年代，阿瑟在斯坦福大学任教期间，开始研究一个让主流经济学界不安的问题：<em>收益递增（increasing returns）</em>。传统经济学假设收益递减——你投入越多，边际收益越低。但阿瑟发现，在高技术产业中，收益递增是常态：网络越大，价值越高；标准一旦确立，就会自我强化。这与当时主流经济学的新古典均衡框架直接冲突。</p>
+
+    <div class="pull-quote">
+        "经济学理论假设技术是从天而降的——像上帝给人类的礼物。但技术不是礼物，技术是一个自我编织的生态系统。"
+    </div>
+
+    <p>1990年代，阿瑟离开斯坦福，加入了新成立的圣塔菲研究所（Santa Fe Institute）——一个致力于跨学科复杂性科学研究的机构。在那里，他接触到了生物学中的进化理论、物理学中的自组织理论、计算机科学中的涌现现象。这些跨学科的对话，最终催生了《技术的本质》这本书的核心框架。</p>
+
+    <p>2009年，《The Nature of Technology》由Free Press出版。这不是一本传统的经济学著作，而是一本"技术哲学"——阿瑟试图回答一个最基础的问题：技术是什么？它的结构是什么？它如何演化？</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1946</div>
+            <div class="timeline-text">生于北爱尔兰贝尔法斯特附近的一个农场家庭</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1966–1970</div>
+            <div class="timeline-text">贝尔法斯特女王大学，工程学和经济学双学位</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1973</div>
+            <div class="timeline-text">加州大学伯克利分校运筹学博士</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1983–1995</div>
+            <div class="timeline-text">斯坦福大学任教；提出"收益递增"理论，挑战新古典经济学</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1987</div>
+            <div class="timeline-text">加入圣塔菲研究所（SFI），转向复杂性科学研究</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1994</div>
+            <div class="timeline-text">出版《Increasing Returns and Path Dependence in the Economy》，奠定技术演化理论基础</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2009</div>
+            <div class="timeline-text">出版《The Nature of Technology》（技术的本质），系统阐述技术的组合性、递归性和自创造性</div>
+        </div>
+    </div>
+
+    <!-- Time context -->
+    <h2>为什么是阿瑟：2008年金融危机后的技术反思</h2>
+
+    <p>理解阿瑟的位置，需要先理解他站在什么样的时代节点上。</p>
+
+    <p>2008年，全球金融危机爆发。经济学界遭受重创——那些曾经自信地预测市场均衡、理性预期、有效市场的模型，在现实的湍流中显得苍白无力。人们开始质疑：经济学是否理解错了什么？</p>
+
+    <p>阿瑟的答案在《技术的本质》中被含蓄地表达：<em>经济学错了，因为它假设技术是一个外生常量。但技术是内生的、演化的、自我创造的。</em>金融危机不是市场失灵，而是<em>技术-经济系统</em>的复杂动力学结果——金融衍生品（本身就是一种技术）的递归组合创造了系统性风险，而经济理论因为把技术当作外生变量，完全没有预见到这种风险。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">传统经济学视角</div>
+            <div class="compare-row">技术是生产函数中的参数</div>
+            <div class="compare-row">技术进步是外生的、随机的</div>
+            <div class="compare-row">创新来自天才的灵感</div>
+            <div class="compare-row">经济决定技术的方向</div>
+            <div class="compare-row">目标：市场均衡</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">阿瑟的视角</div>
+            <div class="compare-row">技术是组合系统，有内部结构</div>
+            <div class="compare-row">技术进步是内生的、递归的</div>
+            <div class="compare-row">创新来自已有技术的组合</div>
+            <div class="compare-row">技术决定经济的形式</div>
+            <div class="compare-row">目标：理解技术演化</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>天才发明者叙事偏差</strong>：乔布斯、爱迪生、特斯拉的故事被包装成"孤独天才改变世界的叙事"，但这过度简化了技术演化的过程。阿瑟的框架提醒我们：每一个"突破性发明"背后，都是数十个已有技术的组合和数百个失败实验的积累。没有天才，技术也会演化——只是速度不同。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>技术决定论偏差</strong>：阿瑟的框架容易被误读为"技术决定一切"——经济、社会、文化都只是技术的表达。但阿瑟本人明确反对这种决定论。他强调的是"技术有它自己的逻辑"，而不是"技术不受人类影响"。社会因素、制度、文化都会影响技术选择，只是它们不是技术演化的主要驱动力。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>后见之明偏差</strong>：阿瑟在2009年出版的这本书，让技术组合理论看起来像是"必然的突破"。但阿瑟的收益递增理论在1980年代几乎被主流经济学界系统性排斥。我们今天看到的"成功"，在当时的语境下是"异端"。没有后见之明，我们无法判断哪些"边缘理论"会变成"新范式"。
+    </div>
+
+    <!-- Book's birth -->
+    <h2>一本书如何从"边缘思考"变成"范式转换"</h2>
+
+    <p>《技术的本质》不是一本传统的学术著作。它更像一本思想地图——阿瑟带着读者走过二十年对技术演化的思考。</p>
+
+    <p>书的开篇是一个关键场景。阿瑟在圣塔菲研究所的一次跨学科研讨会上，听到一位生物学家讲DNA的递归结构——每个基因都是更简单的核苷酸的组合，而整个基因组又是一个自组织系统。他突然意识到：<em>技术也是如此。</em>喷气发动机不是被"发明"出来的——它是涡轮压缩机、燃烧室、涡轮叶片等已有组件的组合，而这些组件本身又是更基础技术的组合。</p>
+
+    <p>从那一刻起，阿瑟开始了他的"技术解剖"工程。他研究了大量技术史案例：蒸汽机、电力、计算机、互联网、激光、雷达、青霉素——每一个看似"革命性"的发明，都不过是已有技术的重新组合，加上一些关键的新元素。</p>
+
+    <p>2008年金融危机的爆发，成了这本书的意外催化剂。金融危机让经济学界开始反思：为什么我们的模型没有预测到这场危机？阿瑟的答案是：<em>因为模型把技术当作外生常量，但金融衍生品本身就是技术——而且是递归组合的、自我创造的、系统性的技术。</em>当信用违约互换（CDS）和抵押贷款支持证券（MBS）被组合成更复杂的衍生品时，风险不是简单的加总，而是涌现的、非线性的。经济学因为不理解技术的组合性，所以不理解风险的系统性。</p>
+
+    <!-- Concept preview -->
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">技术作为组合 <span>Technology as Combination</span></div>
+            <div class="concept-desc">每一个新技术都是已有技术的组合。喷气发动机 = 涡轮压缩机 + 燃烧室 + 涡轮叶片 + 控制系统。这些组件本身又是更基础技术的组合。技术不是从无到有的创造，而是从已有元素中的重组。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">技术的递归结构 <span>Recursive Structure</span></div>
+            <div class="concept-desc">技术具有分形般的递归结构：整体由组件构成，组件由子组件构成，子组件由更基础的元素构成。就像俄语套娃一样，每一层都是上一层的组合。这种递归性让技术系统具有自我增强的能力。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">域的涌现与集群 <span>Domains & Clusters</span></div>
+            <div class="concept-desc">技术不是孤立存在的，它们聚集成"域"（domains）——如电子技术、信息技术、生物技术。每个域是一个技术集群，内部技术相互支持、相互依赖。新域的涌现（如数字域）会改变整个经济和社会结构。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">经济是技术的表达 <span>Economy as Expression of Technology</span></div>
+            <div class="concept-desc">经济不是决定技术的上层建筑，而是技术的一种组织形式。新的技术域（如互联网）会创造出新的经济形式（如平台经济、共享经济）。经济随技术演化而演化，而非相反。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">技术的自创造 <span>Technology as Self-Creating</span></div>
+            <div class="concept-desc">技术不仅被人创造，它也在创造自己。新技术打开新的可能性空间，这些可能性又催生更多的新技术。技术是一个自我喂养（autocatalytic）的系统——它用自己的产物作为下一步的输入。</div>
+        </div>
+    </div>
+
+    <!-- Tension question -->
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果技术本质上是已有技术的组合和递归，那么"创新"是否只是重组？"原创性"是一个伪概念吗？如果技术自己创造自己，人类的"发明"行为到底是主动的创造，还是被技术逻辑推着走的必然？</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+        <div class="footer-info">Week 17 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解技术的组合逻辑与递归结构 →</div>
+    </div>
+
+    <!-- Page Nav -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w16-d05.html" style="color:#888;text-decoration:none;">← W16 · D05</a>
+        <a href="./w17-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>
