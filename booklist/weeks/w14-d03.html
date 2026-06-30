@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 14 · Day 3 · 应用者 · 《具身认知》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        .scenario-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .scenario-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .scenario-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .scenario-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .scenario-card .card-body em {
+            color: var(--accent);
+        }
+
+        .scenario-card .card-insight {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .scenario-card .card-insight strong {
+            color: var(--accent);
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .compare-table th {
+            background: var(--surface-2);
+            color: var(--accent);
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .compare-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            line-height: 1.6;
+            vertical-align: top;
+        }
+
+        .compare-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .compare-table tr:nth-child(even) {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .post-header h1 { font-size: 1.5rem; }
+            .compare-table { font-size: 0.78rem; }
+            .compare-table th, .compare-table td { padding: 0.5rem 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第14周 · 第3天</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="role-badge">🛠 应用者 The Applier · W14-D03</div>
+        <div class="meta">
+            <span>📅 2026-07-08</span>
+            <span>📖 第 14 周 · Day 3 / 5</span>
+            <span>🔢 《我们赖以生存的隐喻》</span>
+        </div>
+        <h1>当隐喻变成政策：三场景拆解</h1>
+        <div class="subtitle">概念隐喻不是书斋里的理论——它在美国总统的演讲台、中国政治话语、和腾讯的KPI表格里，悄无声息地塑造着现实</div>
+    </header>
+
+    <div class="prose">
+
+        <p>
+            应用者今天的工作，是把莱考夫和约翰逊的框架刀从理论带到现实。概念隐喻理论最惊人的地方不是它在语言学中的优雅——而是它在现实世界中的<em>无处不在</em>。我们不是在"使用"隐喻，我们是<em>被隐喻使用</em>。今天的三个场景，分别来自历史、当下中国、和Ethan的职业日常，展示隐喻如何不是装饰，而是政策、制度和商业决策的结构性支撑。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">场景一 · 历史案例</div>
+
+        <div class="scenario-card" data-num="01">
+            <div class="card-label">场景 01</div>
+            <div class="card-title">政治隐喻如何塑造政策：从"向贫困宣战"到"看不见的手"</div>
+            <div class="card-body">
+                1964年，美国总统林登·约翰逊宣布"<em>向贫困宣战</em>"（War on Poverty）。这个隐喻不是修辞选择——它定义了整个政策框架。如果贫困是一场<em>战争</em>，那么它需要：敌人（贫困本身）、武器（政府项目）、战场（贫困地区）、胜利标准（贫困率下降）。<br><br>
+                但这个隐喻也隐藏了关键的东西。战争隐喻让贫困看起来是一个需要被"击败"的外部敌人，而不是一个需要被"理解"和"治愈"的社会病症。它强调<em>行动、对抗、快速解决</em>，而隐藏了<em>结构性、长期性、合作性</em>的解决方案。社区发展、教育投资、医疗普及——这些需要"培育"而非"战斗"的隐喻。<br><br>
+                另一个经典例子是亚当·斯密的"<em>看不见的手</em>"（invisible hand）。这个隐喻把市场经济描述为一个<em>有机体</em>——它有自我调节的能力，不需要外部干预。"手"是身体隐喻，"看不见"是感知隐喻。这个隐喻在300年里塑造了整个自由市场经济学的前提：市场是有机体，干预是手术，最好让有机体自己愈合。但2008年的金融危机证明：当"手"看不见的时候，它也可能<em>看不见自己在做什么</em>。<br><br>
+                再举一个更近的例子：1980年代里根的"<em>毒品战争</em>"（War on Drugs）。战争隐喻让禁毒政策变成了军事问题：逮捕、监禁、边境封锁。它隐藏了公共卫生视角：成瘾是疾病，需要治疗而非惩罚。结果是美国监狱人口在30年里翻了五倍，而毒品问题几乎没有改善。隐喻不是政策——<em>隐喻是政策的基因</em>。
+            </div>
+            <div class="card-insight">
+                <strong>应用者洞察：</strong>政策制定者不是先选择目标再选择隐喻，而是<em>先选择隐喻，再发现目标</em>。"向贫困宣战"一旦说出口，政策工具箱就自动排除了"与贫困共生""慢慢培育社区"等选项。隐喻是政策的先验条件，不是政策的事后包装。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">场景二 · 中国当下</div>
+
+        <div class="scenario-card" data-num="02">
+            <div class="card-label">场景 02</div>
+            <div class="card-title">中国政治话语中的隐喻系统：面子、关系、与"河流隐喻"</div>
+            <div class="card-body">
+                莱考夫和约翰逊的理论在中国有一个有趣的检验场：中文政治话语中的隐喻系统与英语政治话语中的隐喻系统<em>不完全相同</em>——这本身就是对"概念隐喻普遍性"假说的挑战。<br><br>
+                首先是"<em>面子</em>"（face）。英语中有"face"（面子），但没有一个系统性的"FACE IS SOCIAL CAPITAL"隐喻。中文里"给面子""丢面子""面子工程""不给面子"——"面子"是一个容器吗？是一个物体吗？还是一个货币？实际上，中文的"面子"隐喻混合了多种源域：容器（"脸上有光"——光在容器内部）、货币（"欠面子"）、物理表面（"撕破脸"）。这种混合性说明，同一个抽象概念可以被<em>多个源域</em>映射，而不是只有一个源域。<br><br>
+                然后是"<em>关系</em>"（guanxi）。英语中的"relationship"通常是平等的、情感性的。但中文的"关系"隐喻深受网络图式（network schema）和银行隐喻（"人情债"）的影响。"拉关系"是物理拉扯，"走关系"是路径移动，"托关系"是力量传递。"关系"在中国社会中的概念化，不是简单的"人际关系"，而是一个<em>复杂的力量-网络-债务系统</em>。这让中国官僚体系和商业运作中的"关系"概念，与西方的"networking"概念有本质差异。<br><br>
+                更宏观的是中国政治话语中的"<em>河流隐喻</em>"和"<em>航海隐喻</em>"。"历史长河""滚滚向前""潮流不可逆转"——历史被理解成一条河流，方向是"向前"，反潮流是"逆流"。这与英语中"历史是旅程"（journey）的隐喻类似，但河流隐喻强调<em>不可抗拒的集体力量</em>，而旅程隐喻强调<em>个体选择的目的地</em>。当中国领导人说"历史潮流浩浩荡荡"，他们用的是河流的力量动力学隐喻；当美国领导人说"our journey continues"，用的是路径隐喻。两种隐喻隐藏了不同的政治哲学：集体命运 vs 个体选择。
+            </div>
+            <div class="card-insight">
+                <strong>应用者洞察：</strong>跨文化概念隐喻的差异不是语言差异，而是<em>概念系统差异</em>。当中国人说"关系"和西方人说"networking"时，他们不是在用不同的词描述同一个概念——他们在用不同的概念系统描述不同的社会现实。翻译的困难不仅是语言层面的，更是概念层面的。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">场景三 · Ethan职业</div>
+
+        <div class="scenario-card" data-num="03">
+            <div class="card-label">场景 03</div>
+            <div class="card-title">腾讯广告渠道绩效管理中的隐喻："增长""生态"与"管道"</div>
+            <div class="card-body">
+                Ethan在腾讯广告渠道绩效管理的工作中，每天都在使用一套隐喻系统——这套隐喻系统不是"装饰"，而是<em>决定了绩效指标的定义、考核方式和激励机制</em>。<br><br>
+                <strong>隐喻 1："增长"（Growth）。</strong> "增长"是一个生物隐喻——像植物一样生长。这个隐喻隐藏了：增长是自然的、有机的、应该持续的。但它没有问：什么在增长？增长的上限在哪里？增长的成本是什么？当"增长"成为默认的绩效目标，收缩、调整、甚至"战略性撤退"都被排除在选项之外。增长隐喻预设了<em>扩张即正义</em>。<br><br>
+                <strong>隐喻 2："生态"（Ecosystem）。</strong> "生态"是生物学隐喻——各个渠道像生态系统中的物种一样相互依存。这个隐喻隐藏了：生态是"自然的"、"平衡的"、"自我调节的"。但现实中的广告渠道管理不是生态——它是<em>权力分配和利益博弈</em>。用"生态"来描述渠道关系，让渠道间的冲突看起来像"自然选择"而不是"制度设计问题"。当某个渠道被削减预算时，"生态优化"的说法让它看起来像是自然过程，而不是人为决策。<br><br>
+                <strong>隐喻 3："管道"（Pipeline）。</strong> "管道"是物理工程隐喻——客户像液体一样从管道的一端流入，从另一端流出。这个隐喻隐藏了：客户不是液体，他们有自主性、犹豫、比较、和拒绝的权利。管道隐喻让"漏斗模型"（awareness → interest → decision → action）看起来像是物理定律，而不是<em>一个可以被改变的选择架构</em>。当Ethan设计渠道绩效指标时，"管道"隐喻决定了他测量什么（转化率、流失率、流速），也决定了他不测量什么（客户满意度、长期信任、品牌情感）。<br><br>
+                更深层的是：腾讯内部的绩效语言系统性地使用<em>容器隐喻</em>（"在业务范围内""突破边界"）和<em>路径隐喻</em>（"目标导向""达成路径""里程碑"）。这些隐喻不是腾讯独有的——它们是整个中国互联网管理话语的通用货币。但正因为它们太通用，它们变得<em>不可见</em>——没有人质疑"增长"是否总是好的，"生态"是否掩盖了权力关系，"管道"是否把客户物化了。
+            </div>
+            <div class="card-insight">
+                <strong>应用者洞察：</strong>管理话语中的隐喻不是"说话方式"，而是<em>思考方式</em>。当腾讯用"生态"来描述渠道关系时，它实际上是在选择一种特定的制度分析框架——一种隐藏冲突、强调和谐、自然化权力结构的框架。改变隐喻，就是改变管理的可能性空间。如果Ethan把"生态"重新框架为"联盟博弈"，他可能会看到完全不同的渠道管理策略。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">三场景对比</div>
+
+        <h2>隐喻如何成为制度的隐形语法</h2>
+
+        <p>
+            三个场景看似不同，但共享同一个结构：隐喻不是政策制定后的修辞包装，而是<em>政策形成前的概念地基</em>。一旦隐喻被选定，某些政策选项自动变得"不可想象"，而另一些选项自动变得"自然"。
+        </p>
+
+        <table class="compare-table">
+            <thead>
+                <tr>
+                    <th style="width:18%">维度</th>
+                    <th style="width:28%">场景一：历史政策</th>
+                    <th style="width:28%">场景二：中国政治</th>
+                    <th style="width:26%">场景三：腾讯绩效</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>核心隐喻</strong></td>
+                    <td>WAR（战争）/ HAND（手）/ BODY（有机体）</td>
+                    <td>RIVER（河流）/ FACE（面子）/ NETWORK（关系网）</td>
+                    <td>GROWTH（生长）/ ECO（生态）/ PIPELINE（管道）</td>
+                </tr>
+                <tr>
+                    <td><strong>源域</strong></td>
+                    <td>战争、物理力量、有机体</td>
+                    <td>自然力量、身体部位、社会网络</td>
+                    <td>生物学、工程学、物理学</td>
+                </tr>
+                <tr>
+                    <td><strong>目标域</strong></td>
+                    <td>贫困、毒品、市场</td>
+                    <td>历史、社会信用、人际资源</td>
+                    <td>业务目标、渠道关系、客户转化</td>
+                </tr>
+                <tr>
+                    <td><strong>隐藏了什么</strong></td>
+                    <td>结构性根源、合作解决、系统复杂性</td>
+                    <td>个体选择、冲突、权力不对称</td>
+                    <td>增长极限、渠道冲突、客户自主性</td>
+                </tr>
+                <tr>
+                    <td><strong>替代隐喻</strong></td>
+                    <td>"与贫困共生""培育社区""健康合作"</td>
+                    <td>"历史是森林"（多样性共存）"面子是货币"（可量化交易）</td>
+                    <td>"业务是花园"（需要修剪和休养）"渠道是博弈"（显化冲突）</td>
+                </tr>
+                <tr>
+                    <td><strong>制度后果</strong></td>
+                    <td>军事化政策、大规模监禁、忽视预防</td>
+                    <td>集体主义框架、和谐优先、个人服从</td>
+                    <td>增长至上、渠道冲突隐性化、客户物化</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            这张表格揭示了一个令人不安的模式：<em>隐喻的选择不是中性的。</em>"战争"隐喻让对抗变得自然，"生态"隐喻让和谐变得自然，"管道"隐喻让控制变得自然。每种隐喻都服务某种权力结构，同时隐藏另一种可能性。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D3·应用者视角）</div>
+            <div class="tension-q">
+                如果隐喻是概念的地基，那么改变隐喻是否就是改变现实？管理者和政策制定者是否应该主动操控隐喻，来实现更好的结果？
+            </div>
+            <div class="tension-echo">
+                应用者今天的工作，是让这个张力问题在三个场景中变得具体。<br><br>
+                在场景一，我们看到："向贫困宣战"的隐喻被约翰逊政府选择，不是因为它是"最好的描述"，而是因为它能<em>动员政治意志</em>。战争隐喻的动员力量是巨大的——但它也付出了代价：40年后，美国社会仍然没有解决贫困的结构性问题，因为战争隐喻让"慢慢培育社区"看起来像是失败。<br><br>
+                在场景二，我们看到：中国政治话语中的河流隐喻不是"选择"的结果——它是<em>文化概念系统的一部分</em>，深嵌在语言中。莱考夫会说：这不是中国政治家"选择"了河流隐喻，而是河流隐喻"选择"了他们。概念隐喻的自动性和无意识性，让"改变隐喻"变得极其困难——你需要改变的不是修辞，而是<em>整个概念系统</em>。<br><br>
+                在场景三，我们看到：腾讯的绩效管理隐喻系统不是某一个人设计的——它是<em>管理话语的集体产物</em>，从MBA教材、咨询公司报告、到硅谷文化，层层渗透。Ethan作为渠道绩效管理者，面对的不是"选择什么隐喻"的问题，而是<em>能否识别出隐喻的存在</em>的问题。如果"增长""生态""管道"看起来像是事实而不是隐喻，那么改变它们就无从谈起。<br><br>
+                更精确的问题变成：<strong>在组织管理中，隐喻意识（metaphor awareness）能否成为一种领导力？</strong>如果一个管理者能够识别出团队使用的隐喻系统，并有策略地引入替代隐喻，他是在做"认知架构设计"，还是在做"思想操控"？这取决于一个关键区别：替代隐喻是被<em>公开讨论和共同选择</em>的，还是被<em>悄悄植入和单向引导</em>的。前者是民主的认知设计，后者是精致的认知操纵。区分两者的标准，不是技术，而是<em>透明度和参与权</em>。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "在真实的政治中，不是事实决定框架，而是框架决定事实。改变框架，就是改变事实。"
+            <br>— 乔治·莱考夫，《Don't Think of an Elephant!》
+        </div>
+
+        <p>
+            明天，挑战者会从四个维度解构这个框架——从循环论证的危险，到文化多样性的盲区，到神经科学的挑战，再到政治框架的伦理边界。应用者今天展示的力量，是挑战者明天要追问的问题。
+        </p>
+
+    </div>
+
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w14-d02.html">← 提炼者 · 五把框架刀</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w14-d04.html">挑战者 · 四道断层线 →</a>
+        </div>
+    </nav>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w14-d02.html" style="color:#888;text-decoration:none;">← D02 · 提炼者</a>
+        <a href="./w14-d04.html" style="color:#888;text-decoration:none;">D04 · 挑战者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

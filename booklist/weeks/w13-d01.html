@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 13 · Day 1 · 叙事者 · 《娱乐至死》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        /* Role intro */
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Body text */
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        /* Scene opening block */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Compare grid */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Concept cards */
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        /* Bias tag */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Tension question */
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        /* Footer nav */
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第13周 · 第1天</span>
+    </nav>
+
+    <!-- Badge -->
+    <div class="week-badge">📚 Week 13 · Day 1 · 2026-06-29</div>
+
+    <!-- Book title area -->
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">娱乐至死</div>
+        <div class="book-author">尼尔·波兹曼 <span>Neil Postman</span></div>
+    </div>
+
+    <!-- Role intro -->
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲波兹曼是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <!-- Opening scene -->
+    <h2>1985年，纽约大学的一间办公室里</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1985年，纽约</div>
+        <p>1985年的秋天，纽约大学教育学院的一间办公室里，一位54岁的教授正在审阅自己新书的手稿清样。他刚刚给出版社寄去了最后一章的修改稿，标题是《<em>Amusing Ourselves to Death: Public Discourse in the Age of Show Business</em>》。</p>
+        <p>窗外是曼哈顿中城的街景。美国三大电视网（ABC、CBS、NBC）的晚间新闻正在全国家庭里播放。里根总统在屏幕上的形象——那个从好莱坞走出的"伟大的沟通者"——让这位教授感到深深的忧虑。不是因为里根的政治立场，而是因为：<em>政治话语本身已经变成了一种娱乐表演</em>。</p>
+        <p>这位教授就是尼尔·波兹曼。他在这本书的扉页上写下了献词，然后做了一件很少被学者做的事：他预言，如果美国文化继续沿着电视化的道路走下去，<strong>"我们将毁于我们所热爱的东西"</strong>。</p>
+    </div>
+
+    <p>波兹曼在书中开篇就做了一个著名的比较：乔治·奥威尔的《1984》和奥尔德斯·赫胥黎的《美丽新世界》。奥威尔警告的是，政府会通过禁书和审查来消灭思想；赫胥黎警告的是，<em>人们会自己在无尽的快乐和娱乐中放弃思想</em>。波兹曼的论断是：<strong>赫胥黎的预言正在美国成为现实。</strong></p>
+
+    <p>上周我们跟随塞勒走进了选择架构的迷宫——我们被默认选项、信息框架和认知偏差引导着做出选择。本周，我们跟随波兹曼——<em>那个问"不是我们在选择什么，而是什么东西在选择我们"的人</em>。他做的事情比塞勒更根本：塞勒关心的是"选项如何被呈现"，波兹曼关心的是"<strong>当所有内容都被包装成娱乐时，严肃思考是否还有容身之地</strong>"。</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">1985</div>
+            <div class="data-label">出版年份</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">200+</div>
+            <div class="data-label">全球译本/引用</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">40</div>
+            <div class="data-label">年出版后仍具预言性</div>
+        </div>
+    </div>
+
+    <!-- Person biography -->
+    <h2>波兹曼是谁：一个拒绝上电视的媒介生态学家</h2>
+
+    <p>尼尔·波兹曼1931年出生于纽约市的一个犹太家庭。他在纽约的公立学校长大，1953年获得纽约州立大学弗雷多尼尔分校的英语教育学士学位，1955年获得哥伦比亚大学教育学硕士学位，1958年获得哥伦比亚大学教育学博士学位。他的学术生涯几乎完全在纽约大学度过——从讲师到教授，再到教育学院文化与传播学系的创始人。</p>
+
+    <p>波兹曼的学术身份很难被归类。他自称为"<em>媒介生态学家</em>"（media ecologist）——这个术语借用了生物学中的"生态学"概念，把媒介环境视为塑造人类认知和文化的生态系统。媒介不仅仅是信息传递的工具，<em>媒介本身就是环境</em>，它决定了什么信息可以被生产、什么信息可以被消费、以及信息被消费的方式。</p>
+
+    <p>他的学术路径有几个关键节点。1960年代末，他成为麦克卢汉（Marshall McLuhan）"媒介即讯息"理论在美国最重要的传播者之一。但他与麦克卢汉有根本分歧：麦克卢汉对电子媒介的革命性持乐观态度，认为电子媒介将恢复人类的全感官参与；波兹曼则对电子媒介——尤其是电视——持深刻的批判态度。他认为，<strong>电视的媒介特性不是中性的，它系统性地偏爱娱乐、图像和即时情绪，而排斥逻辑、文本和深度论证。</strong></p>
+
+    <div class="pull-quote">
+        "我们认识到的过去，不是过去本身，而是被书写下来的过去。我们认识到的知识，不是知识本身，而是被印刷下来的知识。媒介不仅传递内容，媒介定义了内容存在的方式。"
+    </div>
+
+    <p>波兹曼在1970年代末到1980年代初期，开始系统性地关注电视对美国公共生活的影响。他观察到三个趋势：第一，政治辩论变得越来越短，越来越情绪化；第二，新闻节目开始追求"收视率"而非"信息质量"；第三，教育节目（如《芝麻街》）虽然形式活泼，但正在培养一种"<em>用娱乐来学习</em>"的认知习惯，而这种习惯在根本上与深度思考不兼容。</p>
+
+    <p>1982年，他出版了《<em>童年的消逝</em>》（<em>The Disappearance of Childhood</em>），论证印刷术创造了"童年"这个概念（因为阅读需要长时间的学习，把儿童和成人分隔开），而电视正在消灭这种分隔——儿童在电视上看到的一切，成人也看到了；成人不再掌握任何儿童无法接触的信息。这本书是《娱乐至死》的预演：媒介形式改变社会结构，而且是深层结构。</p>
+
+    <p>1985年《娱乐至死》出版后，波兹曼获得了广泛的公众关注。但他有一个著名的原则：<strong>他拒绝上电视。</strong>他认为，如果他在电视上讨论"电视的危害"，他本身就成为了问题的一部分。这个拒绝本身，就是一个媒介生态学的立场——<em>你不可能在一个媒介中批评那个媒介本身而不被那个媒介的逻辑捕获</em>。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1931</div>
+            <div class="timeline-text">生于纽约市，犹太家庭，成长于印刷文化环境中</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1958</div>
+            <div class="timeline-text">哥伦比亚大学教育学博士，随后加入纽约大学</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1960s</div>
+            <div class="timeline-text">开始传播麦克卢汉理论，但逐渐形成自己的批判立场</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1970s</div>
+            <div class="timeline-text">纽约大学创立文化与传播学系，媒介生态学作为学术领域正式确立</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1982</div>
+            <div class="timeline-text">出版《童年的消逝》，论证印刷术创造了童年，电视正在消灭童年</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1985</div>
+            <div class="timeline-text">出版《娱乐至死》，预言公共话语的娱乐化将导致文化消亡</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1992</div>
+            <div class="timeline-text">出版《技术垄断》（<em>Technopoly</em>），警告技术文化对人文价值的吞噬</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2003</div>
+            <div class="timeline-text">因肺癌去世，享年72岁。去世前一年仍在批判互联网对思考的侵蚀</div>
+        </div>
+    </div>
+
+    <!-- Time context -->
+    <h2>为什么是1985：印刷文化的黄昏，电视帝国的正午</h2>
+
+    <p>理解《娱乐至死》的位置，需要先理解它站在什么时代的门槛上。</p>
+
+    <p>1985年的美国，电视已经完全渗透了公共生活。三大电视网的晚间新闻收视率仍在巅峰，但电视的逻辑已经开始改变新闻的定义：新闻不再是"需要理解的事件"，而是"需要观看的图像"。1980年里根总统的竞选，是第一次被完全电视化的总统竞选——候选人的形象、肢体语言、15秒的回答片段，比政策内容更重要。</p>
+
+    <p>波兹曼在书中举了一个让人震惊的例子：1858年的林肯-道格拉斯辩论。那场辩论中，林肯和道格拉斯各自进行长达1小时的开场陈述，然后是1.5小时的回应，最后是半小时的反驳。听众在户外站着听了<strong>7个小时</strong>。而且听众不是精英——他们是普通的伊利诺伊州农民和工人。波兹曼问："1985年的美国人，有多少人能够忍受7小时的政治论证？"</p>
+
+    <p>答案不是"现代人变蠢了"——波兹曼明确反对这种简单解释。答案是：<em>印刷文化创造了一种认知模式，电视文化创造了另一种</em>。印刷文化要求读者跟随线性论证、记住前提、接受延迟满足；电视文化要求观众被即时吸引、接受碎片化信息、追求情绪高潮。问题不是人变了，是<em>环境变了</em>。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">印刷文化 · 波兹曼的理性乡愁</div>
+            <div class="compare-row">话语以文本为中心，线性、逻辑、有层级</div>
+            <div class="compare-row">受众需要主动解码，阅读是劳动</div>
+            <div class="compare-row">信息需要上下文，论证需要铺垫</div>
+            <div class="compare-row">"理解"意味着记住并连接不同部分</div>
+            <div class="compare-row">公共 discourse 以理性说服为目标</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">电视文化 · 波兹曼的批判对象</div>
+            <div class="compare-row">话语以图像为中心，情绪、碎片、无上下文</div>
+            <div class="compare-row">受众被动接收，观看是消费</div>
+            <div class="compare-row">信息必须即时吸引，不需要铺垫</div>
+            <div class="compare-row">"理解"意味着感受和反应</div>
+            <div class="compare-row">公共 discourse 以娱乐效果为目标</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>媒介技术决定论偏差</strong>：波兹曼的叙事常被简化为"电视导致了文化衰落"，但这过度简化了因果关系。印刷文化本身也有缺陷——它强化了精英与大众的知识分层，排斥了不识字群体的公共参与。电视的民主化特征（让信息触达更多人）被波兹曼低估了。媒介不是唯一的变量，政治经济结构、教育制度、社会运动同样是塑造公共 discourse 的力量。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>怀旧理想化偏差</strong>：波兹曼对印刷时代的描绘过于浪漫化。19世纪的美国公共 discourse 并不全是林肯-道格拉斯式的理性辩论；报纸上充斥着煽情、谣言和党派攻击。印刷文化也生产垃圾。波兹曼选择性地记住了印刷文化最好的部分，而忽略了它的糟粕。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>美国中心主义偏差</strong>：《娱乐至死》的分析几乎完全基于美国经验。它假设"电视+资本主义"的媒介环境是普适的，但不同国家的电视文化差异巨大（如BBC的公共服务模式 vs 美国商业电视模式）。波兹曼的"电视认识论"可能过于泛化，忽视了制度对媒介内容的塑造作用。
+    </div>
+
+    <!-- Book's birth -->
+    <h2>一本书如何成为预言：从电视到互联网</h2>
+
+    <p>《娱乐至死》在1985年出版时，美国的主流书评界反应冷淡。它的销量在最初几年并不突出。但在1990年代，尤其是2000年代互联网兴起之后，这本书被重新发现——而且被惊人地"验证"了。</p>
+
+    <p>波兹曼在书中分析的对象是电视，但他的核心洞见——<em>媒介形式塑造思想内容，娱乐逻辑侵蚀严肃 discourse</em>——在互联网时代获得了更极端的表达。如果说电视把新闻变成了3分钟的片段，那么社交媒体把新闻变成了140字的推文（后来是短视频里的15秒）。如果说电视要求"被观看"，那么社交媒体要求"被点赞"。波兹曼的预言不是"我们会看到更多娱乐"，而是<em>"娱乐会成为所有 discourse 的默认元叙事"</em>。</p>
+
+    <p>波兹曼在书的结尾提出了一个反问："有没有一种方法，可以让我们既享受电视带来的快乐，又不失去印刷文化赋予的理性能力？"他的回答是悲观的："<em>没有。媒介的偏向性是不可逆的。你不能用电视来传播理性 discourse，就像你不能用烟雾信号来讨论哲学。</em>"</p>
+
+    <p>这个悲观结论在2003年他去世时仍然是他的立场。值得注意的是，他在晚年看到了互联网的兴起，并认为互联网是比电视更彻底的"娱乐化媒介"——因为它不仅碎片化了注意力，还消除了"作者"和"读者"的区分，让每个人都成为内容的生产者和消费者，而这意味着<em>严肃 discourse 的守门人机制彻底消失了</em>。</p>
+
+    <!-- Concept preview -->
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">媒介即隐喻 <span>The Medium Is the Metaphor</span></div>
+            <div class="concept-desc">波兹曼对麦克卢"媒介即讯息"的修正。他认为媒介不仅仅是传递信息的渠道，媒介本身就是文化的隐喻——它定义了什么是有价值的、什么是真实的、什么是重要的。电视的隐喻是"娱乐"，所以当电视成为主导媒介时，所有内容都倾向于被娱乐化。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">电视认识论 <span>Television Epistemology</span></div>
+            <div class="concept-desc">波兹曼提出，不同的媒介有不同的"认识论"——即关于"什么构成知识"和"什么构成真理"的隐含标准。印刷文化的认识论是：连贯的论证、证据的积累、理性的说服。电视的认识论是：视觉吸引力、情感共鸣、即时满足。当电视认识论成为主导，"真理"不再需要通过论证来建立，只需要通过表演来呈现。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">信息-行动比 <span>Information-to-Action Ratio</span></div>
+            <div class="concept-desc">在印刷时代，信息是稀缺的，因此获得信息通常意味着需要采取行动。在电视时代，信息是过剩的，而且以极高的速度流动。结果是：人们被淹没在信息中，但信息不再导向行动——它只导向更多的信息消费。"知道"和"做"之间的链条被切断了。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">童年概念的消亡 <span>The Disappearance of Childhood</span></div>
+            <div class="concept-desc">印刷术创造了"童年"这个概念（因为掌握阅读需要长期训练，把儿童和成人分隔为两个知识阶层）。电视消除了这种分隔——儿童在电视上看到的一切，成人也看到了。成人不再拥有任何秘密。波兹曼认为，"童年"不是生物学概念，而是媒介技术产品。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">娱乐化作为认识论危机 <span>Amusement as Epistemological Crisis</span></div>
+            <div class="concept-desc">当政治、宗教、新闻、教育都被包装成娱乐时，一个更深层的问题出现了：人们不再知道"严肃"是什么意思。"严肃"被重新定义为"不够有趣"。当所有 discourse 都必须通过娱乐的过滤器才能被传播，那些无法被娱乐化的内容——复杂的论证、缓慢的推理、不讨人喜欢的真相——就被系统性地排除在公共视野之外。</div>
+        </div>
+    </div>
+
+    <!-- Tension question -->
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果所有严肃内容都必须变成娱乐才能被传播，那么"不被娱乐化"本身是否意味着被消音？媒介形式是否不可避免地决定了思想内容？如果波兹曼是对的——电视（和今天的短视频）的媒介特性系统性地偏爱娱乐、碎片和情绪，那么我们是否只能选择"被娱乐化地理解"或"不被理解"？有没有第三条路？</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+        <div class="footer-info">Week 13 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解媒介即隐喻与电视认识论的逻辑链 →</div>
+    </div>
+
+    <!-- Page Nav -->
+    <div style="display:flex;justify-content:flex-end;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w13-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

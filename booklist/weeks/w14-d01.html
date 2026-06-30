@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 14 · Day 1 · 叙事者 · 《具身认知》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a; --surface: #111111; --surface-2: #161616; --border: #1e1e1e; --border-light: #2a2a2a;
+            --text: #d4d4d4; --text-dim: #888; --text-muted: #555; --white: #f0f0f0;
+            --accent: #e2a355; --accent-dim: rgba(226,163,85,0.08); --accent-border: rgba(226,163,85,0.2);
+        }
+        body {
+            font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--text);
+            min-height: 100vh; line-height: 1.9; -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2.5rem; font-size: 0.78rem; color: var(--text-muted); font-family: -apple-system, system-ui, sans-serif; }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+        .week-badge {
+            display: inline-flex; align-items: center; gap: 0.4rem; background: var(--accent-dim); border: 1px solid var(--accent-border);
+            color: var(--accent); font-size: 0.72rem; font-family: -apple-system, system-ui, sans-serif; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 2rem; margin-bottom: 1.5rem;
+        }
+        .book-title-area { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        .book-label { font-size: 0.75rem; color: var(--text-muted); font-family: -apple-system, system-ui, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .book-name { font-size: 2rem; font-weight: 800; color: var(--white); letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.4rem; font-family: -apple-system, system-ui, sans-serif; }
+        .book-author { font-size: 0.95rem; color: var(--text-dim); font-family: -apple-system, system-ui, sans-serif; }
+        .book-author span { color: var(--accent); }
+        .role-intro { display: flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.875rem 1.125rem; margin-bottom: 2.5rem; font-family: -apple-system, system-ui, sans-serif; font-size: 0.82rem; }
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+        h2 { font-size: 1.1rem; font-weight: 700; color: var(--white); font-family: -apple-system, system-ui, sans-serif; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        p { margin-bottom: 1.2rem; font-size: 0.97rem; color: var(--text); }
+        em { color: var(--accent); font-style: normal; }
+        .scene-block { background: var(--surface); border-left: 3px solid var(--accent); padding: 1.25rem 1.5rem; margin: 1.5rem 0 2rem; border-radius: 0 0.5rem 0.5rem 0; }
+        .scene-block p { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 0; line-height: 2; }
+        .scene-block .scene-label { font-size: 0.68rem; font-family: -apple-system, system-ui, sans-serif; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.75rem; }
+        .timeline { position: relative; padding-left: 1.5rem; margin: 1.5rem 0; }
+        .timeline::before { content: ''; position: absolute; left: 0.35rem; top: 0.5rem; bottom: 0.5rem; width: 1px; background: var(--border-light); }
+        .timeline-item { position: relative; margin-bottom: 1.25rem; font-family: -apple-system, system-ui, sans-serif; font-size: 0.83rem; }
+        .timeline-item::before { content: ''; position: absolute; left: -1.165rem; top: 0.4rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--accent); }
+        .timeline-year { color: var(--accent); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+        .timeline-text { color: var(--text-dim); line-height: 1.6; }
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 0.5rem; overflow: hidden; margin: 1.5rem 0; font-family: -apple-system, system-ui, sans-serif; font-size: 0.82rem; }
+        .compare-col { background: var(--surface); padding: 1.125rem 1.25rem; }
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+        .col-header { font-weight: 700; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.875rem; }
+        .compare-row { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; color: var(--text-dim); line-height: 1.55; }
+        .compare-row::before { content: '—'; color: var(--text-muted); flex-shrink: 0; }
+        .concept-list { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.5rem 0; }
+        .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem 1.25rem; font-family: -apple-system, system-ui, sans-serif; }
+        .concept-name { font-weight: 700; font-size: 0.88rem; color: var(--white); margin-bottom: 0.3rem; }
+        .concept-name span { font-size: 0.72rem; color: var(--accent); font-weight: 400; margin-left: 0.5rem; }
+        .concept-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; }
+        .bias-note { display: inline-flex; align-items: flex-start; gap: 0.4rem; background: rgba(233, 69, 96, 0.06); border: 1px solid rgba(233, 69, 96, 0.18); border-radius: 0.375rem; padding: 0.6rem 0.875rem; margin: 0.5rem 0 1rem; font-family: -apple-system, system-ui, sans-serif; font-size: 0.79rem; color: #d4657a; line-height: 1.55; }
+        .tension-block { background: rgba(226, 163, 85, 0.05); border: 1px solid rgba(226, 163, 85, 0.25); border-radius: 0.625rem; padding: 1.5rem 1.75rem; margin: 2.5rem 0; font-family: -apple-system, system-ui, sans-serif; }
+        .tension-label { font-size: 0.68rem; font-weight: 700; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.75rem; }
+        .tension-q { font-size: 1.05rem; font-weight: 600; color: var(--white); line-height: 1.65; }
+        .page-footer { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-family: -apple-system, system-ui, sans-serif; font-size: 0.8rem; }
+        .footer-info { color: var(--text-muted); }
+        .footer-next { color: var(--accent); font-weight: 600; }
+        .pull-quote { border-left: 2px solid var(--border-light); padding: 0.5rem 1.25rem; margin: 1.5rem 0; color: var(--text-dim); font-size: 0.92rem; font-style: italic; line-height: 1.9; }
+        .data-highlight { display: flex; gap: 1rem; margin: 1.5rem 0; font-family: -apple-system, system-ui, sans-serif; }
+        .data-item { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; text-align: center; }
+        .data-num { font-size: 1.4rem; font-weight: 700; color: var(--accent); margin-bottom: 0.25rem; }
+        .data-label { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第14周 · 第1天</span>
+    </nav>
+
+    <div class="week-badge">📚 Week 14 · Day 1 · 2026-07-06</div>
+
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">我们赖以生存的隐喻</div>
+        <div class="book-author">乔治·莱考夫 / 马克·约翰逊 <span>George Lakoff / Mark Johnson</span></div>
+    </div>
+
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不讲结论，只讲：两个哲学家在1980年的伯克利校园，如何因为一杯咖啡，改变了我们对语言、思维和身体的理解。</div>
+        </div>
+    </div>
+
+    <h2>那个在咖啡馆里争论"argument is war"的下午</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1980年，加州大学伯克利分校</div>
+        <p>1980年春天，加州大学伯克利分校的一间教员咖啡馆里，两位哲学系的同事坐在靠窗的位置。外面是加州典型的阳光和蓝花楹，而他们正在激烈地争论——或者说，在进行一场"argument"。</p>
+        <p>乔治·莱考夫（George Lakoff）刚刚从语言学的研究中转过头来。他原本是乔姆斯基（Noam Chomsky）生成语法学派的一员，但越研究越觉得不对劲：如果语言真的像乔姆斯基说的那样，是一套独立于身体经验的纯形式系统，那么为什么英语里说"argument is war"——我们<em>攻击</em>对方的观点、<em>捍卫</em>自己的立场、<em>赢得</em>辩论、<em>输掉</em>争论？</p>
+        <p>马克·约翰逊（Mark Johnson）是哲学系的新星，专攻美学和康德哲学。他回应道："也许问题出在康德身上。康德假设了一个'纯粹理性'——不沾染任何感官经验、身体感受的理性。但如果这个假设是错的呢？"</p>
+        <p>莱考夫把咖啡杯放下："如果理性不是纯粹的，如果概念系统是从身体经验中生长出来的，那么隐喻就不是修辞的装饰品——它是<em>概念系统的地基</em>。"</p>
+        <p>那个下午，两位哲学家没有达成任何结论。但他们共同起草了一份书稿大纲。六个月后，这本书送到了芝加哥大学出版社。编辑的反馈是："很有意思，但恐怕过于激进。"</p>
+        <p>这本书就是《<em>Metaphors We Live By</em>》（我们赖以生存的隐喻）。中文译名《具身认知》——这个译名并不完全准确，但精准地抓住了书的核心精神：<em>认知是具身的，概念是隐喻的，理性是想象的。</em></p>
+    </div>
+
+    <p>1980年，语言学的主流是乔姆斯基的生成语法。乔姆斯基的革命性假设是：人类大脑中有一套先天的"普遍语法"（Universal Grammar），语言的结构独立于经验、独立于身体、独立于世界。语法规则是形式化的，像数学公理一样。认知科学和人工智能（符号AI）正在这个框架上蓬勃发展——<em>只要给计算机足够的符号和规则，它就能像人一样思考。</em></p>
+
+    <p>莱考夫和约翰逊的这本书，在1980年几乎是对整个学术建制宣战。他们说：<strong>概念系统不是从逻辑中推导出来的，而是从身体经验中隐喻地映射出来的。</strong>"时间不是钱"——但英语（以及大多数语言）的时间概念系统，被彻底建构在"金钱"的隐喻之上："花费时间"、"浪费时间"、"节省时间"、"时间预算"。这些不是修辞手法，而是我们用来思考和体验时间的<em>唯一工具</em>。</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">1980</div>
+            <div class="data-label">出版年份</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">40+</div>
+            <div class="data-label">年持续影响力</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">∞</div>
+            <div class="data-label">日常隐喻的数量</div>
+        </div>
+    </div>
+
+    <h2>莱考夫：从乔姆斯基阵营的"叛逃者"</h2>
+
+    <p>乔治·莱考夫1941年出生于新泽西州。他的父亲是一位戏剧导演和诗人，母亲是家庭主妇。从小在艺术与语言的氛围中长大，他对"意义如何运作"有一种本能的好奇。</p>
+
+    <p>1960年代，莱考夫在麻省理工学院（MIT）攻读语言学博士学位，师承乔姆斯基。乔姆斯基当时正在建立他的"转换生成语法"——一种认为语言是先天内置的形式系统的理论。莱考夫最初是这个理论的热情拥护者。但渐渐地，他发现了问题：<em>乔姆斯基的理论能解释句子的结构，却无法解释句子的意义。</em>为什么"argument is war"这个隐喻在英语中如此系统性地、如此无处不在地出现？为什么不是"argument is a dance"？</p>
+
+    <p>1970年代，莱考夫开始转向"生成语义学"（Generative Semantics），试图把语义重新带回语言学的核心。但这条路越走越深——他最终发现，语义不能只靠语言内部的规则来解释，必须诉诸身体经验、感知运动和认知结构。这就是他转向"认知语言学"的起点。</p>
+
+    <p>莱考夫后来的学术生涯充满了争议。他研究模态逻辑（modal logic），然后研究隐喻和概念系统，然后突然在1990年代转向政治——出版《Moral Politics》（道德政治），分析美国保守派和自由派的隐喻框架如何塑造了政治话语。2004年，他出版了《<em>Don't Think of an Elephant!</em>》，成为民主党策略家的必读书。他从一个语言学家变成了一个政治评论员，这让很多同行感到不适。但莱考夫会说：<em>这是他的理论的逻辑延伸——如果概念系统由隐喻塑造，那么政治概念系统也由隐喻塑造，改变政治就必须改变隐喻。</em></p>
+
+    <h2>约翰逊：康德的"破坏者"与美学的重建者</h2>
+
+    <p>马克·约翰逊1949年出生于堪萨斯城。他的学术路径比莱考夫更"正统"——哲学系出身，研究康德美学，相信"判断力"在审美经验和道德推理中的核心地位。</p>
+
+    <p>但约翰逊越读康德，越发现一个裂缝：康德说"纯粹理性"不依赖任何感官经验，但康德自己的论证中充满了隐喻。当康德说"理性是法庭"，"概念是工具"，"知识是建筑"——他自己不就在用身体经验的概念来建构"纯粹理性"吗？</p>
+
+    <p>约翰逊的贡献在于把"体验主义"（Experientialism）哲学化。他和莱考夫在1980年代合作，之后各自发展。1993年，他出版了《<em>Moral Imagination</em>》（道德想象），把具身认知推进到伦理学领域：如果道德概念也是隐喻建构的，那么"普遍道德法则"的幻觉是什么？2007年，他的《<em>The Meaning of the Body</em>》（身体的意义）进一步探索美学和意义如何在身体感知中涌现。</p>
+
+    <p>约翰逊比莱考夫更安静、更哲学化。如果说莱考夫是把隐喻理论扔向政治战场的战士，约翰逊就是在书房里把康德的形式主义一块一块拆掉的匠人。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1941</div>
+            <div class="timeline-text">乔治·莱考夫出生于新泽西州，父亲是戏剧导演和诗人</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1949</div>
+            <div class="timeline-text">马克·约翰逊出生于堪萨斯城，后来转向哲学与美学</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1960s</div>
+            <div class="timeline-text">莱考夫在MIT攻读语言学博士，师从乔姆斯基，后逐渐"叛逃"</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1970s</div>
+            <div class="timeline-text">莱考夫参与生成语义学运动；约翰逊研究康德美学并发现隐喻裂缝</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1980</div>
+            <div class="timeline-text">《Metaphors We Live By》出版；两人提出"概念隐喻理论"的雏形</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1987</div>
+            <div class="timeline-text">莱考夫出版《Women, Fire, and Dangerous Things》，系统阐述认知语言学框架</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1993</div>
+            <div class="timeline-text">约翰逊出版《Moral Imagination》，将具身认知引入伦理学</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1996</div>
+            <div class="timeline-text">莱考夫与约翰逊合著《Philosophy in the Flesh》，提出"体验主义哲学"</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2004</div>
+            <div class="timeline-text">莱考夫出版《Don't Think of an Elephant!》，进入政治话语研究领域</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2007</div>
+            <div class="timeline-text">约翰逊出版《The Meaning of the Body》，探索美学与身体感知</div>
+        </div>
+    </div>
+
+    <h2>为什么是他们：乔姆斯基的理性 vs 莱考夫的身体</h2>
+
+    <p>理解莱考夫和约翰逊的位置，需要先理解他们的敌人是谁。</p>
+
+    <p>1980年代的认知科学被两种范式主导。一种是乔姆斯基的"形式主义"：语言是一套先天的、独立于身体的形式规则，意义可以通过逻辑推导获得。另一种是符号AI：智能是符号的操纵，和身体无关。笛卡尔的"身心二元论"在20世纪以新的形式复活——<em>心不是身，思想不是脑，概念不是经验。</em></p>
+
+    <p>莱考夫和约翰逊的反对不是简单的"反对理性"——他们反对的是"理性可以脱离身体经验"的假设。他们的核心论点非常精确：<strong>抽象概念不是凭空产生的，它们是通过隐喻从身体经验中映射出来的。</strong>"理解"（understanding）这个词本身就是一个隐喻——从"站立"（stand）的物理经验来。"掌握"（grasp）一个概念，是从"用手抓住"的物理经验来。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">乔姆斯基 / 形式主义</div>
+            <div class="compare-row">语言是先天的形式系统</div>
+            <div class="compare-row">语法独立于意义和经验</div>
+            <div class="compare-row">大脑是符号处理机器</div>
+            <div class="compare-row">理性是纯粹的、普遍的</div>
+            <div class="compare-row">隐喻是修辞装饰，可忽略</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">莱考夫 / 体验主义</div>
+            <div class="compare-row">语言从身体经验中生长</div>
+            <div class="compare-row">语法与意义、经验不可分</div>
+            <div class="compare-row">大脑是模式识别与隐喻引擎</div>
+            <div class="compare-row">理性是想象的、具身的</div>
+            <div class="compare-row">隐喻是概念系统的地基</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>英雄叙事偏差</strong>：莱考夫和约翰逊的故事常被包装成"两个孤独天才对抗整个学术建制"的叙事。但认知语言学的兴起不是两个人的功劳。认知心理学家（如Rosch的原型理论）、神经科学家（如Damasio的躯体标记假说）、和更早的梅洛-庞蒂等现象学家都为"具身认知"铺了路。莱考夫和约翰逊是站在一个浪潮上，而非独自掀起浪潮。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>译名简化偏差</strong>：中文译名《具身认知》把这本书的范围扩大了。原书名《Metaphors We Live By》强调的是"隐喻"——我们活着所依赖的隐喻。"具身认知"（Embodied Cognition）是一个更广泛的学术领域，包括动作认知、镜像神经元、感官运动模拟等。这本书的核心是"概念隐喻理论"，而非具身认知的全部。把两者等同，会低估具身认知领域的其他重要贡献者。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>政治化后见偏差</strong>：莱考夫在2004年后因政治框架研究而广为人知，这让许多人误以为《Metaphors We Live By》是一本政治书。但1980年的原版几乎不涉及政治。把后期的政治应用投射到早期著作上，会误解这本书的原始学术意图——它不是要改变政治，而是要改变哲学和语言学对"概念"的理解。
+    </div>
+
+    <h2>一本书如何从"边缘理论"变成"范式地震"</h2>
+
+    <p>《Metaphors We Live By》1980年出版时，几乎没有引起语言学主流的关注。芝加哥大学出版社的编辑是对的：它太激进了。它挑战的不是某个具体的理论，而是整个学科的前提——<em>语言学家可以只研究句子结构而不研究意义，哲学家可以只研究逻辑而不研究身体。</em></p>
+
+    <p>但这本书的传播路径很特别。它先是在认知心理学界悄悄流传——心理学家发现，"概念隐喻"可以解释很多实验现象：为什么人在"思考未来"时会向前倾？为什么"热"的咖啡让人对陌生人的评价更"温暖"？为什么"重"的文件夹让人觉得这个议题更"重要"？这些实验在1980年代到2000年代不断累积，逐渐构成了"具身认知"的实验证据。</p>
+
+    <p>然后，它进入了人工智能领域。符号AI在1990年代遭遇瓶颈——计算机可以处理语法，却无法理解意义。"常识问题"（commonsense problem）让AI研究者意识到：<em>意义不是符号的组合，而是经验与世界的关联。</em>这推动了联结主义（connectionism）和后来的深度学习革命。莱考夫讨厌神经网络（他认为它过于简化），但神经网络研究者从他的隐喻理论中借走了核心洞见：概念不是离散的符号，而是分布式模式。</p>
+
+    <p>最后，它进入了政治学和传播学。莱考夫在2004年的《Don't Think of an Elephant!》把概念隐喻理论变成了政治工具：保守派用"严父"（strict father）框架来组织道德和政治概念，自由派用"养育式父母"（nurturant parent）框架。谁能控制隐喻，谁就能控制政治话语。这个洞见在2008年和2016年的美国总统大选中反复被验证。</p>
+
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">概念隐喻 <span>Conceptual Metaphor</span></div>
+            <div class="concept-desc">从源域（source domain，通常是身体经验）到目标域（target domain，通常是抽象概念）的系统性映射。例如："ARGUMENT IS WAR"——源域是"战争"，目标域是"争论"。这不是修辞，而是我们用"战争"的全部逻辑结构来理解"争论"的结构。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">容器图式 <span>Container Schema</span></div>
+            <div class="concept-desc">一种基本的空间图式，源于身体在空间中"有边界/无边界"的经验。我们把自己想象成容器（"我气得要爆炸了"），把概念想象成容器（"在这个范畴内"），把国家想象成容器（"在……境内"）。容器图式是隐喻的地基，不是隐喻本身。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">路径图式 <span>Path Schema</span></div>
+            <div class="concept-desc">源于身体在空间中的移动经验：起点→路径→终点。时间被理解成路径（"展望未来"）、目标被理解成路径（"通往成功"）、人生被理解成旅程（"人生走到了十字路口"）。我们几乎无法不借助"路径"来思考"过程"。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">力量动力学 <span>Force Dynamics</span></div>
+            <div class="concept-desc">莱考夫提出的概念系统，描述我们如何用物理力量的语言来理解因果、允许、阻止和倾向。"我被迫辞职"——把外部力量描述成物理力施加于身体。"市场推动价格上涨"——把抽象因果描述成物理推动。力量动力学渗透在我们的语法和概念中。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">体验主义哲学 <span>Experientialism</span></div>
+            <div class="concept-desc">莱考夫和约翰逊提出的哲学立场，介于客观主义（objectivism，认为意义独立于心智）和主观主义（subjectivism，认为意义是纯个人感受）之间。体验主义认为：意义来自我们作为身体存在者与世界的互动，它既非纯客观的，也非纯主观的，而是"具身的"。</div>
+        </div>
+    </div>
+
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果我们的概念系统从根本上是由身体经验塑造的，那么"纯粹理性"是否只是一个幻觉？不同身体经验的人（不同文化、不同生理条件）是否注定生活在不同的概念世界里？如果隐喻是概念的地基，那么改变隐喻是否就是改变现实——还是仅仅改变我们对现实的理解？</div>
+    </div>
+
+    <div class="page-footer">
+        <div class="footer-info">Week 14 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解概念隐喻的逻辑结构 →</div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w14-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

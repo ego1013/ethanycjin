@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 11 · Day 2 · 提炼者 · 《思考，快与慢》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Framework card */
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        /* SVG info container */
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Contrast box */
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        /* Pullquote */
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        /* Misread block */
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        /* Bias note */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Footer nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第11周 · 第2天</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W11-D02</div>
+        <div class="meta">
+            <span>📅 2026-06-16</span>
+            <span>📖 第 11 周 · Day 2 / 5</span>
+            <span>🔢 《思考，快与慢》</span>
+        </div>
+        <h1>从"两个系统"到"前景理论"：卡尼曼的五把认知框架刀</h1>
+        <div class="subtitle">卡尼曼用五十年时间，把心理学实验室里的"认知偏差"提炼成一套能切开人类决策机制的认知解剖学</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把卡尼曼散落在《思考，快与慢》中的认知逻辑，拼成一张可理解的地图。卡尼曼的方法论非常明确：<strong>从真实的实验数据出发，描述人类心智的实际运作方式</strong>。但他不是简单地说"人不理性"——他证明的是，<em>人类的认知系统有两层，每一层都有特定的功能和盲区</em>。今天这五把框架刀，每一把都从一个具体的认知机制出发，指向一个让传统心理学和经济学不安的结论。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <!-- Knife 1: System 1 & 2 -->
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title">系统1与系统2 <em>System 1 & System 2</em> · 心智的双重操作系统</div>
+            <div class="card-body">
+                卡尼曼在书中构建的最核心框架，是把人类认知划分为两个系统。<br><br>
+                <strong>System 1（快思考）</strong>是自动、无意识、快速且几乎不耗费认知资源的系统。它负责2+2=4、识别愤怒的面孔、阅读简单的文字、理解"冰箱是冷的"。它工作时不经过"思考"——你不需要"努力"就能知道这些。<br><br>
+                <strong>System 2（慢思考）</strong>是缓慢、有意识、费力且消耗认知资源的系统。它负责17×24的计算、填写复杂的税表、在拥挤的停车场寻找空位、比较两款保险产品的条款。System 2是"你认为自己"——那个理性的、深思熟虑的自我。<br><br>
+                但卡尼曼的颠覆性发现是：<em>System 2大多数时候不是在"思考"，而是在"认可"System 1的直觉。</em>当你觉得某个结论"感觉对"的时候，System 2只是在为System 1的直觉寻找理由。System 2很懒，它尽可能避免工作，只在System 1遇到无法处理的问题时才会被激活。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>System 2不是"监督者"，而是"懒惰的认可者"。真正的认知权力在System 1手中。这意味着<em>我们自认为是理性决策者，但大部分决策实际上由直觉驱动</em>——而直觉正是偏差的主要来源。
+            </div>
+        </div>
+
+        <!-- Knife 2: Prospect Theory -->
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">前景理论 <em>Prospect Theory</em> · 价值判断的参考点依赖</div>
+            <div class="card-body">
+                这是卡尼曼和特沃斯基1979年论文的核心。传统期望效用理论假设，人们根据最终的财富状态来评估选择。但卡尼曼证明：<em>人们评估的不是绝对状态，而是相对于某个参考点的变化。</em><br><br>
+                一个实验：如果某人现有财富是1000元，面对"50%概率获得1000元，50%概率什么都不变"和"确定获得500元"的选择，大多数人会选择确定的500元。但如果他的现有财富是2000元，面对"50%概率损失1000元，50%概率什么都不变"和"确定损失500元"的选择，大多数人会选择赌一把。<br><br>
+                从数学上看，两种情境的期望值完全相同（期望效用各为500元）。但<em>参考点</em>改变了人们对风险的态度：<strong>面对收益时厌恶风险，面对损失时偏好风险。</strong>这种不对称性彻底推翻了期望效用理论的预测。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>价值函数在收益区域是凹的（风险厌恶），在损失区域是凸的（风险偏好），且损失区域的斜率约为收益区域的<strong>2.25倍</strong>。这意味着"获得1000元的快乐"远小于"损失1000元的痛苦"。
+            </div>
+        </div>
+
+        <!-- Knife 3: Loss Aversion -->
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">损失厌恶 <em>Loss Aversion</em> · 损失比收益更沉重</div>
+            <div class="card-body">
+                损失厌恶是前景理论中最具影响力的发现。实验反复证明：失去某样东西的痛苦，大约需要获得同等价值<strong>2到2.5倍</strong>的收益才能抵消。<br><br>
+                这解释了为什么股票投资者倾向于过早卖出盈利的股票（"锁定收益"），却过久持有亏损的股票（"不愿实现损失"）。也解释了为什么默认选项（维持现状）如此强大——改变现状意味着可能遭受损失，而损失的痛苦压倒了改变的潜在收益。<br><br>
+                损失厌恶还解释了"禀赋效应"（Endowment Effect）——拥有一样东西会让人高估它的价值。因为"放弃"意味着损失，而损失的心理权重远大于同等收益。康奈尔大学的马克杯实验（塞勒后来重复验证）证明了这一点：拥有者对杯子的估价是未拥有者的两倍。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>损失厌恶不是"非理性"，而是进化适应——在生存环境中，"失去食物"比"获得额外食物"更致命。问题在于，<em>这种进化遗产在现代社会（金融、医疗、政策）中会产生系统性偏差</em>。
+            </div>
+        </div>
+
+        <!-- Knife 4: Anchoring & Availability -->
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">锚定与可得性 <em>Anchoring & Availability</em> · 判断的捷径与陷阱</div>
+            <div class="card-body">
+                <strong>锚定效应（Anchoring）</strong>：当人们做数值估计时，最先接触到的数字会"锚定"他们的判断，即使这个数字完全无关。经典实验：让被试转动一个标有1-100的轮盘，然后回答"非洲国家在联合国中占比是否高于这个数字"。轮盘转到10的被试平均估计25%，转到65的平均估计45%。<em>一个完全随机的数字，改变了对客观事实的估计。</em><br><br>
+                <strong>可得性启发（Availability Heuristic）</strong>：人们根据信息在记忆中"容易提取"的程度来判断事件频率。飞机失事的新闻报道多，人们就高估空难概率；自己的名字在报纸上出现频繁，就高估自己的名字在社会中的普遍性。这在进化上是合理的——在原始环境中，"容易回忆"意味着"最近发生"，从而意味着"需要警惕"。<br><br>
+                但两种启发式在现代社会中都会失灵：媒体的报道频率不等于事件的真实频率；个人经验不等于统计规律。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>启发式不是"错误"，而是<em>在信息不完整和时间压力下，大脑使用的高效策略</em>。问题在于，我们不知道自己正在使用启发式——System 1的运作是无意识的，而System 2很少去质疑它。
+            </div>
+        </div>
+
+        <!-- Knife 5: Framing Effect -->
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">框架效应 <em>Framing Effect</em> · 语言如何重塑决策</div>
+            <div class="card-body">
+                卡尼曼最著名的实验之一，是1981年的"亚洲疾病问题"。假设美国正在准备应对一种罕见的亚洲疾病，预计将有600人死亡。两种方案：<br><br>
+                <strong>收益框架：</strong>A方案确定救200人；B方案有1/3概率救600人、2/3概率无人获救。72%的人选择A。<br><br>
+                <strong>损失框架：</strong>C方案确定死400人；D方案有1/3概率无人死亡、2/3概率死亡600人。78%的人选择D。<br><br>
+                从数学上看，A=C，B=D。但<em>仅仅改变措辞</em>（"救活" vs "死亡"），就彻底逆转了大多数人的选择。这不是因为人们不懂数学，而是因为System 1对"获得"和"损失"的框架有本能的反应——而System 2没有纠正它。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>框架效应证明，<em>决策不是"做出"的，而是"被呈现"的</em>。同一个选项，用不同的话描述，会产生不同的选择。这意味着"客观选择"是一个幻觉——所有选择都嵌套在某种框架中，而框架本身是有权力的。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 认知双系统与决策偏差流程</div>
+
+        <!-- SVG Infographic -->
+        <div class="svg-container">
+            <div class="svg-label">卡尼曼认知流程图 · 从刺激到决策的偏差路径</div>
+            <svg viewBox="0 0 720 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                </defs>
+
+                <!-- Background -->
+                <rect width="720" height="560" fill="#111" rx="8"/>
+
+                <!-- Title -->
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">认知双系统流程 · 从刺激到决策</text>
+
+                <!-- ── System 1 Block ── -->
+                <rect x="16" y="44" width="336" height="220" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">系统1 · 快思考 · 自动、直觉、无意识</text>
+
+                <!-- Box 1: Stimulus -->
+                <rect x="32" y="76" width="304" height="36" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="92" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">外部刺激</text>
+                <text x="184" y="104" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">问题、数字、面孔、文字、风险信息</text>
+
+                <line x1="184" y1="112" x2="184" y2="124" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 2: Heuristics -->
+                <rect x="32" y="128" width="304" height="36" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="144" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">启发式处理</text>
+                <text x="184" y="156" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">锚定 · 可得性 · 代表性 · 情绪替代</text>
+
+                <line x1="184" y1="164" x2="184" y2="176" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 3: Intuitive judgment -->
+                <rect x="32" y="180" width="304" height="36" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="196" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">直觉判断</text>
+                <text x="184" y="208" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">"感觉对"或"感觉错" · 0.2秒内完成</text>
+
+                <line x1="184" y1="216" x2="184" y2="228" stroke="#E94560" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrow-red)"/>
+
+                <!-- Box 4: Bias output -->
+                <rect x="32" y="232" width="304" height="28" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="184" y="250" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">偏差输出（System 1默认路径）</text>
+
+                <!-- ── System 2 Block ── -->
+                <rect x="368" y="44" width="336" height="220" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">系统2 · 慢思考 · 有意识、费力、逻辑</text>
+
+                <!-- Box 5: Override check -->
+                <rect x="384" y="76" width="304" height="36" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="92" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">监督检查</text>
+                <text x="536" y="104" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">"这个结果合理吗？" · 需要认知资源</text>
+
+                <line x1="536" y1="112" x2="536" y2="124" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 6: Deliberate -->
+                <rect x="384" y="128" width="304" height="36" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="144" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">审慎计算</text>
+                <text x="536" y="156" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">概率计算 · 参考点调整 · 框架重构</text>
+
+                <line x1="536" y1="164" x2="536" y2="176" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 7: Corrected judgment -->
+                <rect x="384" y="180" width="304" height="36" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="196" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">修正判断</text>
+                <text x="536" y="208" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">理性分析后的决策 · 缓慢但更准确</text>
+
+                <line x1="536" y1="216" x2="536" y2="228" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 8: Rational output -->
+                <rect x="384" y="232" width="304" height="28" rx="5" fill="#0a1a0a" stroke="rgba(108,191,115,0.3)" stroke-width="1.5"/>
+                <text x="536" y="250" text-anchor="middle" fill="#6cbf73" font-family="system-ui,sans-serif" font-size="9" font-weight="600">理性输出（System 2干预路径）</text>
+
+                <!-- Bridge: System 2 rarely intervenes -->
+                <line x1="340" y1="200" x2="380" y2="200" stroke="#555" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+                <text x="360" y="192" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">很少激活</text>
+                <text x="360" y="216" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">需要警觉+认知资源</text>
+
+                <!-- ── Bottom: Prospect Theory Value Function ── -->
+                <rect x="16" y="276" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="296" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">前景理论 · 价值函数 · 参考点依赖</text>
+
+                <!-- X-axis -->
+                <line x1="80" y1="360" x2="640" y2="360" stroke="#444" stroke-width="1"/>
+                <text x="360" y="376" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">参考点（当前状态）</text>
+
+                <!-- Y-axis -->
+                <line x1="360" y1="320" x2="360" y2="360" stroke="#444" stroke-width="1"/>
+                <text x="360" y="316" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">主观价值</text>
+
+                <!-- Gain curve (concave) -->
+                <path d="M 360 360 Q 420 348 520 320" fill="none" stroke="#6cbf73" stroke-width="2"/>
+                <text x="520" y="318" text-anchor="start" fill="#6cbf73" font-family="system-ui,sans-serif" font-size="8">收益区（凹函数 · 风险厌恶）</text>
+
+                <!-- Loss curve (convex, steeper) -->
+                <path d="M 360 360 Q 300 340 200 310" fill="none" stroke="#E94560" stroke-width="2.5"/>
+                <text x="200" y="308" text-anchor="end" fill="#E94560" font-family="system-ui,sans-serif" font-size="8">损失区（凸函数 · 风险偏好 · 斜率≈2.25x）</text>
+
+                <!-- ── Bottom: Comparison ── -->
+                <rect x="16" y="408" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="428" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两种认知范式 · 对人类心智的根本假设</text>
+
+                <!-- Rational Agent -->
+                <rect x="28" y="440" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="460" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">理性人模型</text>
+                <text x="188" y="480" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">单一理性系统 · 效用最大化</text>
+                <text x="188" y="494" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">偏好稳定 · 概率计算精确</text>
+                <text x="188" y="508" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">偏差是例外，不是规则</text>
+
+                <!-- Dual Process -->
+                <rect x="372" y="440" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="460" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">双系统模型</text>
+                <text x="532" y="480" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">System 1直觉 + System 2审慎</text>
+                <text x="532" y="494" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">启发式驱动 · 参考点依赖 · 损失厌恶</text>
+                <text x="532" y="508" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">偏差是系统性规律，不是例外</text>
+
+                <!-- ── Red dashed boxes: Preconditions ── -->
+                <rect x="16" y="540" width="688" height="56" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="560" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 核心盲区</text>
+                <text x="360" y="582" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">盲区 A：System 2并不总是正确的——它也有过度自信、确认偏误和认知盲区</text>
+                <text x="360" y="596" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">盲区 B：如果两个系统都有偏差，谁来监督监督者？是否存在"元认知"的第三层？</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图底部的两个红色虚线框是提炼者要特别强调的。左边的问题问的是：System 2虽然比System 1更审慎，但它也有自己的偏差——<em>过度自信、确认偏误、沉没成本谬误</em>。System 2不是"完美监督者"，它只是一个"不那么快的思考者"。右边的问题更深层：如果System 1和System 2都有盲区，是否存在一个更高层的"元认知"系统来监督两者？卡尼曼在书中暗示答案是"不存在"——我们被困在两个系统之中，没有外部裁判。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条范式对比</div>
+
+        <h2>理性人模型 vs 卡尼曼双系统：从"单一理性"到"双重认知"</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">传统经济学</div>
+                <div class="col-name" style="color:#6fb5e0;">理性人模型</div>
+                <div class="col-text">
+                    单一认知系统：理性计算<br><br>
+                    偏好稳定、一致、可传递<br><br>
+                    价值评估基于绝对财富状态<br><br>
+                    概率判断遵循贝叶斯规则<br><br>
+                    损失和收益对称处理<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：人是效用最大化的计算机器。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">卡尼曼的认知科学</div>
+                <div class="col-name" style="color:#E94560;">双系统模型</div>
+                <div class="col-text">
+                    System 1直觉 + System 2审慎<br><br>
+                    偏好受参考点、框架、情绪影响<br><br>
+                    价值评估基于相对于参考点的变化<br><br>
+                    概率判断依赖启发式（锚定、可得性）<br><br>
+                    损失比收益权重高约2.25倍<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：人是有限理性的启发式使用者，偏差是系统性规律。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种范式的分歧，不只是方法论的差异，更是关于<strong>"人类心智到底是什么"</strong>的根本分歧。理性人模型问："如果人是完全理性的，系统会如何运转？"卡尼曼问："如果人是真实的心智，我们应该如何理解他们的决策？"<br><br>
+            卡尼曼的立场不是全盘否定理性——他多次承认System 2在"努力工作时"确实能够做出理性判断。他的问题是：System 2很少"努力工作"，而且即使努力工作了，它也会受到自身偏差的限制。那么，<em>我们有没有办法设计一个系统，让它能够持续地、可靠地激活System 2，并监督System 1的偏差？</em>这正是行为经济学和政策设计的核心问题。
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：双系统模型（System 1/System 2）是一个有用的"隐喻"而非"神经科学事实"。卡尼曼自己多次强调，这两个系统不是大脑中独立的物理模块，而是描述认知功能的"角色"。现代神经科学（如Stanislas Dehaene的工作）确实发现了类似的"双通路"证据，但把System 1/System 2等同于具体的脑区是错误的。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：System 1 = "坏"，System 2 = "好"</strong>
+                    <span>很多人把双系统模型理解为"直觉是坏的，理性是好的"。但卡尼曼明确反对这种道德化解读。System 1是进化赋予的高效系统——它让你在0.2秒内识别危险面孔，在开车时自动处理路况，在阅读时自动解码文字。System 2也不是"完美"的——它很懒、很耗能量、而且自己也有偏差（如过度自信）。问题在于System 1的偏差在特定情境下会产生代价，而不是System 1本身需要被消灭。</span>
+                    <div class="misread-correction">✓ 准确理解：System 1和System 2各有功能，偏差不是"系统的故障"，而是"功能在特定环境下的副作用"。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：认知偏差 = "愚蠢"或"可以轻易纠正"</strong>
+                    <span>很多读者读完卡尼曼后，产生了一种"优越感"——"现在我知道这些偏差了，所以我可以避免它们。"这是幻觉。卡尼曼在书的结尾明确说："<em>我知道所有这些偏差，但我仍然每天都在犯这些错误。</em>"认知偏差不是知识缺陷，而是大脑架构的深层特征。知道锚定效应存在，并不能阻止你的大脑被锚定。知道损失厌恶存在，并不能消除损失带来的痛苦。</span>
+                    <div class="misread-correction">✓ 准确理解：认知偏差是"可描述的"但"不可根除的"。最好的策略不是"避免偏差"，而是"设计环境来减少偏差的影响"（如制度、流程、算法辅助）。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：前景理论 = "证明人不理性"</strong>
+                    <span>前景理论常被简化为"人不是理性的"。但卡尼曼的原始洞见更精确：人的决策是"<em>有模式的非理性</em>"——偏离理性的方式是可预测的、系统性的。这正是前景理论的革命性所在：它不是"否定"理性模型，而是"替代"它——用一个更精确的描述模型（参考点依赖、损失厌恶、概率加权）来预测人类行为。在这个意义上，前景理论是一种"<em>更好的描述性理论</em>"，而不是对理性模型的纯粹批判。</span>
+                    <div class="misread-correction">✓ 准确理解：前景理论不是"人有多不理性"，而是"人的非理性遵循什么样的数学规律"。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <!-- Tension echo -->
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                认知偏差是可纠正的漏洞，还是人类认知系统不可分割的源代码？如果系统1和系统2都有盲区，谁来监督监督者？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，卡尼曼的逻辑链在描述层面是闭合的：System 1直觉 → System 2审慎（偶尔） → 前景理论的价值函数 → 损失厌恶 → 锚定/可得性 → 框架效应。但<strong>除了那两个红色虚线框</strong>，还有一个更深层的问题：<em>System 2的自我监督能力也是有限的。</em><br><br>
+                卡尼曼在书中多次提到，他知道所有的偏差，但仍然无法避免它们。这意味着"知识"本身不足以对抗"架构"。如果认知偏差是大脑的硬件设计，那么软件升级（知识）只能改变部分行为，而不能改变根本倾向。<br><br>
+                更精确的问题变成：<strong>如果偏差是源代码，我们能做的不是"删除bug"，而是"设计补偿机制"。</strong>这正是行为经济学的实用方向：不是改变人，而是改变环境。默认选项、选择架构、信息披露方式、决策流程设计——这些工具不试图"修复"人类心智，而是承认心智的局限，并绕过它。<br><br>
+                但这也带来了一个伦理问题：<em>如果补偿机制由设计者定义，谁来确保设计者的System 1和System 2没有偏差？</em>英国助推小组的设计者、政策制定者、算法工程师——他们也在用System 1做直觉判断，也在受损失厌恶和框架效应的影响。<strong>选择架构的设计者，是否也需要被监督？</strong>谁来监督监督者？卡尼曼没有给出答案，但问题本身已经足够锋利。<br><br>
+                从"是"到"应该"之间，从"描述偏差"到"利用偏差"之间，有一道价值观和权力的鸿沟。这道鸿沟，认知科学的框架刀无法切开。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "认知错觉和心理陷阱一样，无法被简单地消除。它们就像视觉错觉——即使你知道那是幻觉，你仍然会看到它。"
+            <br>— 卡尼曼，《思考，快与慢》
+        </div>
+
+        <p>
+            这句话是卡尼曼给自己的框架设下的边界。他清楚认知科学的锋利，也清楚它的局限。明天，应用者会把这五把框架刀放进三个真实场景——历史的、中国的、和Ethan每天面对的商业世界——看看System 1与System 2的力学在什么样的土壤里生效，在什么样的容器里可以被改变。
+        </p>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w11-d01.html">← 叙事者 · 那个在耶路撒冷深夜改写心理学的二人组</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w11-d03.html">应用者 · 三场景拆解 →</a>
+        </div>
+    </nav>
+
+    <!-- Page Nav (required) -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w11-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w11-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

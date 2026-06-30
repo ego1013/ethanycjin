@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 14 · Day 2 · 提炼者 · 《具身认知》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第14周 · 第2天</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W14-D02</div>
+        <div class="meta">
+            <span>📅 2026-07-07</span>
+            <span>📖 第 14 周 · Day 2 / 5</span>
+            <span>🔢 《我们赖以生存的隐喻》</span>
+        </div>
+        <h1>从"argument is war"到"体验主义哲学"：五把框架刀</h1>
+        <div class="subtitle">莱考夫和约翰逊用五把刀切开了西方哲学两千年的一个核心幻觉：理性可以脱离身体</div>
+    </header>
+
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把莱考夫和约翰逊散落在语言学论文、哲学著作和隐喻分析中的核心逻辑，拼成一张可理解的地图。他们的方法论非常明确：<strong>从日常语言中的系统性隐喻模式出发，推导出概念系统的深层结构。</strong>但这不是简单的"找比喻"——他们证明的是，<em>隐喻不是语言的诗意装饰，而是概念系统的结构性支撑</em>。今天这五把框架刀，每一把都从一个具体的隐喻现象出发，指向一个让西方哲学传统不安的结论。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title">概念隐喻 <em>Conceptual Metaphor</em> · 抽象概念的源域地基</div>
+            <div class="card-body">
+                概念隐喻理论的核心是：抽象概念不是直接定义的，而是从更具体的身体经验域中<em>系统性映射</em>而来的。莱考夫和约翰逊把这种映射称为"源域→目标域"结构。<br><br>
+                源域（source domain）通常是身体经验——空间、运动、容器、力量、温度、重量。目标域（target domain）通常是抽象概念——时间、争论、爱情、道德、因果。<br><br>
+                经典的例子：<strong>ARGUMENT IS WAR</strong>。我们不只是"修辞性地"用战争来比喻争论，我们实际上用战争的全部逻辑结构来<em>建构争论的概念</em>：攻击对方的观点、捍卫自己的立场、赢得辩论、输掉争论、策略、反击、投降。如果我们换一种隐喻——比如ARGUMENT IS A DANCE——争论的概念系统就会完全不同：合作、节奏、美感、同步。但英语中几乎没有"argument is a dance"的系统性用法，因为英语文化中的争论概念系统已经被"战争"隐喻锁死了。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>概念隐喻不是"修辞手法"的集合，而是<em>概念系统的结构性组织原则</em>。改变隐喻，就是改变概念系统。这就是政治话语中"框架战争"（framing wars）的深层机制——谁控制了隐喻，谁就控制了概念。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">容器图式 <em>Container Schema</em> · 身体边界的概念投影</div>
+            <div class="card-body">
+                容器图式是最基本的身体经验之一：我们在物理空间中区分"内部"和"外部"，自己的身体就是一个容器（皮肤是边界）。这种经验被系统性地映射到抽象概念中。<br><br>
+                我们把自己描述为情绪的容器（"我充满了愤怒"），把范畴描述为容器（"在这个类别<em>内</em>"），把国家描述为容器（"进入……领土"），把心理状态描述为容器（"他<em>在</em>抑郁<em>中</em>"）。英语介词"in""out""into""out of"的广泛使用，本身就是容器图式的语法痕迹。<br><br>
+                更重要的是，容器图式带来了二元对立的逻辑：<em>内部 vs 外部，成员 vs 非成员，属于 vs 不属于</em>。这种逻辑在政治话语中尤其强大——"我们"（容器内部）vs"他们"（容器外部），"美国人"vs"非法移民"。容器图式不是中性的空间描述，它是社会边界的概念工具。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>范畴不是逻辑的集合，而是容器的边界。原型理论（Rosch）证明：范畴的"边界"是模糊的，但容器图式让我们<em>感觉</em>它们有明确边界。这种"感觉"有真实的政治和社会后果。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">路径图式 <em>Path Schema</em> · 从A到B的身体记忆</div>
+            <div class="card-body">
+                路径图式源于身体在空间中最基本的经验：从起点出发，沿着路径移动，到达终点。我们把这个经验投射到时间、目的、因果、人生等抽象域中。<br><br>
+                时间被理解成路径："展望未来"（前方是未来的方向）、"回顾过去"（后方是过去的方向）、"人生走到了十字路口"。目的被理解成路径终点："通往成功"、"偏离了正轨"。因果关系也被理解成路径："从A导致了B"——A是起点，B是终点。<br><br>
+                路径图式的文化差异非常显著。在英语中，"未来在前方"是默认方向。但Aymara语（南美洲的一种语言）中，"未来在后方"——因为未来是看不见的，就像背后的事物。这个差异不是任意的，而是反映了不同文化中"时间可视化"的具身体验差异。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>过程概念几乎无法脱离路径隐喻而存在。"实现目标""走上正轨""偏离方向"——这些不是可选的修辞，而是我们<em>唯一拥有的</em>思考"过程"的概念工具。路径图式决定了我们如何理解进步、退步、因果关系和人生意义。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">力量动力学 <em>Force Dynamics</em> · 物理世界的因果语法</div>
+            <div class="card-body">
+                莱考夫在1980年代末提出"力量动力学"（Force Dynamics），后来被Talmy发展成一个完整的认知语义学框架。它的核心洞见是：我们用<em>物理力量的经验</em>来理解因果、阻碍、允许和倾向。<br><br>
+                "通货膨胀<em>推动</em>价格上涨"——把抽象经济因果描述成物理推动。"我无法<em>阻止</em>他离开"——把心理意愿描述成物理阻挡。"市场<em>迫使</em>公司裁员"——把制度压力描述成物理力量。这些不是修辞——它们是语法层面的概念结构。不同语言中，表达"允许"和"阻止"的动词系统，都映射在力量动力学的基础之上。<br><br>
+                力量动力学还解释了一种更深层的现象：<em>道德的物理化</em>。"沉重的良心""卸下负担""承受压力"——道德责任被系统性地理解为物理重量。这不是偶然，而是力量动力学在伦理概念中的结构性投影。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>因果概念不是从逻辑中推导出来的，而是从"推动/阻碍"的身体经验中隐喻地映射出来的。这意味着<em>因果本身是一个隐喻建构</em>——当休谟问"因果到底是什么"时，他实际上是在追问一个隐喻的源域。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">体验主义哲学 <em>Experientialism</em> · 客观主义与主观主义之间</div>
+            <div class="card-body">
+                莱考夫和约翰逊在1999年的《Philosophy in the Flesh》中提出了"体验主义"（Experientialism）作为第三种哲学立场。它试图在客观主义（objectivism，认为意义独立于人类心智）和主观主义（subjectivism，认为意义是纯个人感受）之间找到中间道路。<br><br>
+                体验主义的核心主张：意义来自我们作为<em>身体存在者</em>与世界的互动。概念系统不是对客观世界的镜像反映（客观主义），也不是纯个人想象力的产物（主观主义），而是<em>身体在环境中行动的产物</em>。我们之所以理解"上"和"下"，不仅因为重力是客观的，也因为我们的身体在重力场中的经验是普遍的（虽然不是绝对的）。<br><br>
+                这个立场的一个关键后果是：<strong>"真理"本身是一个隐喻建构。</strong>"真理"（truth）在英语中的隐喻是"符合"（correspondence）——"理论与事实相符"。但"符合"是一个空间隐喻（两个物体对齐）。如果概念系统本身由隐喻构成，那么"真理作为符合"这个定义本身也依赖隐喻。这不是相对主义——体验主义仍然相信某些说法比另一些更"好地服务于我们的目的"——但它摧毁了"绝对真理"的哲学基础。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>体验主义不是相对主义。它承认某些概念系统比其他系统在特定情境中更有效，但否认存在一个独立于所有身体经验的"绝对真理"。这让体验主义在科学哲学和伦理学中处于一个非常微妙的位置——它既不完全拥抱后现代，也不完全拒绝客观性。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 从身体经验到抽象概念的隐喻映射</div>
+
+        <div class="svg-container">
+            <div class="svg-label">概念隐喻映射结构 · 从源域到目标域</div>
+            <svg viewBox="0 0 720 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                </defs>
+
+                <rect width="720" height="560" fill="#111" rx="8"/>
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">概念隐喻映射结构 · 从身体经验到抽象概念</text>
+
+                <rect x="16" y="44" width="336" height="220" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">源域 Source Domain · 身体经验</text>
+
+                <rect x="32" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #1 · 概念隐喻</text>
+                <text x="184" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">ARGUMENT IS WAR · 争论被战争结构定义</text>
+
+                <line x1="184" y1="116" x2="184" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="32" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #2 · 容器图式</text>
+                <text x="184" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">IN/OUT · 身体边界投射到范畴与社会</text>
+
+                <line x1="184" y1="172" x2="184" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="32" y="188" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #3 · 路径图式</text>
+                <text x="184" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">起点→路径→终点 · 时间/人生/过程</text>
+
+                <line x1="184" y1="228" x2="184" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <rect x="32" y="244" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="262" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #4 · 力量动力学</text>
+                <text x="184" y="276" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">推动/阻碍 · 因果与道德的物理化</text>
+
+                <line x1="184" y1="116" x2="184" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="368" y="44" width="336" height="220" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">目标域 Target Domain · 抽象概念</text>
+
+                <rect x="384" y="76" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">争论</text>
+                <text x="536" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">攻击/防御/赢得/输掉/策略</text>
+
+                <line x1="536" y1="116" x2="536" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="384" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">范畴/社会</text>
+                <text x="536" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">内部/外部 · 成员/非成员 · 我们/他们</text>
+
+                <line x1="536" y1="172" x2="536" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="384" y="188" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">时间/过程</text>
+                <text x="536" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">未来在前方 · 回顾过去 · 人生十字路口</text>
+
+                <line x1="536" y1="228" x2="536" y2="240" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="384" y="244" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="262" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">因果/道德</text>
+                <text x="536" y="276" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">推动/迫使/阻止 · 沉重的良心</text>
+
+                <line x1="340" y1="264" x2="380" y2="264" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+                <text x="360" y="256" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="8">系统性映射</text>
+
+                <rect x="16" y="280" width="688" height="80" rx="6" fill="#1a1200" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="360" y="300" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">刀 #5 · 体验主义哲学</text>
+                <text x="360" y="320" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">意义来自身体与世界的互动 · 既非纯客观也非纯主观</text>
+                <text x="360" y="340" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">"真理"本身是一个隐喻（符合/对应）· 不是相对主义，而是"有依据的视角"</text>
+
+                <rect x="16" y="372" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="392" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两种哲学范式 · 对概念与真理的根本假设</text>
+
+                <rect x="28" y="404" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="424" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">客观主义</text>
+                <text x="188" y="444" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">概念是客观世界的镜像</text>
+                <text x="188" y="458" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">真理是理论与事实的对应</text>
+                <text x="188" y="472" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">隐喻是修辞装饰，可消除</text>
+
+                <rect x="372" y="404" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="424" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">体验主义</text>
+                <text x="532" y="444" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">概念来自身体与世界的互动</text>
+                <text x="532" y="458" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">真理是"更好地服务于目的"</text>
+                <text x="532" y="472" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">隐喻是概念系统的地基</text>
+
+                <rect x="16" y="504" width="688" height="40" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="524" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 关键张力</text>
+                <text x="360" y="536" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">如果概念系统由身体经验塑造，那么不同身体（文化/生理）的人是否生活在不同的概念世界里？</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图底部的红色虚线框是提炼者要特别强调的。如果概念隐喻理论是对的——抽象概念从身体经验中映射出来——那么一个必然的推论是：<em>不同身体经验的人，会有不同的概念系统。</em>说英语的人用"争论是战争"来理解争论，但说其他语言的人可能不是。这种差异不是浅层的语言差异，而是深层的概念差异。问题是：这种差异是程度差异，还是种类差异？是"看同一座山的不同角度"，还是"看完全不同的山"？
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条范式对比</div>
+
+        <h2>客观主义 vs 体验主义：两千年的哲学地震</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">客观主义 Objectivism</div>
+                <div class="col-name" style="color:#6fb5e0;">理性独立于身体</div>
+                <div class="col-text">
+                    概念是客观世界的镜像<br><br>
+                    真理是理论与现实的对应<br><br>
+                    隐喻是修辞装饰，可消除<br><br>
+                    理性是普遍的、纯粹的<br><br>
+                    身体经验是认知的噪声<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：存在一个独立于人类的客观真理。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">体验主义 Experientialism</div>
+                <div class="col-name" style="color:#E94560;">理性即具身</div>
+                <div class="col-text">
+                    概念来自身体与世界的互动<br><br>
+                    真理是"更好地服务于目的"<br><br>
+                    隐喻是概念系统的地基<br><br>
+                    理性是想象的、情境的<br><br>
+                    身体经验是认知的根基<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：意义来自身体存在，不是纯粹的也不是任意的。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种范式的分歧，不只是语言学的分歧，而是关于<strong>"人类是什么"</strong>的根本分歧。客观主义认为人类是理性的旁观者，站在世界之外描述世界。体验主义认为人类是具身的参与者，在世界之中通过行动理解世界。<br><br>
+            莱考夫和约翰逊的立场不是全盘否定客观主义——他们承认科学在预测和解释物理世界方面的巨大成功。他们的问题是：当科学开始研究人类自身（心智、语言、概念）时，客观主义框架是否仍然有效？如果概念系统本身由身体经验塑造，那么"客观描述概念系统"是否可能？
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：莱考夫和约翰逊的"体验主义"有时被简化为"相对主义"——"所有概念都是主观的，没有客观真理"。但这是错误的。体验主义明确拒绝主观主义，它主张的是"有依据的视角"（embodied perspective）而非"任意的视角"。某些概念系统在服务于人类生存目标方面更"好"，但这不是因为它们"更客观"，而是因为它们更好地利用了普遍的（虽然不是绝对的）身体经验。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：隐喻就是"修辞手法"，莱考夫和约翰逊只是发现了修辞的普遍性</strong>
+                    <span>传统语言学把隐喻归类为"修辞格"（figure of speech），认为它是语言的装饰，可以消除而不改变意义。但莱考夫和约翰逊的核心发现是：隐喻不是修辞——它是<em>概念结构</em>。如果没有"时间即金钱"的隐喻，我们根本无法思考"时间预算""节省时间""浪费时间"这些概念。消除隐喻，不是消除修辞，而是消除概念本身。</span>
+                    <div class="misread-correction">✓ 准确理解：概念隐喻是概念系统的组织原则，不是语言的诗意点缀。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：体验主义 = 相对主义，一切真理都是主观的</strong>
+                    <span>批评者（尤其是分析哲学家）认为，如果概念系统由隐喻构成，那么"真理"就成了任意的东西——每种文化都可以有自己的"真理"。但莱考夫和约翰逊明确否认这一点。他们区分了"绝对真理"（不存在）和"有依据的视角"（存在）。体验主义认为某些概念系统更有效，但这种有效性不是基于"与客观现实的对应"，而是基于"更好地服务于人类目的"。这不是相对主义，而是实用主义。</span>
+                    <div class="misread-correction">✓ 准确理解：体验主义拒绝绝对真理，但不拒绝"更好的概念系统"——只是判断标准不是"客观对应"而是"实用有效"。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：所有的抽象概念都是隐喻的，所以文学比科学更"真实"</strong>
+                    <span>一些文学评论者把隐喻理论当作"文学战胜科学"的武器。但莱考夫和约翰逊的意图恰恰相反——他们是在用认知科学的实证方法来研究隐喻，而不是用文学诠释来解构科学。科学概念（如力、能量、基因）本身也是隐喻建构的（"力"是力量的隐喻，"能量"是工作的隐喻），但这并不意味着科学无效。相反，科学之所以有效，正是因为它的隐喻系统更好地服务于预测和控制的目的。</span>
+                    <div class="misread-correction">✓ 准确理解：科学和文学的概念系统都是隐喻建构的，但科学的隐喻系统在特定目的上更有效。这不是文学的胜利，而是对"科学客观性"的重新理解。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                如果我们的概念系统从根本上是由身体经验塑造的，那么"纯粹理性"是否只是一个幻觉？不同身体经验的人是否注定生活在不同的概念世界里？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，概念隐喻理论在描述层面是闭合的：源域（身体经验）→ 映射 → 目标域（抽象概念）。但<strong>除了红色虚线框里的关键问题</strong>，还有更深层的问题：<em>如果隐喻是概念的地基，那么改变隐喻是否就是改变现实？</em><br><br>
+                莱考夫2004年的政治框架研究给出了一个令人不安的答案：是的。当保守派把税收框架为"政府从你口袋里拿钱"（容器隐喻：你的钱在政府容器里被拿走），和自由派把税收框架为"公民投资于共同未来"（路径隐喻：一起走向更好的终点）——他们不是在争论同一个概念的不同修辞，而是在用<em>完全不同的概念系统</em>来理解"税收"这件事。<br><br>
+                更精确的问题变成：<strong>如果概念系统由隐喻塑造，而隐喻可以被有策略地选择，那么"改变隐喻来改变政治"是民主的武器，还是操纵的工具？</strong>当莱考夫为民主党设计"框架策略"时，他是在帮助选民更好地理解问题，还是在用认知科学来"重新编程"选民的概念系统？<br><br>
+                从"是"到"应该"之间，从"概念系统如何运作"到"我们应该如何运作概念系统"之间，有一道伦理的鸿沟。莱考夫的理论可以描述隐喻的运作，但无法告诉我们是否应该利用这种运作。这道鸿沟，体验主义哲学的框架刀无法切开。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "隐喻是我们理解抽象概念的主要手段。没有隐喻，我们就无法抽象地思考。但每一个隐喻都隐藏了某些东西，同时揭示了某些东西。这就是隐喻的力量——也是它的危险。"
+            <br>— 莱考夫 & 约翰逊，《我们赖以生存的隐喻》
+        </div>
+
+        <p>
+            明天，应用者会把这五把框架刀放进三个真实场景——历史的、中国的、和Ethan每天面对的商业世界——看看概念隐喻如何在政策设计、文化理解和管理语言中悄无声息地塑造着现实。
+        </p>
+
+    </div>
+
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w14-d01.html">← 叙事者 · 那个在咖啡馆里争论"argument is war"的下午</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w14-d03.html">应用者 · 三场景拆解 →</a>
+        </div>
+    </nav>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w14-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w14-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

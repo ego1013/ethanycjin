@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 14 · Day 4 · 挑战者 · 《具身认知》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        .fault-line {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .fault-line::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(233,69,96,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .fault-line .fault-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #E94560;
+            margin-bottom: 0.5rem;
+        }
+
+        .fault-line .fault-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .fault-line .fault-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .fault-line .fault-body em {
+            color: var(--accent);
+        }
+
+        .fault-line .fault-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid #E94560;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .fault-line .fault-core strong {
+            color: #E94560;
+        }
+
+        .checklist {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .checklist .checklist-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #E94560;
+            margin-bottom: 0.75rem;
+        }
+
+        .checklist .checklist-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            font-family: Georgia, serif;
+        }
+
+        .check-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .check-item:last-child { border-bottom: none; }
+
+        .check-item .check-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .check-item .check-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .check-item .check-verdict {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #E94560;
+        }
+
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        .pullquote {
+            border-left: 3px solid #E94560;
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .post-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第14周 · 第4天</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="role-badge">⚔️ 挑战者 The Challenger · W14-D04</div>
+        <div class="meta">
+            <span>📅 2026-07-09</span>
+            <span>📖 第 14 周 · Day 4 / 5</span>
+            <span>🔢 《我们赖以生存的隐喻》</span>
+        </div>
+        <h1>四道断层线：概念隐喻理论的裂缝与阴影</h1>
+        <div class="subtitle">莱考夫和约翰逊的框架是革命性的，但革命性不等于无懈可击。挑战者今天要找到四道最深的地质断层</div>
+    </header>
+
+    <div class="prose">
+
+        <p>
+            挑战者今天的工作，不是否定概念隐喻理论——而是找到它的<em>边界</em>。每一套有力的框架都有它的裂缝。莱考夫和约翰逊的框架也不例外。四道断层线，每一道都指向一个理论内部无法自洽的问题，或一个被刻意忽略的领域。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">四道断层线</div>
+
+        <div class="fault-line" data-num="01">
+            <div class="fault-label">断层线 #1</div>
+            <div class="fault-title">循环论证：隐喻解释概念，但概念也解释隐喻</div>
+            <div class="fault-body">
+                概念隐喻理论的核心逻辑是：抽象概念（目标域）通过隐喻从具体经验（源域）中获得意义。但这里有一个根本的方法论问题：<em>我们如何确定哪个是源域，哪个是目标域？</em><br><br>
+                莱考夫和约翰逊说"ARGUMENT IS WAR"——争论是目标域，战争是源域。因为"战争"比"争论"更具体、更物理。但真的是这样吗？"战争"本身也是一个高度抽象的概念——它涉及策略、联盟、资源分配、合法性、道德。如果没有"争论""谈判""冲突"这些更抽象的概念，"战争"本身能被理解吗？<br><br>
+                更麻烦的是：如果概念A通过概念B来理解，而概念B又通过概念C来理解，最终所有概念都指向身体经验——那么身体经验本身是否需要概念？当我们说"上"和"下"是身体经验时，我们已经在用空间概念来描述了。"身体经验"不是一个无概念的纯粹地基，它<em>已经被概念穿透了</em>。<br><br>
+                这意味着概念隐喻理论可能陷入循环：它声称概念从经验中来，但"经验"本身已经是概念化的。这不是莱考夫和约翰逊的疏忽——这是现象学家（如梅洛-庞蒂）早就指出的问题：<em>身体知觉和概念理解之间没有清晰的先后关系，它们是相互构成的。</em>
+            </div>
+            <div class="fault-core">
+                <strong>核心挑战：</strong>概念隐喻理论声称找到了概念的"地基"（身体经验），但"地基"本身可能也是建筑的一部分。如果源域和目标域之间的关系是<em>双向的</em>，那么"映射"的方向性就无法被严格证明——它可能只是一个描述性的 Convenience，而不是解释性的发现。
+            </div>
+        </div>
+
+        <div class="fault-line" data-num="02">
+            <div class="fault-label">断层线 #2</div>
+            <div class="fault-title">文化多样性被系统性低估：英语中心主义的幽灵</div>
+            <div class="fault-body">
+                莱考夫和约翰逊的理论基于英语语料。这是合理的起点——他们研究的是英语母语者的概念系统。但问题是：他们是否<em>过度推广</em>了英语隐喻的普遍性？<br><br>
+                我们在D3看到，中文的"面子"和"关系"不是英语隐喻的直接翻译。Aymara语中的"未来在后方"挑战了"时间即路径"的普遍性。Hopi语（一种美洲原住民语言）据说没有时间隐喻——时间被理解成一种循环的节奏而非线性路径。如果Hopi语的时间概念真的如此不同，那么"时间即路径"就不是普遍概念隐喻，而是<em>英语概念系统的特殊性</em>。<br><br>
+                莱考夫和约翰逊在1999年的《Philosophy in the Flesh》中回应了这个问题。他们承认文化差异的存在，但坚持认为"基本级概念"（basic-level concepts）——如容器、路径、力量——是普遍的，因为它们基于普遍的身体经验。但批评者指出：<em>即使身体经验是普遍的，对经验的概念化也不是。</em>同样的身体，不同的文化，可以产生不同的概念化方式。"身体经验"不是一块白板——它已经被文化渗透了。
+            </div>
+            <div class="fault-core">
+                <strong>核心挑战：</strong>如果概念隐喻理论声称某些隐喻是"普遍的"（基于共同身体），但文化人类学的证据显示概念系统差异巨大，那么理论要么需要缩小声称（只适用于某些语言），要么需要解释为什么身体经验的普遍性没有导致概念系统的普遍性。莱考夫和约翰逊没有充分回答这个问题。
+            </div>
+        </div>
+
+        <div class="fault-line" data-num="03">
+            <div class="fault-label">断层线 #3</div>
+            <div class="fault-title">神经基础过度简化：现代神经科学的挑战</div>
+            <div class="fault-body">
+                莱考夫和约翰逊在1999年之后越来越多地诉诸神经科学来支持具身认知。他们声称：概念隐喻的"映射"对应着大脑中的神经联结——当我们理解"掌握"一个概念时，运动皮层中控制"抓握"的神经元也被激活。这被称为"<em>具身模拟</em>"（embodied simulation）假说。<br><br>
+                但现代神经科学给出了更复杂的图景。镜像神经元（mirror neurons）确实在动作理解和语言理解中被激活，但它们的激活模式远比"源域→目标域映射"复杂。更重要的是，<em>前额叶皮层</em>在抽象概念处理中扮演着核心角色——这些区域与身体运动没有直接对应关系。如果抽象概念主要依赖于前额叶，那么"概念即身体经验映射"的论断就需要被修正。<br><br>
+                2010年代以来的大量fMRI研究也显示：抽象概念和具体概念在大脑中的激活模式<em>部分重叠，但不完全重叠</em>。"爱"这个概念确实会激活与身体温暖相关的脑区，但它也激活大量与身体温暖无关的脑区。这意味着隐喻"爱即温暖"可能是一个<em>真实但不充分</em>的神经机制描述。概念不是简单的身体经验映射——它们可能是身体经验、社会学习、文化符号和逻辑推理的复杂混合体。
+            </div>
+            <div class="fault-core">
+                <strong>核心挑战：</strong>概念隐喻理论把神经基础简化成了"源域神经回路被目标域激活"。但现代神经科学显示，抽象概念处理涉及多个脑区的复杂交互，其中许多与身体运动没有直接对应。"具身"可能是必要条件，但不是充分条件。如果概念系统还需要<em>非具身的</em>神经机制，那么概念隐喻理论的"地基"就不再是地基——它只是多层建筑中的一层。
+            </div>
+        </div>
+
+        <div class="fault-line" data-num="04">
+            <div class="fault-label">断层线 #4</div>
+            <div class="fault-title">政治框架的道德真空：从描述到操纵的滑坡</div>
+            <div class="fault-body">
+                莱考夫在2004年的政治框架研究把概念隐喻理论变成了一种政治工具：如果概念系统由隐喻塑造，那么改变隐喻就能改变政治。这听起来像是民主的武器——让公民意识到隐喻的力量，从而做出更清醒的选择。<br><br>
+                但问题是：莱考夫自己成为了民主党框架策略的设计者。他在《Don't Think of an Elephant!》中提供的不是"如何识别隐喻"的公民教育，而是"<em>如何为对手设计无法逃避的隐喻框架</em>"的操作手册。当他说"不要想大象"时，他不是在描述一个认知现象——他是在<em>使用</em>这个认知现象。<br><br>
+                这带来了深刻的伦理问题：如果认知科学家知道隐喻如何运作，并主动设计框架来引导公众舆论，这和使用助推（Nudge）的塞勒有什么区别？莱考夫在1999年还信誓旦旦地说体验主义不是相对主义，但2004年他却在实践一种<em>策略性相对主义</em>——"哪个框架有效，就用哪个框架"。这与他早期著作中对"客观真理"的批评形成了讽刺性的呼应：如果真理本身不存在，那么任何框架都是可接受的，只要它"有效"。<br><br>
+                更深层的问题是：概念隐喻理论在描述层面很有力，但在<em>规范层面</em>完全沉默。它告诉我们隐喻如何运作，但没有告诉我们<em>应该如何使用隐喻</em>。如果框架设计是一种权力，那么谁来监督框架设计者？当莱考夫为民主党设计"严格父亲"vs"养育式父母"的框架对立时，他是在<em>揭露</em>保守派的隐喻，还是在<em>制造</em>一种新的两极化？
+            </div>
+            <div class="fault-core">
+                <strong>核心挑战：</strong>概念隐喻理论从描述到应用的转换中，隐藏了一个未经检验的伦理前提："理解隐喻的力量"是解放性的。但莱考夫自己的政治实践表明，理解隐喻的力量也可以被用来<em>更有效地操纵</em>。从认知科学到认知政治的滑坡，比莱考夫承认的更陡峭。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">被证伪判断清单</div>
+
+        <div class="checklist">
+            <div class="checklist-label">⚠️ 被证伪判断清单</div>
+            <div class="checklist-title">莱考夫 & 约翰逊理论中，哪些声称已经被证伪或严重挑战？</div>
+
+            <div class="check-item">
+                <div class="check-icon">🟡</div>
+                <div class="check-body">
+                    <strong>声称：所有抽象概念都是通过概念隐喻从身体经验中映射出来的</strong>
+                    <span>神经科学挑战：前额叶皮层在抽象概念处理中扮演核心角色，且许多抽象概念激活了与身体经验无关的脑区。抽象概念可能不是"完全"隐喻的，而是隐喻、逻辑推理和文化符号的混合体。</span>
+                    <div class="check-verdict">→ 部分被挑战：不是"全部"抽象概念都是隐喻的，而是"许多"抽象概念有隐喻基础。</div>
+                </div>
+            </div>
+
+            <div class="check-item">
+                <div class="check-icon">🔴</div>
+                <div class="check-body">
+                    <strong>声称：基本级概念（容器、路径、力量）是普遍的，基于共同身体经验</strong>
+                    <span>跨文化挑战：Aymara语的"未来在后方"、Hopi语的时间概念、中文的"面子"和"关系"系统，都表明身体经验的概念化受文化深度影响。"普遍性"声称需要大幅缩小范围。</span>
+                    <div class="check-verdict">→ 被严重挑战：某些空间经验（如上下）可能普遍，但时间、社会、道德概念的概念化差异巨大。</div>
+                </div>
+            </div>
+
+            <div class="check-item">
+                <div class="check-icon">🟡</div>
+                <div class="check-body">
+                    <strong>声称：隐喻映射的方向是确定的（从具体到抽象）</strong>
+                    <span>循环论证挑战："战争"本身也是抽象概念，"身体经验"本身已被概念化。源域和目标域之间的区分在很多情况下是分析者的选择，而非理论上的必然。</span>
+                    <div class="check-verdict">→ 方法论上存疑：方向性假设在描述层面有用，但无法被严格证明。</div>
+                </div>
+            </div>
+
+            <div class="check-item">
+                <div class="check-icon">🟡</div>
+                <div class="check-body">
+                    <strong>声称：体验主义不是相对主义，因为它承认某些概念系统更有效</strong>
+                    <span>政治实践挑战：莱考夫自己的政治框架设计表明，"有效性"标准可以被策略性地选择。如果"更有效"取决于设计者的政治目标，那么体验主义在实践中滑向了相对主义。</span>
+                    <div class="check-verdict">→ 理论层面成立，但实践层面被模糊化："有效"的标准由谁来定义？</div>
+                </div>
+            </div>
+
+            <div class="check-item">
+                <div class="check-icon">🔴</div>
+                <div class="check-body">
+                    <strong>声称：隐喻是"概念系统的地基"，改变隐喻就是改变概念系统</strong>
+                    <span>认知固化挑战：如果隐喻是深层的、无意识的、自动的，那么"改变隐喻"可能和"改变母语"一样困难。莱考夫在政治中的应用暗示隐喻是可以被策略性操控的，但心理学研究表明，深层概念系统的改变需要长期的文化沉浸，而非一次性的框架调整。</span>
+                    <div class="check-verdict">→ 被夸大：隐喻在政治话语中的短期效果存在，但深层概念系统的改变远比莱考夫暗示的更难。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D4·挑战者视角）</div>
+            <div class="tension-q">
+                如果概念隐喻理论本身有裂缝，那么"纯粹理性是幻觉"这个结论是否站得住脚？如果概念系统的运作方式比我们想象的更复杂，那么利用隐喻来引导政治和商业决策，是比传统理性更进步，还是更危险？
+            </div>
+            <div class="tension-echo">
+                挑战者今天的工作，是让这个张力问题变得更尖锐。<br><br>
+                四道断层线指向一个共同的问题：<em>莱考夫和约翰逊的框架在描述日常语言时很有力，但在解释概念系统的深层机制时过于简化。</em>循环论证让"源域→目标域"的方向性无法严格证明；文化多样性让"普遍性"声称需要大幅收缩；神经科学让"具身即全部"的论断变得不成立；政治实践让"描述性理论"滑向了"操纵性工具"。<br><br>
+                但挑战者不是要回到客观主义。笛卡尔的"纯粹理性"确实是一个幻觉——但这不等于莱考夫的"纯粹隐喻"就是答案。可能的真实情况更复杂：<em>概念系统是多层的</em>——底层有身体经验的基础（可能是普遍的），中层有文化隐喻的建构（是多样的），上层有逻辑推理的抽象（是相对独立于身体的）。莱考夫和约翰逊发现了中间层，但可能低估了上下层。<br><br>
+                更精确的问题变成：<strong>如果概念隐喻理论只是"部分正确"，那么它的政治应用是否也是"部分有效"——而且"部分有效"的权力是否比"完全无效"的权力更危险？</strong>因为"部分有效"意味着它可以被用来塑造认知，但不能被完全控制；它可以被声称是"科学"，但无法被完全验证。当政治策略披上认知科学的外衣，它的说服力增加了，但它的问责性却降低了。<br><br>
+                从"是"到"应该"之间，从"隐喻如何运作"到"我们应该如何使用隐喻"之间，那道伦理鸿沟，挑战者认为比莱考夫承认的更深、更暗。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "每一种革命性的理论都携带它自己的盲点。发现隐喻的力量，可能让我们忽视非隐喻的力量；强调身体的根基，可能让我们忽视心智的飞翔；解构客观主义，可能让我们滑向策略性的相对主义。"
+            <br>— 挑战者的立场
+        </div>
+
+        <p>
+            明天，摆渡人要把问题带到更深的地方。如果概念隐喻理论不是全部答案，那什么可能是？如果"纯粹理性"和"纯粹隐喻"都是幻觉，那认知的真相在哪里？
+        </p>
+
+    </div>
+
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w14-d03.html">← 应用者 · 三场景拆解</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w14-d05.html">摆渡人+连接者 →</a>
+        </div>
+    </nav>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w14-d03.html" style="color:#888;text-decoration:none;">← D03 · 应用者</a>
+        <a href="./w14-d05.html" style="color:#888;text-decoration:none;">D05 · 摆渡人+连接者 →</a>
+    </div>
+
+</div>
+</body>
+</html>
