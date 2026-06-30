@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 24 · Day 1 · 叙事者 · 《论自由》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第24周 · 第1天</span>
+    </nav>
+
+    <div class="week-badge">📚 Week 24 · Day 1 · 2026-09-14</div>
+
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">论自由</div>
+        <div class="book-author">约翰·斯图尔特·密尔 <span>John Stuart Mill</span></div>
+    </div>
+
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲密尔是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <h2>那个为自由写下最强辩护词的人</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1859年，伦敦</div>
+        <p>1859年，伦敦的出版商收到了一部手稿。手稿只有不到两百页，但作者显然知道自己在写什么——它像一把手术刀，要把社会对个人生活的入侵切得清清楚楚。</p>
+        <p>作者在开篇就抛出了一个惊人的宣言："本文的目的是要力主一条极其简单的原则，使凡属社会以强制和控制方法对付个人之事，不论所用手段是法律惩罚方式下的物质力量，或者是公众意见下的道德压力，都绝对以此为界。"</p>
+        <p>这个"极其简单的原则"就是后来被称为<em>伤害原则</em>（Harm Principle）的命题：<strong>人类之所以有理有权可以个别地或集体地对其中任何成员的行动自由进行干涉，唯一的目的只是自我防卫。</strong>也就是说，权力能够正当地干涉个人自由的唯一理由，是防止个人伤害他人。</p>
+        <p>这位作者就是<em>约翰·斯图尔特·密尔</em>。这本书就是《<em>论自由</em>》（<em>On Liberty</em>）。它后来成为自由主义政治哲学史上最重要的著作之一——不是因为它的结论最激进，而是因为它的论证最严密、最诚实、最不自欺。</p>
+    </div>
+
+    <p>密尔在《论自由》中面对的问题是：人类已经从君主专制中解放出来了，但<em>新的暴政正在形成</em>——不是来自政府，而是来自<em>社会舆论</em>。当大多数人持有相同意见时，少数人的 dissent 会被沉默、被排斥、被社会压力摧毁。这种"多数人的暴政"比政治暴政更隐蔽，因为它不需要监狱和刽子手——只需要<em>冷眼和沉默</em>。</p>
+
+    <p>密尔的诊断至今仍然锋利：在19世纪的英国，一个不信基督教的人可能会失去工作、失去朋友、失去社会地位。这不算"法律迫害"——政府没有逮捕他。但<em>社会迫害</em>比法律迫害更彻底，因为它渗透到生活的每一个角落。密尔追问：如果社会有权通过舆论压力来惩罚"异端"，那么自由还剩下什么？</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">1859</div>
+            <div class="data-label">《论自由》出版</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">5</div>
+            <div class="data-label">章 核心论述</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">150+</div>
+            <div class="data-label">年持续影响</div>
+        </div>
+    </div>
+
+    <h2>密尔是谁：一个被父亲和哈丽特·泰勒共同塑造的哲学家</h2>
+
+    <p>约翰·斯图尔特·密尔1806年出生于伦敦。他的父亲詹姆斯·密尔是一位著名的哲学家和经济学家，也是杰里米·边沁的密友。老密尔对儿子实施了严格的教育计划——约翰三岁开始学希腊语，八岁开始学拉丁语，十二岁读亚里士多德，十六岁编辑边沁的著作。他的童年没有游戏、没有玩伴、没有假期——只有<em>学习</em>。</p>
+
+    <p>1826年，二十岁的密尔经历了一场严重的精神危机。他突然意识到：即使他所有的改革目标都实现了，他也不会感到幸福。这个"幸福真空"让他陷入了抑郁。他后来回忆说，这段时间是他人生中最黑暗的时期。他从阅读华兹华斯的诗歌中找到了慰藉——这标志着他从纯粹的理性主义转向了<em>对情感和人性的尊重</em>。</p>
+
+    <div class="pull-quote">
+        "我问我自己：如果你的所有政治改革都成功了，你会感到幸福吗？我清楚地知道：不会。那一刻，我意识到我的整个人生基础都是错误的。"
+    </div>
+
+    <p>1830年，密尔遇见了<em>哈丽特·泰勒</em>（Harriet Taylor），一位已婚的女性知识分子。他们的关系在当时是丑闻性的——密尔爱上了别人的妻子。但他们维持了一段长达二十年的柏拉图式友谊，直到哈丽特的丈夫去世，两人才结婚。密尔后来承认，《论自由》中关于女性平等和婚姻自由的论述，很大程度上受到了哈丽特的影响。</p>
+
+    <p>1851年，密尔与哈丽特结婚。1858年，哈丽特在法国去世。密尔在她去世后的几个月里完成了《论自由》——这本书的扉页上写着"献给亲爱的亡妻"。密尔在书中写道："如果这本书中有任何真理，它属于我们两个人。"</p>
+
+    <p>1865年，密尔被选为英国议会议员。他在议会中倡导女性选举权、爱尔兰土地改革和劳动者权益。1873年，他在法国去世，享年67岁。他的《论自由》继续影响着每一个关心自由与权力边界的人。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1806</div>
+            <div class="timeline-text">生于伦敦，父亲詹姆斯·密尔是著名哲学家和边沁的追随者</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1818</div>
+            <div class="timeline-text">十二岁开始学习亚里士多德和经院哲学；教育严格到没有童年</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1826</div>
+            <div class="timeline-text">二十岁经历精神危机，质疑功利主义的人生目标；从华兹华斯诗歌中恢复</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1830</div>
+            <div class="timeline-text">遇见哈丽特·泰勒，开始长达二十年的精神伴侣关系</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1851</div>
+            <div class="timeline-text">与哈丽特·泰勒结婚；婚后共同生活和写作</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1858</div>
+            <div class="timeline-text">哈丽特在法国去世；密尔在悲痛中开始撰写《论自由》</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1859</div>
+            <div class="timeline-text">出版《论自由》；扉页献给"亲爱的亡妻"</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1865–1868</div>
+            <div class="timeline-text">担任英国议会议员，倡导女性选举权和劳动者权益</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1873</div>
+            <div class="timeline-text">在法国去世；《论自由》成为自由主义政治哲学的基石</div>
+        </div>
+    </div>
+
+    <h2>为什么是密尔：从"政治自由"到"社会自由"的范式扩展</h2>
+
+    <p>理解密尔的位置，需要先理解他扩展了什么传统。在密尔之前，自由主义主要关心<em>政治自由</em>——摆脱君主专制、获得选举权、限制政府权力。从洛克到孟德斯鸠，从美国革命到法国大革命，自由的核心是<em>政治自由</em>。</p>
+
+    <p>但密尔意识到：政治自由不等于<em>社会自由</em>。一个拥有选举权的人，可能仍然被社会舆论所奴役。一个不被政府逮捕的人，可能仍然被邻居的冷眼所驱逐。一个可以发表言论的人，可能仍然因为"异端"意见而失去工作和朋友。</p>
+
+    <p>密尔的革命性贡献在于：他把自由的战场从<em>政治领域</em>扩展到了<em>社会领域</em>。他问的不是"政府可以做什么"，而是"<em>社会</em>可以做什么"。政府权力可以被宪法限制，但社会舆论的权力如何被限制？这是一个比政治自由更深层、更困难的问题。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">传统自由主义</div>
+            <div class="compare-row">关心政治自由（选举权、言论自由）</div>
+            <div class="compare-row">主要敌人是政府专制</div>
+            <div class="compare-row">自由 = 免于政府干预</div>
+            <div class="compare-row">宪法和法律是保护自由的工具</div>
+            <div class="compare-row">目标：限制政府权力</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">密尔</div>
+            <div class="compare-row">关心社会自由（舆论、习俗、社会压力）</div>
+            <div class="compare-row">主要敌人是多数人的暴政</div>
+            <div class="compare-row">自由 = 免于社会压迫</div>
+            <div class="compare-row">道德宽容和多元主义是保护自由的工具</div>
+            <div class="compare-row">目标：限制社会权力</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>精英主义偏差</strong>：密尔在《论自由》中表现出明显的精英主义倾向。他认为普通人的意见往往是错误的，而"有教养的少数人"更可能发现真理。这种精英主义在今天的语境下听起来不舒服，但密尔的论证是：不是精英更聪明，而是<em>少数意见更有可能包含被忽视的真理</em>。这个论证在逻辑上独立于精英主义，但密尔的语言有时混淆了两者。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>时代局限偏差</strong>：密尔假设"真理会战胜谬误"——如果允许自由讨论，正确的意见最终会胜出。但现代信息环境（社交媒体、信息茧房、算法推荐）让这个假设变得可疑。在19世纪，真理和谬误在同一个公共广场上竞争；在21世纪，人们生活在不同的"信息宇宙"中，真理和谬误甚至不会相遇。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>个人主义偏差</strong>：密尔假设个人是自由的最终单位。但人类是社会性动物——我们的身份、价值观、甚至"自我"都是在社会关系中形成的。密尔的"个人"是一个理论抽象，忽略了人类对归属感和认同的深层需求。这种个人主义在对抗社会压迫时有效，但在解释人类行为时可能过于简化。
+    </div>
+
+    <h2>一本书如何从个人悲痛变成自由主义的基石</h2>
+
+    <p>《论自由》不是一本传统的学术著作。它是一部<em>个人告白</em>——密尔在妻子去世后写下的政治遗嘱。全书只有五章，但每一章都充满了对个人尊严的深刻关怀。</p>
+
+    <p>第一章"引论"提出了伤害原则——全书的核心论点。密尔说，人类可以正当地干涉个人自由的唯一理由，是防止个人伤害他人。个人的身体、精神、道德——只要不影响他人，就属于个人自主的领域。社会无权干涉。</p>
+
+    <p>第二章"论思想自由和讨论自由"是全书最著名的一章。密尔论证：即使一个意见被所有人认为是错误的，压制它仍然是不正当的。因为<em>没有人是绝对正确的</em>——我们今天认为正确的东西，可能明天被证明是错误的。即使被压制的意见确实是错误的，允许它的存在也能让正确的意见更加清晰和有力。密尔说："一个正确的意见，如果不与错误意见进行斗争，就会变成死的教条。"</p>
+
+    <p>第三章"论个性作为幸福的要素之一"扩展了自由的范围。密尔认为，个性（individuality）本身就是幸福的组成部分。一个人按照自己选择的方式生活——即使这种方式不是最好的——也比被迫按照社会规定的方式生活更有价值。这不是因为个人选择总是正确的，而是因为<em>选择本身有内在价值</em>。</p>
+
+    <p>第四章和第五章讨论了自由的边界——什么时候社会可以干涉个人行为。密尔在这里小心翼翼地划定边界：当个人行为<em>伤害他人</em>时，社会可以干涉；当个人行为只影响自己时，社会无权干涉。但这个"伤害"的界定，直到今天仍然是争论的焦点。</p>
+
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">伤害原则 <span>Harm Principle</span></div>
+            <div class="concept-desc">人类可以正当地干涉个人自由的唯一理由，是防止个人伤害他人。个人的身体、精神、道德——只要不影响他人，就属于个人自主的领域。这是《论自由》的核心命题，也是自由主义政治哲学的基石。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">多数人的暴政 <span>Tyranny of the Majority</span></div>
+            <div class="concept-desc">当社会中的大多数人持有相同意见时，少数人的 dissent 会被沉默、排斥和惩罚。这种暴政比政治暴政更隐蔽，因为它不需要监狱和刽子手，只需要冷眼和沉默。密尔认为这是对自由的最大威胁。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">思想自由 <span>Freedom of Thought</span></div>
+            <div class="concept-desc">即使一个意见被所有人认为是错误的，压制它仍然是不正当的。因为没有人是绝对正确的，而且即使错误的意见也能让正确的意见更加清晰。真理通过与错误的斗争而变得更加强大。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">个性的价值 <span>Value of Individuality</span></div>
+            <div class="concept-desc">按照自己选择的方式生活——即使这种方式不是最好的——也比被迫按照社会规定的方式生活更有价值。选择本身有内在价值，因为它培养了个人的判断力、责任感和创造力。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">自由的边界 <span>Limits of Liberty</span></div>
+            <div class="concept-desc">当个人行为伤害他人时，社会可以干涉。但"伤害"的界定是困难的：精神伤害算不算？社会压力算不算？间接伤害（如醉酒导致的社会成本）算不算？密尔的边界划定至今仍然是争论的焦点。</div>
+        </div>
+    </div>
+
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果多数人的意见可能是错的，谁来保护少数人的自由？密尔的"伤害原则"在实践中如何界定——精神伤害算不算？社会压力算不算？</div>
+    </div>
+
+    <div class="page-footer">
+        <div class="footer-info">Week 24 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解密尔的自由逻辑链 →</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w23-d05.html" style="color:#888;text-decoration:none;">← W23 · D05</a>
+        <a href="./w24-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

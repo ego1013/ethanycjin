@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 23 · Day 1 · 叙事者 · 《利维坦》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第23周 · 第1天</span>
+    </nav>
+
+    <div class="week-badge">📚 Week 23 · Day 1 · 2026-09-07</div>
+
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">利维坦</div>
+        <div class="book-author">托马斯·霍布斯 <span>Thomas Hobbes</span></div>
+    </div>
+
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲霍布斯是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <h2>那个在英国内战中看见"一切人对一切人的战争"的人</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1642年，英格兰</div>
+        <p>1642年8月，英国内战爆发。国王查理一世与议会的冲突终于演变成武装对抗。在接下来的四年里，英格兰经历了人类历史上最血腥的内战之一——约10%的成年男性人口死亡，比例高于第一次世界大战。教堂被毁，村庄被烧，家庭被撕裂，法律崩溃。</p>
+        <p>在这场混乱中，一位五十四岁的哲学家正在逃亡。他的名字叫托马斯·霍布斯，是当时英国最杰出的学者之一。他曾是德文郡贵族卡文迪什家族的家庭教师，与培根、伽利略等巨匠有交往。但在政治立场上，他既不是保皇派，也不是议会派——他是一个<em>恐惧者</em>。</p>
+        <p>霍布斯在流亡法国期间（1640–1651），目睹了巴黎的政治动荡和英国内战的恐怖报道。他后来回忆说，这些经历让他明白了一个道理：<em>没有国家，人类生活就是"孤独、贫困、卑污、粗野且短命的"</em>。这不是文学修辞，而是他在血腥现实中提炼出的政治结论。</p>
+        <p>1651年，霍布斯在巴黎出版了《<em>利维坦</em>》（<em>Leviathan</em>）。书名来自《圣经》中的海怪——一个巨大而可怕的生物，象征着国家。霍布斯用这个词来形容他设想中的<em>绝对主权国家</em>：一个由人民让渡权利创造出来的"人造人"，它的力量足以压制一切内部冲突，维持和平与秩序。</p>
+    </div>
+
+    <p>霍布斯在《利维坦》的开篇就做了一个惊人的思想实验：假设人类没有国家，生活在"自然状态"中。在这种状态下，每个人对一切事物都有权利——包括他人的身体。因为没有法律，没有法官，没有执行力量，所以每个人都可以为了自我保护而攻击他人。结果是<em>一切人对一切人的战争</em>（war of all against all）。</p>
+
+    <p>这个思想实验不是历史描述，而是<em>逻辑推演</em>。霍布斯不是在说"人类曾经生活在自然状态中"，而是说"如果没有国家，人类理性的推理会导向什么结论"。他的答案是：即使没有国家，人类也足够理性，能够认识到战争状态对所有人都是灾难性的。因此，人们会自愿放弃一部分自然权利，把它们交给一个主权者——国家——来换取安全。</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">1651</div>
+            <div class="data-label">《利维坦》出版</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">700+</div>
+            <div class="data-label">页 巨著篇幅</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">10%</div>
+            <div class="data-label">英国内战死亡率</div>
+        </div>
+    </div>
+
+    <h2>霍布斯是谁：一个从几何学走进政治的恐惧者</h2>
+
+    <p>托马斯·霍布斯1588年出生于英国威尔特郡的一个牧师家庭。他出生的那一年，英国刚刚击败了西班牙无敌舰队，但他母亲后来告诉他，他是因为听说西班牙舰队即将入侵而早产的。霍布斯后来开玩笑说："恐惧是我的孪生兄弟。"</p>
+
+    <p>霍布斯在牛津大学接受了传统的古典教育，但他的真正兴趣在<em>几何学和自然科学</em>。他翻译了修昔底德的《伯罗奔尼撒战争史》，从中看到了民主政治的混乱和危险。他后来成为德文郡伯爵卡文迪什的家庭教师，随卡文迪什家族三次访问欧洲大陆，结识了伽利略、梅森、笛卡尔等科学革命的关键人物。</p>
+
+    <p>这些经历让霍布斯形成了一个核心信念：<em>政治应该像几何学一样严谨</em>。几何学从公理出发，通过逻辑推理得出定理。霍布斯想把同样的方法应用于政治：从人类的本性出发，通过理性推理，得出国家的必然性。</p>
+
+    <div class="pull-quote">
+        "几何学是唯一的科学，因为几何学从定义出发，通过无可争议的推理得出结论。政治也应该如此。"
+    </div>
+
+    <p>1640年，英国议会危机加剧，霍布斯因为写了一篇支持王权的论文而被迫流亡法国。在巴黎，他担任了威尔士亲王（后来的查理二世）的数学教师。正是在这段流亡岁月中，他开始撰写《利维坦》。</p>
+
+    <p>1651年，《利维坦》出版。这本书的出版让霍布斯同时得罪了所有阵营：保皇派认为他把君主权力的来源从"神圣权利"降级为"人民同意"；议会派认为他为主权者赋予了过多的权力；教会认为他的唯物主义否定了灵魂不朽。霍布斯在书的扉页上画了一幅著名的版画：一个巨人（利维坦）由无数小人组成，一手持剑（世俗权力），一手持牧杖（精神权力），俯视着一个城市。这幅图像成为政治哲学史上最有力的视觉隐喻之一。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1588</div>
+            <div class="timeline-text">生于威尔特郡，母亲因西班牙舰队恐慌而早产，恐惧伴随一生</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1608</div>
+            <div class="timeline-text">牛津大学毕业，进入卡文迪什家族担任家庭教师</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1629–1637</div>
+            <div class="timeline-text">三次访问欧洲大陆，结识伽利略、笛卡尔、梅森等科学革命领袖</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1640</div>
+            <div class="timeline-text">因政治论文被迫流亡法国，开始构思《利维坦》</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1642–1649</div>
+            <div class="timeline-text">英国内战爆发，查理一世被处决，霍布斯在巴黎目睹恐怖</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1651</div>
+            <div class="timeline-text">出版《利维坦》，同时得罪保皇派、议会派和教会</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1660–1679</div>
+            <div class="timeline-text">斯图亚特王朝复辟，霍布斯返英但遭政治冷遇；晚年继续著述</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1679</div>
+            <div class="timeline-text">去世，享年91岁；其思想在18世纪启蒙运动中被广泛讨论和批判</div>
+        </div>
+    </div>
+
+    <h2>为什么是霍布斯：从"上帝"到"契约"的合法性转移</h2>
+
+    <p>理解霍布斯的位置，需要先理解他打破了什么传统。在马基雅维利之前，政治权力的合法性来自<em>上帝</em>——君权神授。国王是上帝的代理人，他的权力不需要人民的同意，只需要上帝的认可。这个传统在中世纪达到了顶峰，任何反抗君主的行为都被视为对上帝的反叛。</p>
+
+    <p>马基雅维利打破了"君权神授"的神话，但他没有提供替代方案。他说权力来自能力和运气，但没有解释为什么人民应该服从。</p>
+
+    <p>霍布斯做了第二个革命：他把权力的合法性从<em>上帝</em>转移到了<em>人民</em>。不是人民选择了上帝，而是人民为了自己的安全，<em>自愿同意</em>建立一个主权者。这个主权者可以是君主，也可以是议会——霍布斯对政体形式是中立的。重要的是：主权者的权力来自人民的<em>契约</em>，而不是上帝的授予。</p>
+
+    <p>这就是"社会契约论"的诞生。霍布斯不是第一个使用"契约"概念的人，但他是第一个用契约来系统性地论证国家合法性的思想家。在他之后，洛克、卢梭、康德都在这个框架内工作——只是他们对"契约的内容"和"主权者的边界"有不同的看法。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">传统合法性</div>
+            <div class="compare-row">权力来自上帝（君权神授）</div>
+            <div class="compare-row">服从是道德义务</div>
+            <div class="compare-row">反抗是罪恶</div>
+            <div class="compare-row">国家是神圣秩序的一部分</div>
+            <div class="compare-row">目标：实现上帝的计划</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">霍布斯</div>
+            <div class="compare-row">权力来自人民同意（社会契约）</div>
+            <div class="compare-row">服从是理性选择</div>
+            <div class="compare-row">反抗是自我毁灭</div>
+            <div class="compare-row">国家是人为创造物</div>
+            <div class="compare-row">目标：避免一切人对一切人的战争</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>恐惧投射偏差</strong>：霍布斯把英国内战的极端暴力普遍化为"自然状态"的必然结果，但这可能过度投射了他个人的恐惧。历史人类学研究表明，许多无国家社会并非处于"一切人对一切人的战争"中，而是形成了复杂的互惠和冲突解决机制。霍布斯描述的自然状态更像是<em>内战</em>，而非<em>无国家状态</em>。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>理性化偏差</strong>：霍布斯假设人类足够理性，能够通过推理认识到社会契约的必然性。但行为经济学证明，人类在风险决策中表现出系统性的非理性（损失厌恶、现状偏见、短视等）。霍布斯的"理性人"假设可能过于乐观——人们不是总能认识到什么对自己最有利。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>男性中心偏差</strong>：霍布斯的自然状态假设所有参与者都是平等的男性个体，忽略了家庭、社群、性别和等级关系。在现实历史中，人类从来不是以"孤立个体"的方式进入政治的——我们总是已经嵌入在社会关系中。霍布斯的"个体"是一个理论抽象，不是历史真实。
+    </div>
+
+    <h2>一本书如何从恐惧变成政治哲学的基石</h2>
+
+    <p>《利维坦》不是一本传统意义上的政治建议书。它是一本<em>政治几何学</em>——试图从关于人类本性的公理出发，通过严格的逻辑推理，得出国家的必然性。</p>
+
+    <p>书的第一部分"论人"从人类的感官、想象、激情出发，分析了人类行为的心理学基础。霍布斯认为，人类的核心动机是<em>自我保护</em>——这是不可置疑的"自然权利"。在自然状态中，每个人都有无限的自我保存权利，但这也意味着每个人对一切都有权利，导致持续的冲突。</p>
+
+    <p>书的第二部分"论国家"是核心。霍布斯论证：为了摆脱自然状态的恐怖，人们通过契约把权利转让给主权者。这个契约不是君主与人民之间的契约，而是<em>人民之间的契约</em>——他们同意彼此之间不再使用暴力，并把使用暴力的权利交给一个第三方（主权者）。主权者不是契约的一方，因此不受契约约束。</p>
+
+    <p>这个论证的惊人之处在于：它既为绝对权力辩护，又把绝对权力的来源从<em>上帝</em>转移到了<em>人民</em>。霍布斯同时得罪了所有人：保皇派认为他在贬低君权神授，议会派认为他在为主权者的暴政辩护。</p>
+
+    <p>但霍布斯在书的第三部分和第四部分走得更远：他攻击了教会的权力，主张主权者应该同时控制世俗和精神事务。这让他成为教会的敌人，也让他的书在多地被禁。霍布斯在晚年回忆说，他因为《利维坦》而"害怕被暗杀"。</p>
+
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">自然状态 <span>State of Nature</span></div>
+            <div class="concept-desc">没有国家、没有法律、没有政府的假设状态。霍布斯认为，在这种状态下，人类对一切都有权利，导致一切人对一切人的战争。这不是历史描述，而是逻辑推演——展示没有国家会导向什么。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">社会契约 <span>Social Contract</span></div>
+            <div class="concept-desc">人们为了摆脱自然状态的恐怖，通过相互同意放弃一部分自然权利，把它们交给主权者。契约是人民之间的协议，不是人民与君主之间的协议——因此主权者不受契约约束。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">利维坦 <span>Leviathan</span></div>
+            <div class="concept-desc">霍布斯用《圣经》中的海怪来象征国家——一个由无数人民组成的人造巨人。它拥有绝对的权力来维持和平，因为任何对权力的分割都会重新打开内战的大门。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">主权者的绝对权力 <span>Absolute Sovereignty</span></div>
+            <div class="concept-desc">主权者拥有不可分割、不可转让的权力。立法、司法、行政、军事、宗教——所有这些权力都必须集中在同一个主体手中，否则权力分散会导致冲突和内战。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">自然法 <span>Law of Nature</span></div>
+            <div class="concept-desc">不是成文法律，而是理性发现的规则：寻求和平、遵守契约、不伤害他人。但自然法在没有强制力的情况下只是"建议"，不是真正的法律。只有当国家建立后，自然法才通过主权者的立法变成真正的法律。</div>
+        </div>
+    </div>
+
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果人们为了安全愿意放弃自由，那么霍布斯的利维坦是契约还是陷阱？国家垄断暴力的合法性，究竟来自人民的同意，还是来自没有更好的替代？</div>
+    </div>
+
+    <div class="page-footer">
+        <div class="footer-info">Week 23 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解霍布斯的社会契约逻辑链 →</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w22-d05.html" style="color:#888;text-decoration:none;">← W22 · D05</a>
+        <a href="./w23-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 34 · Day 2 · 提炼者 · 《未来简史》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Framework card */
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        /* SVG info container */
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Contrast box */
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        /* Pullquote */
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        /* Misread block */
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        /* Bias note */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Footer nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第34周 · 第2天</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W34-D02</div>
+        <div class="meta">
+            <span>📅 2026-11-24</span>
+            <span>📖 第 34 周 · Day 2 / 5</span>
+            <span>🔢 《未来简史》</span>
+        </div>
+        <h1>从"人类中心"到"数据中心"：赫拉利的五把框架刀</h1>
+        <div class="subtitle">赫拉利用宏大的历史叙事，把人类从宇宙的主角降级为数据流中的一个节点</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把赫拉利散落在《未来简史》中的思想碎片，拼成一张可理解的地图。赫拉利的方法论非常独特：<strong>他不是预测未来，而是描述一个正在发生的范式转移</strong>。从"人类是意义和价值的来源"到"数据是意义和价值的来源"——这不是技术升级，而是<em>世界观的革命</em>。今天这五把框架刀，每一把都从一个具体的哲学问题出发，指向一个令人不安的未来图景。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <!-- Knife 1: The New Human Agenda -->
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title">新人类议程 <em>The New Human Agenda</em> · 从生存到升级</div>
+            <div class="card-body">
+                几千年来，人类的议程一直是生存：对抗饥荒、瘟疫和战争。赫拉利认为，21世纪的前半叶，人类将在技术上解决这三个问题。不是因为人类变得更道德，而是因为技术能力（生物科技、AI、数据网络）使这些问题的解决方案成为可能。<br><br>
+                当生存不再是问题，人类的新议程变成了三个：<em>追求永生</em>（通过基因编辑和再生医学）、<em>追求幸福</em>（通过神经药物和生物反馈）、<em>追求神性</em>（通过脑机接口和基因升级）。这不是比喻，而是正在发生的投资方向——硅谷的抗衰老研究、致幻剂心理治疗、神经科技公司。<br><br>
+                但问题是：这三个议程将惠及所有人，还是只属于能支付得起的人？当永生技术诞生时，它是公共医疗还是奢侈品？
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>人类的议程从"解决所有人的问题"转向"升级一部分人"。这个转移不是故意的，而是技术的逻辑——当生存问题解决后，资源自然流向差异化竞争。但差异化的终点是<em>物种分裂</em>：一小部分神人和大部分无用阶级。
+            </div>
+        </div>
+
+        <!-- Knife 2: The End of Free Will -->
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">自由意志的终结 <em>The End of Free Will</em> · 生物电的幻觉</div>
+            <div class="card-body">
+                赫拉利引用了大量神经科学研究来证明：人类的决策不是"自由"的。在Libet实验中，科学家发现大脑的运动皮层在<em>人类"意识"到决定之前</em>就已经发出了行动信号。也就是说，当你"决定"抬起手指时，你的大脑已经在你"感觉到"这个决定之前开始了动作。<br><br>
+                更进一步，fMRI研究显示，通过扫描大脑活动，科学家可以在人类"做出决定"之前<em>预测</em>他们的选择。如果外部观察者能够预测你的选择，那你的选择是否还是"自由"的？<br><br>
+                赫拉利把这个结论推向极端：人类的"选择"不是自由意志的产物，而是基因、神经化学、环境刺激和文化叙事的<em>计算结果</em>。如果这是对的，那么基于"自由意志"的民主、人权、个人责任——这些制度的地基开始摇晃。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>如果自由意志是幻觉，那么"选择"作为一种权利就失去了哲学基础。但民主制度不是建立在"自由意志"的实验证据上，而是建立在<em>人类应当被当作自由主体来对待</em>的规范判断上。赫拉利混淆了"是"和"应当"。
+            </div>
+        </div>
+
+        <!-- Knife 3: The Useless Class -->
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">无用阶级 <em>The Useless Class</em> · 失去经济价值的多数人</div>
+            <div class="card-body">
+                工业革命创造了"无产阶级"——工人失去了生产资料，但还拥有自己的劳动。AI革命将创造"无用阶级"——当机器在体力劳动<em>和</em>认知劳动上都超越人类，人类将失去<em>经济价值</em>。<br><br>
+                赫拉利强调，这不是道德判断，而是经济描述。当自动驾驶取代司机，当AI诊断取代医生，当算法交易取代投资经理——这些人类确实"不被需要"了。这不是因为人类"懒惰"或"愚蠢"，而是因为<em>机器更便宜、更可靠、更可扩展</em>。<br><br>
+                但"无用"不等于"无价值"。赫拉利的框架有一个暗含前提：人类的价值主要来源于经济贡献。如果这个前提被质疑，"无用阶级"的叙事就会改变。问题变成：社会是否愿意为非经济贡献（如艺术、养育、公民参与）提供资源和尊重？
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>"无用阶级"的预测成立的前提是：社会继续用经济价值来衡量人的价值。如果UBI（全民基本收入）或新的社会契约改变了价值衡量标准，这个预测可能不成立。赫拉利假设了现有价值体系的延续，但没有考虑价值体系本身的变革可能。
+            </div>
+        </div>
+
+        <!-- Knife 4: Dataism -->
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">数据主义 <em>Dataism</em> · 新的宗教</div>
+            <div class="card-body">
+                赫拉利认为，数据主义是一种正在取代人文主义的新"宗教"。它的核心信条：<strong>宇宙由数据流组成，生命的本质是数据处理。</strong>人类、动物、机器、生态系统——都是不同的数据处理系统。效率更高的系统应该取代效率更低的系统。<br><br>
+                在数据主义看来，人类体验是"主观的"、"低效的"、"不可比较的"——而数据是"客观的"、"精确的"、"可优化的"。当算法可以通过分析你的行为数据来"知道"你的偏好（比你自己的自我报告更准确），为什么还需要人类的自我认知？<br><br>
+                赫拉利把数据主义描述为继基督教（以神为中心）和人文主义（以人为中心）之后的<em>第三种价值体系</em>——以数据为中心。但它的吸引力不是来自"正确"，而是来自"有用"：数据确实能预测行为、优化决策、创造价值。问题是："有用"是否等于"值得追求"？
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>数据主义不是科学发现，而是一种价值选择。它假设"可测量"比"不可测量"更重要，"优化"比"体验"更有价值。但赫拉利没有给出选择数据主义的理由——他只是描述了它的崛起。从"数据主义在崛起"到"数据主义应该被接受"，中间有一道<em>价值鸿沟</em>。
+            </div>
+        </div>
+
+        <!-- Knife 5: Algorithmic Authority -->
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">算法权威 <em>Algorithmic Authority</em> · 从人类判断到机器决策</div>
+            <div class="card-body">
+                赫拉利描述了一个渐进但不可逆转的过程：人类正在把决策权从自己的大脑<em>转移</em>到算法。最初是简单的建议（GPS导航、拼写检查），然后是复杂的推荐（Netflix推荐、亚马逊排序），然后是关键的决策（信贷评分、医疗诊断、投资配置）。<br><br>
+                这个过程的关键不是"机器强迫人服从"，而是<em>"人自愿服从"</em>——因为机器确实做得更好。当Waze推荐的路线比你的直觉更省时，当算法推荐的股票比你的分析更赚钱，你自然会放弃自己的判断。这不是奴役，这是理性的选择。但结果是：人类决策能力本身会逐渐退化。<br><br>
+                赫拉利把这个过程称为"权威的转移"——从人类专家到数据算法。当这个转移完成时，人类将面临一个终极问题：如果算法在所有领域都做得更好，人类还有什么存在的理由？
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>算法权威的崛起不依赖于强制，而依赖于<em>比较优势</em>。但赫拉利忽略了一个维度：人类在需要<em>责任承担</em>的决策中（如司法判决、道德选择）可能永远不可替代，因为"承担责任"本身需要人类主体。算法可以做决定，但谁为决定负责？
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 从"人类中心"到"数据中心"的逻辑链</div>
+
+        <!-- SVG Infographic -->
+        <div class="svg-container">
+            <div class="svg-label">赫拉利框架逻辑链 · 从"人类是什么"到"数据将成为什么"</div>
+            <svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                </defs>
+
+                <!-- Background -->
+                <rect width="720" height="520" fill="#111" rx="8"/>
+
+                <!-- Title -->
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">赫拉利框架逻辑链 · 从"人类中心"到"数据中心"</text>
+
+                <!-- ── Left: Human-centric chain ── -->
+                <rect x="16" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">人类时代 · 人文主义</text>
+
+                <!-- Box 1: Humanism -->
+                <rect x="32" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #1 · 人文主义</text>
+                <text x="184" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">人类经验是意义和价值的终极来源</text>
+
+                <line x1="184" y1="116" x2="184" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 2: Free Will -->
+                <rect x="32" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #2 · 自由意志</text>
+                <text x="184" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">人类选择基于内在意志而非外在决定</text>
+
+                <line x1="184" y1="172" x2="184" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 3: Human Value -->
+                <rect x="32" y="188" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #3 · 人类价值</text>
+                <text x="184" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">人的经济/军事/认知价值不可替代</text>
+
+                <line x1="184" y1="228" x2="184" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 4: Crisis -->
+                <rect x="32" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="184" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">核心危机</text>
+                <text x="184" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">技术正在瓦解人文主义的三大基石</text>
+
+                <!-- ── Right: Data-centric chain ── -->
+                <rect x="368" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">数据时代 · 数据主义</text>
+
+                <!-- Box 5: Dataism -->
+                <rect x="384" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #4 · 数据主义</text>
+                <text x="536" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">数据流是宇宙的本质，价值来自数据</text>
+
+                <line x1="536" y1="116" x2="536" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 6: Algorithm -->
+                <rect x="384" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #5 · 算法权威</text>
+                <text x="536" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">人类自愿让渡决策权给更优算法</text>
+
+                <line x1="536" y1="172" x2="536" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 7: Homo Deus -->
+                <rect x="384" y="188" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">神人崛起</text>
+                <text x="536" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">技术精英升级自身，无用阶级被遗弃</text>
+
+                <line x1="536" y1="228" x2="536" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 8: Tension -->
+                <rect x="384" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="536" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">终极张力</text>
+                <text x="536" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">自由意志还是幻觉？人类还是数据？</text>
+
+                <!-- Bridge arrow between left and right -->
+                <line x1="340" y1="264" x2="380" y2="264" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+                <text x="360" y="256" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="8">范式转移</text>
+
+                <!-- ── Bottom: Comparison ── -->
+                <rect x="16" y="316" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="336" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两种价值体系 · 对"意义来源"的根本假设</text>
+
+                <!-- Humanism -->
+                <rect x="28" y="348" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="368" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">人文主义</text>
+                <text x="188" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">意义来自人类内在体验 · 自由意志是核心</text>
+                <text x="188" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">人类价值不可替代 · 个体选择神圣</text>
+                <text x="188" y="416" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">民主、人权、艺术基于人文主义</text>
+
+                <!-- Dataism -->
+                <rect x="372" y="348" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="368" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">数据主义</text>
+                <text x="532" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">意义来自数据效率 · 可测量优于可感受</text>
+                <text x="532" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">人类是数据处理系统之一 · 可被优化</text>
+                <text x="532" y="416" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">算法权威取代人类判断 · 效率即正义</text>
+
+                <!-- ── Red dashed boxes: Preconditions ── -->
+                <rect x="16" y="448" width="688" height="56" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="468" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 前提条件</text>
+                <text x="360" y="490" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 A：技术确实会在所有认知领域超越人类（尚未被证明）</text>
+                <text x="360" y="504" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 B：人类价值仅由经济/军事/认知贡献定义（价值单一化）</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图底部的两个红色虚线框是提炼者要特别强调的。前提A问的是：赫拉利假设AI将在<em>所有</em>领域超越人类，但创造力、同理心、道德判断等领域是否真的会被机器取代？前提B问的是："无用阶级"的叙事假设人类价值只来自经济贡献，但养育、艺术、社区关怀等活动是否不算"价值"？如果改变价值定义，"无用"可能不存在。<br><br>
+            明天应用者会把这个框架带进三个真实场景，看看这两个前提在哪里被确认、在哪里被挑战。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条范式对比</div>
+
+        <h2>人文主义 vs 数据主义：从"人"到"数据"的范式转移</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">人文主义</div>
+                <div class="col-name" style="color:#6fb5e0;">以人类为中心</div>
+                <div class="col-text">
+                    意义来自人类的内在体验<br><br>
+                    自由意志是核心信念<br><br>
+                    个体选择是神圣的<br><br>
+                    人类价值不可替代<br><br>
+                    民主、人权基于人的尊严<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：人类是宇宙意义和价值的来源。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">数据主义</div>
+                <div class="col-name" style="color:#E94560;">以数据为中心</div>
+                <div class="col-text">
+                    意义来自数据流效率<br><br>
+                    自由意志是生物幻觉<br><br>
+                    算法决策优于人类判断<br><br>
+                    人类是可被优化的系统<br><br>
+                    效率是可测量价值的唯一标准<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：数据处理和效率是宇宙的本质。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种范式的分歧，不只是关于技术的前景，更是关于<strong>"什么值得追求"</strong>的根本分歧。人文主义问："人类想要什么？"数据主义问："什么是最优的数据处理？"<br><br>
+            赫拉利的立场不是支持数据主义——他多次警告数据主义的危险。但他的分析框架是<em>描述性的</em>而非<em>规范性的</em>：他描述数据主义正在崛起，但没有给出拒绝它的充分理由。他的问题是：如果数据主义确实"更有效"，人文主义还有什么立足之地？
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：赫拉利描述数据主义时，经常使用"效率"作为价值标准。但"效率"本身是一个人文主义的概念——它是人类工具理性的产物。数据主义把"效率"当作终极价值，但这本身就是一个人文主义的假设。真正的"非人文主义"价值体系可能不追求任何人类可理解的目标。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：赫拉利预言AI会毁灭人类</strong>
+                    <span>赫拉利不是末日预言家。他不认为AI会"像科幻电影里那样"毁灭人类。他认为的危机更 subtle：人类将逐渐失去存在的理由，因为机器在所有领域做得更好。这不是毁灭，而是"意义的蒸发"。"无用阶级"不是被杀死，而是被"不需要"。</span>
+                    <div class="misread-correction">✓ 准确理解：赫拉利的核心威胁不是物理毁灭，而是存在意义的丧失。这是更缓慢的危机，也更难被察觉。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：赫拉利认为自由意志已经被"科学证明"不存在</strong>
+                    <span>Libet实验和神经科学研究确实对自由意志提出了挑战，但哲学和科学界对此远未达成共识。相容论者（compatibilists）认为自由意志可以与决定论共存；量子不确定论者认为微观层面的不确定性为自由意志留出了空间。赫拉利倾向于引用支持"自由意志不存在"的研究，而对反方证据着墨较少。</span>
+                    <div class="misread-correction">✓ 准确理解：自由意志问题是一个开放的哲学问题，不是已被科学解决的定论。赫拉利的选择性引用可能让读者高估了确定性。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：数据主义是一个未来趋势，现在还没有发生</strong>
+                    <span>数据主义不是未来学，它是描述当下。当你更信任GPS而不是自己的方向感，当算法推荐决定了你读什么新闻、看什么视频、买什么商品——你已经在数据主义的逻辑中运作。赫拉利认为这个过程已经开始了，而且正在加速。问题不是"它会不会来"，而是"我们是否愿意接受它"。</span>
+                    <div class="misread-correction">✓ 准确理解：数据主义不是遥远的未来，而是正在发生的当下。我们每天的行为都在确认或否定它的逻辑。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <!-- Tension echo -->
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                如果数据和算法将取代人类成为万物的主宰，那么"自由意志"是否还有意义？当AI能比我们更了解自己时，"选择"还是不是一种权利？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，赫拉利的逻辑链在描述层面是闭合的：新议程 → 自由意志终结 → 无用阶级 → 数据主义 → 算法权威。但<strong>除了那两个红色虚线框</strong>，还有一个更深层的问题：<em>赫拉利自己也是人</em>，他的框架也是人类认知的产物。如果数据主义是对的，赫拉利的书本身也不过是数据处理的副产品——它的"洞见"并不比算法的预测更有价值。<br><br>
+                更精确的问题变成：<strong>如果数据主义最终胜利，那么"理解"本身还有价值吗？</strong>如果算法可以在所有领域做出更好的决策，人类对"理解"的追求——哲学、艺术、历史——是否只是进化遗留的娱乐？<br><br>
+                赫拉利在书的结尾提出了一个他自己也无法回答的问题：如果数据主义是"对的"，但人文主义是"好的"——我们追求什么？<em>从"对"到"好"之间，有一道价值观的鸿沟。</em>这道鸿沟，赫拉利的框架刀无法切开。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "数据主义对人文主义构成了最大威胁，不是因为它是错误的，而是因为它可能是正确的——至少在它自己的逻辑内是 self-consistent 的。"
+            <br>— 赫拉利，《未来简史》
+        </div>
+
+        <p>
+            这句话是赫拉利给自己的框架设下的边界。他清楚数据主义的锋利，也清楚它的局限。明天，应用者会把这五把框架刀放进三个真实场景——历史的、中国的、和Ethan每天面对的商业世界——看看数据主义、算法权威和无用阶级的叙事在什么样的土壤里生效，在什么样的容器里可以被改变。
+        </p>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w34-d01.html">← 叙事者 · 那个问"人类未来是什么"的年轻教授</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w34-d03.html">应用者 · 三场景拆解 →</a>
+        </div>
+    </nav>
+
+    <!-- Page Nav (required) -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w34-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w34-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 35 · Day 2 · 提炼者 · 《非理性繁荣》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第35周 · 第2天</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W35-D02</div>
+        <div class="meta">
+            <span>📅 2026-12-01</span>
+            <span>📖 第 35 周 · Day 2 / 5</span>
+            <span>🔢 《非理性繁荣》</span>
+        </div>
+        <h1>从"理性市场"到"叙事市场"：席勒的五把框架刀</h1>
+        <div class="subtitle">席勒用数据证明了一个反直觉的命题：市场不是由信息驱动，而是由故事驱动——而故事有自己的传播规律</div>
+    </header>
+
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把席勒散落在《非理性繁荣》和后续著作中的行为金融学逻辑，拼成一张可理解的地图。席勒的方法论非常明确：<strong>从真实的市场数据出发，寻找价格脱离基本面的系统性模式</strong>。但他不是简单地说"投资者不理性"——他证明的是，<em>投资者的非理性是可预测的、结构性的、由制度放大的</em>。今天这五把框架刀，每一把都从一个具体的市场现象出发，指向一个让有效市场假说不安的结论。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title">CAPE比率 <em>Cyclically Adjusted P/E</em> · 超越周期的真实估值</div>
+            <div class="card-body">
+                传统市盈率（P/E）用一个季度的收益来计算，容易被经济周期的波动扭曲。席勒与坎贝尔的CAPE用过去10年的平均收益（经通胀调整），消除了短期收益波动的影响。<br><br>
+                历史数据惊人：当CAPE超过20时，未来10年的股市平均回报约为每年6%；当CAPE超过30时，未来10年的平均回报接近于零。2000年互联网泡沫顶峰时，CAPE达到了44；2008年金融危机前达到了27。2020年代中期，CAPE再次接近历史高位。<br><br>
+                但CAPE不是预测短期市场的工具。它预测的是<em>长期回报</em>——而且它的预测力在10年期最强。短期（1-2年）市场可以被任何叙事驱动，CAPE无法预测。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>CAPE的有效性依赖于一个前提：历史模式会重复。但"这次不一样"是金融市场最危险的短语。如果结构性变化（如利率环境、全球化、技术革命）永久改变了估值基准，CAPE的历史比较可能失效。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">反馈循环 <em>Feedback Loop</em> · 自我强化的泡沫引擎</div>
+            <div class="card-body">
+                泡沫的核心不是"愚蠢"，而是<em>结构</em>。席勒描述的反馈循环是这样的：价格上涨→吸引更多投资者（羊群效应）→需求增加→价格进一步上涨→媒体关注→叙事传播→更多投资者涌入→价格继续涨……<br><br>
+                这个循环不需要任何欺诈。每个参与者都可以是理性的：看到价格上涨，推断需求强劲，决定加入。但<em>集体结果</em>是非理性的——价格脱离基本面，直到某个临界点打破循环。<br><br>
+                反馈循环的临界点通常是：资金耗尽（没有新的买家）、叙事崩溃（"皇帝没有新衣"的时刻）、外部冲击（利率上升、监管变化、丑闻曝光）。但预测临界点的精确时机几乎是不可能的——这是泡沫的固有特征。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>反馈循环是"合成谬误"的经典案例：个体理性（追涨）导致集体非理性（泡沫）。这意味着即使每个人都"知道"市场可能过热，只要相信"还有人会接盘"，泡沫就会继续。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">动物精神 <em>Animal Spirits</em> · 市场的心理基础</div>
+            <div class="card-body">
+                凯恩斯在1936年的《就业、利息和货币通论》中创造了这个词，用来描述驱动经济决策的非理性心理因素。席勒把动物精神从宏观经济学带进了资产定价：市场不是由"贴现未来现金流"驱动，而是由<em>信心、恐惧、投机冲动和叙事传染</em>驱动。<br><br>
+                席勒的核心证据：股票价格的波动幅度远远超过了股息（或收益）的波动幅度。如果市场只是对基本面信息做出反应，那么价格波动的幅度应该与基本面波动的幅度相近。但实际上，价格波动是基本面波动的数倍。多出来的波动来自哪里？<em>来自动物精神。</em><br><br>
+                但"动物精神"不是随机的噪音。席勒证明，它有历史模式：过度自信之后往往是过度悲观，贪婪之后往往是恐惧。这些模式不是"异常"，而是市场的<em>结构性特征</em>。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>动物精神的存在意味着"市场有效性"是一个程度问题，而不是非黑即白的命题。市场在"大多数时候"是有效的，但在"关键时刻"（泡沫、崩溃）会系统性失效。有效市场假说的问题不是全错，而是<em>边界错误</em>——它声称自己的边界是"所有时候"，但证据支持的是"大多数时候"。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">叙事经济学 <em>Narrative Economics</em> · 故事作为传染病</div>
+            <div class="card-body">
+                席勒在2019年正式提出这个框架，但它的种子早在《非理性繁荣》中就已经种下。核心洞见：经济事件（尤其是泡沫和衰退）的传播方式类似于<em>病毒传播</em>——通过叙事（故事、隐喻、口号）在社会中传染。<br><br>
+                一个经典例子："房价永远不会下跌"这个叙事在2000年代中期的美国传播。它不是经济学教科书的命题，但它在餐桌、电视、社交媒体上被反复讲述。当人们相信这个叙事时，他们的行为（过度借贷、投机买房）让这个叙事自我实现——直到它不再被相信。<br><br>
+                叙事经济学的关键是：叙事的传播不取决于它的"真理性"，而取决于它的<em>感染力</em>。简单、情绪化、与个人经验相关的叙事比复杂、冷静、抽象的叙事传播得更快。这就是为什么"这次不一样"总是比"历史会重复"更有感染力。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>叙事经济学的一个危险是它似乎暗示"一切经济现象都是故事"——这会导致相对主义。但席勒的回应是：叙事可以被测量（通过媒体覆盖率、搜索量、社交传播），而测量可以检验预测。叙事经济学不是放弃科学，而是扩大科学的方法论。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">结构性泡沫 <em>Structural Bubble</em> · 市场运行的常态</div>
+            <div class="card-body">
+                席勒最激进的命题：泡沫不是"市场失灵"的例外，而是市场运行的<em>结构性特征</em>。它由人类认知偏差、制度激励和媒体生态共同产生。即使每个参与者都是理性的，集体结果仍然可以是疯狂的。<br><br>
+                制度因素包括：央行的宽松货币政策（低利率推高资产价格）、金融机构的激励（交易员按短期业绩奖励，不关心长期风险）、媒体的商业模式（好消息和恐慌都带来流量）、政府的隐性担保（"大而不倒"让冒险无成本）。<br><br>
+                席勒的结论是：防止泡沫不是"修复市场"，而是<em>"重新设计制度"</em>——需要金融监管、媒体素养、央行政策、社会规范的综合改革。但这不是一个容易的政策处方，因为改革本身需要政治意愿，而政治意愿往往只在崩溃后才出现。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>结构性泡沫意味着"市场自我调节"是一个神话。市场需要外部监管，但监管的设计本身也受叙事和政治影响。这是一个递归问题：谁来监管监管者？如果监管者也被动物精神感染，那么监管本身可能成为泡沫的推手（如政府鼓励房地产泡沫以促进经济增长）。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 从"基本面"到"叙事"的逻辑链</div>
+
+        <div class="svg-container">
+            <div class="svg-label">席勒框架逻辑链 · 从"信息反应"到"叙事驱动"</div>
+            <svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                </defs>
+
+                <rect width="720" height="520" fill="#111" rx="8"/>
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">席勒框架逻辑链 · 从"基本面"到"叙事驱动"</text>
+
+                <rect x="16" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">传统解释 · 有效市场</text>
+
+                <rect x="32" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #1 · 基本面定价</text>
+                <text x="184" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">价格 = 贴现未来收益</text>
+
+                <line x1="184" y1="116" x2="184" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="32" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #2 · 信息效率</text>
+                <text x="184" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">所有信息即时反映在价格中</text>
+
+                <line x1="184" y1="172" x2="184" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="32" y="188" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #3 · 套利消除错误</text>
+                <text x="184" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">理性投资者通过套利纠正偏差</text>
+
+                <line x1="184" y1="228" x2="184" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <rect x="32" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="184" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">核心矛盾</text>
+                <text x="184" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">价格波动远超基本面波动</text>
+
+                <rect x="368" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">行为金融 · 席勒解释</text>
+
+                <rect x="384" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #4 · 反馈循环</text>
+                <text x="536" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">价格涨→更多人买→价格继续涨</text>
+
+                <line x1="536" y1="116" x2="536" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="384" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #5 · 叙事传播</text>
+                <text x="536" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">故事像病毒一样传染，驱动行为</text>
+
+                <line x1="536" y1="172" x2="536" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="384" y="188" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">制度放大</text>
+                <text x="536" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">央行政策、机构激励、媒体生态</text>
+
+                <line x1="536" y1="228" x2="536" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <rect x="384" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="536" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">结构性泡沫</text>
+                <text x="536" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">泡沫是市场常态，不是例外</text>
+
+                <line x1="340" y1="264" x2="380" y2="264" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+                <text x="360" y="256" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="8">范式转移</text>
+
+                <rect x="16" y="316" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="336" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两种市场范式 · 对价格波动来源的根本假设</text>
+
+                <rect x="28" y="348" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="368" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">有效市场假说</text>
+                <text x="188" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">价格是随机游走 · 不可预测</text>
+                <text x="188" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">波动 = 信息反应 · 理性驱动</text>
+                <text x="188" y="416" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">泡沫不可能长期存在</text>
+
+                <rect x="372" y="348" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="368" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">行为金融学</text>
+                <text x="532" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">价格可预测地偏离基本面 · 长期回归</text>
+                <text x="532" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">波动 = 叙事+情绪 · 反馈驱动</text>
+                <text x="532" y="416" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">泡沫是结构性常态</text>
+
+                <rect x="16" y="448" width="688" height="56" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="468" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 前提条件</text>
+                <text x="360" y="490" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 A：历史模式会重复（但"这次不一样"可能真的发生）</text>
+                <text x="360" y="504" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 B：叙事可以被识别和测量（但叙事的感染力难以量化）</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图底部的两个红色虚线框是提炼者要特别强调的。前提A问的是：历史模式是否会重复？如果结构性变化（如AI革命、全球化逆转）永久改变了市场运行逻辑，CAPE和反馈循环的预测可能失效。前提B问的是：叙事的感染力是否可以被量化？席勒用媒体覆盖率和搜索量来测量叙事，但"感染速度"和"传播路径"可能因社交媒体而根本改变。<br><br>
+            明天应用者会把这个框架带进三个真实场景，看看这两个前提在哪里被确认、在哪里被挑战。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条范式对比</div>
+
+        <h2>有效市场 vs 行为金融：从理性到叙事</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">有效市场假说</div>
+                <div class="col-name" style="color:#6fb5e0;">理性驱动</div>
+                <div class="col-text">
+                    投资者是理性信息处理者<br><br>
+                    价格即时反映所有信息<br><br>
+                    泡沫不可能长期存在<br><br>
+                    市场不可预测（随机游走）<br><br>
+                    框架：数学模型 + 统计检验<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：个体非理性被聚合抵消。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">行为金融学</div>
+                <div class="col-name" style="color:#E94560;">叙事驱动</div>
+                <div class="col-text">
+                    投资者是情绪驱动的叙事参与者<br><br>
+                    价格可系统性偏离基本面<br><br>
+                    泡沫是结构性常态<br><br>
+                    长期可预测（CAPE、历史模式）<br><br>
+                    框架：数据 + 心理学 + 叙事分析<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：个体非理性在集体中放大。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种范式的分歧，不只是方法论的差异，更是关于<strong>"市场是什么"</strong>的根本分歧。有效市场问："如果人是理性的，价格会怎样？"行为金融问："如果人是真实的，价格会怎样？"<br><br>
+            席勒的立场不是全盘否定有效市场——他承认市场在大多数时候是"有效的"（价格确实反映了很多信息）。他的问题是：当市场系统性偏离时，偏离模式是可预测的吗？如果可预测，那有效市场假说的核心命题——"不可预测性"——就需要被修正。
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：有效市场假说在预测<strong>短期市场</strong>时往往准确（短期价格确实像随机游走），但行为金融学在预测<strong>长期极端</strong>时更有力（泡沫和崩溃）。两个框架不是互斥的，而是互补的。真正的问题不是"谁对"，而是"在什么时间尺度上谁更有效"。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：席勒认为可以精确预测市场崩溃的时机</strong>
+                    <span>席勒从未声称可以预测"何时"崩溃。CAPE比率显示的是"长期回报预期"，而不是"下个月会跌"。他在2000年之前就认为股市高估，但市场继续上涨数年。"迟早会崩溃"的预测在统计上几乎是必然的，但精确 timing 是几乎不可能的。</span>
+                    <div class="misread-correction">✓ 准确理解：席勒预测的是"条件概率"——在高估值条件下，长期回报低的概率很高。他不预测时间。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：行为金融学 = 证明市场愚蠢</strong>
+                    <span>很多人把行为金融学理解为"投资者是愚蠢的，所以市场不有效"。但席勒的原始洞见恰恰相反：投资者的非理性不是"愚蠢"，而是<em>结构性的</em>——反馈循环、制度激励、叙事传播会让聪明人做出集体非理性的决策。偏差不是个人缺陷，是系统特征。</span>
+                    <div class="misread-correction">✓ 准确理解：行为金融学不是"人有多蠢"，而是"人在什么制度条件下表现出什么样的系统性偏差，以及这些偏差如何被放大"。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：叙事经济学 = 一切都是主观的</strong>
+                    <span>席勒的叙事经济学不是相对主义。它认为叙事可以被测量（媒体覆盖率、搜索量、社交传播），而且测量可以检验预测。叙事经济学的目标是让"故事"成为可研究的变量，而不是用它来解释一切。不是所有经济现象都是叙事驱动的。</span>
+                    <div class="misread-correction">✓ 准确理解：叙事经济学是扩展经济学的变量空间，不是放弃经济学的实证方法。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                如果市场的非理性是系统性的，那么我们还能相信市场的有效性吗？"动物精神"能被理性驯服吗？还是需要重新设计金融制度？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，席勒的逻辑链在描述层面是闭合的：CAPE → 反馈循环 → 动物精神 → 叙事经济学 → 结构性泡沫。但<strong>除了那两个红色虚线框</strong>，还有一个更深层的问题：<em>如果市场确实是结构性泡沫的，那么谁来设计"更好的制度"？</em>制度设计者本身也是人，也有动物精神，也会被叙事感染。<br><br>
+                更精确的问题变成：<strong>如果市场需要监管，但监管者也是市场的一部分，那么监管本身是否会成为新的泡沫来源？</strong>历史告诉我们：政府鼓励房地产泡沫（如美国的房利美房地美）、央行宽松货币政策（如长期低利率）、金融监管的放松——这些"制度"本身往往是泡沫的推手，而不是刹车。<br><br>
+                席勒发现了泡沫的结构，但没有给出一个防止制度自身被感染的框架。<em>从"诊断"到"处方"之间，有一道制度设计的鸿沟。</em>这道鸿沟，行为金融学的框架刀无法切开。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "我们无法设计一个完全防止泡沫的制度，但我们可以设计一个让泡沫不那么频繁、不那么剧烈的制度。前提是：我们愿意承认自己的非理性。"
+            <br>— 席勒，《非理性繁荣》第三版前言
+        </div>
+
+        <p>
+            这句话是席勒给自己的框架设下的边界。他清楚市场心理学的锋利，也清楚它的局限。明天，应用者会把这五把框架刀放进三个真实场景——历史的、中国的、和Ethan每天面对的商业世界——看看反馈循环、叙事传播和结构性泡沫的力学在什么样的土壤里生效，在什么样的容器里可以被改变。
+        </p>
+
+    </div>
+
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w35-d01.html">← 叙事者 · 那个在泡沫顶点发出警告的人</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w35-d03.html">应用者 · 三场景拆解 →</a>
+        </div>
+    </nav>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w35-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w35-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

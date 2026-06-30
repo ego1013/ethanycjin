@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>行业演化100讲 · Ethan's Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0C0C0C;
+      --surface:   #141414;
+      --surface2:  #1C1C1C;
+      --border:    #262626;
+      --border2:   #333;
+      --gold:      #C8922A;
+      --gold-dim:  #8A6420;
+      --rust:      #B85C38;
+      --blue:      #5282B4;
+      --green:     #64A064;
+      --purple:    #9664B4;
+      --text:      #E2DDD6;
+      --text-dim:  #7A7570;
+      --text-faint:#3A3835;
+      --mono:      'Space Mono', monospace;
+      --sans:      'Space Grotesk', sans-serif;
+      --serif:     'Noto Serif SC', serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.3;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      height: 56px;
+      background: rgba(12,12,12,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex; gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+      margin-top: 56px;
+      padding: 16px 40px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+    }
+    .breadcrumb a {
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb .sep { margin: 0 10px; color: var(--text-faint); }
+    .breadcrumb .current { color: var(--text); }
+
+    /* ── TICKER ── */
+    .ticker {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 40px;
+      display: flex; align-items: center; gap: 32px;
+      overflow: hidden;
+    }
+    .ticker-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding-right: 24px;
+      border-right: 1px solid var(--border2);
+    }
+    .ticker-items {
+      display: flex; gap: 40px;
+      animation: ticker 35s linear infinite;
+      white-space: nowrap;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ticker-item span { color: var(--text-faint); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 70vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 56px 40px 64px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    .hero-bg-num {
+      position: absolute;
+      right: -20px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--mono);
+      font-size: 300px;
+      font-weight: 700;
+      color: var(--text-faint);
+      opacity: 0.12;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 32px; height: 1px;
+      background: var(--gold);
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(48px, 7vw, 88px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      position: relative; z-index: 1;
+      max-width: 900px;
+    }
+    .hero-title em { font-style: normal; color: var(--gold); }
+    .hero-subtitle {
+      margin-top: 28px;
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 560px;
+      line-height: 1.8;
+      position: relative; z-index: 1;
+    }
+    .hero-stats {
+      margin-top: 48px;
+      display: flex; gap: 48px;
+      position: relative; z-index: 1;
+    }
+    .stat { display: flex; flex-direction: column; gap: 4px; }
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── PATTERNS GRID ── */
+    .section-header {
+      padding: 64px 40px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-end; justify-content: space-between;
+    }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 1px;
+      background: var(--gold);
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .section-count {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    .patterns-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-right: 1px solid var(--border);
+    }
+    .pattern-card {
+      padding: 36px 32px;
+      border-left: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .pattern-card:hover { background: var(--surface); }
+    .pattern-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      margin-bottom: 20px;
+    }
+    .pattern-icon { font-size: 24px; margin-bottom: 16px; display: block; }
+    .pattern-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .pattern-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .pattern-tag {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 3px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── LECTURE LIST ── */
+    .lecture-section { padding: 0 40px 60px; }
+
+    .group-header {
+      display: flex; align-items: center; gap: 20px;
+      padding: 40px 0 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .group-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+    .group-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+    .group-count-badge {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      padding: 3px 10px;
+      border: 1px solid var(--border2);
+      border-radius: 2px;
+    }
+
+    .lecture-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 140px 90px;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+      margin: 0 -40px;
+      padding-left: 40px;
+      padding-right: 40px;
+      gap: 20px;
+    }
+    .lecture-row:hover { background: var(--surface); }
+    .lecture-row:hover .lecture-title { color: var(--gold); }
+
+    .lecture-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+    }
+    .lecture-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 3px;
+      transition: color 0.15s;
+      line-height: 1.4;
+    }
+    .lecture-paradox {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+    .pattern-pill {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .pill-platform  { background: rgba(184,92,56,0.15); color: #B85C38; border: 1px solid rgba(184,92,56,0.3); }
+    .pill-monopoly  { background: rgba(200,146,42,0.15); color: #C8922A; border: 1px solid rgba(200,146,42,0.3); }
+    .pill-tech      { background: rgba(82,130,180,0.15); color: #5282B4; border: 1px solid rgba(82,130,180,0.3); }
+    .pill-resource  { background: rgba(100,160,100,0.15); color: #64A064; border: 1px solid rgba(100,160,100,0.3); }
+    .pill-regulation { background: rgba(180,150,80,0.15); color: #B4963C; border: 1px solid rgba(180,150,80,0.3); }
+    .pill-culture   { background: rgba(150,100,180,0.15); color: #9664B4; border: 1px solid rgba(150,100,180,0.3); }
+    .pill-meta      { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border2); }
+
+    .lecture-status {
+      text-align: right;
+    }
+    .status-dot {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+      letter-spacing: 0.08em;
+    }
+    .status-dot::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--text-faint);
+    }
+    .status-dot.active::before { background: var(--gold); }
+    .status-dot.active { color: var(--gold); }
+
+    /* Meta row styling */
+    .lecture-row.meta-row {
+      background: var(--surface);
+      border-left: 2px solid var(--gold);
+    }
+    .lecture-row.meta-row .lecture-num { color: var(--gold); }
+    .lecture-row.meta-row .lecture-title { color: var(--gold); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+    .footer-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .breadcrumb { padding: 12px 20px; }
+      .hero { padding: 40px 20px 48px; min-height: 60vh; }
+      .hero-stats { gap: 24px; flex-wrap: wrap; }
+      .section-header { padding: 40px 20px 24px; flex-direction: column; align-items: flex-start; gap: 8px; }
+      .patterns-grid { grid-template-columns: 1fr; }
+      .lecture-section { padding: 0 20px 40px; }
+      .lecture-row {
+        grid-template-columns: 50px 1fr;
+        margin: 0 -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        gap: 12px;
+      }
+      .lecture-row .lecture-pattern,
+      .lecture-row .lecture-status { display: none; }
+      .group-header { padding: 24px 0 16px; }
+      footer { padding: 24px 20px; flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="../" class="nav-logo">Ethan's Lab · 行业演化</a>
+    <ul class="nav-links">
+      <li><a href="#catalog">目录</a></li>
+      <li><a href="#patterns">演化模式</a></li>
+    </ul>
+    <div class="nav-meta">100讲 · 7000字/讲</div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="../">Ethan's Lab</a>
+    <span class="sep">/</span>
+    <span class="current">行业演化100讲</span>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-label">正在解剖</div>
+    <div class="ticker-items">
+      <div class="ticker-item">互联网广告 <span>·</span> 平台化吞噬</div>
+      <div class="ticker-item">石油 <span>·</span> 垄断诞生与瓦解</div>
+      <div class="ticker-item">半导体 <span>·</span> 垄断诞生</div>
+      <div class="ticker-item">制药 <span>·</span> 专利护城河</div>
+      <div class="ticker-item">流媒体 <span>·</span> 技术颠覆</div>
+      <div class="ticker-item">加密货币 <span>·</span> 监管套利</div>
+      <div class="ticker-item">快时尚 <span>·</span> 速度护城河</div>
+      <div class="ticker-item">互联网广告 <span>·</span> 平台化吞噬</div>
+      <div class="ticker-item">石油 <span>·</span> 垄断诞生与瓦解</div>
+      <div class="ticker-item">半导体 <span>·</span> 垄断诞生</div>
+      <div class="ticker-item">制药 <span>·</span> 专利护城河</div>
+      <div class="ticker-item">流媒体 <span>·</span> 技术颠覆</div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-num">100</div>
+    <div class="hero-eyebrow">Ethan's Lab · Series 03</div>
+    <h1 class="hero-title">行业<em>演化</em><br>100讲</h1>
+    <p class="hero-subtitle">
+      每个行业都是一个生命体。<br>
+      把它放上解剖台，切开它——<br>
+      看权力如何流动，钱在哪里聚集，颠覆从哪里生长。
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">100</span>
+        <span class="stat-label">行业解剖</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">7K+</span>
+        <span class="stat-label">字/讲</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">6</span>
+        <span class="stat-label">演化模式</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">7</span>
+        <span class="stat-label">底层定律</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATTERNS -->
+  <div class="section-header" id="patterns">
+    <div>
+      <div class="section-label">核心框架</div>
+      <h2 class="section-title">六大演化模式</h2>
+    </div>
+    <div class="section-count">所有行业均归属其中一种或多种模式</div>
+  </div>
+
+  <div class="patterns-grid">
+    <div class="pattern-card">
+      <div class="pattern-num">模式 01</div>
+      <span class="pattern-icon">⚡</span>
+      <div class="pattern-name">垄断的诞生与瓦解</div>
+      <div class="pattern-desc">权力集中→反垄断→新垄断的永恒循环。</div>
+      <span class="pattern-tag">权力结构</span>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-num">模式 02</div>
+      <span class="pattern-icon">📈</span>
+      <div class="pattern-name">技术颠覆的S曲线</div>
+      <div class="pattern-desc">旧技术防御→新技术边缘生长→突然替代。</div>
+      <span class="pattern-tag">技术演化</span>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-num">模式 03</div>
+      <span class="pattern-icon">⛓</span>
+      <div class="pattern-name">资源诅咒与禀赋陷阱</div>
+      <div class="pattern-desc">天然优势如何变成长期枷锁。</div>
+      <span class="pattern-tag">结构性陷阱</span>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-num">模式 04</div>
+      <span class="pattern-icon">🕸</span>
+      <div class="pattern-name">平台化吞噬</div>
+      <div class="pattern-desc">中间层消失、价值链重构、租金提取。</div>
+      <span class="pattern-tag">平台经济</span>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-num">模式 05</div>
+      <span class="pattern-icon">⚖️</span>
+      <div class="pattern-name">监管套利与制度红利</div>
+      <div class="pattern-desc">行业如何在规则缝隙中生长。</div>
+      <span class="pattern-tag">制度博弈</span>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-num">模式 06</div>
+      <span class="pattern-icon">🎭</span>
+      <div class="pattern-name">文化编码</div>
+      <div class="pattern-desc">行业如何被社会意义塑造，又反塑造社会。</div>
+      <span class="pattern-tag">文化结构</span>
+    </div>
+  </div>
+
+  <!-- CATALOG -->
+  <div class="section-header" id="catalog">
+    <div>
+      <div class="section-label">完整目录</div>
+      <h2 class="section-title">100个行业，100个演化故事</h2>
+    </div>
+    <div class="section-count">按六大演化模式分组</div>
+  </div>
+
+  <!-- GROUP 1 -->
+  <section class="lecture-section">
+    <div class="group-header">
+      <span class="group-num">第一组</span>
+      <span class="group-title">平台与注意力经济</span>
+      <span class="group-count-badge">第 1—15 讲</span>
+    </div>
+
+    <a href="lectures/001.html" class="lecture-row">
+      <div class="lecture-num">001</div>
+      <div class="lecture-content">
+        <div class="lecture-title">互联网广告</div>
+        <div class="lecture-paradox">从「卖版面」到「卖人」——注意力如何被定价和交易</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div>
+      <div class="lecture-status"><span class="status-dot active">已解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">002</div>
+      <div class="lecture-content">
+        <div class="lecture-title">搜索引擎</div>
+        <div class="lecture-paradox">谷歌如何用「免费」建造了史上最大的收费站</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">003</div>
+      <div class="lecture-content">
+        <div class="lecture-title">社交媒体</div>
+        <div class="lecture-paradox">连接的承诺与监控的现实——Facebook的双重身份</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">004</div>
+      <div class="lecture-content">
+        <div class="lecture-title">短视频</div>
+        <div class="lecture-paradox">TikTok/抖音如何重写了注意力的分配规则</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">005</div>
+      <div class="lecture-content">
+        <div class="lecture-title">电商</div>
+        <div class="lecture-paradox">从货架到算法——零售权力的百年迁移</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">006</div>
+      <div class="lecture-content">
+        <div class="lecture-title">游戏</div>
+        <div class="lecture-paradox">从卖光盘到卖皮肤——游戏行业的三次商业模式革命</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">007</div>
+      <div class="lecture-content">
+        <div class="lecture-title">流媒体</div>
+        <div class="lecture-paradox">Netflix如何在10年内两次颠覆自己</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">008</div>
+      <div class="lecture-content">
+        <div class="lecture-title">音乐</div>
+        <div class="lecture-paradox">一个行业被数字化摧毁又重建的完整解剖</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">009</div>
+      <div class="lecture-content">
+        <div class="lecture-title">新闻媒体</div>
+        <div class="lecture-paradox">为什么「真相」变得越来越贵</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">010</div>
+      <div class="lecture-content">
+        <div class="lecture-title">出版</div>
+        <div class="lecture-paradox">亚马逊如何成为书籍行业的房东</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">011</div>
+      <div class="lecture-content">
+        <div class="lecture-title">外卖与本地生活</div>
+        <div class="lecture-paradox">美团/饿了么：平台如何把餐厅变成流量租客</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">012</div>
+      <div class="lecture-content">
+        <div class="lecture-title">网约车</div>
+        <div class="lecture-paradox">Uber的悖论：颠覆者如何成为新的剥削者</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">013</div>
+      <div class="lecture-content">
+        <div class="lecture-title">共享单车</div>
+        <div class="lecture-paradox">一个行业如何在18个月内从狂热到坟场</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-tech">资本泡沫</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row">
+      <div class="lecture-num">014</div>
+      <div class="lecture-content">
+        <div class="lecture-title">直播电商</div>
+        <div class="lecture-paradox">李佳琦现象的结构性解释——为什么是中国，为什么是现在</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+    <a class="lecture-row meta-row">
+      <div class="lecture-num">015</div>
+      <div class="lecture-content">
+        <div class="lecture-title">【暗线连接】注意力经济的七个共同真相</div>
+        <div class="lecture-paradox">元洞见 · 单讲无法呈现的系统图景</div>
+      </div>
+      <div class="lecture-pattern"><span class="pattern-pill pill-meta">元洞见</span></div>
+      <div class="lecture-status"><span class="status-dot">待解剖</span></div>
+    </a>
+  </section>
+
+  <!-- GROUP 2 -->
+  <section class="lecture-section">
+    <div class="group-header">
+      <span class="group-num">第二组</span>
+      <span class="group-title">能源与资源</span>
+      <span class="group-count-badge">第 16—28 讲</span>
+    </div>
+    <a class="lecture-row"><div class="lecture-num">016</div><div class="lecture-content"><div class="lecture-title">石油</div><div class="lecture-paradox">从洛克菲勒到OPEC——权力如何在国家与资本之间转移</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">017</div><div class="lecture-content"><div class="lecture-title">煤炭</div><div class="lecture-paradox">一个行业的慢死亡——技术、环保与政治的三重绞杀</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">018</div><div class="lecture-content"><div class="lecture-title">天然气</div><div class="lecture-paradox">管道即权力——能源地缘政治的基础设施逻辑</div></div><div class="lecture-pattern"><span class="pattern-pill pill-resource">资源诅咒</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">019</div><div class="lecture-content"><div class="lecture-title">太阳能</div><div class="lecture-paradox">从政府补贴的婴儿到颠覆化石燃料的成年人</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">020</div><div class="lecture-content"><div class="lecture-title">锂与电池</div><div class="lecture-paradox">下一个石油？锂矿争夺战与新能源的资源诅咒</div></div><div class="lecture-pattern"><span class="pattern-pill pill-resource">资源诅咒</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">021</div><div class="lecture-content"><div class="lecture-title">钢铁</div><div class="lecture-paradox">百年工业之王的衰落与中国的异军突起</div></div><div class="lecture-pattern"><span class="pattern-pill pill-resource">禀赋陷阱</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">022</div><div class="lecture-content"><div class="lecture-title">稀土</div><div class="lecture-paradox">中国如何用17种金属改变了全球供应链博弈</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">023</div><div class="lecture-content"><div class="lecture-title">水资源</div><div class="lecture-paradox">下一场战争的起点——水如何从公共品变成资产</div></div><div class="lecture-pattern"><span class="pattern-pill pill-resource">资源诅咒</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">024</div><div class="lecture-content"><div class="lecture-title">农业</div><div class="lecture-paradox">孟山都/拜耳如何把种子变成专利，把农民变成租客</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">025</div><div class="lecture-content"><div class="lecture-title">渔业</div><div class="lecture-paradox">公地悲剧的教科书案例——为什么海洋正在被吃空</div></div><div class="lecture-pattern"><span class="pattern-pill pill-resource">资源诅咒</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">026</div><div class="lecture-content"><div class="lecture-title">核能</div><div class="lecture-paradox">三次事故、一个梦想——核能为什么总是「未来的能源」</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">027</div><div class="lecture-content"><div class="lecture-title">电力</div><div class="lecture-paradox">从爱迪生到特斯拉到马斯克——电网的百年权力游戏</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row meta-row"><div class="lecture-num">028</div><div class="lecture-content"><div class="lecture-title">【暗线连接】资源行业的「诅咒结构」</div><div class="lecture-paradox">为什么越富有越危险</div></div><div class="lecture-pattern"><span class="pattern-pill pill-meta">元洞见</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+  </section>
+
+  <!-- GROUP 3 -->
+  <section class="lecture-section">
+    <div class="group-header">
+      <span class="group-num">第三组</span>
+      <span class="group-title">制造与供应链</span>
+      <span class="group-count-badge">第 29—42 讲</span>
+    </div>
+    <a class="lecture-row"><div class="lecture-num">029</div><div class="lecture-content"><div class="lecture-title">汽车</div><div class="lecture-paradox">福特流水线→丰田精益→特斯拉软件化——三次制造革命</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">030</div><div class="lecture-content"><div class="lecture-title">汽车后市场</div><div class="lecture-paradox">4S店的黄金时代为什么正在终结</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">031</div><div class="lecture-content"><div class="lecture-title">半导体</div><div class="lecture-paradox">台积电如何成为全球最不可替代的公司</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">032</div><div class="lecture-content"><div class="lecture-title">智能手机</div><div class="lecture-paradox">从诺基亚到苹果——一个行业如何在5年内完成权力交接</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">033</div><div class="lecture-content"><div class="lecture-title">快时尚</div><div class="lecture-paradox">Zara/H&M/SHEIN的三代进化——速度如何成为护城河</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">034</div><div class="lecture-content"><div class="lecture-title">奢侈品</div><div class="lecture-paradox">LVMH帝国的秘密——为什么越贵越好卖</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">035</div><div class="lecture-content"><div class="lecture-title">航空</div><div class="lecture-paradox">为什么航空公司总是在亏钱，却从未消失</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">036</div><div class="lecture-content"><div class="lecture-title">航运与集装箱</div><div class="lecture-paradox">一个铁箱子如何改变了全球化的物理结构</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">037</div><div class="lecture-content"><div class="lecture-title">化工</div><div class="lecture-paradox">从染料到炸药到农药——化工行业的黑暗起源与现代转型</div></div><div class="lecture-pattern"><span class="pattern-pill pill-resource">禀赋陷阱</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">038</div><div class="lecture-content"><div class="lecture-title">涂料与特种化学品</div><div class="lecture-paradox">阿克苏诺贝尔/立邦/宣伟——一个「无聊」行业的权力结构</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">039</div><div class="lecture-content"><div class="lecture-title">物流与快递</div><div class="lecture-paradox">顺丰/京东/菜鸟——最后一公里的战争</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">040</div><div class="lecture-content"><div class="lecture-title">机器人与自动化</div><div class="lecture-paradox">工厂里的「失业制造机」——自动化如何重塑劳动关系</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">041</div><div class="lecture-content"><div class="lecture-title">新能源汽车</div><div class="lecture-paradox">比亚迪垂直整合 vs 特斯拉软件定义——两种颠覆路径</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row meta-row"><div class="lecture-num">042</div><div class="lecture-content"><div class="lecture-title">【暗线连接】制造业的「微笑曲线」</div><div class="lecture-paradox">为什么中间总是最薄</div></div><div class="lecture-pattern"><span class="pattern-pill pill-meta">元洞见</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+  </section>
+
+  <!-- GROUP 4 -->
+  <section class="lecture-section">
+    <div class="group-header">
+      <span class="group-num">第四组</span>
+      <span class="group-title">金融与资本</span>
+      <span class="group-count-badge">第 43—55 讲</span>
+    </div>
+    <a class="lecture-row"><div class="lecture-num">043</div><div class="lecture-content"><div class="lecture-title">投资银行</div><div class="lecture-paradox">高盛如何成为「做空世界的机器」</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">044</div><div class="lecture-content"><div class="lecture-title">保险</div><div class="lecture-paradox">风险的定价与道德风险——保险行业的根本悖论</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">045</div><div class="lecture-content"><div class="lecture-title">房地产</div><div class="lecture-paradox">土地、金融与政治的三角共谋</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">046</div><div class="lecture-content"><div class="lecture-title">加密货币</div><div class="lecture-paradox">从比特币到FTX崩塌——一场「去中心化」的中心化闹剧</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">047</div><div class="lecture-content"><div class="lecture-title">支付</div><div class="lecture-paradox">支付宝/微信支付如何把银行变成管道</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">048</div><div class="lecture-content"><div class="lecture-title">风险投资</div><div class="lecture-paradox">硅谷VC的权力游戏——谁在决定哪些未来值得被投资</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">049</div><div class="lecture-content"><div class="lecture-title">私募股权</div><div class="lecture-paradox">杠杆收购的逻辑——PE如何用债务重塑企业</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">050</div><div class="lecture-content"><div class="lecture-title">评级机构</div><div class="lecture-paradox">穆迪/标普如何给次贷危机盖章——利益冲突的制度化</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">051</div><div class="lecture-content"><div class="lecture-title">消费金融</div><div class="lecture-paradox">花呗/信用卡/现金贷——债务如何被包装成「生活方式」</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">052</div><div class="lecture-content"><div class="lecture-title">财富管理</div><div class="lecture-paradox">为什么大多数基金经理跑不赢指数，却还能收管理费</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">053</div><div class="lecture-content"><div class="lecture-title">央行与货币政策</div><div class="lecture-paradox">美联储如何成为全球最有权力的机构之一</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">054</div><div class="lecture-content"><div class="lecture-title">金融科技</div><div class="lecture-paradox">Fintech的承诺与现实——颠覆者如何被收编</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row meta-row"><div class="lecture-num">055</div><div class="lecture-content"><div class="lecture-title">【暗线连接】金融行业的「信息不对称」</div><div class="lecture-paradox">为什么金融总是在制造雾</div></div><div class="lecture-pattern"><span class="pattern-pill pill-meta">元洞见</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+  </section>
+
+  <!-- GROUP 5 -->
+  <section class="lecture-section">
+    <div class="group-header">
+      <span class="group-num">第五组</span>
+      <span class="group-title">健康、教育与人类服务</span>
+      <span class="group-count-badge">第 56—70 讲</span>
+    </div>
+    <a class="lecture-row"><div class="lecture-num">056</div><div class="lecture-content"><div class="lecture-title">制药</div><div class="lecture-paradox">专利悬崖、孤儿药与「救命药为什么这么贵」</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">057</div><div class="lecture-content"><div class="lecture-title">医疗器械</div><div class="lecture-paradox">美敦力/强生——医疗行业的隐形权力结构</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">058</div><div class="lecture-content"><div class="lecture-title">医院与医疗服务</div><div class="lecture-paradox">美国医疗体系为什么是全球最贵却不是最好的</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">059</div><div class="lecture-content"><div class="lecture-title">基因与生物技术</div><div class="lecture-paradox">CRISPR之后——当生命本身成为可编辑的产品</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">060</div><div class="lecture-content"><div class="lecture-title">健身与wellness</div><div class="lecture-paradox">Peloton的崛起与崩塌——健康焦虑如何被商业化</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">061</div><div class="lecture-content"><div class="lecture-title">K12教育</div><div class="lecture-paradox">双减政策的深层逻辑——教育行业的政治经济学</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">062</div><div class="lecture-content"><div class="lecture-title">高等教育</div><div class="lecture-paradox">常青藤的护城河——文凭为什么还值钱</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">063</div><div class="lecture-content"><div class="lecture-title">在线教育</div><div class="lecture-paradox">MOOC的承诺与失败——为什么教育最难被数字化</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">064</div><div class="lecture-content"><div class="lecture-title">咨询行业</div><div class="lecture-paradox">麦肯锡如何成为「建议的垄断者」</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">065</div><div class="lecture-content"><div class="lecture-title">律师行业</div><div class="lecture-paradox">法律服务为什么还没有被互联网颠覆</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">066</div><div class="lecture-content"><div class="lecture-title">心理咨询</div><div class="lecture-paradox">从弗洛伊德诊室到App——心理健康行业的商业化困境</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">067</div><div class="lecture-content"><div class="lecture-title">养老</div><div class="lecture-paradox">银发经济的真相——谁在从老龄化中获利</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">068</div><div class="lecture-content"><div class="lecture-title">宠物经济</div><div class="lecture-paradox">为什么人们愿意为宠物花比自己更多的钱</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">069</div><div class="lecture-content"><div class="lecture-title">食品与餐饮</div><div class="lecture-paradox">从农场到餐桌——食品供应链的权力地图</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row meta-row"><div class="lecture-num">070</div><div class="lecture-content"><div class="lecture-title">【暗线连接】人类服务行业的「信任悖论」</div><div class="lecture-paradox">越需要信任，越难建立信任</div></div><div class="lecture-pattern"><span class="pattern-pill pill-meta">元洞见</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+  </section>
+
+  <!-- GROUP 6 -->
+  <section class="lecture-section">
+    <div class="group-header">
+      <span class="group-num">第六组</span>
+      <span class="group-title">文化、奢侈与体验经济</span>
+      <span class="group-count-badge">第 71—85 讲</span>
+    </div>
+    <a class="lecture-row"><div class="lecture-num">071</div><div class="lecture-content"><div class="lecture-title">好莱坞与电影</div><div class="lecture-paradox">流媒体如何摧毁了院线的百年商业模式</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">072</div><div class="lecture-content"><div class="lecture-title">体育产业</div><div class="lecture-paradox">NBA/足球——体育如何成为全球最大的情感生意</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">073</div><div class="lecture-content"><div class="lecture-title">旅游与酒店</div><div class="lecture-paradox">Airbnb如何把每个家庭变成酒店，又引发了什么</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">074</div><div class="lecture-content"><div class="lecture-title">航天</div><div class="lecture-paradox">SpaceX如何打破国家对太空的垄断</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断瓦解</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">075</div><div class="lecture-content"><div class="lecture-title">烟草</div><div class="lecture-paradox">一个被全球围剿的行业，为什么还活得好好的</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">076</div><div class="lecture-content"><div class="lecture-title">酒精与饮料</div><div class="lecture-paradox">百威/可口可乐——品牌如何成为最深的护城河</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">077</div><div class="lecture-content"><div class="lecture-title">美妆与个护</div><div class="lecture-paradox">欧莱雅/资生堂——「美」的工业化与焦虑制造</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">078</div><div class="lecture-content"><div class="lecture-title">博彩与赌场</div><div class="lecture-paradox">合法赌博的政治经济学</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">079</div><div class="lecture-content"><div class="lecture-title">武器与国防</div><div class="lecture-paradox">洛克希德·马丁——军工复合体的运作逻辑</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">080</div><div class="lecture-content"><div class="lecture-title">时尚媒体</div><div class="lecture-paradox">Vogue/小红书——谁在定义「品味」</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">081</div><div class="lecture-content"><div class="lecture-title">艺术市场</div><div class="lecture-paradox">苏富比/佳士得——艺术如何成为避税工具</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">082</div><div class="lecture-content"><div class="lecture-title">音乐节与现场演出</div><div class="lecture-paradox">为什么数字时代，现场体验反而更值钱</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">083</div><div class="lecture-content"><div class="lecture-title">咖啡</div><div class="lecture-paradox">星巴克如何把一杯咖啡变成一种身份认同</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">084</div><div class="lecture-content"><div class="lecture-title">宗教经济</div><div class="lecture-paradox">寺庙/教会/新兴宗教——信仰如何被商业化</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row meta-row"><div class="lecture-num">085</div><div class="lecture-content"><div class="lecture-title">【暗线连接】文化行业的「意义溢价」</div><div class="lecture-paradox">为什么有些东西越无用越值钱</div></div><div class="lecture-pattern"><span class="pattern-pill pill-meta">元洞见</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+  </section>
+
+  <!-- GROUP 7 -->
+  <section class="lecture-section">
+    <div class="group-header">
+      <span class="group-num">第七组</span>
+      <span class="group-title">AI、科技与未来行业</span>
+      <span class="group-count-badge">第 86—100 讲</span>
+    </div>
+    <a class="lecture-row"><div class="lecture-num">086</div><div class="lecture-content"><div class="lecture-title">云计算</div><div class="lecture-paradox">AWS如何把服务器变成水电煤</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">087</div><div class="lecture-content"><div class="lecture-title">人工智能</div><div class="lecture-paradox">OpenAI之后——AI行业的权力结构正在如何形成</div></div><div class="lecture-pattern"><span class="pattern-pill pill-monopoly">垄断诞生</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">088</div><div class="lecture-content"><div class="lecture-title">数据经济</div><div class="lecture-paradox">数据是新石油？这个比喻哪里错了</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">089</div><div class="lecture-content"><div class="lecture-title">网络安全</div><div class="lecture-paradox">攻防的永恒循环——为什么安全行业永远有生意</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">090</div><div class="lecture-content"><div class="lecture-title">自动驾驶</div><div class="lecture-paradox">为什么「明年就能实现」说了十年</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">091</div><div class="lecture-content"><div class="lecture-title">无人机</div><div class="lecture-paradox">从军用到民用到快递——一项技术的商业化扩散路径</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">092</div><div class="lecture-content"><div class="lecture-title">元宇宙</div><div class="lecture-paradox">Meta的千亿豪赌——一个概念如何被资本吹大又刺破</div></div><div class="lecture-pattern"><span class="pattern-pill pill-culture">文化编码</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">093</div><div class="lecture-content"><div class="lecture-title">量子计算</div><div class="lecture-paradox">下一个半导体？还是下一个核聚变？</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">094</div><div class="lecture-content"><div class="lecture-title">生物制造</div><div class="lecture-paradox">用细胞工厂生产一切——合成生物学的产业化前景</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">095</div><div class="lecture-content"><div class="lecture-title">碳市场</div><div class="lecture-paradox">把大气层变成交易所——碳交易的逻辑与荒诞</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">096</div><div class="lecture-content"><div class="lecture-title">太空经济</div><div class="lecture-paradox">卫星互联网/太空采矿——下一个资源争夺战</div></div><div class="lecture-pattern"><span class="pattern-pill pill-resource">资源诅咒</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">097</div><div class="lecture-content"><div class="lecture-title">AI Agent经济</div><div class="lecture-paradox">当AI开始自主完成任务——中间层的第二次消失</div></div><div class="lecture-pattern"><span class="pattern-pill pill-platform">平台化吞噬</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">098</div><div class="lecture-content"><div class="lecture-title">长寿经济</div><div class="lecture-paradox">如果人类可以活到150岁，哪些行业会被颠覆</div></div><div class="lecture-pattern"><span class="pattern-pill pill-tech">技术颠覆</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row"><div class="lecture-num">099</div><div class="lecture-content"><div class="lecture-title">去全球化经济</div><div class="lecture-paradox">供应链回流、贸易壁垒——逆全球化如何重塑行业版图</div></div><div class="lecture-pattern"><span class="pattern-pill pill-regulation">监管套利</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+    <a class="lecture-row meta-row"><div class="lecture-num">100</div><div class="lecture-content"><div class="lecture-title">【终章】所有行业演化的七个底层定律</div><div class="lecture-paradox">大暗线揭示 · 从99个行业蒸馏出的系统性真相</div></div><div class="lecture-pattern"><span class="pattern-pill pill-meta">元洞见</span></div><div class="lecture-status"><span class="status-dot">待解剖</span></div></a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Ethan's Lab · Industry Evolution · Series 03</div>
+    <div class="footer-meta">100讲 · 700,000字 · 6演化模式 · 7底层定律</div>
+  </footer>
+
+</body>
+</html>

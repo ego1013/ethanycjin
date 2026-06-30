@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 34 · Day 1 · 叙事者 · 《未来简史》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        /* Role intro */
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        /* Body text */
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        /* Scene opening block */
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Compare grid */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* Concept cards */
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        /* Bias tag */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Tension question */
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        /* Footer nav */
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第34周 · 第1天</span>
+    </nav>
+
+    <!-- Badge -->
+    <div class="week-badge">📚 Week 34 · Day 1 · 2026-11-23</div>
+
+    <!-- Book title area -->
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">未来简史</div>
+        <div class="book-author">尤瓦尔·赫拉利 <span>Yuval Noah Harari</span></div>
+    </div>
+
+    <!-- Role intro -->
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲赫拉利是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <!-- Opening scene -->
+    <h2>那个在耶路撒冷问"人类未来是什么"的年轻教授</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 2011年，耶路撒冷希伯来大学</div>
+        <p>2011年，耶路撒冷希伯来大学历史系的一间办公室里，一位三十多岁的年轻教授正在整理他的讲义。他教授的是"世界历史"——一个听起来宏大而空洞的科目。但在他手中，这门课变成了对人类整体命运的追问。</p>
+        <p>这位教授叫尤瓦尔·赫拉利。他1976年出生于以色列海法，成长于一个世俗的犹太家庭。他的早年经历没有什么特别——一个聪明的学生，对科学和历史充满好奇，在牛津大学获得中世纪军事史博士学位，然后回到希伯来大学教书。</p>
+        <p>但赫拉利有一个不同寻常的视角：他不是一个专门研究某一时期或某一地区的历史学家，而是一个试图把人类作为一个<em>整体物种</em>来思考的宏观历史学者。他的问题不是"法国大革命为什么发生"，而是"智人如何成为地球的主宰"。</p>
+        <p>2011年，他开始在希伯来大学开设一门新课——"人类历史的未来"。这门课的讲义后来变成了两本书：2014年的《人类简史》（<em>Sapiens</em>）和2015年的《未来简史》（<em>Homo Deus</em>）。前者回望过去，后者眺望未来。而《未来简史》的野心更大：它要回答的不是"人类曾经是什么"，而是<em>"人类正在变成什么"</em>——或者更尖锐地说，"人类是否还需要存在"。</p>
+    </div>
+
+    <p>赫拉利在《未来简史》开篇提出了一个令人不安的命题：<strong>在21世纪，人类将面临一个前所未有的身份危机。</strong>过去几千年来，人类一直在为生存而奋斗——对抗饥荒、瘟疫和战争。但赫拉利认为，这三个问题在21世纪正在获得技术性解决。当人类不再为生存而挣扎时，"活着"本身的意义开始动摇。</p>
+
+    <p>更 radical 的命题紧随其后：当数据和算法能够比我们更了解自己的身体、情绪、偏好和决策模式时，<em>人类独特的价值是什么</em>？如果AI可以在医疗诊断上超越人类医生，在投资决策上超越人类分析师，在情感陪伴上超越人类伴侣——那么人类还剩下什么不可替代的功能？</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">40+</div>
+            <div class="data-label">种语言译本</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">1500万+</div>
+            <div class="data-label">全球销量</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">2015</div>
+            <div class="data-label">出版年份</div>
+        </div>
+    </div>
+
+    <!-- Person biography -->
+    <h2>赫拉利是谁：一个从军事史叛逃到宏观未来的"思想实验者"</h2>
+
+    <p>尤瓦尔·赫拉利1976年出生于以色列海法。他的学术训练是中世纪军事史——一个与"未来"几乎无关的领域。但正是这种看似遥远的背景，给了赫拉利一种独特的视角：他研究过十字军东征中的决策失误，研究过战争如何改变社会结构，研究过技术（如火药、骑兵）如何重新定义军事权力的分配。</p>
+
+    <p>2002年，他在牛津大学获得博士学位。博士论文研究的是中世纪军人的日常生活——不是英雄叙事，而是士兵们如何吃、如何睡、如何在战场上做出生死决策。这种<em>自下而上</em>的视角，后来成为了他写作的标志：他不讲帝王将相的故事，他讲<em>人类作为一个物种的集体命运</em>。</p>
+
+    <p>转折点发生在2000年代末。赫拉利开始阅读神经科学、进化生物学、人工智能和遗传学的文献。他意识到：历史学的问题正在与生物学和计算机科学的问题交汇。当基因编辑可以"设计"人类，当算法可以预测人类行为，当脑机接口可以重新定义"意识"——历史学家不能再只研究过去，必须开始思考未来。</p>
+
+    <div class="pull-quote">
+        "历史不是关于过去的学问。历史是关于变化的学问——而未来是变化最剧烈的地方。"
+    </div>
+
+    <p>2011年，赫拉利在希伯来大学开设了那门"人类历史的未来"课程。课程的受欢迎程度超出了他的预期。学生们不是来听"预测"的——他们是来听一个<em>框架</em>的，一个理解人类在技术革命中的位置的框架。赫拉利给了他们这个框架：从认知革命（7万年前）到农业革命（1.2万年前），到科学革命（500年前），再到正在发生的<em>数据革命</em>。</p>
+
+    <p>《人类简史》2014年出版后，迅速成为全球现象级畅销书。但赫拉利没有停留在过去。2015年的《未来简史》更直接地追问：如果人类解决了饥荒、瘟疫和战争，那么<em>人类的下一个议程是什么</em>？答案是：追求永生、追求幸福、追求成为"神人"（Homo Deus）——一个通过生物技术和数据算法实现自我升级的新物种。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1976</div>
+            <div class="timeline-text">生于以色列海法，成长于世俗犹太家庭</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2002</div>
+            <div class="timeline-text">牛津大学博士，研究中世纪军事史</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2000s末</div>
+            <div class="timeline-text">转向宏观历史和跨学科研究，阅读神经科学、AI、基因学</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2011</div>
+            <div class="timeline-text">在希伯来大学开设"人类历史的未来"课程</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2014</div>
+            <div class="timeline-text">出版《人类简史》（Sapiens），全球销量破千万</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2015</div>
+            <div class="timeline-text">出版《未来简史》（Homo Deus），直接追问人类的技术命运</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2018</div>
+            <div class="timeline-text">出版《今日简史》（21 Lessons），转向当下议题</div>
+        </div>
+    </div>
+
+    <!-- Time context -->
+    <h2>为什么是赫拉利：当历史遇见算法</h2>
+
+    <p>理解《未来简史》的位置，需要先理解它诞生时的时代背景。</p>
+
+    <p>2015年是一个关键年份。DeepMind的AlphaGo在2016年击败李世石，但2015年AI已经在图像识别、语音处理和自然语言理解上取得突破性进展。基因编辑技术CRISPR-Cas9在2012年被发现，到2015年已经开始应用于人类胚胎实验。脑机接口（Brain-Computer Interface）从科幻走向实验室。</p>
+
+    <p>赫拉利不是第一个讨论这些技术的人。但他的独特贡献是：他把这些技术放在一个<em>历史叙事</em>中，而不是一个<em>科技报道</em>中。他不问"AlphaGo用了多少层神经网络"，他问"当机器在越来越多的认知任务上超越人类，人类的主体性还剩下什么"。</p>
+
+    <p>《未来简史》的核心叙事框架是这样的：</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">人类时代（Homo Sapiens）</div>
+            <div class="compare-row">依靠叙事能力（虚构故事）组织大规模合作</div>
+            <div class="compare-row">通过工具和农业征服自然</div>
+            <div class="compare-row">以人类经验为价值中心</div>
+            <div class="compare-row">自由意志是核心信仰</div>
+            <div class="compare-row">生命意义来自内在体验</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">神人时代（Homo Deus）</div>
+            <div class="compare-row">数据和算法取代叙事成为合作基础</div>
+            <div class="compare-row">通过生物技术和AI升级自身</div>
+            <div class="compare-row">以数据流为价值中心</div>
+            <div class="compare-row">自由意志是过时的生物幻觉</div>
+            <div class="compare-row">生命意义由外部算法定义</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>科技决定论偏差</strong>：赫拉利的叙事常被批评为"技术决定论"——他假设技术会按自己的逻辑发展，人类只能适应或被淘汰。但技术史学者指出，技术发展方向深受政治、经济和社会选择的影响。AI不是"自然进化"出来的，它是被特定公司、政府和投资者选择的方向。赫拉利的框架可能低估了人类在技术选择中的能动性。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>西方中心叙事偏差</strong>：赫拉利自称写"人类"历史，但他的例子、数据和文化参照主要来自西方。当他说"人类解决了饥荒"时，他忽略了2026年仍有8亿人处于慢性饥饿。当他说"人类正在追求永生"时，他描述的是硅谷亿万富翁的抗衰老项目，而不是全球南方国家的生存挣扎。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>后见之明偏差</strong>：赫拉利在2015年的预测看起来很有远见，因为我们已经看到AI和基因编辑的快速发展。但预测未来的人总是同时做出大量正确和错误的预测。赫拉利预测了"无用阶级"（useless class）的崛起，但低估了人类在社会服务和创造性工作中持续的价值。我们不能因为他部分说中了，就认为他的整体框架是正确的。
+    </div>
+
+    <!-- Book's birth -->
+    <h2>一本书如何从学术讲义变成全球现象</h2>
+
+    <p>《未来简史》的出版过程本身就是21世纪出版业的一个案例。赫拉利最初用希伯来语写作，然后自己翻译成英语。他没有找大型出版社，而是先在网上发布了部分章节，测试读者反应。</p>
+
+    <p>书的结构非常清晰，三部分对应三个核心问题：人类的新议程（永生、幸福、神性）、人类的意义危机（自由意志的消亡、人类失去价值）、以及数据主义的崛起（当数据成为新的宗教）。</p>
+
+    <p>赫拉利的写作风格是：大量的事实、清晰的逻辑、令人不安的结论。他不喜欢哲学家的抽象思辨，他喜欢历史学家的证据和生物学家的数据。但当这些证据和数据指向一个哲学结论时——<em>人类可能不是宇宙的中心</em>——他的冷静叙述反而变得更具冲击力。</p>
+
+    <p>书中最具争议的部分是赫拉利对"自由意志"的否定。他认为，现代神经科学和心理学已经证明，人类的决策不是"自由"的，而是被基因、环境、文化和生物电信号决定的。如果这是对的，那么民主、人权、个人选择——这些建立在自由意志假设上的制度——将面临根本性挑战。</p>
+
+    <!-- Concept preview -->
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">神人 <span>Homo Deus</span></div>
+            <div class="concept-desc">通过生物技术和数据算法实现自我升级的人类新形态。不是传统的"神"，而是拥有"神一般"能力（永生、全知、全能）的升级人类。但问题是：这种升级会惠及全人类，还是只属于少数精英？</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">无用阶级 <span>Useless Class</span></div>
+            <div class="concept-desc">当AI和自动化在越来越多的领域超越人类，大量人类将失去经济和军事价值。"无用"不是道德判断，而是经济描述：当机器可以做得更好、更便宜，人类劳动不再被需要。这不是科幻，而是正在发生的结构性失业。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">数据主义 <span>Dataism</span></div>
+            <div class="concept-desc">一种新兴的价值体系：宇宙由数据流组成，生命的本质是数据处理。人类、动物、机器都是不同的数据处理系统。在数据主义看来，人类的体验不如数据重要，因为数据可以被精确测量和优化，而体验是主观和模糊的。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">自由意志的终结 <span>The End of Free Will</span></div>
+            <div class="concept-desc">赫拉利认为现代神经科学已经证明，人类的决策是基因、环境和神经电信号的产物，而不是"自由"的选择。如果人类没有自由意志，那么基于自由意志的民主、人权和个人责任制度将如何运转？</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">算法权威 <span>Algorithmic Authority</span></div>
+            <div class="concept-desc">当算法在医疗、法律、投资、教育等领域做出比人类更准确的决策时，人类将逐渐放弃自己的判断，转而服从算法的建议。这不是被迫的，而是"理性的"——因为算法确实更好。但这也意味着人类正在把决策权让渡给机器。</div>
+        </div>
+    </div>
+
+    <!-- Tension question -->
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果数据和算法将取代人类成为万物的主宰，那么"自由意志"是否还有意义？当AI能比我们更了解自己时，"选择"还是不是一种权利？</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+        <div class="footer-info">Week 34 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解数据主义与算法权威的逻辑链 →</div>
+    </div>
+
+    <!-- Page Nav -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w33-d05.html" style="color:#888;text-decoration:none;">← D05 · 摆渡人 W33</a>
+        <a href="./w34-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

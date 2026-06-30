@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第1讲 · 互联网广告 · 行业演化100讲</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0C0C0C;
+      --surface:   #141414;
+      --surface2:  #1C1C1C;
+      --border:    #262626;
+      --border2:   #333;
+      --gold:      #C8922A;
+      --gold-dim:  #8A6420;
+      --rust:      #B85C38;
+      --blue:      #5282B4;
+      --text:      #E2DDD6;
+      --text-dim:  #7A7570;
+      --text-faint:#3A3835;
+      --mono:      'Space Mono', monospace;
+      --sans:      'Space Grotesk', sans-serif;
+      --serif:     'Noto Serif SC', serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.3;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      height: 56px;
+      background: rgba(12,12,12,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .nav-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+      margin-top: 56px;
+      padding: 16px 40px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+    }
+    .breadcrumb a {
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb .sep { margin: 0 10px; color: var(--text-faint); }
+    .breadcrumb .current { color: var(--text); }
+
+    /* ── HERO ── */
+    .lecture-hero {
+      padding: 80px 40px 64px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .lecture-hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    .hero-bg-num {
+      position: absolute;
+      right: -20px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--mono);
+      font-size: 280px;
+      font-weight: 700;
+      color: var(--text-faint);
+      opacity: 0.12;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 32px; height: 1px;
+      background: var(--gold);
+    }
+    .lecture-hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+      position: relative; z-index: 1;
+      max-width: 800px;
+      margin-bottom: 16px;
+    }
+    .lecture-hero h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--rust);
+      font-style: italic;
+      position: relative; z-index: 1;
+      max-width: 640px;
+      line-height: 1.6;
+      padding-left: 20px;
+      border-left: 2px solid var(--rust);
+    }
+    .hero-meta {
+      margin-top: 32px;
+      display: flex; gap: 24px; flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 4px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      border-radius: 2px;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 64px 40px 80px;
+    }
+
+    .chapter-divider {
+      margin: 64px 0 48px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .chapter-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .chapter-label::before {
+      content: '';
+      display: inline-block;
+      width: 16px; height: 1px;
+      background: var(--gold);
+    }
+    .chapter-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .chapter-subtitle {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    .content p {
+      margin-bottom: 1.5em;
+      color: var(--text);
+      line-height: 1.9;
+    }
+    .content strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .content em {
+      color: var(--rust);
+      font-style: italic;
+    }
+
+    .quote-block {
+      margin: 32px 0;
+      padding: 24px 28px;
+      background: var(--surface);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 4px 4px 0;
+    }
+    .quote-block p {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 0;
+    }
+    .quote-block .source {
+      margin-top: 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+    }
+
+    .insight-box {
+      margin: 32px 0;
+      padding: 20px 24px;
+      background: rgba(200,146,42,0.05);
+      border: 1px solid rgba(200,146,42,0.2);
+      border-radius: 4px;
+    }
+    .insight-box .insight-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .insight-box p {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 0;
+    }
+
+    .collision-box {
+      margin: 32px 0;
+      padding: 24px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+    }
+    .collision-box .collision-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--blue);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .collision-formula {
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .collision-term {
+      font-size: 14px;
+      color: var(--text);
+      padding: 4px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+    .collision-x {
+      font-family: var(--mono);
+      font-size: 16px;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .collision-result {
+      font-size: 14px;
+      color: var(--text-dim);
+      font-style: italic;
+      line-height: 1.7;
+    }
+
+    .anchor-box {
+      margin: 32px 0;
+      padding: 24px;
+      background: rgba(184,92,56,0.05);
+      border: 1px solid rgba(184,92,56,0.2);
+      border-radius: 4px;
+    }
+    .anchor-box .anchor-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--rust);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .anchor-box p {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.7;
+    }
+    .anchor-box p:last-child { margin-bottom: 0; }
+
+    /* ── SUMMARY CARD ── */
+    .summary-card {
+      margin: 64px 0;
+      padding: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      position: relative;
+    }
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--rust), transparent);
+    }
+    .summary-card h3 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px 24px;
+      font-size: 14px;
+    }
+    .summary-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-faint);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding-top: 2px;
+    }
+    .summary-val {
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── PRIVATE NOTE ── */
+    .private-note {
+      margin: 48px 0;
+      padding: 32px;
+      background: var(--surface2);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 4px 4px 0;
+    }
+    .private-note .note-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .private-note p {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.9;
+    }
+
+    /* ── DARK LINE INDEX ── */
+    .darkline-index {
+      margin: 48px 0;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    .darkline-index h4 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .darkline-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .darkline-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    .lecture-footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-nav {
+      display: flex; gap: 24px;
+    }
+    .footer-nav a {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-nav a:hover { color: var(--gold); }
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .breadcrumb { padding: 12px 20px; }
+      .lecture-hero { padding: 60px 20px 48px; }
+      .content { padding: 48px 20px 60px; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .lecture-footer { padding: 24px 20px; flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="../../" class="nav-logo">Ethan's Lab · 行业演化</a>
+    <div class="nav-meta">第1讲 / 100讲</div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="../../">Ethan's Lab</a>
+    <span class="sep">/</span>
+    <a href="../">行业演化100讲</a>
+    <span class="sep">/</span>
+    <span class="current">第1讲 · 互联网广告</span>
+  </div>
+
+  <!-- HERO -->
+  <section class="lecture-hero">
+    <div class="hero-bg-num">001</div>
+    <div class="hero-eyebrow">第一组 · 平台与注意力经济 · 第1讲</div>
+    <h1>从「卖版面」到「卖人」<br>——注意力如何被<em>定价</em>和交易</h1>
+    <div class="hero-subtitle">
+      你以为互联网广告是关于「传播」的——<br>
+      但它真正是关于「让人类行为变得可预测」的工业化工程。
+    </div>
+    <div class="hero-meta">
+      <span class="hero-tag">平台化吞噬</span>
+      <span class="hero-tag">注意力经济</span>
+      <span class="hero-tag">程序化购买</span>
+      <span class="hero-tag">≥7000字</span>
+    </div>
+  </section>
+
+  <!-- CONTENT -->
+  <article class="content">
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 开场 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="chapter-divider">
+      <div class="chapter-label">开场 · 解剖学家的第一刀</div>
+    </div>
+
+    <p>2007年11月6日，谷歌的股价首次突破700美元。同一天，《纽约时报》的市值跌到了23亿美元——还不到它十年前的一半。这两个数字之间的关系，不是巧合，而是<strong>因果</strong>。</p>
+
+    <p>你以为互联网广告是一个「传播行业」——帮品牌把信息送到消费者面前。错了。互联网广告的本质，是一场关于<strong>人类注意力的工业化提取</strong>。它不是媒体的延续，它是媒体的终结者。它不是广告的进化，它是广告的物种替代。</p>
+
+    <p>更精确地说：互联网广告是人类历史上第一个<em>把人的行为本身变成可交易商品</em>的工业体系。在这个系统里，你不是用户，你是原材料；你的注意力不是被「吸引」的，而是被「开采」的；你的每一次点击、每一次停留、每一次犹豫，都已经被定了价。</p>
+
+    <p>而这整件事最精妙的地方在于：它是以「免费」的名义完成的。</p>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 第一章 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="chapter-divider">
+      <div class="chapter-label">第一章 · 禀赋解剖</div>
+      <div class="chapter-title">这个行业是在什么土壤里长出来的？</div>
+    </div>
+
+    <p><strong>地理与技术禀赋：为什么是美国，为什么是1990年代末</strong></p>
+
+    <p>互联网广告的诞生需要三个条件同时满足：一个已经高度成熟的广告产业（提供了需求侧）、一个快速普及的新媒介（提供了供给侧）、以及一个对「信息自由流动」有意识形态迷信的社会（提供了监管真空）。1990年代末的美国，精确地同时满足了这三个条件。</p>
+
+    <p>1994年10月27日，AT&T在HotWired.com上投放了人类历史上第一个横幅广告（Banner Ad）。那个468×60像素的小方块写着："Have you ever clicked your mouse right HERE? You will."——44%的人点了。这个数字今天看来像天方夜谭（今天Banner广告的平均点击率是0.05%），但它揭示了一个转瞬即逝的<strong>规则真空</strong>：在一个全新的媒介上，旧的定价规则还没有形成，任何人都可以宣称自己的版面值天价。</p>
+
+    <p><strong>初始权力结构：谁是第一批受益者？</strong></p>
+
+    <p>最初的权力在<strong>内容网站</strong>手里。1990年代末，Yahoo!、AOL、MSN这些门户网站是互联网的入口，它们卖的是「版面」——本质上和报纸卖广告位没有区别。CPM（每千次展示成本）是定价单位，价格由网站流量决定。广告主买的是「可能被看到」的概率，就像买一块高速公路旁的广告牌。</p>
+
+    <p>这个阶段，互联网广告的权力结构和传统媒体几乎一样：<em>谁拥有注意力的入口，谁就拥有定价权</em>。</p>
+
+    <p>但这个结构存活了不到五年。</p>
+
+    <p><strong>「规则真空」意味着什么？</strong></p>
+
+    <p>1990年代末的互联网广告世界，没有标准化的效果衡量体系，没有第三方审计，没有隐私法规，甚至没有人确定「一次展示」到底怎么定义。在这种真空中，两件事同时发生：泡沫（因为无法证伪任何估值）和创新（因为没有规则阻止任何实验）。</p>
+
+    <p>2000年的互联网泡沫破裂，一夜之间消灭了数百家靠广告收入生存的网站。这次崩溃反而加速了行业进化：它证明了「卖版面」模式的脆弱性，为下一个阶段——「卖效果」——清理了舞台。</p>
+
+    <div class="anchor-box">
+      <div class="anchor-label">🎯 Ethan锚点</div>
+      <p>这个「规则真空→泡沫→崩溃→新规则形成」的循环，和你在字节跳动、腾讯广告看到的渠道政策调整有结构性的相似——每当平台改变计费规则或代理政策时，本质上就是在「重新填充规则真空」。字节2020年改oCPC竞价模型、腾讯广告从CPA到深度转化优化，每一次都是在重新定义「注意力的价格」。</p>
+    </div>
+
+    <p><strong>一个具体的创始故事：Overture的悲剧性贡献</strong></p>
+
+    <p>1998年，一家叫GoTo.com（后更名Overture）的公司发明了一样东西：<strong>搜索广告竞价排名</strong>。创始人Bill Gross的洞见极其简单——如果有人在搜索引擎里输入"花店"，那么向这个人展示花店广告，效果一定远好于向所有人展示花店广告。他让广告主对关键词出价，出价最高的排在最前面。</p>
+
+    <p>这是互联网广告史上最重要的发明。它把广告从「展示逻辑」（你的广告被多少人看到）变成了「意图逻辑」（你的广告在什么时候被看到）。但Overture犯了一个结构性错误：它没有自己的搜索引擎流量，只能依赖Yahoo!等合作伙伴。当谷歌在2002年推出AdWords——本质上是Overture模型的改良版——一切都结束了。谷歌既有流量（搜索引擎），又有竞价系统（AdWords），它同时拥有了注意力的「生产」和「销售」两端。</p>
+
+    <p>Overture最终被Yahoo!以16.3亿美元收购，然后被遗忘。但它留下的遗产——「用竞价机制让市场自己定价注意力」——成为了整个行业此后二十年的底层逻辑。</p>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 第二章 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="chapter-divider">
+      <div class="chapter-label">第二章 · 黄金时代的内部结构</div>
+      <div class="chapter-title">行业最辉煌时，权力是如何分配的？</div>
+    </div>
+
+    <p><strong>价值链图谱：谁在哪个环节赚钱</strong></p>
+
+    <p>2015-2020年是互联网广告的黄金时代。全球数字广告支出从1750亿美元增长到3780亿美元，年复合增长率超过16%。在这个价值链中，权力分配如下：</p>
+
+    <p><strong>第一层·注意力生产者（平台）</strong>——谷歌和Meta（Facebook）合计吃掉了全球数字广告收入的50-60%。谷歌2019年广告收入1348亿美元，净利润率约22%。Meta同年广告收入697亿美元，净利润率约34%。它们的护城河不是「用户多」，而是「数据多」——它们知道每个人在什么时候想要什么。</p>
+
+    <p><strong>第二层·注意力中间商（AdTech）</strong>——程序化购买生态链，包括DSP（需求方平台）、SSP（供给方平台）、DMP（数据管理平台）、Ad Exchange（广告交易所）。这一层的代表公司是The Trade Desk、Criteo、AppNexus（后被AT&T收购）。它们的利润率在15-25%之间，靠「匹配效率」赚钱——帮广告主在正确的时间找到正确的人。</p>
+
+    <p><strong>第三层·注意力分销商（代理商）</strong>——WPP、宏盟、阳狮、电通。传统4A代理商的利润率从黄金时代的15-20%被压缩到了8-12%。它们原本的核心能力是「创意」和「媒介议价」，但程序化购买让机器取代了媒介购买，而平台的自助投放工具让广告主可以绕过代理商。</p>
+
+    <p><strong>第四层·注意力原材料（内容创作者/媒体）</strong>——这是被压榨最严重的一层。新闻网站、博客、App开发者把用户注意力「贡献」给生态系统，但只能拿到最末端的分成。一个典型的程序化广告交易中，从广告主付出1块钱到媒体实际拿到手，中间要经过6-8个中间环节的「抽水」，媒体最终只能拿到30-40分。</p>
+
+    <div class="insight-box">
+      <div class="insight-label">关键数据</div>
+      <p>2020年，一项由英国广告主协会（ISBA）委托的研究发现：在程序化广告的供应链中，平均只有51%的广告主花费最终到达了媒体（即用户真正能看到广告的地方）。剩下的49%被各种中间商、技术费用、数据费用吃掉了。有15%甚至「去向不明」。</p>
+    </div>
+
+    <p><strong>护城河解剖：为什么谷歌和Meta无法被挑战</strong></p>
+
+    <p>互联网广告的护城河不是单一壁垒，而是<strong>三重锁定</strong>：</p>
+
+    <p>第一重：<strong>数据网络效应</strong>。用户越多→数据越多→广告越精准→广告主越多→产品越好→用户越多。这个循环一旦启动，后来者永远追不上数据差距。</p>
+
+    <p>第二重：<strong>生态锁定</strong>。广告主的投放系统、代理商的工具链、媒体的变现接口，全部围绕谷歌/Meta的API构建。切换成本不是金钱，是整个组织的工作流程。</p>
+
+    <p>第三重：<strong>注意力入口垄断</strong>。搜索（谷歌）、社交（Meta）、视频（YouTube，属于谷歌）——这三个入口覆盖了人类上网80%以上的时间。你不是在「选择」用谷歌，你是没有选择。</p>
+
+    <p><strong>行业「潜规则」</strong></p>
+
+    <p>黄金时代有几条不成文的规则，所有从业者都知道，但很少有人公开说：</p>
+
+    <p>第一，<em>效果归因是一场共谋</em>。所有平台都声称自己的广告「带来了转化」，但如果把所有平台声称的转化数加起来，会远超实际发生的交易数。"Last-click attribution"（最后一次点击归因）不是一个技术缺陷，而是一个被默许的制度性谎言——它让每个平台都能宣称功劳。</p>
+
+    <p>第二，<em>反欺诈是一场永远不会赢的战争</em>。行业估计全球广告欺诈每年约650亿美元（2023年数据），占总支出的约12%。但没有任何一方有动力真正消灭它——平台多卖了流量，中间商多收了费用，代理商完成了KPI，只有广告主在为虚假流量买单，而大多数广告主的内部团队也没有动力去证明自己花的钱是浪费的。</p>
+
+    <p>第三，<em>隐私保护是一种选择性道德</em>。行业口头上说尊重用户隐私，实际上一直在尽可能多地收集数据。这不是某家公司的恶意，而是商业模式的内在要求：广告定向的精度=数据的颗粒度。只要商业模式不变，「保护隐私」和「提升广告效果」永远是结构性矛盾。</p>
+
+    <div class="anchor-box">
+      <div class="anchor-label">🎯 Ethan锚点</div>
+      <p>你在腾讯广告做渠道绩效管理时，处理的正是这个价值链第三层的权力关系。代理商的ARPU、消耗、客户数——这些KPI背后的结构性真相是：代理商这个层级正在被「上游」（平台的自助工具）和「下游」（广告主的内部团队）两面挤压。你优化的不是一个「渠道」，而是一个正在被结构性消解的中间层。</p>
+      <p>而在字节跳动做代理政策时，你本质上参与了「平台如何重新定义中间商的角色」的规则制定——这和Overture发明竞价排名是同一个演化逻辑的不同阶段。</p>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 第三章 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="chapter-divider">
+      <div class="chapter-label">第三章 · 颠覆的解剖学</div>
+      <div class="chapter-title">破坏是从哪里开始的？为什么没有人看见？</div>
+    </div>
+
+    <p><strong>颠覆的起点：一封2004年的SEC文件</strong></p>
+
+    <p>2004年8月19日，谷歌在纳斯达克IPO，以85美元/股发行，筹资16.7亿美元。这本身不是颠覆——真正的颠覆在它的S-1文件里。在文件中，谷歌披露了一个让华尔街困惑的事实：它的收入几乎100%来自广告，但它没有一个销售团队去「卖」广告。广告主自己上来，自己出价，自己投放。</p>
+
+    <p>这是广告史上第一次出现<strong>「自助式」广告购买</strong>。在此之前，投放广告需要联系媒体销售、谈判价格、签订合同、等待排期。谷歌把这个流程压缩成了三步：开户、出价、上线。一个小商户可以用5美元/天开始投广告。</p>
+
+    <p>这个变化看起来只是「效率提升」，但它的深层含义是：<em>广告不再需要中间人了</em>。当你把广告购买变成一个API调用，代理商的「媒介购买」能力就失去了价值。</p>
+
+    <p><strong>为什么没人看见：旧行业的认知盲区</strong></p>
+
+    <p>传统广告行业在2005-2010年间犯了一个经典的「创新者的窘境」错误：它们看到了数字广告的增长，但把它理解为「新增的渠道」而不是「替代性的系统」。</p>
+
+    <p>具体来说，4A代理商的盲区在于三个假设：</p>
+
+    <p>假设一：「创意永远是核心价值」——但谷歌的搜索广告证明了，在用户有明确意图的时刻，一条简单的文字链比一支百万预算的TVC更有效。</p>
+
+    <p>假设二：「品牌广告和效果广告是两个世界」——但Facebook的精准定向证明了，一条广告可以同时实现品牌曝光和即时转化。「品效合一」不是营销术语，而是技术现实。</p>
+
+    <p>假设三：「广告主需要专业顾问」——但平台的AI优化系统证明了，机器在「选择对谁展示什么广告」这件事上，已经远超人类媒介策划师。</p>
+
+    <p><strong>颠覆者的初始优势</strong></p>
+
+    <p>谷歌和后来的Facebook绕过旧行业护城河的方式，是<strong>重新定义了「价值」的衡量单位</strong>：</p>
+
+    <p>旧行业卖的是「曝光」（CPM），谷歌卖的是「意图」（CPC/CPA）。这不是定价方式的区别，而是世界观的区别。在CPM世界里，广告是一种「概率游戏」——你花钱让100万人看到广告，期望其中1000人会购买。在CPC/CPA世界里，广告是一种「精准交易」——你只为那个「正在搜索你的产品」的人付费。</p>
+
+    <p>这意味着：广告预算的门槛从百万级降到了千元级，广告主的画像从「大品牌」扩展到了「街边花店」。这不是渐进式改良，这是市场本身的重新定义——从一个「奢侈品市场」变成了一个「大众市场」。</p>
+
+    <p><strong>旧行业的防御反应</strong></p>
+
+    <p>传统媒体和4A代理商的防御策略，回头看几乎每一步都是错的：</p>
+
+    <p>报纸们试图「把内容搬到网上」，但免费内容摧毁了付费订阅模式，而它们在线上获得的广告收入，远低于线下失去的。《纽约时报》从2006年到2012年广告收入下降了65%。</p>
+
+    <p>4A代理商试图「收购数字代理商」——WPP在2007-2015年间收购了数十家数字代理商，但发现它们的能力无法被整合到传统的组织结构中。数字广告需要的是工程师和数据科学家，而不是创意总监和客户经理。</p>
+
+    <p>电视台试图「用内容质量对抗」，但发现年轻用户的注意力正在不可逆转地向手机迁移。2010年美国成年人每天花在移动设备上的时间是24分钟，2020年变成了4小时16分钟。电视广告的黄金时代结束了，不是因为电视节目变差了，而是因为眼球去了别处。</p>
+
+    <p><strong>S曲线：转折点在哪里</strong></p>
+
+    <p>互联网广告颠覆传统广告的S曲线转折点，发生在<strong>2016年</strong>——这一年，全球数字广告支出首次超过电视广告支出。但回头看，真正的不可逆转点更早：2012年，Facebook上市并推出了News Feed广告。这个产品证明了一件事——社交信息流中可以无缝嵌入广告，用户甚至分不清什么是广告、什么是朋友的内容。这是广告形态的本质性变化：<em>广告不再是内容的「插入物」，而是内容本身</em>。</p>
+
+    <p><strong>差点失败的时刻</strong></p>
+
+    <p>一个反直觉的细节：Facebook在2012年IPO后的前6个月，股价从38美元跌到了17.55美元。华尔街的核心恐惧是：Facebook的用户正在大规模向手机迁移，但它还没有找到移动端的广告变现模式。当时的「移动广告」就是在小屏幕上放一个banner——体验极差，效果极差。</p>
+
+    <p>如果不是Sheryl Sandberg的团队在2012年下半年「赌命式」地推出了News Feed广告——一种和手机内容消费习惯完全融合的广告形态——Facebook可能真的会成为下一个MySpace。从2012年Q3到2013年Q3，Facebook移动广告收入从零增长到占总收入的49%。这可能是互联网广告史上最惊险的一次「存活」。</p>
+
+    <div class="collision-box">
+      <div class="collision-label">跨学科碰撞</div>
+      <div class="collision-formula">
+        <span class="collision-term">Shoshana Zuboff · 监控资本主义理论</span>
+        <span class="collision-x">×</span>
+        <span class="collision-term">互联网广告的效率进化</span>
+      </div>
+      <div class="collision-result">
+        核心悖论：广告行业追求的「精准」，在技术上等同于「监控」。当你把一个人的行为预测得越准确，你就越接近于「控制」而非「服务」。Zuboff称之为"行为修正"（behavioral modification）——广告不只是预测你的行为，它在塑造你的行为。你优化的每一个CTR，都是这台「行为修正机器」的一个微小齿轮。但——这不是道德控诉，而是结构性描述。这就是这个行业的运作逻辑。
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 第四章 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="chapter-divider">
+      <div class="chapter-label">第四章 · 权力重构</div>
+      <div class="chapter-title">谁赢了，谁输了，谁消失了</div>
+    </div>
+
+    <p><strong>新赢家画像</strong></p>
+
+    <p>赢家只有两类：<strong>拥有注意力入口的平台</strong>和<strong>掌握数据处理能力的技术公司</strong>。具体来说：</p>
+
+    <p>谷歌在2023年广告收入2378亿美元，占母公司Alphabet总收入的77%。它赢了不是因为搜索技术最好，而是因为它同时控制了搜索入口（Google Search）、视频入口（YouTube）、移动操作系统（Android，全球78%市场份额）和浏览器（Chrome，65%市场份额）。它是整个数字世界的「收费站管理员」。</p>
+
+    <p>Meta在2023年广告收入1319亿美元。它赢了不是因为社交产品最好，而是因为它拥有全球30亿人的社交图谱——这是人类历史上最完整的「谁认识谁、谁喜欢什么」的数据库。</p>
+
+    <p>还有一个被低估的赢家：<strong>亚马逊广告</strong>。2023年收入468亿美元，增速超过谷歌和Meta。它的优势在于：它拥有「最后一步」的数据——用户不只是搜索了什么，而是<em>买了什么</em>。在效果归因上，它是最「诚实」的平台，因为广告和购买发生在同一个生态系统里。</p>
+
+    <p><strong>旧行业的命运分类</strong></p>
+
+    <p><em>彻底消失</em>：地方报纸广告。美国报纸广告收入从2006年的494亿美元下降到2020年的89亿美元，跌幅82%。数千家地方报纸关闭。</p>
+
+    <p><em>缩小</em>：4A代理商集团。WPP、宏盟、阳狮的营收增长率从2010年代的8-12%降到了2020年代的2-4%。它们还活着，但已经从「不可或缺的中间人」变成了「可选的服务商」。</p>
+
+    <p><em>转型</em>：电视台。Discovery与Warner Bros合并成Warner Bros. Discovery，NBC孵化了Peacock流媒体——它们试图从「广告支撑的免费内容」转向「订阅+广告」的混合模式。但这条路的终点是成为「广告平台的内容供应商」，而非独立的广告渠道。</p>
+
+    <p><em>被收编</em>：数字原生代理商。大量独立的数字代理商被巨头收购——Omnicom收购Annalect，Publicis收购Epsilon——它们的「独立创新」能力在被整合后迅速消失。</p>
+
+    <p><strong>意外的受害者</strong></p>
+
+    <p>互联网广告的繁荣，出乎意料地伤害了一些看似无关的领域：</p>
+
+    <p><em>民主本身</em>。当新闻媒体失去广告收入来源，深度调查报道的资金被切断。美国「新闻荒漠」——没有任何本地新闻机构覆盖的区域——从2004年的0%增长到了2023年覆盖全国约20%的人口。没有新闻监督的地方，腐败增加了。</p>
+
+    <p><em>心理健康</em>。注意力经济的逻辑要求用户停留时间越长越好，这驱动了「上瘾性设计」——无限滚动、通知轰炸、推荐算法的多巴胺操控。青少年抑郁症发病率从2005年到2020年上升了约65%。</p>
+
+    <p><strong>意外的受益者</strong></p>
+
+    <p><em>中小商户</em>。在传统广告时代，一家街边花店做不起广告。但在谷歌/Meta的自助平台上，5美元/天就能开始投放。全球数百万小微企业第一次获得了「被看见」的能力。这可能是互联网广告唯一的、无可争议的正面贡献。</p>
+
+    <p><em>内容创作者经济</em>。YouTube的广告分成模式养活了超过200万全职创作者。TikTok/抖音的创作者基金虽然争议不断，但确实创造了一个全新的「个人媒体」阶层。</p>
+
+    <p><strong>新垄断的形成</strong></p>
+
+    <p>互联网广告行业完美诠释了一个定律：<em>每一次颠覆都以「去中心化」的名义开始，以「新中心化」的结果收场</em>。</p>
+
+    <p>谷歌打破了传统媒体的广告垄断——然后建立了搜索广告的垄断。Facebook打破了门户网站的流量垄断——然后建立了社交数据的垄断。它们都以「让广告更高效」为起点，以「让广告生态系统依赖我」为终点。</p>
+
+    <p>而这个新垄断比旧垄断更强大，因为它是<strong>数据驱动的</strong>。传统媒体的垄断是「稀缺性」垄断——频道有限、版面有限。数字广告的垄断是「效率」垄断——不是只有这一个选择，而是只有这一个选择的效果最好。后者更难被打破。</p>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 第五章 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="chapter-divider">
+      <div class="chapter-label">第五章 · 当下的断层线</div>
+      <div class="chapter-title">这个行业现在面临的最大张力是什么？</div>
+    </div>
+
+    <p><strong>结构性矛盾：隐私保护 vs. 精准定向</strong></p>
+
+    <p>互联网广告的商业模式建立在一个前提上：你可以免费追踪用户行为并据此定向投放。但这个前提正在被三股力量同时瓦解：</p>
+
+    <p>第一，<strong>监管</strong>。欧盟GDPR（2018）、中国《个人信息保护法》（2021）、美国各州隐私法——全球主要经济体都在建立数据保护框架。这不是「可能的趋势」，而是「已发生的现实」。</p>
+
+    <p>第二，<strong>平台自律（或说自保）</strong>。苹果在iOS 14.5中推出App Tracking Transparency（ATT），让用户可以选择不被追踪。结果：约75%的用户选择了拒绝。Meta因此在2022年宣称损失了约100亿美元广告收入。谷歌宣布将在Chrome中逐步淘汰第三方Cookie（虽然一再推迟）。</p>
+
+    <p>第三，<strong>用户觉醒</strong>。越来越多的用户安装广告拦截工具（全球约8亿用户）、使用隐私浏览器、删除社交媒体账号。「注意力提取」模式正在遇到其对象——人类——的主动反抗。</p>
+
+    <p><strong>三个可能的未来场景</strong></p>
+
+    <p><em>乐观场景</em>：行业完成从「监控广告」到「上下文广告」的转型。广告不再依赖个人数据，而是依赖内容语境（你在看什么）和群体模式（和你类似的人喜欢什么）。这会降低广告的精度，但提高用户信任。</p>
+
+    <p><em>悲观场景</em>：巨头利用「隐私保护」作为新的护城河。苹果和谷歌以保护隐私为名，切断第三方的数据获取能力，但自己的「第一方数据」（用户在自家生态系统内的行为）不受影响。结果是：「隐私保护」反而加固了寡头垄断。这是正在发生的事。</p>
+
+    <p><em>意外场景</em>：AI Agent经济颠覆了「注意力」的概念本身。如果用户的购买决策越来越多地由AI助手代理——Ethan让AI去搜索、比较、购买——那么广告的目标就不再是人类的眼球，而是AI的决策模型。「注意力经济」让位于「AI说服经济」。这听起来科幻，但可能在5-10年内部分实现。</p>
+
+    <p><strong>行业内部的「定时炸弹」</strong></p>
+
+    <p>互联网广告有一个很少被讨论的结构性问题：<strong>效果衡量的「可信度危机」</strong>。</p>
+
+    <p>2017年，宝洁首席品牌官Marc Pritchard在一次行业会议上说了一句震动行业的话：「我们不知道我们花的钱有多少真正到达了消费者。」他随后削减了2亿美元数字广告预算，宝洁的销售额没有变化。</p>
+
+    <p>这揭示了一个可能性：数字广告的效果，可能被系统性地高估了。如果越来越多的大广告主得出同样的结论，整个行业的收入基础可能面临急剧收缩。</p>
+
+    <p><strong>中国视角：一条不同的演化路径</strong></p>
+
+    <p>中国互联网广告的演化有三个独特之处：</p>
+
+    <p>第一，<em>超级App的生态封闭</em>。微信、抖音、淘宝各自构建了「围墙花园」，广告和交易闭环在同一个App内完成。这和美国的「开放网络」模式完全不同——中国的广告系统更封闭，但转化路径更短。</p>
+
+    <p>第二，<em>直播电商的独特形态</em>。这是一种在全球其他市场都没有成功的模式——它本质上是把「广告」和「销售」融为一体，由一个人格化的KOL同时完成。李佳琦的一场直播=一个广告campaign+一个销售渠道+一次品牌事件。这在第14讲会详细解剖。</p>
+
+    <p>第三，<em>监管的深度介入</em>。2021年的「互联网反垄断」运动、《个人信息保护法》的严格执行、对算法推荐的监管——中国互联网广告面临的监管压力，从某些维度看比欧美更大。这迫使行业加速探索「无第三方数据」环境下的广告变现方式。</p>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 第六章 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="chapter-divider">
+      <div class="chapter-label">第六章 · Ethan的私人连接</div>
+      <div class="chapter-title">这个行业的演化，与你的职业经历有什么直接对话？</div>
+    </div>
+
+    <p>Ethan，你不是在「观察」互联网广告行业的演化——你在<strong>构成</strong>它。</p>
+
+    <p><strong>连接一：你站在「中间层消失」的断层线上</strong></p>
+
+    <p>你在字节跳动做代理政策管理时，设计的政策本质上是「平台如何与中间层共处」的规则。代理商拿到的佣金率、完成目标的奖励系数、逾期的惩罚机制——每一条政策都是平台在回答一个问题：「我还需要这个中间层吗？如果需要，它值多少钱？」</p>
+
+    <p>你现在在腾讯广告管理K1 Frame渠道的消耗数据。那些你每周追踪的ARPU、客户数、消耗环比——它们背后的结构性故事是：这个中间层的「价值密度」在不断被平台重新评估。当你发现K1渠道消耗同比-18%时，你看到的不只是一个数字，而是平台对中间层「价值重估」的信号。</p>
+
+    <p><strong>连接二：你亲历了「效果归因的制度性模糊」</strong></p>
+
+    <p>你管理代理商绩效时，一定遇到过这个问题：代理商声称的「贡献」和平台系统记录的「归因」经常不一致。不同代理商服务同一个客户，都宣称是自己促成了转化。这不是谁在撒谎——这是效果归因系统本身的结构性缺陷。你日常处理的，正是这个行业最核心的「信任问题」的微观表现。</p>
+
+    <p><strong>一个具体的场景</strong></p>
+
+    <p>想象你周一早上打开消耗数据报表：美护行业的代理商A，上周消耗环比下降了12%，但客户数增加了3个。你需要判断这意味着什么——是客户质量下降（每个客户花的钱更少了）？还是代理商在冲客户数但没有做好留存？还是行业整体淡季？</p>
+
+    <p>你做的这个判断，微观上是「渠道管理」，宏观上是在回答第二章讨论的问题：中间层的价值在哪里？如果一个代理商只能带来「量」但不能带来「质」（高消耗客户），那它在这条价值链上的位置就是脆弱的。</p>
+
+    <p><strong>迁移：这个行业的演化逻辑如何帮你理解现在的工作？</strong></p>
+
+    <p>如果你把「K1渠道管理」放在本讲的框架里重新理解：</p>
+
+    <p>你管理的是一个<strong>正在被结构性压缩的中间层</strong>。平台（腾讯广告）的自助投放工具越来越强大，广告主绕过代理商直接投放的趋势不可逆转。代理商要证明自己的存在价值，就必须从「帮客户投广告」（这件事机器越来越擅长）转向「帮客户理解自己需要什么」（这件事仍然需要人）。</p>
+
+    <p>你的工作——追踪数据、分析异常、判断趋势——本质上是在为「中间层的价值重新定义」提供情报。你是这场结构性变化的观测者，也是参与者。</p>
+
+    <div class="insight-box">
+      <div class="insight-label">一个问题</div>
+      <p>如果你是2005年的传统广告代理商CEO，你已经看到了谷歌的崛起和数字化的浪潮。你会在哪个节点做出不同的选择？是早期全面转型数字化，还是保持创意能力同时建立自己的技术栈？还是直接变成一家技术公司？——这个问题的答案，可能帮你理解当前代理商们面临的战略选择。</p>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 暗线索引 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="darkline-index">
+      <h4>暗线索引</h4>
+      <div class="darkline-item">
+        <div class="darkline-dot"></div>
+        <span><strong>本讲主演化模式：</strong>平台化吞噬——注意力从分散的媒体被集中到平台手中，价值链中间层被系统性压缩</span>
+      </div>
+      <div class="darkline-item">
+        <div class="darkline-dot"></div>
+        <span><strong>与以下讲次存在隐藏连接：</strong>第11讲·外卖平台（同样的「平台→中间商」租金提取逻辑）；第88讲·数据经济（注意力数据化的终极形态）；第9讲·新闻媒体（广告收入枯竭的连锁反应）；第97讲·AI Agent经济（注意力经济的可能终结者）</span>
+      </div>
+      <div class="darkline-item">
+        <div class="darkline-dot"></div>
+        <span><strong>本讲埋下的一个悬念：</strong>如果AI Agent代替人类做购买决策，广告的目标对象就不再是人而是算法——这个可能性，将在第97讲被完整展开</span>
+      </div>
+      <div class="darkline-item">
+        <div class="darkline-dot"></div>
+        <span><strong>如果你只能记住一件事：</strong>互联网广告行业的本质不是「帮品牌被看见」，而是「让人类行为变得可预测」的工业化系统——理解这一点，你就理解了它所有演化的驱动力</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 解剖卡片 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="summary-card">
+      <h3>📌 解剖卡片（可截图保存）</h3>
+      <div class="summary-grid">
+        <div class="summary-key">行业禀赋</div>
+        <div class="summary-val">成熟广告产业 + 新媒介爆发 + 监管真空</div>
+
+        <div class="summary-key">黄金时代护城河</div>
+        <div class="summary-val">数据网络效应 × 生态锁定 × 注意力入口垄断（三重锁定）</div>
+
+        <div class="summary-key">颠覆来源</div>
+        <div class="summary-val">搜索竞价排名（Overture/Google）→ 自助投放 → 程序化购买 → 信息流广告</div>
+
+        <div class="summary-key">权力重构结果</div>
+        <div class="summary-val">平台双寡头（Google+Meta占60%）赢；传统媒体、4A代理商输；中小商户意外受益</div>
+
+        <div class="summary-key">当下断层线</div>
+        <div class="summary-val">隐私保护 vs. 精准定向 — 效果归因可信度危机 — AI Agent可能颠覆注意力概念本身</div>
+
+        <div class="summary-key">核心悖论</div>
+        <div class="summary-val">广告行业追求的「精准」= 对人类行为的「监控」；以「免费」的名义完成了史上最大规模的注意力工业化提取</div>
+
+        <div class="summary-key">跨学科碰撞</div>
+        <div class="summary-val">监控资本主义理论 × 广告效率进化 = 行为修正工业</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- 私人笔记 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="private-note">
+      <div class="note-label">💎 解剖学家的私人笔记</div>
+      <p>这个行业让我不舒服的地方是：它把「让人类行为更可预测」包装成了「让广告更高效」。这两个描述指向同一件事，但前者是反乌托邦，后者是商业进步。我们选择用后者来讲述这个故事，是因为我们大多数人都在这条食物链上——包括我，包括你。</p>
+      <p>但更让我不舒服的是：即使你看清了这个结构，你也无法退出。因为这不是一个可以选择不参与的游戏。你的注意力已经被定了价，无论你是否同意。你能做的不是退出，而是理解你在这台机器里的位置——然后判断，你是否还愿意继续推动这个齿轮。</p>
+      <p>大多数人误解这个行业的地方是：他们以为广告行业的客户是广告主。错了。广告行业的产品是用户——你。广告主是买家，平台是卖家，而你，是货架上的商品。只是这个货架是透明的，商品自己不知道自己在被卖。</p>
+    </div>
+
+  </article>
+
+  <!-- FOOTER -->
+  <div class="lecture-footer">
+    <div class="footer-nav">
+      <a href="../">← 返回目录</a>
+      <a href="002.html">下一讲：搜索引擎 →</a>
+    </div>
+    <div class="footer-copy">Ethan's Lab · 行业演化100讲 · &copy; 2026</div>
+  </div>
+
+</body>
+</html>

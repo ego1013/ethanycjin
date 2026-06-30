@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 25 · Day 1 · 叙事者 · 《规训与惩罚》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .week-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-title-area {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .book-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: -apple-system, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 0.4rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .book-author span { color: var(--accent); }
+
+        .role-intro {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.125rem;
+            margin-bottom: 2.5rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .role-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .role-name { color: var(--accent); font-weight: 600; }
+        .role-desc { color: var(--text-muted); margin-top: 0.1rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 0.97rem;
+            color: var(--text);
+        }
+
+        em {
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        .scene-block {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .scene-block p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 0;
+            line-height: 2;
+        }
+
+        .scene-block .scene-label {
+            font-size: 0.68rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 1px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.83rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.165rem;
+            top: 0.4rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .timeline-year {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-text {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.82rem;
+        }
+
+        .compare-col {
+            background: var(--surface);
+            padding: 1.125rem 1.25rem;
+        }
+
+        .compare-col.left .col-header { color: #6fb5e0; }
+        .compare-col.right .col-header { color: var(--accent); }
+
+        .col-header {
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.875rem;
+        }
+
+        .compare-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .compare-row::before {
+            content: '—';
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .concept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .concept-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .concept-name span {
+            font-size: 0.72rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+
+        .concept-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .tension-block {
+            background: rgba(226, 163, 85, 0.05);
+            border: 1px solid rgba(226, 163, 85, 0.25);
+            border-radius: 0.625rem;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .tension-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .tension-q {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.65;
+        }
+
+        .page-footer {
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .footer-info {
+            color: var(--text-muted);
+        }
+
+        .footer-next {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .pull-quote {
+            border-left: 2px solid var(--border-light);
+            padding: 0.5rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-style: italic;
+            line-height: 1.9;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第25周 · 第1天</span>
+    </nav>
+
+    <div class="week-badge">📚 Week 25 · Day 1 · 2026-09-21</div>
+
+    <div class="book-title-area">
+        <div class="book-label">本周精读</div>
+        <div class="book-name">规训与惩罚</div>
+        <div class="book-author">米歇尔·福柯 <span>Michel Foucault</span></div>
+    </div>
+
+    <div class="role-intro">
+        <div class="role-icon">🎭</div>
+        <div>
+            <div class="role-name">叙事者 The Storyteller</div>
+            <div class="role-desc">用故事打开一本书。今天不给结论，只讲福柯是谁、这本书从哪里来。</div>
+        </div>
+    </div>
+
+    <h2>那个从监狱档案中看见权力真相的人</h2>
+
+    <div class="scene-block">
+        <div class="scene-label">开场 · 1975年，巴黎</div>
+        <p>1975年，巴黎的一家出版社出版了一部奇怪的书。它的开篇不是哲学论证，而是一份1757年的行刑记录——一位名叫达米安的刺客试图刺杀法国国王路易十五，被判处公开处决。记录描述了如何用烧红的铁钳撕裂他的肉体，如何在他伤口上浇熔化的铅，如何最后将他四马分尸。</p>
+        <p>书的作者没有评论这份记录的残忍。他只是把它放在那里，然后翻过一页，展示了一张80年后的建筑图纸——一座圆形监狱，中心有一个瞭望塔，周围是环形排列的囚室。每个囚室都面向中心，但囚室之间被墙壁隔开。这意味着：任何时刻，瞭望塔中的人都可以看见任何囚室，但囚室中的人看不见瞭望塔中的人。</p>
+        <p>这个建筑就是杰里米·边沁设计的<em>全景敞视监狱</em>（Panopticon）。书的作者用这两个图像——公开的酷刑和隐蔽的监视——来讲述一个关于权力的故事：<strong>权力如何从直接的、可见的暴力，转变为间接的、不可见的规训。</strong></p>
+        <p>这位作者就是<em>米歇尔·福柯</em>。这本书就是《<em>规训与惩罚</em>》（<em>Surveiller et Punir</em>）。它后来成为20世纪最具影响力的著作之一——不是因为它最系统地解释了权力，而是因为它最彻底地<em>颠覆了我们对权力的理解</em>。</p>
+    </div>
+
+    <p>福柯在《规训与惩罚》中追问的核心问题是：<em>权力是什么？</em>传统的政治理论把权力看作一种自上而下的压制——国王对臣民、国家对公民、老板对员工。权力是某个人或某个机构拥有的东西，可以被用来命令、惩罚和控制。</p>
+
+    <p>但福柯说：<strong>这不是权力的真实运作方式。</strong>权力不是某个人拥有的东西，而是一种<em>关系网络</em>——它渗透在社会的每一个毛细血管中，从监狱到工厂，从学校到医院，从军队到家庭。权力不是压制性的，而是<em>生产性的</em>——它生产知识、生产真理、生产我们认为是"正常"的一切。</p>
+
+    <div class="data-highlight">
+        <div class="data-item">
+            <div class="data-num">1975</div>
+            <div class="data-label">《规训与惩罚》出版</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">360</div>
+            <div class="data-label">度全景监视</div>
+        </div>
+        <div class="data-item">
+            <div class="data-num">50+</div>
+            <div class="data-label">年持续影响</div>
+        </div>
+    </div>
+
+    <h2>福柯是谁：一个从精神病院走进哲学史的叛逆者</h2>
+
+    <p>米歇尔·福柯1926年出生于法国普瓦捷的一个富裕医生家庭。他的童年被两种力量塑造：父亲的严厉期望和母亲的温柔关怀。青少年时期，他经历了严重的抑郁症，一度试图自杀。这段经历让他对<em>疯狂、边缘性和权力</em>产生了终身的兴趣。</p>
+
+    <p>1946年，福柯进入巴黎高等师范学院——法国哲学家的摇篮。他在那里结识了梅洛-庞蒂、阿尔都塞等思想家。但福柯从来不是传统意义上的哲学家。他的方法更接近<em>历史学家</em>——不是研究大事件和伟人，而是研究被忽视的档案、被压抑的声音、被边缘化的群体。</p>
+
+    <div class="pull-quote">
+        "我研究的不是权力的中心，而是权力的边缘。不是国王如何统治，而是疯子如何被监禁，罪犯如何被改造，病人如何被诊断。"
+    </div>
+
+    <p>1961年，福柯出版了《<em>疯癫与文明</em>》（<em>Folie et Déraison</em>），研究了西方社会对精神病人的态度变迁。1963年，出版了《<em>临床医学的诞生</em>》（<em>Naissance de la clinique</em>），分析了医学知识如何被权力塑造。1966年，出版了《<em>词与物</em>》（<em>Les Mots et les Choses</em>），提出了"知识型"（episteme）的概念——不同历史时期有不同的"真理规则"。</p>
+
+    <p>1970年，福柯被任命为法兰西学院"思想体系史"教授。在这个职位上，他继续研究权力与知识的关系。1975年，他出版了《规训与惩罚》——这本书的野心更大：不是研究某个特定领域（疯癫、医学），而是研究<em>权力本身如何在现代西方社会中运作</em>。</p>
+
+    <p>1984年，福柯因艾滋病在巴黎去世，享年57岁。他的去世本身具有讽刺意味——他研究了医学权力对边缘群体的控制，最终却成为医学权力的对象。他生前拒绝公开自己的病情，这与他关于" confession "（告白）是权力机制的理论形成了微妙的张力。</p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">1926</div>
+            <div class="timeline-text">生于法国普瓦捷，父亲是外科医生，童年严格而压抑</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1946</div>
+            <div class="timeline-text">进入巴黎高等师范学院；结识梅洛-庞蒂、阿尔都塞</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1961</div>
+            <div class="timeline-text">出版《疯癫与文明》，研究西方对精神病人的态度变迁</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1966</div>
+            <div class="timeline-text">出版《词与物》，提出"知识型"概念，成为国际学术明星</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1970</div>
+            <div class="timeline-text">被任命为法兰西学院教授，开始系统研究权力与知识</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1975</div>
+            <div class="timeline-text">出版《规训与惩罚》，分析现代权力的运作机制</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1976–1984</div>
+            <div class="timeline-text">转向"性史"研究，提出"生命权力"（biopower）概念</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">1984</div>
+            <div class="timeline-text">因艾滋病在巴黎去世；其思想在去世后继续影响全球学术界</div>
+        </div>
+    </div>
+
+    <h2>为什么是福柯：从"权力压制"到"权力生产"的范式革命</h2>
+
+    <p>理解福柯的位置，需要先理解他颠覆了什么传统。从霍布斯到马克思，政治理论一直把权力看作一种<em>压制性力量</em>——权力阻止人们做某些事情，权力剥夺人们的自由，权力维护统治阶级的利益。</p>
+
+    <p>但福柯说：<strong>这只是一半的故事。</strong>权力的另一半是：权力不是压制，而是<em>生产</em>。权力生产知识（什么是"真理"），权力生产主体（什么是"正常"），权力生产社会（什么是"秩序"）。我们以为自己在追求自由，但我们的"自由"本身可能是权力精心设计的产物。</p>
+
+    <div class="compare-grid">
+        <div class="compare-col left">
+            <div class="col-header">传统权力观</div>
+            <div class="compare-row">权力是某些人拥有的东西</div>
+            <div class="compare-row">权力是压制性的（禁止、惩罚）</div>
+            <div class="compare-row">权力来自上级（国王、国家）</div>
+            <div class="compare-row">权力是负面的（剥夺自由）</div>
+            <div class="compare-row">目标：推翻压迫者获得自由</div>
+        </div>
+        <div class="compare-col right">
+            <div class="col-header">福柯</div>
+            <div class="compare-row">权力是一种关系网络</div>
+            <div class="compare-row">权力是生产性的（制造知识、主体）</div>
+            <div class="compare-row">权力无处不在（学校、医院、工厂）</div>
+            <div class="compare-row">权力是积极的（塑造行为）</div>
+            <div class="compare-row">目标：分析权力如何运作</div>
+        </div>
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>悲观主义偏差</strong>：福柯的理论常被批评为"过于悲观"——如果权力无处不在，那么反抗还有意义吗？如果"自由"也是权力的产物，那么追求自由是否只是权力的另一种游戏？但福柯本人拒绝被贴上"悲观主义者"的标签。他在晚年 interviews 中说："哪里有权力，哪里就有抵抗。"权力不是铁板一块，抵抗也不是徒劳的。但福柯没有系统地发展抵抗理论，这让他的追随者感到困惑。
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>历史决定论偏差</strong>：福柯的"考古学"方法强调历史的断裂和不连续性，但批评者认为他的分析过于依赖欧洲历史，忽略了其他文化中权力运作的不同方式。全景敞视监狱是欧洲的发明，但规训技术在其他文化中有不同的形式。福柯的"权力无处不在"是否只是"欧洲权力无处不在"？
+    </div>
+
+    <div class="bias-note">
+        ⚠️ <strong>概念膨胀偏差</strong>：福柯把"权力"的定义扩展得如此广泛，以至于几乎一切社会现象都可以被解释为权力运作。当"权力"意味着一切时，它可能意味着 nothing。福柯需要解释：什么<em>不是</em>权力？如果一切都被权力渗透，那么"抵抗"和"自由"如何可能？福柯的晚期著作试图回答这个问题，但答案不够清晰。
+    </div>
+
+    <h2>一本书如何从酷刑档案变成哲学革命</h2>
+
+    <p>《规训与惩罚》的结构本身就是一部权力史。第一部分"酷刑"分析了1757年达米安公开处刑的恐怖——权力通过展示身体来展示权威。第二部分"惩罚"分析了18世纪末的改革运动——人们开始认为酷刑是"野蛮的"，应该被更"人道"的惩罚取代。第三部分"规训"是福柯的核心——他分析了学校、工厂、医院和军队如何通过<em>空间安排、时间分割、层级监视和规范化评判</em>来塑造人体。第四部分"监狱"和"全景敞视主义"是福柯的结论——现代监狱不是惩罚犯罪，而是<em>生产罪犯</em>——通过分类、诊断、治疗和改造，监狱创造了一个"可以被改造"的主体。</p>
+
+    <p>福柯的论证策略是展示而非说教。他不直接说"权力是坏的"——他展示权力如何在历史中被精心编织。他分析了监狱的建筑图纸、军队的操练手册、学校的课程表、医院的病历档案。这些看似中性的技术文件，在福柯眼中都是<em>权力运作的脚本</em>。</p>
+
+    <p>全景敞视监狱是福柯理论最著名的视觉隐喻。边沁设计它时认为这是一个"完美的"监狱——因为囚犯永远不知道自己是否被监视，所以他们必须<em>自我监控</em>。守卫不需要实际监视每一个人，因为<em>被监视的可能性</em>本身就足够让囚犯自律。福柯说：这就是现代权力的本质——<em>权力最有效的时候，不是当它在惩罚，而是当它让人们自己惩罚自己</em>。</p>
+
+    <h2>本周会遇到哪些核心概念</h2>
+
+    <div class="concept-list">
+        <div class="concept-card">
+            <div class="concept-name">权力/知识 <span>Power/Knowledge</span></div>
+            <div class="concept-desc">福柯认为权力和知识不是对立的，而是相互生产的关系。知识不是中性的真理发现，而是权力的工具；权力不是盲目的暴力，而是知识的应用。医学诊断、心理测试、教育评估——都是权力/知识的运作。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">规训 <span>Discipline</span></div>
+            <div class="concept-desc">规训不是惩罚，而是一种"温和"的矫正技术。它通过空间安排（如教室座位）、时间分割（如课程表）、层级监视（如老师监督）和规范化评判（如成绩排名）来塑造人体。规训的目标不是消灭身体，而是生产"有用"和"顺从"的身体。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">全景敞视主义 <span>Panopticism</span></div>
+            <div class="concept-desc">边沁设计的圆形监狱——中心瞭望塔可以监视所有囚室，但囚犯看不见瞭望塔。囚犯因为"可能被监视"而自我监控。福柯认为这不仅是监狱建筑，而是现代社会的隐喻——学校、工厂、办公室都运作在"全景敞视"逻辑上。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">生命权力 <span>Biopower</span></div>
+            <div class="concept-desc">从18世纪开始，权力从"控制死亡"转向"管理生命"——国家开始关注人口健康、出生率、死亡率、卫生条件。生命权力管理的是"人口"（整体），而规训管理的是"身体"（个体）。两者结合，构成了现代权力的完整形态。</div>
+        </div>
+        <div class="concept-card">
+            <div class="concept-name">规范化 <span>Normalization</span></div>
+            <div class="concept-desc">规训通过建立"标准"或"规范"来运作——什么是正常的行为、正常的成绩、正常的身体。偏离规范的人被标记为"异常"，然后被矫正、治疗或排斥。规范化不是压制差异，而是<em>生产差异</em>——先定义"正常"，然后让"异常"成为问题。</div>
+        </div>
+    </div>
+
+    <div class="tension-block">
+        <div class="tension-label">❓ 本周核心张力问题</div>
+        <div class="tension-q">如果权力最有效的形态不是暴力，而是让我们自我监控的规训，那么"自由"是否只是另一种被驯化的幻觉？福柯的诊断是否适用于今天的数字监控？</div>
+    </div>
+
+    <div class="page-footer">
+        <div class="footer-info">Week 25 · Day 1 · 🎭 叙事者</div>
+        <div class="footer-next">明日 · 🎯 提炼者将拆解密尔的自由逻辑链 →</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w24-d05.html" style="color:#888;text-decoration:none;">← W24 · D05</a>
+        <a href="./w25-d02.html" style="color:#888;text-decoration:none;">D02 · 提炼者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 26 · Day 2 · 提炼者 · 《旧制度与大革命》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        /* Header */
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Body text */
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        /* Section */
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        /* Framework card */
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        /* SVG info container */
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Contrast box */
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        /* Pullquote */
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        /* Misread block */
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        /* Bias note */
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        /* Data highlight */
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Footer nav */
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第26周 · 第2天</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W26-D02</div>
+        <div class="meta">
+            <span>📅 2026-09-29</span>
+            <span>📖 第 26 周 · Day 2 / 5</span>
+            <span>🔢 《旧制度与大革命》</span>
+        </div>
+        <h1>从"改革"到"革命"：托克维尔的五把框架刀</h1>
+        <div class="subtitle">托克维尔用档案和历史证据，把法国大革命从"人民起义"的叙事，重构为"旧制度自我解体"的精密诊断</div>
+    </header>
+
+    <!-- Body -->
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把托克维尔散落在《旧制度与大革命》中的历史洞察，拼成一张可理解的地图。托克维尔的方法论非常明确：<strong>从旧制度的档案出发，重构革命前的社会结构，然后揭示改革的意外后果。</strong>他的核心发现不是"革命为什么发生"，而是"<em>为什么偏偏在这个时候、以这种方式</em>"发生。今天这五把框架刀，每一把都从一个具体的历史现象出发，指向一个让政治科学不安的结论。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把框架刀</div>
+
+        <!-- Knife 1: Reform Paradox -->
+        <div class="framework-card" data-num="01">
+            <div class="card-label">框架刀 #1</div>
+            <div class="card-title">改革悖论 <em>Reform-Revolution Paradox</em> · 最危险的时期是改革开始的时期</div>
+            <div class="card-body">
+                传统政治理论认为，革命发生在压迫最严酷的时期。但托克维尔证明：革命发生在<em>压迫开始减轻</em>的时期。<br><br>
+                18世纪晚期的法国正处于旧制度下最繁荣的阶段。路易十六的政府进行了关税改革、地方行政改革、财政透明化尝试。但每一次改革都产生了两个意外效果：第一，改革暴露了旧制度的不合理性（"既然要改，说明现状是错的"）；第二，改革激发了人们对更多改变的期望（"既然能改这个，为什么不改那个"）。<br><br>
+                当政府开始改革，它实际上是在承认自己的统治逻辑有问题。而这个承认，比任何革命宣传都更能瓦解合法性。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>改革不是革命的替代品，而是革命的<em>催化剂</em>。当统治集团开始"自我修正"时，它实际上是在向全社会发出信号：现状可以被质疑。而这个信号一旦被发出，就无法收回。
+            </div>
+        </div>
+
+        <!-- Knife 2: Administrative Centralization -->
+        <div class="framework-card" data-num="02">
+            <div class="card-label">框架刀 #2</div>
+            <div class="card-title">行政中央化 <em>Administrative Centralization</em> · 王权摧毁了社会的缓冲层</div>
+            <div class="card-body">
+                这是托克维尔最核心的历史发现。从路易十三到路易十六，法国王权通过总督（intendants）逐步接管了地方行政。贵族被剥夺了政治权力，但仍然保留经济特权（免税、领主司法权）。教士成为国家的附属机构。第三等级承担了几乎全部税负，但没有任何政治代表。<br><br>
+                结果是：<em>法国社会失去了中间层</em>。在英国，贵族仍然参与地方治理，充当了王权与平民之间的缓冲。在德国，地方邦国保留了自治传统。但在法国，王权直接接触到了社会底层——这意味着当革命爆发时，没有任何中间组织可以吸收冲击、减缓极端化。<br><br>
+                托克维尔说："法国王权做了革命本来要做的事——它摧毁了封建制度。革命只是完成了这个进程的剩余部分。"
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>中央化不是革命的对立面，而是革命的<em>前置条件</em>。一个中央化的国家比一个分权的社会更脆弱，因为中央化瓦解了社会的自我防御能力。
+            </div>
+        </div>
+
+        <!-- Knife 3: Class Atomization -->
+        <div class="framework-card" data-num="03">
+            <div class="card-label">框架刀 #3</div>
+            <div class="card-title">阶级原子化 <em>Class Atomization</em> · 社会断裂比阶级压迫更危险</div>
+            <div class="card-body">
+                托克维尔发现了一个被忽视的悖论：法国三个等级之间的<em>分离</em>比他们的<em>对立</em>更致命。贵族住在巴黎或凡尔赛，与地方社会完全脱节。资产阶级被排斥在政治权力之外，但在经济上日益强大。农民被压在底层，既无法与贵族对话，也无法与资产阶级联合。<br><br>
+                在18世纪的英国，贵族、资产阶级和农民之间存在着复杂的社会纽带——贵族投资工商业，资产阶级购买土地，农民参与地方自治。但在法国，这些纽带被中央化王权有意切断了。<br><br>
+                当革命爆发时，法国社会没有一个"减压阀"。三个等级不是谈判和妥协，而是直接碰撞。贵族想恢复旧权利，资产阶级想要政治权力，农民想要土地。因为没有共同的制度框架来调解这些诉求，革命迅速走向极端。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>社会断裂不是阶级矛盾的<em>结果</em>，而是阶级矛盾的<em>原因</em>。当不同阶级之间没有任何制度化的联系时，革命不是改良，而是断裂。
+            </div>
+        </div>
+
+        <!-- Knife 4: Equality Trap -->
+        <div class="framework-card" data-num="04">
+            <div class="card-label">框架刀 #4</div>
+            <div class="card-title">平等陷阱 <em>Equality Trap</em> · 对平等的渴望比对自由的渴望更强烈</div>
+            <div class="card-body">
+                托克维尔在《论美国的民主》中已经提出了这个洞见，在《旧制度与大革命》中进一步深化。他发现：法国大革命的参与者最强烈的情感不是对自由的渴望，而是对<em>平等</em>的渴望——更准确地说，是对<em>不平等的不满</em>。<br><br>
+                当旧制度开始改革时，它无意中制造了一个期望的"落差"：人们看到了改革的承诺，但改革的速度永远跟不上期望的速度。旧制度越是"努力变好"，人们对"不够好"的容忍度就越低。<br><br>
+                更深层的是，大革命在摧毁旧特权的同时，也摧毁了自由的制度基础。当贵族的特权被废除时，贵族作为"自由传统守护者"的功能也随之消失。革命追求的是平等，但结果往往是<em>一种新型的专制</em>——在拿破仑身上得到了最极端的体现。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>平等和自由不是天然的同盟。在某些条件下，对平等的追求会<em>压制</em>自由——因为平等可以通过强制实现，而自由需要制度保障。一个社会可能在没有自由的情况下获得平等，但很难在没有平等的情况下获得自由。
+            </div>
+        </div>
+
+        <!-- Knife 5: Self-Destruction -->
+        <div class="framework-card" data-num="05">
+            <div class="card-label">框架刀 #5</div>
+            <div class="card-title">旧制度的自我毁灭 <em>Self-Destruction</em> · 革命不是外因，是内因</div>
+            <div class="card-body">
+                这是托克维尔最具颠覆性的结论。他花了大量篇幅分析旧王朝的法律、行政和财政政策，然后证明：<strong>旧制度在被革命推翻之前，已经自我解体了。</strong><br><br>
+                王权为了削弱贵族而剥夺其政治权力，但保留其经济特权——这制造了最危险的敌人：有财富、有怨恨、但没有政治责任感的贵族阶层。王权为了扩大税基而推动经济改革，但经济改革加速了社会流动，社会流动暴露了不平等，不平等激发了革命热情。<br><br>
+                托克维尔说："旧制度不是被革命摧毁的，它是在革命到来之前就已经死去的。革命只是完成了一场葬礼。"
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>革命不是"外部冲击"，而是"内部衰变的加速器"。如果一个制度自我解体的进程已经启动，那么改革（加速解体）和不改革（慢性死亡）都指向同一个终点。区别只在于速度，不在于方向。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 从"改革"到"革命"的逻辑链</div>
+
+        <!-- SVG Infographic -->
+        <div class="svg-container">
+            <div class="svg-label">托克维尔框架逻辑链 · 从改革到革命</div>
+            <svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                </defs>
+
+                <!-- Background -->
+                <rect width="720" height="520" fill="#111" rx="8"/>
+
+                <!-- Title -->
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">托克维尔框架逻辑链 · 从改革到革命</text>
+
+                <!-- ── Left: Structural causes ── -->
+                <rect x="16" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">结构性原因 · 旧制度的内在矛盾</text>
+
+                <!-- Box 1: Centralization -->
+                <rect x="32" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #2 · 行政中央化</text>
+                <text x="184" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">王权剥夺贵族政治权力，社会失去缓冲层</text>
+
+                <line x1="184" y1="116" x2="184" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 2: Class Atomization -->
+                <rect x="32" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #3 · 阶级原子化</text>
+                <text x="184" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">三个等级完全断裂，没有社会粘合剂</text>
+
+                <line x1="184" y1="172" x2="184" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 3: Self-Destruction -->
+                <rect x="32" y="188" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #5 · 旧制度自我毁灭</text>
+                <text x="184" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">改革暴露了矛盾，加速了制度瓦解</text>
+
+                <line x1="184" y1="228" x2="184" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 4: Convergence -->
+                <rect x="32" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="184" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">核心结论</text>
+                <text x="184" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">旧制度在革命前已自我解体</text>
+
+                <!-- ── Right: Trigger chain ── -->
+                <rect x="368" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">触发机制 · 改革如何点燃革命</text>
+
+                <!-- Box 5: Reform -->
+                <rect x="384" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #1 · 改革悖论</text>
+                <text x="536" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">改革承认现状不合理，瓦解统治合法性</text>
+
+                <line x1="536" y1="116" x2="536" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 6: Equality -->
+                <rect x="384" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #4 · 平等陷阱</text>
+                <text x="536" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">对平等的追求压倒对自由的追求</text>
+
+                <line x1="536" y1="172" x2="536" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Box 7: Revolution -->
+                <rect x="384" y="188" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">革命爆发</text>
+                <text x="536" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">1789年三级会议 → 网球场宣誓 → 攻占巴士底</text>
+
+                <line x1="536" y1="228" x2="536" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <!-- Box 8: Outcome -->
+                <rect x="384" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="536" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">历史后果</text>
+                <text x="536" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">旧制度死亡 → 拿破仑崛起</text>
+
+                <!-- Bridge arrow between left and right -->
+                <line x1="340" y1="264" x2="380" y2="264" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+                <text x="360" y="256" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="8">触发</text>
+
+                <!-- ── Bottom: Comparison ── -->
+                <rect x="16" y="316" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="336" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两种历史解释范式 · 对革命原因的根本假设</text>
+
+                <!-- Traditional -->
+                <rect x="28" y="348" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="368" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">传统解释</text>
+                <text x="188" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">革命是外部冲击</text>
+                <text x="188" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">人民反抗压迫是正义的解放</text>
+                <text x="188" y="416" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">旧制度是稳定的，被革命摧毁</text>
+
+                <!-- Tocqueville -->
+                <rect x="372" y="348" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="368" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">托克维尔诊断</text>
+                <text x="532" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">革命是旧制度自我解体的结果</text>
+                <text x="532" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">改革催化而非阻止革命</text>
+                <text x="532" y="416" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">旧制度先自我毁灭，革命只是加速</text>
+
+                <!-- ── Red dashed boxes: Preconditions ── -->
+                <rect x="16" y="448" width="688" height="56" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="468" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 前提条件</text>
+                <text x="360" y="490" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 A：改革必须触及制度合法性（象征层面的改革不足以触发革命）</text>
+                <text x="360" y="504" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 B：社会存在断裂且缺乏中间缓冲层（否则改革可能被社会吸收）</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图底部的两个红色虚线框是提炼者要特别强调的。左边的前提A问的是：如果改革只是技术性调整（如减税），而没有触及制度合法性的象征层面，改革是否仍然会催化革命？右边的前提B问的是：如果社会存在中间缓冲层（如英国的地方贵族），改革是否能被吸收而不触发断裂？托克维尔理论的适用范围，高度取决于这两个前提的成立与否。明天应用者会把这个框架带进三个真实场景，看看改革悖论在什么样的土壤里生效。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条范式对比</div>
+
+        <h2>传统革命叙事 vs 托克维尔诊断：从外部冲击到内部解体</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">传统革命叙事</div>
+                <div class="col-name" style="color:#6fb5e0;">外部冲击模型</div>
+                <div class="col-text">
+                    革命是人民反抗压迫的正义行动<br><br>
+                    旧制度是稳定的、铁板一块的<br><br>
+                    革命摧毁了一个原本存在的制度<br><br>
+                    改革是防止革命的良药<br><br>
+                    革命的原因是压迫<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：革命是对坏制度的道德回应。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">托克维尔诊断</div>
+                <div class="col-name" style="color:#E94560;">内部解体模型</div>
+                <div class="col-text">
+                    革命是旧制度内部矛盾的总爆发<br><br>
+                    旧制度在革命前已经开始自我解体<br><br>
+                    革命只是加速了一个已进行的进程<br><br>
+                    改革是革命的催化剂而非解药<br><br>
+                    革命的原因是改革触发的期望落差<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：革命不是外部冲击，是内部衰变的加速器。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种解释的分歧，不只是历史观的差异，更是关于<strong>"制度如何变化"</strong>的根本分歧。传统叙事问："什么力量摧毁了旧制度？"托克维尔问："旧制度为什么已经死了，只是还没有倒下？"<br><br>
+            托克维尔的方法论不是否定革命的主体性——他从不否认法国人民争取权利的正当性。他的问题是：为什么<em>在这个时候</em>、以<em>这种极端的方式</em>？答案是：因为旧制度已经瓦解了社会结构，改革只是让这种瓦解变得可见。
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：托克维尔的分析框架在解释<strong>法国大革命</strong>时极为有力，但它的普遍性存疑。英国的光荣革命、美国的独立战争、中国的辛亥革命——这些革命的原因和形态与法国大革命截然不同。托克维尔自己承认，他的框架最适用于"中央集权的绝对主义国家"。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：托克维尔是保守派，反对革命</strong>
+                    <span>很多人把托克维尔描绘成革命的反动派。但托克维尔明确表示，旧制度的特权是不公正的，革命追求平等的目标是正当的。他的批评不是针对革命本身，而是针对革命<em>发生的方式</em>和<em>导致的结果</em>——旧制度的过早瓦解导致法国没有中间层来防止极端化。</span>
+                    <div class="misread-correction">✓ 准确理解：托克维尔不是反对革命，而是分析为什么革命以如此极端的方式发生——原因是旧制度先摧毁了社会的缓冲机制。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：托克维尔认为所有改革都会导致革命</strong>
+                    <span>托克维尔并没有说改革"必然"导致革命。他说的是：在特定条件下（行政中央化、社会断裂、阶级原子化），改革会暴露旧制度的内在矛盾，从而催化革命。在英国和德国，改革之所以没有导致革命，是因为这些国家的社会结构提供了缓冲。</span>
+                    <div class="misread-correction">✓ 准确理解：改革-革命悖论只在特定社会结构下成立。托克维尔强调的是结构条件，不是普适规律。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：托克维尔认为旧制度是"好的"</strong>
+                    <span>托克维尔对旧制度的描述有时带有怀旧色彩，但他的核心论点是：旧制度已经<em>被中央化摧毁了</em>——18世纪的法国已经不再是真正的封建社会。路易十六时期的法国是一个高度中央化的官僚国家，贵族只是没有政治功能的寄生虫。托克维尔哀悼的不是旧制度本身，而是旧制度中被中央化摧毁了的地方自由和中间层。</span>
+                    <div class="misread-correction">✓ 准确理解：托克维尔哀悼的不是封建特权，而是地方自治和中间缓冲层——这些恰恰是旧制度中被王权破坏的元素。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <!-- Tension echo -->
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                为什么革命往往发生在改革开始之后、而不是在最黑暗的时刻？托克维尔的"反直觉"诊断是否揭示了制度变革的根本悖论？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，托克维尔的逻辑链在描述层面是闭合的：行政中央化 → 阶级原子化 → 旧制度自我毁灭 → 改革悖论 → 平等陷阱。但<strong>除了那两个红色虚线框</strong>，还有一个更深层的问题：<em>托克维尔描述的是旧制度的结构性弱点，但没有解释为什么其他中央化国家（如普鲁士）没有发生革命</em>。<br><br>
+                更精确的问题变成：<strong>改革催化革命的机制，在什么样的社会结构下生效？</strong>如果法国的特殊性（绝对主义传统、三级会议长期缺席、贵族与资产阶级尖锐对立）是不可复制的，那么托克维尔框架的普遍性有多强？<br><br>
+                另一个被忽略的问题：托克维尔假设改革是由上而下的（政府主导）。但历史中也有由下而上的改革压力（如社会运动）。当改革是被迫的而非主动的，改革悖论是否仍然成立？<br><br>
+                历史档案证明了旧制度的问题，但"从'是'到'应该'"——从"诊断"到"处方"——托克维尔没有给出答案。也许他的意思是：没有安全处方。明天应用者会检验这个命题。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "革命不是在压迫最严酷的时候发生的，而是在压迫开始减轻的时候发生的。这不仅是法国的历史，也是普遍的人心法则。"
+            <br>— 托克维尔，《旧制度与大革命》
+        </div>
+
+        <p>
+            这句话是托克维尔给自己的框架设下的边界。他清楚自己的发现是"反直觉"的，也清楚这个发现的适用范围有限。明天，应用者会把这五把框架刀放进三个真实场景——历史的、中国的、和Ethan每天面对的组织变革——看看改革悖论在什么样的土壤里生效，在什么样的容器里可以被改变。
+        </p>
+
+    </div><!-- /prose -->
+
+    <!-- Post nav -->
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w26-d01.html">← 叙事者 · 那个发现"改革催生革命"的人</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w26-d03.html">应用者 · 三场景拆解 →</a>
+        </div>
+    </nav>
+
+    <!-- Page Nav (required) -->
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w26-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w26-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

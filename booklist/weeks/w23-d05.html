@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 23 · Day 5 · 摆渡人+连接者 · 《利维坦》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .page-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W23 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 23 · Day 5 · 2026-09-11</span>
+            </div>
+            <h1>住在利维坦里的摆渡人</h1>
+            <div class="subtitle">如果霍布斯描述的国家必然性是真实的，但现代宪政已经修正了它，那我们追求的究竟是"更强大的国家"还是"更受限的国家"？</div>
+        </div>
+
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了霍布斯如何在英国内战的恐惧中写下《利维坦》；应用者把社会契约理论丢进了英国内战、中国政治控制和腾讯组织管理三个真实场景；挑战者从自然状态的历史不真实、同意的胁迫性、绝对主权的悖论和现代宪政的超越四个维度解构了霍布斯。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"霍布斯不够"到"霍布斯是基础"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控：霍布斯的自然状态是恐惧投射，同意是胁迫，绝对主权是历史错误。这个指控在很大程度上成立。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果霍布斯不够，那什么才够？</em></p>
+
+        <p>霍布斯的核心洞见被低估了：他反复强调，<strong>国家不是自然的，而是人造的</strong>。国家不是上帝创造的，而是人类为了安全而创造的。这个洞见本身就是革命性的——它把政治从神学的框架中解放出来，放进了人类理性的框架。</p>
+
+        <div class="pull-quote">
+            <p>"霍布斯不是告诉我们国家应该是什么，而是告诉我们国家不能假装不是人造的。"</p>
+            <div class="attribution">—— 摆渡者的注脚</div>
+        </div>
+
+        <p>挑战者正确地指出了霍布斯的框架缺陷，但摆渡人要指出挑战者的盲点：<em>完全否定国家的必要性，不等于超越了国家，而是把国家分析交给了更隐蔽的框架。</em>如果拒绝霍布斯的语言，我们用什么语言来描述英国内战的恐怖、中国政治的稳定需求、或者组织内部的秩序维护？</p>
+
+        <p>所以摆渡人的第一个渡口是：霍布斯的问题不是"他不应该论证国家必要性"，而是<em>他论证的国家必要性没有嵌入足够的约束机制</em>。真正的问题不是"要不要国家"，而是"什么样的国家值得信任"。</p>
+
+        <h2>第二段摆渡：霍布斯遇见现代宪政</h2>
+
+        <p>如果霍布斯在2026年重写《利维坦》，他会看到什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">权力分立：从绝对主权到制衡制度</div>
+            <p>霍布斯认为权力分割会导致内战。但现代宪政已经证明，权力分立（立法、行政、司法）可以运作，而不必然导致内战。美国230年的宪政历史、德国二战后的联邦制、北欧的议会制——这些制度不是完美的，但它们证明了霍布斯的核心假设可以被修正。</p>
+            <p>摆渡人的判断是：<em>权力分立不是对霍布斯的否定，而是对霍布斯的修正</em>。霍布斯看到了权力集中的效率，但忽略了权力分散的安全。现代宪政试图在两者之间找到平衡。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">民主选举：从畏惧人民到信任人民</div>
+            <p>霍布斯认为人民是被动的、需要被统治的。但民主理论假设人民是主权的最终来源。选举不是叛乱，而是和平的权力转移。这不是对霍布斯的否定，而是对他的超越——<em>人民同意</em>的机制从一次性契约变成了周期性投票。</p>
+            <p>但摆渡人要指出：民主不是万能的。民粹主义、信息茧房、政治极化——这些现代民主的病理，恰恰证明霍布斯对"人民可被操纵"的观察并没有过时。民主给人民赋权，但权力运作的逻辑仍然存在。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">人权保护：从自然法到宪法权利</div>
+            <p>霍布斯认为自然法没有强制力，因此需要主权者来执行。但现代宪政把人权写进宪法，并建立独立的司法机构来保护这些权利。这不是对霍布斯的否定，而是对他的完善——<em>自然法被制度化了</em>，获得了强制力。</p>
+            <p>但摆渡人要指出：宪法权利不是自动运行的。当主权者（政府）不愿意遵守宪法时，司法机构也需要权力支持。霍布斯的问题——"谁来约束约束者"——在现代仍然没有被完全解决。</p>
+        </div>
+
+        <h2>第三段摆渡：住在利维坦里的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果霍布斯是对的——国家是人造的，同意是胁迫的，权力是集中的——那么摆渡人作为"把思想带到当下"的角色，本身也是在一个国家中运作。这篇推送的发布、传播、被阅读，都在一个国家的法律框架内发生。摆渡人自己住在利维坦里。</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在国家之外。</em>霍布斯不能，挑战者不能，摆渡人也不能。问题不是"谁能设计无国家的分析"——答案是没有人。问题是：<strong>我们是否愿意承认自己的分析也有国家偏见，并为此承担责任。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的政治智慧不是否认国家，而是在承认国家的同时，坚持约束它的努力。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>霍布斯在晚年回到了更温和的立场——他承认主权者的义务，承认契约的边界，甚至暗示人民在某些条件下可以反抗。摆渡人认为，这个"回归"不是矛盾，而是<em>成熟</em>。他意识到，绝对主权不是答案，制度的约束才是。</p>
+
+        <p>摆渡人最终的立场是：霍布斯的价值不在于他给出的答案，而在于他提出的问题。<em>国家为什么必要？权力的合法性来自哪里？人民为什么服从？</em>这些问题在他之后五个世纪仍然活跃。真正重要的不是选择"霍布斯"还是"反霍布斯"，而是<em>在两者之间的张力中持续追问</em>。</p>
+
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果人们为了安全愿意放弃自由，那么霍布斯的利维坦是契约还是陷阱？国家垄断暴力的合法性，究竟来自人民的同意，还是来自没有更好的替代？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果国家是必要的，而国家权力必须被约束，我们追求的究竟是"更强大的国家"还是"更受限的国家"？真正重要的不是国家本身，而是<em>国家背后的目的和约束是否可被审视和问责</em>。霍布斯发现了国家的必要性，但问题是：当国家必要性遇上权力约束，"保护人民"的理想主义承诺，是否必然滑向"控制人民"的实用主义现实？
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次感受到"为了安全而放弃自由"是在什么场景？这个交换是否值得的？</div>
+                <div class="ft-q-item">你所在的组织（公司/社区/国家）是否有一个机制，让权力的运作被透明化、被监督、被问责？</div>
+                <div class="ft-q-item">如果"国家必须被约束"是一个理想，而"权力运作无处不在"是一个现实——你愿意接受一种"有张力的政治实践"吗？</div>
+            </div>
+        </div>
+
+        <div class="section-break"></div>
+
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第23周《利维坦》的位置是什么？霍布斯的社会契约论如何与前面的22本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第23节点</h2>
+
+        <p>连接者今天的工作不是"霍布斯说了什么"，而是"霍布斯站在哪里"。四条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">君主论</span>
+                <span class="branch-week">W22</span>
+            </div>
+            <div class="branch-desc">
+                马基雅维利在《君主论》中分析了权力如何运作，但没有解释权力为什么合法。霍布斯在《利维坦》中解释了权力为什么合法（人民同意），但假设权力一旦建立就不可挑战。两个理论可以读作一组<em>诊断和处方</em>：马基雅维利诊断了权力运作的机制，霍布斯开出了"人民同意"的处方。但张力在于：如果权力运作如马基雅维利所说不可避免，那么霍布斯的"人民同意"是否也只是权力运作的一种策略？
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">奴役之路</span>
+                <span class="branch-week">W5</span>
+            </div>
+            <div class="branch-desc">
+                哈耶克在《奴役之路》中警告：国家权力的扩张会通向奴役。霍布斯在《利维坦》中论证了国家权力的必要性。两者的深层对话是：国家是必要的，但什么样的国家不会通向奴役？哈耶克的答案是"有限国家"——最小化的政府。霍布斯的答案是"绝对国家"——最大化的主权。但现代政治发现，答案可能介于两者之间：一个<em>有力但受限</em>的国家。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">国富论</span>
+                <span class="branch-week">W1</span>
+            </div>
+            <div class="branch-desc">
+                从霍布斯到斯密的传承是间接的：霍布斯论证了国家为什么必要，斯密论证了市场如何运作。但两者都假设了<em>秩序的前提</em>——没有秩序，市场无法运作；没有国家，秩序无法维持。斯密比霍布斯更乐观：他认为市场可以自我调节，不需要国家的持续干预。但两者都承认：国家是市场运作的<em>基础设施</em>。没有霍布斯式的国家，斯密式的市场无法存在。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">资本论</span>
+                <span class="branch-week">W2</span>
+            </div>
+            <div class="branch-desc">
+                马克思在《资本论》中论证：国家是阶级统治的工具。霍布斯在《利维坦》中论证：国家是人民同意的产物。两个理论对国家的本质有完全不同的理解。但深层张力是：如果国家是阶级统治的工具，那么霍布斯的"人民同意"是否只是一个<em>意识形态的幻觉</em>——统治阶级让被统治阶级相信"国家是为所有人服务的"？还是说，即使在阶级社会中，国家也部分实现了公共利益？
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">动物农场</span>
+                <span class="branch-week">文学感知</span>
+            </div>
+            <div class="branch-desc">
+                奥威尔在《动物农场》中描绘了一个霍布斯式的悲剧：动物们为了摆脱人类的压迫（自然状态）而革命，建立了"动物共和国"（利维坦）。但新的统治者（猪）逐渐变得比旧统治者更暴虐。书的最后，猪们学会了用两条腿走路，与人类无法区分。奥威尔的寓言追问了一个霍布斯没有回答的问题：<em>如果新的主权者与旧的主权者一样坏，那么革命的意义是什么？</em>霍布斯会说：即使猪暴虐，也比人类统治好。但奥威尔让我们看到：有些革命只是换了压迫者。
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第23节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W23</text>
+
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+                <text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text>
+                <text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+
+                <circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W5</text>
+                <text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">奴役之路</text>
+
+                <circle cx="460" cy="100" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="460" y="104" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W22</text>
+                <text x="460" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">君主论</text>
+
+                <circle cx="500" cy="100" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="500" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W23</text>
+                <text x="500" y="130" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">利维坦</text>
+
+                <circle cx="540" cy="100" r="14" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="540" y="104" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="9" font-weight="600">W24</text>
+                <text x="540" y="130" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="8">论自由</text>
+
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+                <text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+                <text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+
+                <path d="M 500 118 Q 500 200 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 500 118 Q 400 180 300 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 500 118 Q 450 180 460 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 300 118 Q 400 180 500 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <h2>下周预告</h2>
+        <p>第24周，我们将翻开约翰·斯图尔特·密尔的《<em>论自由</em>》（<em>On Liberty</em>）。</p>
+        <p>从霍布斯的"安全优先"到密尔的"自由优先"——如果霍布斯关心的是"国家为什么必要"，密尔关心的是"国家应该在哪里止步"。这是从社会契约到个人权利的自然过渡：我们不仅需要国家，还需要知道国家的边界在哪里。</p>
+        <p>密尔1869年的警告在2026年听起来像预言：多数人的暴政可能比君主的暴政更危险，因为 majority tyranny 用"社会舆论"代替了"法律惩罚"，用"沉默的排斥"代替了"公开的处决"。</p>
+
+        <div class="pull-quote">
+            <p>"如果全人类中只剩下一个人持不同意见，人类也没有更好的理由去压制这一个人的声音。"</p>
+            <div class="attribution">—— 约翰·斯图尔特·密尔，《论自由》</div>
+        </div>
+
+        <div class="page-nav">
+            <a href="./w23-d04.html">← D04 · 挑战者</a>
+            <a href="./w24-d01.html">D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>

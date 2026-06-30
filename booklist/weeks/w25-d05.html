@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 25 · Day 5 · 摆渡人+连接者 · 《规训与惩罚》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            /* 摆渡人专属：蓝调 */
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            /* 连接者专属：青调 */
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        /* Header */
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Body text */
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        /* Bridge section */
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Connector section */
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        /* Section break */
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        /* Tension box */
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        /* Final tension box */
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        /* Connector branch */
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Pull quote */
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        /* Bridge passage */
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        /* SVG map container */
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        /* Page nav */
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .page-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Nav -->
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W25 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <!-- Header -->
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 25 · Day 5 · 2026-09-25</span>
+            </div>
+            <h1>在全景敞视监狱的门口</h1>
+            <div class="subtitle">如果权力最有效的形态不是暴力，而是让我们自我监控的规训，那么"自由"是否只是另一种被驯化的幻觉？</div>
+        </div>
+
+        <!-- 摆渡人部分 -->
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了福柯如何在1971年目睹了一次断头台执行的幻觉，从而把权力从"暴力展示"转向"规训技术"；应用者把全景敞视监狱丢进了中国数字监控、社会信用体系和绩效评估三个真实场景；挑战者从概念膨胀、无主体权力的政治 paralysis、历史选择性叙事和能动性盲区四个维度解构了福柯的悲观主义。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"自由是幻觉"到"幻觉中如何行动"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控：福柯的"权力无处不在"是一种智识规训——它让被统治者相信改变不可能，从而确保权力不被挑战。这个指控成立。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果福柯的诊断是对的，而挑战者的批判也是对的，那我们在什么立场上行动？</em></p>
+
+        <p>福柯的一个核心洞见被低估了：他反复强调，<strong>权力不是压迫，而是生产</strong>。权力生产知识、生产主体、生产真理。这意味着权力不是一块可以被移除的石头，而是一套可以被重新编码的程序。但福柯自己从未给出"如何重新编码"的路线图。</p>
+
+        <div class="pull-quote">
+            <p>"关键不是试图从权力内部逃离到权力外部——这是不可能的——而是试图从一种权力形式转移到另一种权力形式。"
+            </p>
+            <div class="attribution">—— 福柯的潜台词，从未被充分展开</div>
+        </div>
+
+        <p>挑战者正确地指出了福柯框架的悲观主义陷阱，但摆渡人要指出挑战者的盲点：<em>完全否定福柯的诊断，不等于恢复了行动的清晰性，而是把权力重新隐藏回"政治"和"制度"的可见领域，假装我们已经在自由之中。</em>如果福柯是对的——权力在我们最日常的习惯、语言、身体姿态中运作——那么不承认这一点，本身就是一种权力效果。</p>
+
+        <p>所以摆渡人的第一个渡口是：福柯的问题不是"他让我们太悲观"，而是<em>他展示了权力的无处不在，但没有设计出一个让我们在被规训中仍然保持能动性的框架</em>。真正的问题不是"权力是否存在"，而是"在承认权力的同时，如何保持行动的能力"。</p>
+
+        <h2>第二段摆渡：福柯遇见2026</h2>
+
+        <p>如果福柯在2026年重写《规训与惩罚》，他会看到什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">算法规训：从"身体训练"到"行为预测"</div>
+            <p>福柯的规训权力作用于身体——站姿、行军、时间表、空间分配。但2026年的算法权力作用于数据——点击、停留、滑动、心率、位置、社交关系。规训的目标从"让身体变得有用而驯服"变成了"让行为变得可预测而可货币化"。这不是规训的增强版，这是规训的范式超越：福柯的规训还需要一个物理空间和一套可见的制度，而算法规训是分布式、实时化、去人化的。</p>
+            <p>但算法规训有一个福柯没有预见到的特征：<em>被规训者往往不知道自己在被规训</em>。福柯的囚犯至少知道监狱的围墙在哪里；算法时代的用户不知道自己的信息流被排序，不知道自己的信用评分被计算，不知道自己的求职简历被AI过滤。福柯的"可见性不对称"在算法时代被推向了极致——权力方全知，被规训方无知。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">自我优化：从"被规训的主体"到"自愿优化的创业者"</div>
+            <p>福柯的规训主体是被动塑造的——士兵被训练、学生被纪律化、工人被标准化。但2026年的数字平台生产了一种新主体：<em>自我优化的创业者</em>。健身App让你自愿监控每一步，社交媒体让你自愿量化每一次互动，职业发展平台让你自愿对标同龄人。这不是被强加的规训，这是被内化的竞争。</p>
+            <p>福柯晚期提出了"自我技术"（technologies of the self）——个体通过自我实践来塑造自己。但2026年的自我技术被平台收编了：<em>自我监控变成了数据生产，自我管理变成了算法优化</em>。福柯想象的"自我实践"是一种抵抗权力的方式；现实是，自我实践成了权力最高效的生产工具。这不是福柯错了——是福柯的"自我技术"概念在数字资本主义中被反转了。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">权力的不可见性：从"全景敞视"到"算法黑箱"</div>
+            <p>福柯的"全景敞视监狱"（Panopticon）有一个关键特征：权力是可见的（有一座塔），但权力行使者是不可见的（塔里可能没有人）。这个结构产生自我监控。但2026年的算法权力把这个结构升级了：<em>不仅没有权力行使者，连权力本身都不可见了。</em>你不知道为什么你被推荐了这个视频，为什么你的贷款被拒绝，为什么你的社交媒体触达率下降。权力不再有一座塔——它变成了一团雾。</p>
+            <p>福柯分析的权力/知识关系是：知识让权力可见，权力让知识被接受。但算法时代的知识（模型参数、训练数据、排序逻辑）是商业机密，而权力（平台决策）是不可审计的。福柯至少还可以分析精神病院、监狱、学校的话语；面对算法黑箱，话语分析失去了对象。<em>福柯的工具箱需要升级，但升级的方向不是"更好的批判"，而是"更可操作的透明"。</em></p>
+        </div>
+
+        <h2>第三段摆渡：住在全景敞视监狱门口的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果福柯是对的——权力无处不在，自我监控不可避免，抵抗本身也是权力的游戏——那么摆渡人作为"把思想带到当下"的角色，本身也是在一个权力网络中运作。这篇推送的算法分发、读者的注意力经济、平台的内容审核，都在塑造知识的流通。摆渡人自己也在被规训。</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在权力之外。</em>福柯不能，挑战者不能，摆渡人也不能。问题不是"谁能逃脱规训"——答案是没有人。问题是：<strong>我们是否愿意在承认自己被规训的同时，仍然尝试改变规训的代码。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的自由不是'免于规训'——这不可能——而是'知道规训的代码，并尝试重写它'。"
+            </p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>福柯在晚期（1980年代）转向了"伦理"和"自我实践"——不是放弃政治，而是把政治从"大规模革命"转向"日常微观抵抗"。但2026年的问题是：当平台把"日常"完全数据化时，微观抵抗是否还有空间？当健身、饮食、社交、阅读都被接入平台时，"不被记录"本身是不是一种抵抗？</p>
+
+        <p>摆渡人不会假装有答案。摆渡人只会说：<em>承认权力的无处不在，同时拒绝接受"因此行动不可能"的结论——这本身就是抵抗。</em>福柯的悲观主义是一种诊断；摆渡人的乐观主义是一种选择。 diagnoses 不决定处方。</p>
+
+        <!-- 张力问题最终形态 -->
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果权力最有效的形态不是暴力，而是让我们自我监控的规训，那么"自由"是否只是另一种被驯化的幻觉？如果规训无处不在，抵抗是否只是权力的另一种游戏？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果权力无处不在且自我监控不可避免，我们追求的究竟是"摆脱权力"还是"与权力游戏"？真正重要的不是权力是否存在，而是<em>我们如何在权力中保持能动性、透明度和尊严</em>。福柯发现了规训的微观运作，但问题是：当规训变得如此不可见、如此技术化、如此内化时，"抵抗"是否必须升级为一整套新的技术——不仅是政治行动，而且是数据素养、算法审计、平台共治？福柯的框架描述了权力的毛细血管，但我们需要的是一套让血液（行动）仍然能够流动的血管学。
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次意识到"有人在设计你的选择环境"是什么时候？你做了什么？</div>
+                <div class="ft-q-item">你所在的组织或平台，是否有任何一个机制让被算法影响的人能够审查和挑战算法的逻辑？</div>
+                <div class="ft-q-item">如果完全的"自由"不可能，你愿意接受一种"有知的被规训"——即公开了解规训的代码，并尝试参与改写——还是宁愿保持"无知的自由"？</div>
+            </div>
+        </div>
+
+        <!-- 分隔线 -->
+        <div class="section-break"></div>
+
+        <!-- 连接者部分 -->
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第25周《规训与惩罚》的位置是什么？福柯的权力分析如何与前面的24本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第25节点</h2>
+
+        <p>连接者今天的工作不是"福柯说了什么"，而是"福柯站在哪里"。五条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">君主论</span>
+                <span class="branch-week">W22</span>
+            </div>
+            <div class="branch-desc">
+                马基雅维利的权力是<em>可见的、集中的、策略性的</em>——君主通过暴力、欺骗和联盟来维持统治。福柯的权力是<em>分散的、微观的、内化的</em>——通过学校、医院、监狱和工厂来生产驯服而有用的身体。张力：从"君主之手"到"社会毛细血管"，权力没有消失，而是变得更加不可见、更加高效。马基雅维利问"如何获得和保持权力"；福柯问"权力如何让我们成为现在的我们"。一个问题关于权力拥有者，另一个关于权力对象——但福柯拒绝承认"对象"和"主体"的清晰分界。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">利维坦</span>
+                <span class="branch-week">W23</span>
+            </div>
+            <div class="branch-desc">
+                霍布斯的权力是<em>契约授予的、自上而下的</em>——人们让渡自然权利给主权者，以换取秩序和安全。福柯的权力是<em>生产性的、自下而上的</em>——权力不是被让渡的，而是在日常实践中被不断再生产的。深层对话：霍布斯假设了一个权力的"原点时刻"（契约），福柯则拒绝任何原点——权力没有起点，因为它就是关系本身。如果福柯是对的，霍布斯的"契约"不是权力的来源，而是<em>权力关系的一种话语效果</em>——一种让人们相信自己曾经"自由"的叙事。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">论自由</span>
+                <span class="branch-week">W24</span>
+            </div>
+            <div class="branch-desc">
+                密尔追求的是<em>免于干涉的消极自由</em>——国家和社会不应干涉个体的思想、言论和行为。福柯的问题是：<em>如果权力不是通过干涉，而是通过自我监控来运作，那么"免于干涉"是否足够？</em>当平台不需要审查你的言论，只需要让某些言论不可见；当公司不需要强迫你加班，只需要把绩效数据实时可视化——密尔的"自由"框架就失效了。福柯不是否定密尔，而是指出密尔的自由定义在一个已经过时的权力图景上。真正的问题不是"谁在干涉我"，而是"谁在塑造我的欲望"。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">资本论</span>
+                <span class="branch-week">W2</span>
+            </div>
+            <div class="branch-desc">
+                马克思的剥削是<em>经济层面的</em>——剩余价值被资本家无偿占有。福柯的规训是<em>身体/知识层面的</em>——通过纪律、分类、检查来生产驯服而有生产力的身体。对话：工厂纪律既是经济剥削的工具（马克思），也是权力技术的典范（福柯）。但两者的分歧在于：马克思相信剥削有一个清晰的"敌人"（资本家），而福柯拒绝任何"敌人"——权力没有主体。这使得福柯的政治处方比马克思更模糊，但也更贴近当代的权力结构（平台没有资本家，只有算法和利益相关者）。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">思考，快与慢</span>
+                <span class="branch-week">W11</span>
+            </div>
+            <div class="branch-desc">
+                从卡尼曼到福柯的传承是间接的：卡尼曼讲<em>系统1如何被系统2监控和纠正</em>，福柯讲<em>社会如何被内化的监控机制驯化</em>。但两者的深层共振是：自我监控不是理性的失败，而是理性的条件。卡尼曼的系统2监控系统1，是为了做出更好的决策；福柯的全景敞视监狱让囚犯自我监控，是为了生产更有用的身体。同一个机制——自我监控——服务于不同的目标。问题是：当平台把"自我监控"包装成"自我提升"时，卡尼曼的框架和福柯的框架如何区分？答案是：<em>卡尼曼假设自我监控服务于个体目标；福柯展示自我监控服务于权力目标。</em>当个体目标和权力目标重叠时，区分就消失了。
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">1984</span>
+                <span class="branch-week">文学感知</span>
+            </div>
+            <div class="branch-desc">
+                奥威尔在《1984》中描绘了一个<em>暴力+监控+思想控制</em>的 dystopia：电幕、思想警察、新话。福柯的全景敞视监狱看起来相似，但本质不同：奥威尔的权力是粗暴的、可见的、有主人的；福柯的权力是精致的、不可见的、去主体的。奥威尔问："老大哥在看着你"；福柯问："如果不需要老大哥，你自己就会看着自己？"奥威尔的噩梦是外部压迫；福柯的噩梦是<em>压迫被内化为主体性的一部分</em>。赫胥黎在《美丽新世界》中更接近福柯——人们不是被强迫服从，而是被设计得愿意服从。福柯的权力理论是赫胥黎文学直觉的社会学证明。
+            </div>
+        </div>
+
+        <!-- 知识地图 SVG -->
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第25节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <!-- 背景 -->
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W25</text>
+
+                <!-- 连接线 -->
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <!-- W1 -->
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+                <text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+
+                <!-- W2 -->
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text>
+                <text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+
+                <!-- W3 -->
+                <circle cx="140" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="140" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W3</text>
+                <text x="140" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">新教伦理</text>
+
+                <!-- W4 -->
+                <circle cx="180" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="180" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W4</text>
+                <text x="180" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">通论</text>
+
+                <!-- W5 -->
+                <circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W5</text>
+                <text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">奴役之路</text>
+
+                <!-- W6 -->
+                <circle cx="260" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="260" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W6</text>
+                <text x="260" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本主义</text>
+
+                <!-- W7 -->
+                <circle cx="300" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="300" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W7</text>
+                <text x="300" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">乌合之众</text>
+
+                <!-- W8 -->
+                <circle cx="340" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="340" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W8</text>
+                <text x="340" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">影响力</text>
+
+                <!-- W9 -->
+                <circle cx="380" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="380" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W9</text>
+                <text x="380" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">竞争战略</text>
+
+                <!-- W10 -->
+                <circle cx="420" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="420" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W10</text>
+                <text x="420" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">21世纪资本</text>
+
+                <!-- W11 -->
+                <circle cx="460" cy="100" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="460" y="104" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W11</text>
+                <text x="460" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">快与慢</text>
+
+                <!-- W12 -->
+                <circle cx="500" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="500" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W12</text>
+                <text x="500" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">错误的行为</text>
+
+                <!-- W13 -->
+                <circle cx="540" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="540" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W13</text>
+                <text x="540" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">娱乐至死</text>
+
+                <!-- W14 -->
+                <circle cx="580" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="580" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W14</text>
+                <text x="580" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">理解媒介</text>
+
+                <!-- W15 -->
+                <circle cx="620" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="620" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W15</text>
+                <text x="620" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">精神分析</text>
+
+                <!-- W16 -->
+                <circle cx="660" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="660" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W16</text>
+                <text x="660" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">传播学</text>
+
+                <!-- W17 -->
+                <circle cx="60" cy="160" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W17</text>
+                <text x="60" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">公共舆论</text>
+
+                <!-- W18 -->
+                <circle cx="100" cy="160" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W18</text>
+                <text x="100" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">社会契约</text>
+
+                <!-- W19 -->
+                <circle cx="140" cy="160" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="140" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W19</text>
+                <text x="140" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">旧制度</text>
+
+                <!-- W20 -->
+                <circle cx="180" cy="160" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="180" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W20</text>
+                <text x="180" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">联邦党</text>
+
+                <!-- W21 -->
+                <circle cx="220" cy="160" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="220" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W21</text>
+                <text x="220" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">论法的精神</text>
+
+                <!-- W22 -->
+                <circle cx="260" cy="160" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="260" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W22</text>
+                <text x="260" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">君主论</text>
+
+                <!-- W23 -->
+                <circle cx="300" cy="160" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="300" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W23</text>
+                <text x="300" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">利维坦</text>
+
+                <!-- W24 -->
+                <circle cx="340" cy="160" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="340" y="164" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W24</text>
+                <text x="340" y="190" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">论自由</text>
+
+                <!-- W25 当前节点 -->
+                <circle cx="380" cy="160" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="380" y="164" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W25</text>
+                <text x="380" y="190" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">规训与惩罚</text>
+
+                <!-- W26 待读 -->
+                <circle cx="420" cy="160" r="14" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="420" y="164" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="9" font-weight="600">W26</text>
+                <text x="420" y="190" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="8">待读</text>
+
+                <!-- 跨频道C -->
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+                <text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+                <text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+
+                <!-- 连接弧线 -->
+                <path d="M 380 178 Q 380 250 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 380 178 Q 320 220 260 178" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 380 178 Q 340 220 340 178" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 380 178 Q 320 220 300 178" fill="none" stroke="#4A9EFF" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 100 178 Q 240 220 380 178" fill="none" stroke="#4A9EFF" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 460 118 Q 420 140 380 178" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <!-- 图例 -->
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <!-- 下周预告 -->
+        <h2>下周预告</h2>
+        <p>第26周，我们将继续探索权力与社会的交汇点。</p>
+        <p>从福柯的"规训社会"到下一本经典——权力如何塑造我们的现代生活，我们如何在被规训中保持清醒？这是从身体政治到社会结构的自然过渡。</p>
+
+        <div class="pull-quote">
+            <p>"在权力的网络中，我们不是被动的节点；我们是网络的一部分，也是网络的可能性。"
+            </p>
+            <div class="attribution">—— 知识网络的延续</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="page-nav">
+            <a href="./w25-d04.html">← D04 · 挑战者</a>
+            <a href="./w26-d01.html">D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>

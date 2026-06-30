@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 24 · Day 2 · 提炼者 · 《论自由》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', 'Songti SC', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 6rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .post-header {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            padding: 0.3rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .prose p {
+            margin-bottom: 1.5rem;
+            font-size: 1.025rem;
+        }
+
+        .prose em { color: var(--accent); font-style: italic; }
+        .prose strong { color: var(--white); font-weight: 600; }
+
+        .section-title {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0;
+        }
+
+        .framework-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .framework-card::before {
+            content: attr(data-num);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(226,163,85,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            line-height: 1;
+        }
+
+        .framework-card .card-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .framework-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+            font-family: Georgia, serif;
+        }
+
+        .framework-card .card-body {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.75;
+        }
+
+        .framework-card .card-body em {
+            color: var(--accent);
+        }
+
+        .framework-card .card-core {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            background: var(--surface-2);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .framework-card .card-core strong {
+            color: var(--accent);
+        }
+
+        .svg-container {
+            margin: 2rem 0;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .svg-container .svg-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .contrast-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1.75rem 0;
+        }
+
+        .contrast-col {
+            background: var(--surface);
+            padding: 1.25rem;
+        }
+
+        .contrast-col .col-label {
+            font-size: 0.7rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .contrast-col .col-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.6rem;
+        }
+
+        .contrast-col .col-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .contrast-col.left { border-right: 1px solid var(--border); }
+        .contrast-col .col-accent { color: var(--accent); }
+
+        .pullquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: #bbb;
+            line-height: 1.75;
+        }
+
+        .misread-list {
+            margin: 1.5rem 0;
+        }
+
+        .misread-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .misread-item:last-child { border-bottom: none; }
+
+        .misread-item .misread-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .misread-item .misread-body {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .misread-item .misread-body strong {
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .misread-item .misread-correction {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #6cbf73;
+        }
+
+        .tension-box {
+            background: rgba(226,163,85,0.06);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            padding: 1.5rem 1.75rem;
+            margin: 2.5rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .tension-box .tension-q {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .tension-box .tension-echo {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent-border);
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .tension-box .tension-echo strong {
+            color: var(--accent);
+        }
+
+        .bias-note {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            background: rgba(233, 69, 96, 0.06);
+            border: 1px solid rgba(233, 69, 96, 0.18);
+            border-radius: 0.375rem;
+            padding: 0.6rem 0.875rem;
+            margin: 0.5rem 0 1rem;
+            font-family: -apple-system, system-ui, sans-serif;
+            font-size: 0.79rem;
+            color: #d4657a;
+            line-height: 1.55;
+        }
+
+        .data-highlight {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .data-item {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .data-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.75rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .post-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+
+        .post-nav a:hover { opacity: 0.75; }
+
+        .post-nav .nav-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 520px) {
+            .contrast-box { grid-template-columns: 1fr; }
+            .contrast-col.left { border-right: none; border-bottom: 1px solid var(--border); }
+            .post-header h1 { font-size: 1.5rem; }
+            .data-highlight { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="nav">
+        <a href="../../index.html">首页</a>
+        <span class="sep">›</span>
+        <a href="../index.html">书单精读</a>
+        <span class="sep">›</span>
+        <span>第24周 · 第2天</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="role-badge">🎯 提炼者 The Distiller · W24-D02</div>
+        <div class="meta">
+            <span>📅 2026-09-15</span>
+            <span>📖 第 24 周 · Day 2 / 5</span>
+            <span>🔢 《论自由》</span>
+        </div>
+        <h1>从伤害原则到个性解放：密尔的五把自由刀</h1>
+        <div class="subtitle">密尔用五章的篇幅，把自由的战场从政治领域扩展到了社会领域——但每一刀都有边界</div>
+    </header>
+
+    <div class="prose">
+
+        <p>
+            提炼者今天的工作，是把密尔散落在《论自由》五章中的自由逻辑，拼成一张可理解的地图。密尔的方法论非常明确：<strong>从个人自主出发，划定社会干涉的边界，然后论证自由对真理和幸福的工具价值</strong>。但他不是简单地说"自由是好的"——他试图证明的是，<em>自由不仅对个人有利，对社会整体也有利</em>。今天这五把自由刀，每一把都从一个具体的论证出发，指向一个让保守主义不安的结论。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">五把自由刀</div>
+
+        <div class="framework-card" data-num="01">
+            <div class="card-label">自由刀 #1</div>
+            <div class="card-title">伤害原则 <em>Harm Principle</em> · 自由的第一防线</div>
+            <div class="card-body">
+                密尔的核心命题：人类可以正当地干涉个人自由的唯一理由，是防止个人<em>伤害他人</em>。这个原则划定了两个领域：<em>个人领域</em>（社会无权干涉）和<em>社会领域</em>（社会可以干涉）。<br><br>
+                但"伤害"的定义是关键。密尔明确排除了"道德伤害"——不能因为一个人的行为违反了社会道德，就干涉他的自由。只有当行为对他人造成了<em>可辨认的物质损害</em>时，干涉才是正当的。<br><br>
+                密尔还区分了<em>直接伤害</em>和<em>间接伤害</em>。直接伤害（如暴力、欺诈） clearly 属于社会干涉的范围。但间接伤害（如一个人懒惰导致家庭贫困）则属于灰色地带。密尔倾向于限制社会干涉的范围，因为间接伤害的链条太长，最终会消灭所有个人自由。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>伤害原则不是道德中立原则，而是<em>道德限制原则</em>。它不是说"所有行为都同样好"，而是说"社会无权用强制力推行某种道德"。道德判断属于个人良知，不属于法律。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="02">
+            <div class="card-label">自由刀 #2</div>
+            <div class="card-title">思想自由 <em>Freedom of Thought</em> · 真理的竞技场</div>
+            <div class="card-body">
+                密尔在第二章提出了三个论证来支持思想自由。第一，<em>被压制的意见可能是正确的</em>。人类历史充满了"今天被压制、明天被证明正确"的例子（如伽利略、马丁·路德）。第二，<em>即使被压制的意见是错误的，它也包含部分真理</em>。真理往往存在于两种对立意见之间的某个位置。第三，<em>即使正确的意见不通过与错误的意见斗争，也会变成死的教条</em>。<br><br>
+                这三个论证构成了密尔对思想自由的<em>工具性辩护</em>——思想自由之所以重要，不是因为自由本身有内在价值，而是因为它是发现真理的最佳机制。这是一个<em>认识论</em>论证，不是<em>道德</em>论证。<br><br>
+                但密尔也暗示了思想自由的<em>内在价值</em>：即使一个人拥有正确的意见，如果他没有通过独立思考来获得它，那么这个意见对他没有真正的意义。"只知道结论，不知道理由"的人，不是真正理解了真理。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>密尔对思想自由的辩护是双重的：工具性（思想自由帮助发现真理）和内在性（独立思考培养人的判断力）。但现代信息环境（算法推荐、信息茧房）让"真理通过自由讨论而胜出"的假设变得可疑。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="03">
+            <div class="card-label">自由刀 #3</div>
+            <div class="card-title">个性的价值 <em>Value of Individuality</em> · 做自己</div>
+            <div class="card-body">
+                第三章是《论自由》中最诗意的一章。密尔论证：<em>按照自己选择的方式生活——即使这种方式不是最好的——也比被迫按照社会规定的方式生活更有价值</em>。这不是因为个人选择总是正确的，而是因为<em>选择本身有内在价值</em>。<br><br>
+                密尔区分了两种人："<em>自己计划生活的人</em>"和"<em>让别人替自己计划生活的人</em>”。前者培养了自己的判断力、责任感和创造力；后者变成了被动接受社会指令的机器。密尔认为，一个社会的进步程度，取决于有多少人是前一种类型。<br><br>
+                但密尔也承认，个性的价值不是无限的。当个人行为伤害他人时，社会可以干涉。问题是："伤害"的边界在哪里？如果一个人的"个性表达"冒犯了他人，这算不算伤害？密尔的回答是模糊的——他倾向于保护个性，但承认边界存在。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>密尔的"个性"概念预设了一个<em>自主的、理性的自我</em>。但现代心理学证明，自我是社会建构的——我们的偏好、价值观、甚至"自我认同"都深受社会环境影响。如果自我不是自主的，那么"做自己"是否只是一个幻觉？
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="04">
+            <div class="card-label">自由刀 #4</div>
+            <div class="card-title">多数人的暴政 <em>Tyranny of the Majority</em> · 社会压迫的机制</div>
+            <div class="card-body">
+                密尔在第一章就警告：民主时代的新威胁不是君主专制，而是<em>社会舆论的专制</em>。当大多数人持有相同意见时，少数人的 dissent 会被沉默、排斥和惩罚。这种暴政不需要监狱——只需要<em>冷眼、沉默和社会排斥</em>。<br><br>
+                密尔描述的社会压迫机制包括：公开谴责（让异端者"社死"）、职业排斥（不让异端者获得工作）、社交隔离（不让异端者参与社交活动）。这些机制比法律惩罚更彻底，因为它们渗透到生活的每一个角落。<br><br>
+                但密尔也承认，社会舆论有正当的功能。当一个人的行为明显伤害他人时，社会舆论可以施加道德压力。问题在于：社会舆论经常把<em>无害的异端</em>也当作<em>有害的行为</em>来惩罚。密尔的挑战是：如何区分正当的道德批评和不正当的社会压迫？
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>多数人的暴政是密尔对自由理论的最大贡献。他认识到，自由的最大威胁不是来自政府，而是来自<em>社会本身</em>。但现代社交媒体的兴起让这个问题更复杂：算法推荐让"多数人的意见"被放大，而少数意见被压缩——这是技术化的多数暴政。
+            </div>
+        </div>
+
+        <div class="framework-card" data-num="05">
+            <div class="card-label">自由刀 #5</div>
+            <div class="card-title">自由的边界 <em>Limits of Liberty</em> · 在哪里止步</div>
+            <div class="card-body">
+                第四章和第五章讨论了自由的边界。密尔提出了几个原则：当个人行为<em>伤害他人</em>时，社会可以干涉；当个人行为只影响自己时，社会无权干涉。但"伤害"的界定是困难的。<br><br>
+                密尔分析了几个边界案例：<em>醉酒</em>（个人伤害自己，但间接导致社会成本）；<em>赌博</em>（个人选择，但可能导致家庭破产）；<em>卖淫</em>（双方同意，但社会认为不道德）。密尔的倾向是：只要行为是自愿的、知情的、不欺骗他人的，社会就应该尊重。<br><br>
+                但密尔也承认，某些"自愿"行为可能不是真正的自愿——比如一个人因为贫困而被迫卖身。在这种情况下，密尔认为社会应该改善贫困，而不是禁止卖身。这是密尔的<em>社会改革</em>面向：自由不仅需要消极的不干涉，还需要积极的条件支持。
+            </div>
+            <div class="card-core">
+                <strong>关键命题：</strong>密尔的边界划定是<em>情境化的</em>，不是绝对的。他试图在"保护个人自由"和"防止社会伤害"之间找到平衡。但这个平衡点是移动的——取决于社会的发展阶段、文化背景和技术条件。密尔的框架提供了思考工具，但没有给出最终答案。
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">信息图 · 从伤害原则到自由边界的逻辑链</div>
+
+        <div class="svg-container">
+            <div class="svg-label">密尔自由逻辑链 · 从个人自主到社会干涉的边界</div>
+            <svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+                    </marker>
+                    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#e2a355"/>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#E94560"/>
+                    </marker>
+                </defs>
+
+                <rect width="720" height="520" fill="#111" rx="8"/>
+                <text x="360" y="28" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="12" letter-spacing="2">密尔自由逻辑链 · 从伤害到边界</text>
+
+                <rect x="16" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">自由核心 · 个人自主</text>
+
+                <rect x="32" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="184" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #1 · 伤害原则</text>
+                <text x="184" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">唯一正当干涉理由：防止伤害他人</text>
+
+                <line x1="184" y1="116" x2="184" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="32" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #2 · 思想自由</text>
+                <text x="184" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">真理通过自由讨论而胜出</text>
+
+                <line x1="184" y1="172" x2="184" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="32" y="188" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="184" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #3 · 个性的价值</text>
+                <text x="184" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">选择本身有内在价值</text>
+
+                <line x1="184" y1="228" x2="184" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <rect x="32" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="184" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">核心问题</text>
+                <text x="184" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">谁来定义"伤害"？</text>
+
+                <rect x="368" y="44" width="336" height="260" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="64" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">社会约束 · 边界划定</text>
+
+                <rect x="384" y="76" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="94" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #4 · 多数人的暴政</text>
+                <text x="536" y="108" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">社会舆论比法律更隐蔽更彻底</text>
+
+                <line x1="536" y1="116" x2="536" y2="128" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="384" y="132" width="304" height="40" rx="5" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="536" y="150" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">刀 #5 · 自由的边界</text>
+                <text x="536" y="164" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">间接伤害、自愿行为、道德冒犯</text>
+
+                <line x1="536" y1="172" x2="536" y2="184" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <rect x="384" y="188" width="304" height="40" rx="5" fill="#1a1200" stroke="rgba(226,163,85,0.35)" stroke-width="1.5"/>
+                <text x="536" y="206" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">社会输出</text>
+                <text x="536" y="220" text-anchor="middle" fill="#d4d4d4" font-family="Georgia,serif" font-size="10">真理发现、个性发展、社会进步</text>
+
+                <line x1="536" y1="228" x2="536" y2="240" stroke="#e2a355" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+                <rect x="384" y="244" width="304" height="40" rx="5" fill="#1a0710" stroke="rgba(233,69,96,0.3)" stroke-width="1.5"/>
+                <text x="536" y="262" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600">伦理张力</text>
+                <text x="536" y="276" text-anchor="middle" fill="#f0f0f0" font-family="Georgia,serif" font-size="10" font-weight="700">自由 vs 安全 vs 道德</text>
+
+                <line x1="340" y1="264" x2="380" y2="264" stroke="#e2a355" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+                <text x="360" y="256" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="8">边界→</text>
+
+                <rect x="16" y="316" width="688" height="120" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="360" y="336" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="9" letter-spacing="1">两种自由观 · 对个人与社会关系的根本假设</text>
+
+                <rect x="28" y="348" width="320" height="76" rx="4" fill="#111" stroke="#2a2a2a" stroke-width="1"/>
+                <text x="188" y="368" text-anchor="middle" fill="#6fb5e0" font-family="system-ui,sans-serif" font-size="9" font-weight="600">传统自由主义</text>
+                <text x="188" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">自由 = 免于政府干预</text>
+                <text x="188" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">主要敌人：政府专制</text>
+                <text x="188" y="416" text-anchor="middle" fill="#555" font-family="system-ui,sans-serif" font-size="8">宪法和法律是保护工具</text>
+
+                <rect x="372" y="348" width="320" height="76" rx="4" fill="#111" stroke="rgba(226,163,85,0.3)" stroke-width="1"/>
+                <text x="532" y="368" text-anchor="middle" fill="#e2a355" font-family="system-ui,sans-serif" font-size="9" font-weight="600">密尔自由主义</text>
+                <text x="532" y="388" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">自由 = 免于社会压迫</text>
+                <text x="532" y="402" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">主要敌人：多数人的暴政</text>
+                <text x="532" y="416" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">道德宽容和多元主义是保护工具</text>
+
+                <rect x="16" y="448" width="688" height="56" rx="6" fill="transparent" stroke="rgba(233,69,96,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+                <text x="360" y="468" text-anchor="middle" fill="#E94560" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing="1">⚠ 红色虚线框 · 前提条件</text>
+                <text x="360" y="490" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 A：人类能够理性地判断什么对自己最好（但认知偏差普遍存在）</text>
+                <text x="360" y="504" text-anchor="middle" fill="#888" font-family="system-ui,sans-serif" font-size="8">前提 B：真理会在自由讨论中胜出（但信息茧房让讨论难以发生）</text>
+            </svg>
+        </div>
+
+        <p>
+            这张图底部的两个红色虚线框是提炼者要特别强调的。左边的前提A问的是：如果人类不是完全理性的，那么"个人自主"是否会导致自我伤害？右边的前提B问的是更深层的问题：<em>在算法推荐和信息茧房的时代，真理是否还能通过自由讨论而胜出</em>？明天应用者会把这个框架带进三个真实场景，看看这两个前提在哪里成立、在哪里被挑战。
+        </p>
+
+        <hr class="divider">
+        <div class="section-title">两条范式对比</div>
+
+        <h2>政治自由 vs 社会自由：从免于政府到免于社会的范式扩展</h2>
+
+        <div class="contrast-box">
+            <div class="contrast-col left">
+                <div class="col-label">传统自由主义</div>
+                <div class="col-name" style="color:#6fb5e0;">政治自由</div>
+                <div class="col-text">
+                    关心政府权力的限制<br><br>
+                    主要敌人是君主专制<br><br>
+                    自由 = 免于政府干预<br><br>
+                    宪法和法律是保护工具<br><br>
+                    目标：限制政治权力<br><br>
+                    <span style="color:#555;font-size:0.83rem">核心信念：政府是自由的主要威胁。</span>
+                </div>
+            </div>
+            <div class="contrast-col">
+                <div class="col-label">密尔</div>
+                <div class="col-name" style="color:#E94560;">社会自由</div>
+                <div class="col-text">
+                    关心社会舆论的限制<br><br>
+                    主要敌人是多数人的暴政<br><br>
+                    自由 = 免于社会压迫<br><br>
+                    道德宽容和多元主义是保护工具<br><br>
+                    目标：限制社会权力<br><br>
+                    <span style="color:#888;font-size:0.83rem">核心信念：社会本身可以是自由的最大威胁。</span>
+                </div>
+            </div>
+        </div>
+
+        <p>
+            两种范式的分歧，不只是方法论的差异，更是关于<strong>"自由的最大威胁来自哪里"</strong>的根本分歧。传统自由主义问："政府在哪里止步？"密尔问："<em>社会</em>在哪里止步？"<br><br>
+            密尔的革命性在于：他认识到，即使在最民主的社会中，自由也可能被摧毁——不是通过法律，而是通过<em>冷眼、沉默和社会排斥</em>。当一个人的邻居、同事、朋友都认为他是"异端"时，政府不需要逮捕他——他已经是一个社会意义上的囚犯了。
+        </p>
+
+        <div class="bias-note">
+            ⚠️ <strong>框架偏差标注</strong>：密尔的框架在解释<strong>19世纪欧洲社会</strong>时是准确的，但在解释<strong>21世纪数字社会</strong>时需要修正。社交媒体让"多数人的暴政"从物理社区扩展到了虚拟空间，算法推荐让"信息茧房"取代了"公共广场"。密尔的"自由讨论"假设了一个共同的对话空间，但现代技术已经碎片化了这个空间。
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">常见误读澄清</div>
+
+        <div class="misread-list">
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：密尔 = 道德虚无主义</strong>
+                    <span>密尔主张社会无权用强制力推行道德，但这不等于他认为所有道德都同样好。密尔明确说某些行为（如伤害他人）是不道德的，社会可以干涉。他的观点是：道德判断应该通过说服而非强制来实现，个人良知应该受到尊重。</span>
+                    <div class="misread-correction">✓ 准确理解：密尔是<em>道德多元主义者</em>，不是道德虚无主义者。他尊重不同的道德选择，但承认某些行为（如伤害他人）是 universally 不可接受的。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：密尔认为真理必然胜出</strong>
+                    <span>密尔确实认为真理在自由讨论中更有可能胜出，但他没有说真理<em>必然</em>胜出。他承认，在某些历史时期，谬误可能暂时占据上风。他的观点是：即使从长期来看，<em>压制意见</em>也比<em>允许错误意见</em>更有害——因为压制摧毁了发现真理的机制。</span>
+                    <div class="misread-correction">✓ 准确理解：密尔不是真理必然论者，而是<em>机制论者</em>。他关心的是发现真理的<em>过程</em>，而不是真理的<em>必然性</em>。</div>
+                </div>
+            </div>
+            <div class="misread-item">
+                <div class="misread-icon">❌</div>
+                <div class="misread-body">
+                    <strong>误读：密尔的伤害原则清晰明确</strong>
+                    <span>"伤害原则"看起来简单，但"伤害"的界定极其复杂。精神伤害算不算？社会压力算不算？间接伤害（如酗酒导致的社会成本）算不算？密尔自己在处理这些边界案例时表现出了矛盾。伤害原则是一个<em>方向性</em>原则，不是一个<em>操作性</em>原则。</span>
+                    <div class="misread-correction">✓ 准确理解：伤害原则是<em>指南针</em>，不是<em>地图</em>。它告诉我们应该朝哪个方向走，但没有告诉我们具体的路线。</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-title">张力问题回响</div>
+
+        <div class="tension-box">
+            <div class="tension-label">🔁 张力问题回响（D2·提炼者视角）</div>
+            <div class="tension-q">
+                如果多数人的意见可能是错的，谁来保护少数人的自由？密尔的"伤害原则"在实践中如何界定——精神伤害算不算？社会压力算不算？
+            </div>
+            <div class="tension-echo">
+                提炼者今天的工作，是让这个张力问题变得更精确。<br><br>
+                五把刀拆开来看，密尔的逻辑链在论证层面是闭合的：伤害原则 → 思想自由 → 个性的价值 → 多数人的暴政 → 自由的边界。但<strong>除了那两个红色虚线框</strong>，还有一个更深层的问题：<em>如果"自我"本身是社会建构的，那么"个人自主"是否只是一个幻觉？</em><br><br>
+                更精确的问题变成：<strong>密尔的"自由"是为谁设计的？</strong>如果自由需要理性判断能力、信息获取能力和经济独立能力，那么那些缺乏这些能力的人（如儿童、精神病人、极端贫困者）是否被排除在自由的保护之外？密尔的框架预设了一个<em>理想的自由主体</em>——理性、自主、有判断力——但现实中的人类很少符合这个理想。<br><br>
+                密尔描述的自由是真实的，但"真实"不等于"普遍"。<em>从"某些人需要自由"到"所有人都应该自由"之间，有一道平等的鸿沟。</em>这道鸿沟，《论自由》无法切开。
+            </div>
+        </div>
+
+        <div class="pullquote">
+            "密尔的自由不是给所有人的礼物，而是给有能力使用它的人的特权。真正的问题不是'自由是否好'，而是'谁有资格获得自由'。"
+            <br>— 提炼者的注脚
+        </div>
+
+        <p>
+            这句话是提炼者给密尔的框架设下的边界。他清楚自由的锋利，也清楚它的局限。明天，应用者会把这五把自由刀放进三个真实场景——历史的、中国的、和Ethan每天面对的商业世界——看看伤害原则、思想自由和多数人的暴政在什么样的土壤里生效，在什么样的容器里可以被改变。
+        </p>
+
+    </div>
+
+    <nav class="post-nav">
+        <div>
+            <div class="nav-label">昨日</div>
+            <a href="./w24-d01.html">← 叙事者 · 那个为自由写下最强辩护词的人</a>
+        </div>
+        <div style="text-align:right">
+            <div class="nav-label">明日</div>
+            <a href="./w24-d03.html">应用者 · 三场景拆解 →</a>
+        </div>
+    </nav>
+
+    <div style="display:flex;justify-content:space-between;margin-top:2rem;font-size:.82rem;font-family:sans-serif;">
+        <a href="./w24-d01.html" style="color:#888;text-decoration:none;">← D01 · 叙事者</a>
+        <a href="./w24-d03.html" style="color:#888;text-decoration:none;">D03 · 应用者 →</a>
+    </div>
+
+</div>
+</body>
+</html>

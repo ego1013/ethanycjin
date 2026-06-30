@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 24 · Day 5 · 摆渡人+连接者 · 《论自由》</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #161616;
+            --border: #1e1e1e;
+            --border-light: #2a2a2a;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #e2a355;
+            --accent-dim: rgba(226,163,85,0.08);
+            --accent-border: rgba(226,163,85,0.2);
+            --bridge: #4A9EFF;
+            --bridge-dim: rgba(74,158,255,0.07);
+            --bridge-border: rgba(74,158,255,0.2);
+            --connector: #2DD4BF;
+            --connector-dim: rgba(45,212,191,0.07);
+            --connector-border: rgba(45,212,191,0.2);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.9;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        .nav a { color: var(--text-dim); text-decoration: none; }
+        .nav a:hover { color: var(--accent); }
+
+        .article-header {
+            padding: 2rem 0 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--bridge-dim);
+            color: var(--bridge);
+            border: 1px solid var(--bridge-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .article-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .article-header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        p { margin-bottom: 1.4rem; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 2.5rem 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1.8rem 0 0.8rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        em { font-style: italic; color: #b8b8b8; }
+        strong { color: var(--white); font-weight: 700; }
+
+        .bridge-section {
+            border-left: 3px solid var(--bridge);
+            padding: 1.5rem 1.5rem;
+            background: var(--bridge-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .bridge-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .connector-section {
+            border-left: 3px solid var(--connector);
+            padding: 1.5rem 1.5rem;
+            background: var(--connector-dim);
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        .connector-section .section-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--connector);
+            margin-bottom: 0.6rem;
+        }
+
+        .section-break {
+            margin: 3rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+        }
+
+        .tension-box {
+            background: var(--surface);
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 2rem 0;
+        }
+
+        .tension-box .tension-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.6rem;
+        }
+
+        .tension-box .tension-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension {
+            background: linear-gradient(135deg, rgba(74,158,255,0.05), rgba(226,163,85,0.05));
+            border: 1px solid rgba(74,158,255,0.25);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .final-tension .ft-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--bridge);
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-arrow {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .final-tension .ft-original {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .final-tension .ft-evolved {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .final-tension .ft-questions {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(74,158,255,0.15);
+        }
+
+        .final-tension .ft-q-label {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+
+        .final-tension .ft-q-item {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .final-tension .ft-q-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--bridge);
+        }
+
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .branch-item.active {
+            border-color: var(--connector-border);
+            background: var(--connector-dim);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .branch-type {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .branch-type.tension { background: rgba(233,69,96,0.1); color: #E94560; }
+        .branch-type.dialogue { background: rgba(74,158,255,0.1); color: var(--bridge); }
+        .branch-type.inherit { background: rgba(226,163,85,0.1); color: var(--accent); }
+        .branch-type.complement { background: rgba(45,212,191,0.1); color: var(--connector); }
+        .branch-type.channel-c { background: rgba(180,120,220,0.1); color: #B47CDC; }
+
+        .branch-book {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .branch-week {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .branch-desc {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .pull-quote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--accent-dim);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .pull-quote p {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pull-quote .attribution {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: normal;
+        }
+
+        .bridge-passage {
+            border: 1px solid var(--bridge-border);
+            border-radius: 10px;
+            padding: 1.5rem 1.6rem;
+            margin: 1.5rem 0;
+            background: var(--surface);
+        }
+
+        .passage-num {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--bridge);
+            margin-bottom: 0.5rem;
+        }
+
+        .passage-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        .map-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .map-title {
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            font-size: 0.82rem;
+            font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .page-nav a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="nav">
+            <a href="../../">Ethan's Lab</a>
+            <span>›</span>
+            <a href="../">书单精读</a>
+            <span>›</span>
+            <span>W24 · D5 · 摆渡人+连接者</span>
+        </nav>
+
+        <div class="article-header">
+            <div class="meta-row">
+                <span class="meta-badge">🌉 摆渡人</span>
+                <span class="meta-badge">🔗 连接者</span>
+                <span>Week 24 · Day 5 · 2026-09-18</span>
+            </div>
+            <h1>住在自由里的摆渡人</h1>
+            <div class="subtitle">如果密尔描述的社会压迫是真实的，但现代技术已经改变了压迫的形式，那我们追求的究竟是"更多的自由"还是"更公平的自由条件"？</div>
+        </div>
+
+        <div class="bridge-section">
+            <div class="section-label">🌉 摆渡人 The Bridge</div>
+            <p>过去四天，叙事者讲述了密尔如何在妻子去世后写下这本自由主义的基石；应用者把自由理论丢进了维多利亚时代的道德压迫、中国当下的集体主义文化和腾讯组织管理三个真实场景；挑战者从伤害原则的不可界定性、理性人假设的破产、精英主义盲区和现代信息环境的挑战四个维度解构了密尔。</p>
+            <p>今天，摆渡人要做最后的摆渡——不是给答案，而是把问题推进到更深的地方。</p>
+        </div>
+
+        <h2>第一段摆渡：从"密尔不够"到"密尔是基础"</h2>
+
+        <p>挑战者昨天提出了一个尖锐的指控：密尔的伤害原则在边界处模糊，理性人假设被证伪，自由框架有阶级盲区，信息环境改变了讨论机制。这个指控在很大程度上成立。</p>
+
+        <p>但摆渡人要问一个更底层的问题：<em>如果密尔不够，那什么才够？</em></p>
+
+        <p>密尔的核心洞见被低估了：他反复强调，<strong>社会本身可以是自由的最大威胁</strong>。不是政府，不是法律，而是邻居的冷眼、同事的沉默、社会的排斥。这个洞见在2026年比1859年更加相关——因为社交媒体的放大效应让社会压迫更加无处不在、更加迅速、更加难以抵抗。</p>
+
+        <div class="pull-quote">
+            <p>"密尔不是告诉我们自由应该是什么，而是告诉我们自由不能假装不受社会威胁。"</p>
+            <div class="attribution">—— 摆渡者的注脚</div>
+        </div>
+
+        <p>挑战者正确地指出了密尔的框架缺陷，但摆渡人要指出挑战者的盲点：<em>完全否定自由的理想，不等于超越了自由问题，而是把自由分析交给了更隐蔽的框架。</em>如果拒绝密尔的语言，我们用什么语言来描述 cancel culture 的恐怖、算法推荐的操纵、或者组织内部的 conformity 压力？</p>
+
+        <p>所以摆渡人的第一个渡口是：密尔的问题不是"他不应该追求自由"，而是<em>他追求自由的方式没有嵌入足够的条件平等</em>。真正的问题不是"要不要自由"，而是"什么样的自由条件让所有人都能享受自由"。</p>
+
+        <h2>第二段摆渡：密尔遇见算法时代</h2>
+
+        <p>如果密尔在2026年重写《论自由》，他会看到什么？</p>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 01</div>
+            <div class="passage-title">算法推荐：从公共广场到信息茧房</div>
+            <p>密尔假设不同意见可以在一个共同的公共广场上竞争。但算法推荐根据用户偏好过滤内容，创造了无数信息茧房。在茧房内，不同意见不会相遇；在茧房之间，对话不可能。密尔的"真理通过讨论胜出"假设了一个共同的认知空间，但算法时代把这个空间分割成了无数孤岛。</p>
+            <p>摆渡人的判断是：<em>算法不是对自由的否定，而是对自由的重新定义</em>。自由不再是"不受干涉"，而是"不受操纵"。但"不受操纵"需要新的制度——算法透明、平台问责、数据权利。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 02</div>
+            <div class="passage-title">Cancel Culture：从社会排斥到数字流放</div>
+            <p>密尔描述的社会压迫是缓慢的、局部的——一个不信教的人可能失去工作和朋友。但 cancel culture 是迅速的、全球的——一条 tweet 可以在几小时内让一个人失去工作、声誉和社会关系。这不是密尔所想象的"社会舆论"——这是<em>数字时代的私刑</em>。</p>
+            <p>但摆渡人要指出：cancel culture 不是密尔自由的对立面，而是它的<em>扭曲版本</em>。密尔说社会不应该压制异端，但 cancel culture 正是社会压制异端的新形式。密尔的框架在诊断 cancel culture 时仍然有效——他只是没有预见到技术会让压制如此高效。</p>
+        </div>
+
+        <div class="bridge-passage">
+            <div class="passage-num">摆渡 03</div>
+            <div class="passage-title">平台权力：从政府专制到平台专制</div>
+            <p>密尔的主要敌人是政府和社会的专制。但21世纪出现了一个新的权力中心——<em>平台</em>。社交媒体平台拥有比大多数国家更大的影响力：它们决定什么内容可见、什么账号可以存在、什么意见可以被传播。这不是政府权力，也不是社会权力——这是一种<em>技术权力</em>，密尔的框架没有覆盖。</p>
+            <p>但摆渡人要指出：平台权力不是全新的。它类似于密尔所说的"社会权力"——一种非正式的、分散的、但无处不在的约束力量。密尔的框架可以被扩展：如果社会权力需要被限制，那么平台权力也需要被限制。但限制平台权力需要新的工具——反垄断、数据保护、算法审计。</p>
+        </div>
+
+        <h2>第三段摆渡：住在自由里的摆渡人</h2>
+
+        <p>摆渡人今天最后一个问题，是关于自己的。</p>
+
+        <p>如果密尔是对的——社会压迫无处不在，自由需要被保护——那么摆渡人作为"把思想带到当下"的角色，本身也在一个社会环境中运作。这篇推送的标题选择、内容取舍、问题排序，都在引导读者的注意力。摆渡人自己也在塑造社会舆论。</p>
+
+        <p>这不是自嘲。这是一个认识论上的必要诚实：<em>没有人能站在社会压迫之外。</em>密尔不能，挑战者不能，摆渡人也不能。问题不是"谁能设计无压迫的自由"——答案是没有人。问题是：<strong>我们是否愿意承认自己的言论也有压迫性，并为此承担责任。</strong></p>
+
+        <div class="pull-quote">
+            <p>"真正的自由不是拒绝一切约束，而是在承认约束的同时，坚持为自己和他人争取空间。"</p>
+            <div class="attribution">—— 摆渡人的立场</div>
+        </div>
+
+        <p>密尔在晚年意识到了自己框架的局限——他支持女性选举权和劳动者权益，表明他认识到自由需要<em>条件</em>。摆渡人认为，这个"觉醒"不是矛盾，而是<em>成熟</em>。他意识到，自由不是抽象的权利，而是具体的资源——教育、经济安全、信息获取、社会网络。</p>
+
+        <p>摆渡人最终的立场是：密尔的价值不在于他给出的答案，而在于他提出的问题。<em>社会如何压迫个人？多数人的暴政如何运作？自由的边界在哪里？</em>这些问题在他之后一个半世纪仍然活跃。真正重要的不是选择"密尔"还是"反密尔"，而是<em>在两者之间的张力中持续追问</em>。</p>
+
+        <div class="final-tension">
+            <div class="ft-label">❓→💡 本周张力问题的最终形态</div>
+            <div class="ft-arrow">↓</div>
+            <div class="ft-original">
+                <strong>原始张力：</strong>如果多数人的意见可能是错的，谁来保护少数人的自由？密尔的"伤害原则"在实践中如何界定——精神伤害算不算？社会压力算不算？
+            </div>
+            <div class="ft-evolved">
+                <strong>最终形态：</strong>如果自由是真实的，但自由的实现需要条件，我们追求的究竟是"更多的自由"还是"更公平的自由条件"？真正重要的不是自由本身，而是<em>自由背后的能力、资源和制度是否让所有人都能享受它</em>。密尔发现了社会压迫，但问题是：当社会压迫遇上算法技术，"保护自由"的理想主义承诺，是否必然滑向"控制信息"的实用主义现实？
+            </div>
+            <div class="ft-questions">
+                <div class="ft-q-label">三个落地提问</div>
+                <div class="ft-q-item">你最近一次感受到"社会压力"是在什么场景？这个压力是正当的道德批评，还是不正当的 conformity 要求？</div>
+                <div class="ft-q-item">你所在的组织（公司/社区/平台）是否有一个机制，让 dissent 被保护、让少数意见被倾听？</div>
+                <div class="ft-q-item">如果"自由需要条件"是一个现实，你愿意接受一种"有张力的自由实践"——即不断在个人自主和社会责任之间调整吗？</div>
+            </div>
+        </div>
+
+        <div class="section-break"></div>
+
+        <div class="connector-section">
+            <div class="section-label">🔗 连接者 The Connector</div>
+            <p>在50本书的知识网络中，第24周《论自由》的位置是什么？密尔的自由理论如何与前面的23本书对话、传承、张力、互补？</p>
+        </div>
+
+        <h2>知识地图：第24节点</h2>
+
+        <p>连接者今天的工作不是"密尔说了什么"，而是"密尔站在哪里"。四条连接枝干，每一条都指向一个更深层的问题。</p>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">利维坦</span>
+                <span class="branch-week">W23</span>
+            </div>
+            <div class="branch-desc">
+                霍布斯在《利维坦》中论证了国家为什么必要，密尔在《论自由》中论证了国家应该在哪里止步。两个理论可以读作一组<em>边界划定</em>：霍布斯说"国家必须强大"，密尔说"国家必须受限"。但深层张力是：如果国家必须强大才能维持秩序，那么限制国家是否会削弱秩序？如果国家必须受限才能保护自由，那么限制国家是否会打开内战的门？现代宪政试图在这两者之间找到平衡——但平衡点是移动的。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type dialogue">对话</span>
+                <span class="branch-book">错误的行为</span>
+                <span class="branch-week">W12</span>
+            </div>
+            <div class="branch-desc">
+                塞勒在《错误的行为》中证明人类不理性，密尔在《论自由》中假设人类理性。两个理论直接冲突：如果人类不理性，那么"让个人自由选择"可能导致自我伤害；但如果人类不理性，谁来替他们做选择？塞勒的答案是"助推"——温和地引导而不强制。但密尔会反驳：助推本身是一种社会压迫——它利用认知偏差来操纵选择，而不是尊重自主。这是行为经济学与自由主义之间的深层对话。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type inherit">传承</span>
+                <span class="branch-book">国富论</span>
+                <span class="branch-week">W1</span>
+            </div>
+            <div class="branch-desc">
+                从斯密到密尔的传承是间接的：斯密论证了市场自由如何促进繁荣，密尔论证了个人自由如何促进真理和幸福。两者都相信<em>自由的力量</em>——不是通过设计，而是通过自发秩序。但密尔比斯密更激进：斯密关心经济自由，密尔关心<em>全部生活方式的自由</em>。从市场到社会，从经济到文化，自由的范围被极大地扩展了。
+            </div>
+        </div>
+
+        <div class="branch-item">
+            <div class="branch-header">
+                <span class="branch-type tension">张力</span>
+                <span class="branch-book">资本论</span>
+                <span class="branch-week">W2</span>
+            </div>
+            <div class="branch-desc">
+                马克思在《资本论》中论证：自由在资本主义社会中是不平等的——工人有"出卖劳动力的自由"，但没有"不出卖的自由"。密尔在《论自由》中论证：自由是普遍权利。但密尔晚年开始支持社会主义改革，这表明他部分接受了马克思的批评。两个理论的深层对话是：自由是否需要<em>经济平等</em>作为前提？如果自由只是形式上的，那么它是否只是统治阶级的意识形态？
+            </div>
+        </div>
+
+        <div class="branch-item active">
+            <div class="branch-header">
+                <span class="branch-type channel-c">跨频道C</span>
+                <span class="branch-book">美丽新世界</span>
+                <span class="branch-week">文学感知</span>
+            </div>
+            <div class="branch-desc">
+                赫胥黎在《美丽新世界》中描绘了一个比《1984》更可怕的 dystopia：人们不是被强迫服从，而是被<em>设计得愿意服从</em>——通过基因工程、条件反射、娱乐麻醉和药物，让每个人都"快乐"地生活在自己的位置上。没有暴力，没有压迫，甚至没有不满。密尔会说：这不是自由，因为"被设计的选择"不是真正的选择。但赫胥黎让我们追问：<em>如果每个人都"快乐"，自由还有价值吗？</em>如果自由意味着痛苦，那么追求自由是否只是浪漫的执念？
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-title">📍 知识地图 · 第24节点</div>
+            <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                <rect width="760" height="420" fill="#111111" rx="8"/>
+                <text x="380" y="28" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="11" letter-spacing="0.08em">KNOWLEDGE MAP · W1–W24</text>
+
+                <line x1="100" y1="100" x2="240" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="100" y1="100" x2="240" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="240" y1="100" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="180" x2="380" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="240" y1="260" x2="380" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="380" y1="140" x2="520" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="220" x2="520" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="380" y1="140" x2="520" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <line x1="520" y1="140" x2="660" y2="140" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="180" x2="660" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="220" x2="660" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="520" y1="260" x2="660" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+                <circle cx="60" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="60" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W1</text>
+                <text x="60" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">国富论</text>
+
+                <circle cx="100" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="100" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W2</text>
+                <text x="100" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">资本论</text>
+
+                <circle cx="220" cy="100" r="14" fill="#e2a355" fill-opacity="0.15" stroke="#e2a355" stroke-width="1.5"/>
+                <text x="220" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="9" font-weight="600">W12</text>
+                <text x="220" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">错误的行为</text>
+
+                <circle cx="460" cy="100" r="14" fill="#4A9EFF" fill-opacity="0.15" stroke="#4A9EFF" stroke-width="1.5"/>
+                <text x="460" y="104" text-anchor="middle" fill="#4A9EFF" font-family="sans-serif" font-size="9" font-weight="600">W23</text>
+                <text x="460" y="130" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">利维坦</text>
+
+                <circle cx="500" cy="100" r="18" fill="#e2a355" fill-opacity="0.2" stroke="#e2a355" stroke-width="2"/>
+                <text x="500" y="104" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="10" font-weight="700">W24</text>
+                <text x="500" y="130" text-anchor="middle" fill="#e2a355" font-family="sans-serif" font-size="8" font-weight="600">论自由</text>
+
+                <circle cx="540" cy="100" r="14" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="540" y="104" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="9" font-weight="600">W25</text>
+                <text x="540" y="130" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="8">规训与惩罚</text>
+
+                <circle cx="660" cy="280" r="16" fill="#B47CDC" fill-opacity="0.1" stroke="#B47CDC" stroke-width="1.5"/>
+                <text x="660" y="284" text-anchor="middle" fill="#B47CDC" font-family="sans-serif" font-size="8" font-weight="600">C</text>
+                <text x="660" y="310" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="8">文学感知</text>
+
+                <path d="M 500 118 Q 500 200 660 264" fill="none" stroke="#B47CDC" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+                <path d="M 500 118 Q 400 180 300 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 500 118 Q 450 180 460 118" fill="none" stroke="#e2a355" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 300 118 Q 400 180 500 118" fill="none" stroke="#E94560" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+                <text x="60" y="380" fill="#555" font-family="sans-serif" font-size="9">— 已读节点</text>
+                <text x="160" y="380" fill="#555" font-family="sans-serif" font-size="9">- - 待读节点</text>
+                <text x="280" y="380" fill="#E94560" font-family="sans-serif" font-size="9">· · 张力连接</text>
+                <text x="400" y="380" fill="#e2a355" font-family="sans-serif" font-size="9">· · 传承连接</text>
+                <text x="520" y="380" fill="#B47CDC" font-family="sans-serif" font-size="9">· · 跨频道C</text>
+            </svg>
+        </div>
+
+        <h2>下周预告</h2>
+        <p>第25周，我们将翻开米歇尔·福柯的《<em>规训与惩罚</em>》（<em>Discipline and Punish</em>）。</p>
+        <p>从密尔的"自由优先"到福柯的"自由幻觉"——如果密尔关心的是如何保护自由，福柯关心的是<em>自由是否只是一个被权力精心设计的幻觉</em>。当权力最有效的形态不是暴力，而是让我们自我监控的规训，"自由"是否还有意义？</p>
+        <p>福柯1975年的诊断在2026年听起来像预言：数字监控、算法推荐、绩效评估——这些都是现代版的"全景敞视监狱"，我们被监视，但更重要的是，我们学会了监视自己。</p>
+
+        <div class="pull-quote">
+            <p>"权力不是压制性的，而是生产性的。它生产真理、生产知识、生产我们认为是'自然'的一切。"</p>
+            <div class="attribution">—— 米歇尔·福柯，《规训与惩罚》</div>
+        </div>
+
+        <div class="page-nav">
+            <a href="./w24-d04.html">← D04 · 挑战者</a>
+            <a href="./w25-d01.html">D01 · 叙事者 →</a>
+        </div>
+
+    </div>
+</body>
+</html>
