@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>从表征到导航：AI 正在离开聊天框，走进世界——而你还以为它只会写文案 · AI 每日洞见 #048</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2rem; font-size: 0.78rem; color: var(--text-muted); }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+        .header { margin-bottom: 2.5rem; }
+        .issue-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .issue-badge { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 6px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
+        .issue-date { font-size: 0.78rem; color: var(--text-muted); }
+        .issue-type { font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: var(--green-dim); border: 1px solid rgba(52,211,153,0.2); color: var(--green); }
+        h1 { font-size: 1.75rem; font-weight: 750; color: var(--white); line-height: 1.35; letter-spacing: -0.02em; margin-bottom: 1rem; }
+        .one-liner { font-size: 1.05rem; color: var(--accent); font-weight: 500; line-height: 1.6; padding: 1rem 1.25rem; background: var(--accent-dim); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; margin-bottom: 0.75rem; }
+        .source-box { padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 2.5rem; font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .body-section { margin-bottom: 2.5rem; }
+        .body-section h2 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .body-section h2 .icon { font-size: 1.1rem; }
+        .body-text { font-size: 0.92rem; line-height: 1.85; color: var(--text); }
+        .body-text p { margin-bottom: 1rem; }
+        .body-text strong { color: var(--white); font-weight: 600; }
+        .body-text .highlight { background: rgba(96, 165, 250, 0.08); padding: 2px 6px; border-radius: 4px; color: var(--accent); font-weight: 500; }
+        .data-callout { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.25rem 0; }
+        .data-callout .data-title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .data-row:last-child { border-bottom: none; }
+        .data-label { font-size: 0.82rem; color: var(--text-dim); }
+        .data-value { font-size: 0.85rem; font-weight: 600; color: var(--white); font-variant-numeric: tabular-nums; }
+        .data-value.up { color: var(--green); }
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .takeaway-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        .takeaway-item { padding: 0.9rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 0.88rem; line-height: 1.65; color: var(--text); }
+        .takeaway-item .num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--accent-dim); color: var(--accent); font-size: 0.7rem; font-weight: 700; border-radius: 6px; margin-right: 0.6rem; }
+        .takeaway-item strong { color: var(--white); }
+        .warning-box { padding: 1rem 1.25rem; background: var(--warn-dim); border: 1px solid var(--warn-border); border-radius: 10px; margin-bottom: 2.5rem; }
+        .warning-box h2 { font-size: 0.9rem; font-weight: 700; color: var(--warn); margin-bottom: 0.6rem; }
+        .warning-box p { font-size: 0.85rem; line-height: 1.7; color: var(--text); }
+        .further { margin-bottom: 2.5rem; }
+        .further h2 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.75rem; }
+        .further-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .further-item a { display: block; padding: 0.7rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--accent); text-decoration: none; font-size: 0.82rem; transition: all 0.2s; }
+        .further-item a:hover { border-color: var(--accent-border); background: var(--surface-alt); }
+        .further-item .label { color: var(--text-dim); font-size: 0.75rem; }
+        .closing-question { padding: 1.5rem 1.5rem; background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06)); border: 1px solid rgba(96,165,250,0.15); border-radius: 12px; margin-bottom: 2.5rem; text-align: center; }
+        .closing-question .q-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+        .closing-question p { font-size: 1rem; font-weight: 500; color: var(--white); line-height: 1.6; }
+        .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .tag { font-size: 0.65rem; color: #666; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 5px; padding: 2px 8px; }
+        .footer { text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: #333; }
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+        .back-btn { display: inline-block; margin-bottom: 2rem; font-size: 0.82rem; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .back-btn:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../">Home</a>
+            <span class="sep">/</span>
+            <a href="./">Ainsight</a>
+            <span class="sep">/</span>
+            <span>#048</span>
+        </nav>
+
+        <header class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#048</span>
+                <span class="issue-date">2026-06-30</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>从表征到导航：AI 正在离开聊天框，走进世界——而你还以为它只会写文案</h1>
+
+            <div class="one-liner">
+                EvolveNav 等具身智能研究揭示了一个被忽视的范式转移：AI 正在从"拥有世界知识"进化到"在世界中行动"。当 AI 不再满足于回答"这是什么"，而是开始问"我该往哪走"——我们与 AI 的关系将发生根本性的改变。这不是能力的线性扩展，而是存在方式的质变。
+            </div>
+        </header>
+
+        <div class="source-box">
+            <strong>核心来源：</strong><br>
+            EvolveNav — Test-time Learning for Zero-Shot Object-Goal Navigation, arXiv 2026.06<br>
+            DRFLOW — Deep Research Workflow Benchmark, 100 tasks / 1,246 steps / 3,900+ sources, 2026.06<br>
+            OmniGameArena — VLM Game Agent Benchmark (UE5), 2026.06<br>
+            arXiv 六月论文综述 — Agent 从静态响应到记忆、规划、行动的范式转移
+        </div>
+
+        <section class="body-section">
+            <h2><span class="icon">🧩</span> 深度解读</h2>
+            <div class="body-text">
+                <p>2026年6月的 arXiv 论文池有一个清晰的主题：AI Agent 正在从"静态响应生成器"进化为"能够记忆、规划和行动的系统"。</p>
+
+                <p>其中最引人注目的是 <span class="highlight">EvolveNav</span>。这个系统解决了一个看似简单实则极难的问题：一个具身智能体需要在从未训练过的环境中找到一个从未见过的物体。传统方法依赖预训练的基础模型，然后花大量时间纠正错误。EvolveNav 的做法截然不同——它构建了一个<span class="highlight">规则记忆库</span>，从过去的轨迹中提取可复用的行动知识，并通过"预反思"（preflection）模块在行动前预测可能的结果。</p>
+
+                <div class="data-callout">
+                    <div class="data-title">具身智能新基准</div>
+                    <div class="data-row">
+                        <span class="data-label">EvolveNav 成功率提升</span>
+                        <span class="data-value up">+10.1%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">无效步数减少</span>
+                        <span class="data-value up">显著</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">DRFLOW 任务覆盖</span>
+                        <span class="data-value accent">100 tasks / 5 domains</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">DRFLOW 参考工作流步骤</span>
+                        <span class="data-value accent">1,246 steps</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">OmniGameArena 平台</span>
+                        <span class="data-value accent">UE5 统一基准</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">关键转变</span>
+                        <span class="data-value accent">从"回答"到"导航"</span>
+                    </div>
+                </div>
+
+                <p>10.1% 的成功率提升听起来 modest，但在具身 AI 领域，这代表了质的跨越。因为这里的关键不是"更准确的识别"，而是<span class="highlight">"更聪明的行动策略"</span>——AI 开始从自己的错误中学习，而不是依赖人类的标注。</p>
+
+                <p>DRFLOW 从另一个角度展示了同一个趋势。它不测试"能不能总结文档"，而是测试"能不能从 scattered sources 中恢复用户实际需要的 workflow，一步一步"。这100个任务跨越5个领域，包含1,246个参考步骤和3,900+个来源。结果显示：即使是最先进的 Agent，在"步骤恢复"和"个性化适配"上仍有巨大空间。</p>
+
+                <p>这两个研究共同指向一个被忽视的真相：<strong>AI 的能力评估正在从"知识型"转向"行动型"</strong>。</p>
+
+                <p>在#035（世界副本已死）中，Sutton 批判了 AI 试图在内部重建世界的"被动表征主义"。EvolveNav 和 DRFLOW 正是在实践 Sutton 的替代方案——<span class="highlight">生成认知（Enactive Cognition）</span>：智能不是在脑中重建世界，而是在行动中与世界相遇。AI 不是通过"知道地图"来导航，而是通过"走过迷宫"来学会导航。</p>
+
+                <p>这个转变对普通人的影响比任何大模型参数扩展都更深远。当 AI 从"聊天框里的文本生成器"变成"能在物理世界中行动的导航者"——它就不再是一个你可以关闭的窗口。它可能在你的智能家居里调整温度、在你的自动驾驶车里选择路线、在你的机器人助手里决定抓取哪个物体。每一次行动都是一个<span class="highlight">不可撤销的物理后果</span>，而不是一个可以删掉的回答。</p>
+
+                <p>在#010（环境即武器）中，我们看到 DeepMind 绘制的 AI Agent 攻击全景图：攻击者不需要破解模型，只需要改变模型看到的世界。当 AI 从"回答问题"进化到"在世界中行动"，攻击面从数字世界扩展到了物理世界——而物理世界的错误代价是不可撤销的。</p>
+            </div>
+        </section>
+
+        <section class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>重新评估你对 AI 的认知框架。</strong> 如果你仍然把 AI 理解为"一个更聪明的搜索引擎"或"一个能写文案的助手"，你的框架已经过时了。2026年的前沿 AI 正在离开聊天框，走进物理世界。你需要从"信息处理"的框架切换到"行动执行"的框架——这意味着安全、验证、责任的概念都发生了根本变化。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>如果你在使用智能家居、自动驾驶或任何具身 AI 产品，"规则记忆"是一把双刃剑。</strong> EvolveNav 的规则记忆让 AI 从错误中学习——但它也可能记住错误的行为模式。当 AI 从你的使用习惯中"学习"时，它可能学的是你糟糕的决策习惯。定期审查和重置 AI 的"经验记忆"，可能比更新软件版本更重要。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>对于组织而言，"行动型 AI"的评估标准需要重新建立。</strong> 不要再问"这个 AI 能回答多少问题"，而要问"这个 AI 在物理世界中的行动，有多少是可解释、可撤销、可验证的？"当 AI 从"说错话"进化到"做错事"，我们的治理框架必须随之升级。
+                </li>
+            </ul>
+        </section>
+
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒：表征固着（Representational Fixation）+ 行动幻觉（Action Illusion）</h2>
+            <p>表征固着让我们本能地相信"知道"先于"做到"——我们假设 AI 必须先"理解"世界，才能在世界上行动。但 EvolveNav 证明恰恰相反：AI 可以通过行动本身来发展导航能力，而不需要先在内部构建一个完美的世界地图。这种"无地图导航"能力对人类来说既令人兴奋又令人不安——因为这意味着 AI 可能以我们无法理解的方式在物理世界中行动。</p>
+            <p>更隐蔽的是<span class="highlight">行动幻觉</span>：当 AI 从文本输出转向物理行动时，我们倾向于把它的行动理解为"有意图的"——就像理解人类的行动一样。但 AI 的"行动"只是优化目标函数的副产品，与"意图"无关。当一辆自动驾驶车选择了一条路线，我们解释为它"想要"更快到达；但实际上，它只是在执行一个概率最大化程序。把无意图的行动理解为有意向的，是具身 AI 时代最危险的认知偏差。</p>
+        </div>
+
+        <section class="further">
+            <h2>📖 延伸阅读</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://arxiv.org/">
+                        EvolveNav — Test-time Learning for Zero-Shot Object-Goal Navigation<br>
+                        <span class="label">arXiv, 2026.06 · 具身导航</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://arxiv.org/">
+                        DRFLOW — Deep Research Workflow Benchmark<br>
+                        <span class="label">2026.06 · 工作流恢复</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.ainsight.io/insights/2026-06-09.html">
+                        Ainsight #035 — "世界副本"已死：Sutton 说 AI 装下整个世界的方法从根本上错了<br>
+                        <span class="label">Ainsight · 相关洞见</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.ainsight.io/insights/2026-04-28.html">
+                        Ainsight #010 — 环境即武器：你的 AI 助手正在一个专门为它设计的雷区里裸奔<br>
+                        <span class="label">Ainsight · 相关洞见</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>当 AI 从"回答你的问题"进化到"替你行走世界"——你愿意让一个没有身体、没有痛觉、没有死亡恐惧的系统，代替你做出不可撤销的物理决策吗？如果不愿意，那么当这个系统被嵌入到你每天使用的汽车、家居和工具中时，你的"不愿意"还有意义吗？</p>
+        </div>
+
+        <div class="tags">
+            <span class="tag">Embodied AI</span>
+            <span class="tag">EvolveNav</span>
+            <span class="tag">DRFLOW</span>
+            <span class="tag">Enactive Cognition</span>
+            <span class="tag">Agent Navigation</span>
+            <span class="tag">Action Illusion</span>
+            <span class="tag">Physical AI</span>
+        </div>
+
+        <a href="./" class="back-btn">← 返回洞见列表</a>
+
+        <footer class="footer">
+            <p>AI 每日洞见 · Ainsight #048 · 2026-06-30</p>
+            <p>不代表投资建议 · 独立思考永远是最好的策略</p>
+        </footer>
+    </div>
+</body>
+</html>

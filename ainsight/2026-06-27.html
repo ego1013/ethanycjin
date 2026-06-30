@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>波浪而非墙：DeepMind 说 AGI 到超级智能不是一道门槛，而是一连串海啸 · AI 每日洞见 #045</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2rem; font-size: 0.78rem; color: var(--text-muted); }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+        .header { margin-bottom: 2.5rem; }
+        .issue-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .issue-badge { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 6px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
+        .issue-date { font-size: 0.78rem; color: var(--text-muted); }
+        .issue-type { font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: var(--green-dim); border: 1px solid rgba(52,211,153,0.2); color: var(--green); }
+        h1 { font-size: 1.75rem; font-weight: 750; color: var(--white); line-height: 1.35; letter-spacing: -0.02em; margin-bottom: 1rem; }
+        .one-liner { font-size: 1.05rem; color: var(--accent); font-weight: 500; line-height: 1.6; padding: 1rem 1.25rem; background: var(--accent-dim); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; margin-bottom: 0.75rem; }
+        .source-box { padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 2.5rem; font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .body-section { margin-bottom: 2.5rem; }
+        .body-section h2 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .body-section h2 .icon { font-size: 1.1rem; }
+        .body-text { font-size: 0.92rem; line-height: 1.85; color: var(--text); }
+        .body-text p { margin-bottom: 1rem; }
+        .body-text strong { color: var(--white); font-weight: 600; }
+        .body-text .highlight { background: rgba(96, 165, 250, 0.08); padding: 2px 6px; border-radius: 4px; color: var(--accent); font-weight: 500; }
+        .data-callout { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.25rem 0; }
+        .data-callout .data-title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .data-row:last-child { border-bottom: none; }
+        .data-label { font-size: 0.82rem; color: var(--text-dim); }
+        .data-value { font-size: 0.85rem; font-weight: 600; color: var(--white); font-variant-numeric: tabular-nums; }
+        .data-value.up { color: var(--green); }
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .takeaway-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        .takeaway-item { padding: 0.9rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 0.88rem; line-height: 1.65; color: var(--text); }
+        .takeaway-item .num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--accent-dim); color: var(--accent); font-size: 0.7rem; font-weight: 700; border-radius: 6px; margin-right: 0.6rem; }
+        .takeaway-item strong { color: var(--white); }
+        .warning-box { padding: 1rem 1.25rem; background: var(--warn-dim); border: 1px solid var(--warn-border); border-radius: 10px; margin-bottom: 2.5rem; }
+        .warning-box h2 { font-size: 0.9rem; font-weight: 700; color: var(--warn); margin-bottom: 0.6rem; }
+        .warning-box p { font-size: 0.85rem; line-height: 1.7; color: var(--text); }
+        .further { margin-bottom: 2.5rem; }
+        .further h2 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.75rem; }
+        .further-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .further-item a { display: block; padding: 0.7rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--accent); text-decoration: none; font-size: 0.82rem; transition: all 0.2s; }
+        .further-item a:hover { border-color: var(--accent-border); background: var(--surface-alt); }
+        .further-item .label { color: var(--text-dim); font-size: 0.75rem; }
+        .closing-question { padding: 1.5rem 1.5rem; background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06)); border: 1px solid rgba(96,165,250,0.15); border-radius: 12px; margin-bottom: 2.5rem; text-align: center; }
+        .closing-question .q-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+        .closing-question p { font-size: 1rem; font-weight: 500; color: var(--white); line-height: 1.6; }
+        .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .tag { font-size: 0.65rem; color: #666; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 5px; padding: 2px 8px; }
+        .footer { text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: #333; }
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+        .back-btn { display: inline-block; margin-bottom: 2rem; font-size: 0.82rem; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .back-btn:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../">Home</a>
+            <span class="sep">/</span>
+            <a href="./">Ainsight</a>
+            <span class="sep">/</span>
+            <span>#045</span>
+        </nav>
+
+        <header class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#045</span>
+                <span class="issue-date">2026-06-27</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>波浪而非墙：DeepMind 说 AGI 到超级智能不是一道门槛，而是一连串海啸</h1>
+
+            <div class="one-liner">
+                DeepMind 联合创始人 Shane Legg 和 13 位研究者发布了一份 57 页的重磅报告，定义了从 AGI 到 ASI 的四种路径。但真正震撼的不是报告本身——而是它彻底推翻了"奇点"叙事。问题不再是"AI 会不会在某天超越人类"，而是"一波又一波的超越正在到来，而你不知道下一波什么时候到"。
+            </div>
+        </header>
+
+        <div class="source-box">
+            <strong>核心来源：</strong><br>
+            Legg, Hutter et al. (Google DeepMind) — From AGI to ASI: Mapping the Continuum of Machine Intelligence, arXiv:2606.12683, 2026.06.10<br>
+            AI Dispatch — Waves, Not a Wall: Inside DeepMind's Map From AGI to Superintelligence, 2026.06<br>
+            54,000+ arXiv 浏览量（发布后数日内）
+        </div>
+
+        <section class="body-section">
+            <h2><span class="icon">🧩</span> 深度解读</h2>
+            <div class="body-text">
+                <p>过去二十年，关于 AI 超越人类的讨论被"奇点"（Singularity）叙事主导：某天，AI 突然跨过一道门槛，变得比人类更聪明——然后一切失控。这个叙事塑造了无数科幻作品、恐惧言论和监管框架。</p>
+
+                <p>DeepMind 的 57 页报告<span class="highlight">彻底推翻了这个框架</span>。</p>
+
+                <p>报告的核心论点是：从人类水平 AI（AGI）到超级智能（ASI）不是一道墙，而是<span class="highlight">一系列重叠的技术波浪</span>。每一波都可能单独不够颠覆，但它们的叠加效应可能在我们准备好之前就已经改变了游戏。</p>
+
+                <div class="data-callout">
+                    <div class="data-title">四种从 AGI 到 ASI 的路径</div>
+                    <div class="data-row">
+                        <span class="data-label">01 持续扩展（Scaling）</span>
+                        <span class="data-value accent">更多算力、数据、模型规模</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">02 范式跃迁（Paradigm Shifts）</span>
+                        <span class="data-value accent">新架构或方法——本质不可预测</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">03 递归自我改进（RSI）</span>
+                        <span class="data-value accent">AI 加速 AI 研发——可能爆炸也可能熄火</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">04 多智能体集体（Multi-Agent）</span>
+                        <span class="data-value accent">多个系统协作产生超人类能力</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">关键约束</span>
+                        <span class="data-value down">高质量文本数据本十年内耗尽</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">有效算力增长</span>
+                        <span class="data-value up">~10x/年，可能 2030 年前 10,000x</span>
+                    </div>
+                </div>
+
+                <p>报告定义了一个<span class="highlight">机器智能连续谱</span>：从今天的 AI（已在狭窄领域超越人类），到人类水平 AGI（在大多数认知任务上达到人类中位数），到 ASI（在几乎所有领域超越大规模专家协作），再到理论上的"通用 AI"（计算上的不可判定上限）。</p>
+
+                <p>但报告的震撼之处不在于技术细节，而在于它的<span class="highlight">政治诚实</span>。作者明确指出了四条路径之间不是互斥的——它们可能同时发生，以不可预测的方式相互作用。RSI 可能加速扩展，扩展可能催生新的范式，多智能体系统可能放大递归改进的效应。这不是"哪条路会走通"的问题，而是"多条路同时走通时会发生什么"。</p>
+
+                <p>报告还做了一个让许多技术乐观主义者不安的声明：ASI 不是全能的。物理定律、哥德尔不完备定理、P≠NP 假设仍然成立。超级智能不能违反热力学，不能解决所有不可判定问题，不能预测混沌系统的长期行为。这听起来像是限制了 AI 的威胁，但实际上——它意味着<span class="highlight">ASI 的能力边界是不规则的</span>，在某些领域碾压人类，在另一些领域仍然脆弱。这种不规则性，正是失控风险最隐蔽的来源。</p>
+
+                <p>这与#005（递归自我进化）和#026（悖论矩阵）形成深层对话：DeepMind 不是在预言未来，而是在绘制一个<span class="highlight">不确定性地图</span>。而这份地图本身，就是迄今最严肃的技术预警。</p>
+            </div>
+        </section>
+
+        <section class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>放弃"等准备好了再应对"的幻想。</strong> 波浪模型的核心启示是：没有"准备好"的那一刻。每一波改变可能在你意识到之前就已经发生。对于个人来说，这意味着持续学习不是一种选择，而是一种生存策略。不是学习"最新的AI工具"，而是学习与AI共同进化的元能力——判断哪些能力会被波浪冲走，哪些能力会在波浪后变得更珍贵。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>如果你是决策者，"波浪"比"门槛"更适合做战略框架。</strong> 门槛思维引导你准备"那一天的应急预案"；波浪思维引导你建立"持续适应的组织能力"。前者是静态防御，后者是动态进化。在波浪模型下，真正重要的不是预测下一波什么时候到，而是确保你的组织能在波浪之间快速重组。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>物理定律的约束是一个被低估的好消息。</strong> 报告明确指出 ASI 不能违反物理定律。这意味着人类仍然有一些不可被替代的"锚点"：物理世界的直接操作、需要身体在场的社交、基于物理直觉的创造性判断。这些"不可计算"的领域，可能是人类在 AI 波浪中最后的立足点。
+                </li>
+            </ul>
+        </section>
+
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒：门槛偏见（Threshold Bias）+ 叙事固着（Narrative Fixation）</h2>
+            <p>人类大脑喜欢门槛——它让复杂的不确定性变成简单的二元问题："到了还是没到？"但 DeepMind 的报告告诉我们，这个问题本身就是错的。AGI 到 ASI 的过渡是渐进的、多路径的、不可线性度量的。门槛偏见让我们把战略资源浪费在"预测奇点日期"上，而不是建立持续适应的韧性。</p>
+            <p>更隐蔽的是<span class="highlight">叙事固着</span>：奇点叙事已经渗透了文化、政策和投资逻辑，以至于我们即使看到了更好的模型（波浪模型），仍然本能地用旧框架来解释它。DeepMind 的报告之所以重要，不是因为它提供了答案，而是因为它提供了一个更好的问题框架。</p>
+        </div>
+
+        <section class="further">
+            <h2>📖 延伸阅读</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://arxiv.org/abs/2606.12683">
+                        Legg, Hutter et al. — From AGI to ASI: Mapping the Continuum of Machine Intelligence<br>
+                        <span class="label">arXiv:2606.12683, 2026.06.10 · 原始论文（57页）</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://artificialintelligencemax.com/ai-work/waves-not-a-wall-inside-deepmind-s-map-from-agi-to-superintelligence">
+                        AI Dispatch — Waves, Not a Wall: Inside DeepMind's Map From AGI to Superintelligence<br>
+                        <span class="label">2026.06 · 深度解读</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.ainsight.io/insights/2026-04-20.html">
+                        Ainsight #005 — 当 AI 开始构建 AI：递归自我进化的塑造窗口正在关闭<br>
+                        <span class="label">Ainsight · 与"递归自我改进"路径的对话</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>如果 AGI 到 ASI 不是一道门槛，而是一连串你根本无法预测的波浪——那么"准备"这个概念本身还有意义吗？还是说，真正重要的不是"预测波浪"，而是"学会在波浪中游泳"？你现在的能力组合里，有多少是"防水的"？</p>
+        </div>
+
+        <div class="tags">
+            <span class="tag">AGI</span>
+            <span class="tag">ASI</span>
+            <span class="tag">DeepMind</span>
+            <span class="tag">Shane Legg</span>
+            <span class="tag">Waves Not Wall</span>
+            <span class="tag">Recursive Self-Improvement</span>
+            <span class="tag">Threshold Bias</span>
+        </div>
+
+        <a href="./" class="back-btn">← 返回洞见列表</a>
+
+        <footer class="footer">
+            <p>AI 每日洞见 · Ainsight #045 · 2026-06-27</p>
+            <p>不代表投资建议 · 独立思考永远是最好的策略</p>
+        </footer>
+    </div>
+</body>
+</html>
