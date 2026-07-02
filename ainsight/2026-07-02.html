@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System 0：Kahneman 漏掉的那一层——AI 在你思考之前就已经选择了你能看到什么 · AI 每日洞见 #050</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+        .nav { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 0 2rem; font-size: 0.78rem; color: var(--text-muted); }
+        .nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+        .header { margin-bottom: 2.5rem; }
+        .issue-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .issue-badge { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 6px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
+        .issue-date { font-size: 0.78rem; color: var(--text-muted); }
+        .issue-type { font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: var(--green-dim); border: 1px solid rgba(52,211,153,0.2); color: var(--green); }
+        h1 { font-size: 1.75rem; font-weight: 750; color: var(--white); line-height: 1.35; letter-spacing: -0.02em; margin-bottom: 1rem; }
+        .one-liner { font-size: 1.05rem; color: var(--accent); font-weight: 500; line-height: 1.6; padding: 1rem 1.25rem; background: var(--accent-dim); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; margin-bottom: 0.75rem; }
+        .source-box { padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 2.5rem; font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .body-section { margin-bottom: 2.5rem; }
+        .body-section h2 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .body-section h2 .icon { font-size: 1.1rem; }
+        .body-text { font-size: 0.92rem; line-height: 1.85; color: var(--text); }
+        .body-text p { margin-bottom: 1rem; }
+        .body-text strong { color: var(--white); font-weight: 600; }
+        .body-text .highlight { background: rgba(96, 165, 250, 0.08); padding: 2px 6px; border-radius: 4px; color: var(--accent); font-weight: 500; }
+        .data-callout { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.25rem 0; }
+        .data-callout .data-title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .data-row:last-child { border-bottom: none; }
+        .data-label { font-size: 0.82rem; color: var(--text-dim); }
+        .data-value { font-size: 0.85rem; font-weight: 600; color: var(--white); font-variant-numeric: tabular-nums; }
+        .data-value.up { color: var(--green); }
+        .data-value.down { color: #f87171; }
+        .data-value.accent { color: var(--accent); }
+        .takeaway-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        .takeaway-item { padding: 0.9rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 0.88rem; line-height: 1.65; color: var(--text); }
+        .takeaway-item .num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--accent-dim); color: var(--accent); font-size: 0.7rem; font-weight: 700; border-radius: 6px; margin-right: 0.6rem; }
+        .takeaway-item strong { color: var(--white); }
+        .warning-box { padding: 1rem 1.25rem; background: var(--warn-dim); border: 1px solid var(--warn-border); border-radius: 10px; margin-bottom: 2.5rem; }
+        .warning-box h2 { font-size: 0.9rem; font-weight: 700; color: var(--warn); margin-bottom: 0.6rem; }
+        .warning-box p { font-size: 0.85rem; line-height: 1.7; color: var(--text); }
+        .further { margin-bottom: 2.5rem; }
+        .further h2 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.75rem; }
+        .further-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .further-item a { display: block; padding: 0.7rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--accent); text-decoration: none; font-size: 0.82rem; transition: all 0.2s; }
+        .further-item a:hover { border-color: var(--accent-border); background: var(--surface-alt); }
+        .further-item .label { color: var(--text-dim); font-size: 0.75rem; }
+        .closing-question { padding: 1.5rem 1.5rem; background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(52,211,153,0.06)); border: 1px solid rgba(96,165,250,0.15); border-radius: 12px; margin-bottom: 2.5rem; text-align: center; }
+        .closing-question .q-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+        .closing-question p { font-size: 1rem; font-weight: 500; color: var(--white); line-height: 1.6; }
+        .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .tag { font-size: 0.65rem; color: #666; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 5px; padding: 2px 8px; }
+        .footer { text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: #333; }
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+        .back-btn { display: inline-block; margin-bottom: 2rem; font-size: 0.82rem; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+        .back-btn:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../">Home</a>
+            <span class="sep">/</span>
+            <a href="./">Ainsight</a>
+            <span class="sep">/</span>
+            <span>#050</span>
+        </nav>
+
+        <header class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#050</span>
+                <span class="issue-date">2026-07-02</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>System 0：Kahneman 漏掉的那一层——AI 在你思考之前就已经选择了你能看到什么</h1>
+
+            <div class="one-liner">
+                MIT Press 论文提出一个震撼性概念：AI 正在成为人类认知架构中被忽视的"第三层"——System 0。它在 Kahneman 的 System 1（直觉）和 System 2（理性）开始工作之前，就已经替你筛选、结构化、预消化了全部信息。你以为自己在做选择，但选择的选项本身已经被 AI 预处理过了。
+            </div>
+        </header>
+
+        <div class="source-box">
+            <strong>核心来源：</strong><br>
+            Chiriatti, M., Bergamaschi Ganapini, M., Panai, E. & Riva, G. — Attention Is Not All You Need: How AI Is Reshaping Consumer Attention and the Future of Brand Strategy, <em>Harvard Data Science Review</em> (MIT Press), 2026<br>
+            理论基础：Kahneman, D. — <em>Thinking, Fast and Slow</em> (2011); Clark, A. & Chalmers, D. — "The Extended Mind" (1998)
+        </div>
+
+        <section class="body-section">
+            <h2><span class="icon">🧩</span> 深度解读</h2>
+            <div class="body-text">
+                <p>Daniel Kahneman 的 <em>Thinking, Fast and Slow</em> 统治了认知心理学二十年。这套双系统理论简洁而有力：System 1 是快、直觉、关联性的；System 2 是慢、理性、分析性的。人类几乎所有的认知活动都被框定在这个二元结构里。</p>
+
+                <p>但 MIT Press 最新发表的论文提出了一个令人不安的追问：<span class="highlight">如果 AI 已经在你调用 System 1 或 System 2 之前，就已经完成了信息的筛选、排序、结构化甚至摘要——那么 Kahneman 的框架是不是漏掉了最关键的一层？</span></p>
+
+                <p>论文将这个被遗漏的层级命名为 <span class="highlight">System 0</span>。它的核心特征不是"思考"，而是<span class="highlight">预处理</span>——在你意识到自己在思考之前，它就已经决定了你将要思考什么。当你打开智能手机找餐厅时，AI 已经整合了位置、消费历史、天气、实时排队数据和评价排序；当你用 AI 搜索资料时，它已经从数十亿网页中"提炼"出了一份看似客观的摘要；当你刷信息流时，算法已经替你完成了注意力的分配。</p>
+
+                <div class="data-callout">
+                    <div class="data-title">System 0 vs System 1 vs System 2</div>
+                    <div class="data-row">
+                        <span class="data-label">System 0（AI 预处理）</span>
+                        <span class="data-value accent">在你意识到之前完成选择</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">System 1（直觉）</span>
+                        <span class="data-value">快速、关联、自动</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">System 2（理性）</span>
+                        <span class="data-value">缓慢、分析、耗能</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">System 0 的威胁</span>
+                        <span class="data-value down">System 1/2 的输入已被操控</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">关键洞见</span>
+                        <span class="data-value accent">选择的选项本身已被预处理</span>
+                    </div>
+                </div>
+
+                <p>System 0 的颠覆性在于：它从根本上改写了"选择自由"的含义。传统意义上的 filter bubble（信息茧房）和推荐算法，只是 System 0 的初级形态——它们还在"被感知"的层面。真正的 System 0 已经<span class="highlight">消失在你的日常工具中</span>：Google 的 AI Overviews 直接替你总结答案，不需要你阅读任何原文；Perplexity 的"实时摘要"让信息源的存在感趋近于零；Copilot 在写邮件时替你完成了措辞、语气和结构的全部决策。这些工具的共同特征是：<strong>你甚至不会意识到自己在被辅助</strong>。</p>
+
+                <p>论文追溯了这一概念的哲学根源——Clark & Chalmers 的 <span class="highlight">"扩展心智"（The Extended Mind）</span> 理论。1998 年，他们论证认知过程可以延伸到大脑和身体之外，包含像笔记本、智能手机这样的外部工具。但当时的外部工具是<span class="highlight">被动的</span>——你主动决定什么时候使用它们。而今天的 System 0 是<span class="highlight">主动介入的</span>：它不需要你的调用，它在每一个决策场景中已经先你一步完成了预处理。</p>
+
+                <p>论文称之为 <span class="highlight">"presemantic"（前语义）层面</span>的运作：System 0 在 token、嵌入和元数据的统计表征上工作，它不需要"理解"世界——它只需要识别数据中的模式，然后用这些模式来重塑你的认知输入。这不是工具在使用你，而是你的认知架构本身已经被重构了。</p>
+            </div>
+        </section>
+
+        <section class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>建立"System 0 审计"习惯。</strong> 每次你使用 AI 辅助做决策时，问自己一个简单的问题：如果我没有这个 AI，我的选项集合会是什么？AI 帮我省去了哪些信息？省去了哪些麻烦？这些被"优化掉"的部分里，有没有包含我本应看到的东西？这个习惯不是反对技术，而是恢复你对认知输入的感知能力——System 0 最危险的地方，恰恰是你意识不到它的存在。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>在关键决策中强制引入"前 AI 思考"。</strong> 对于重要决策（职业选择、投资判断、关系决定），在打开任何 AI 工具之前，先用纸笔写下你的初步思考——不限格式、不限长度、不要追求正确。这个"原始思考"是你认知的 baseline，是你 System 1 和 System 2 在没有 System 0 干预下的自然输出。然后，再让 AI 参与。这样你至少知道：AI 的建议是在你的基础上修正，还是彻底替换了你的出发点。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>刻意保留"低优化"工具。</strong> 如果你所有的搜索、阅读、写作、沟通都通过 AI 中介完成，你就彻底失去了与 System 0 对抗的能力。保留至少一个"裸奔"渠道：用原始搜索引擎（不启用 AI 摘要）、读原始论文（不读 AI 生成的总结）、手写笔记（不借助 AI 整理）。这些"低效"的使用方式不是怀旧，而是<span class="highlight">认知主权的基础设施</span>——它们确保你始终有能力在 System 0 失效、偏见或被操控时独立运作。
+                </li>
+            </ul>
+        </section>
+
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒：选项框架效应（Framing Effect）× 默认偏差（Default Bias）</h2>
+            <p>System 0 的操控能力远超传统意义上的"推荐算法"，因为它直接利用了人类最深层的认知漏洞：<span class="highlight">默认偏差</span>。研究表明，人们有强烈的倾向接受默认选项——不是因为它最好，而是因为"不选"比"选"更省力。当 AI 替你完成预处理后，它呈现的结果就是默认选项。你以为是自己在 System 2 模式下仔细分析，但分析的对象本身已经被 System 0 框架化了。</p>
+            <p>更隐蔽的是<span class="highlight">流畅性启发（Fluency Heuristic）</span>：当信息呈现得流畅、连贯、无摩擦时，你的大脑会本能地认为它更可信。System 0 的输出永远比原始信息更流畅——因为 AI 已经替你消除了矛盾、噪音和不一致性。但这种流畅不是真实的属性，而是预处理的人工产物。流畅的信息不一定是真实的信息，它只是被处理得更好的信息。</p>
+        </div>
+
+        <section class="further">
+            <h2>📖 延伸阅读</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://hdsr.mitpress.mit.edu/pub/2zvzqo4k">
+                        Chiriatti et al. — Attention Is Not All You Need: How AI Is Reshaping Consumer Attention and the Future of Brand Strategy<br>
+                        <span class="label">Harvard Data Science Review (MIT Press), 2026 · 原论文</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://ego1013.github.io/ethanycjin/insights/2026-06-11.html">
+                        Ainsight #037 — 空气化陷阱：当 AI 从工具变成环境，你连"不用"的选项都没有了<br>
+                        <span class="label">Ainsight · 相关洞见（AI 环境化）</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://ego1013.github.io/ethanycjin/insights/2026-06-28.html">
+                        Ainsight #046 — 零点击殖民：Google 正在替你决定什么是真的——而你甚至不需要点击搜索了<br>
+                        <span class="label">Ainsight · 相关洞见（注意力殖民）</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://ego1013.github.io/ethanycjin/insights/2026-04-24.html">
+                        Ainsight #008 — 认知投降：80% 的人在 AI 面前放弃了思考，而且毫不自知<br>
+                        <span class="label">Ainsight · 相关洞见（认知放弃）</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://clarkandchalmers.com/">
+                        Clark, A. & Chalmers, D. — The Extended Mind (1998)<br>
+                        <span class="label">哲学 · 扩展心智理论</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>回想你今天做的三个最重要的决定。其中有多少个是在没有任何 AI 预处理的情况下做出的？如果答案是零——那么从今天起，你能不能为自己设计一个"System 0 断联"的实验：选一个日常决策，刻意绕过所有 AI 辅助，只用你自己的大脑和原始信息来完成？你猜结果会和 AI 辅助版本有什么不同？</p>
+        </div>
+
+        <div class="tags">
+            <span class="tag">System 0</span>
+            <span class="tag">Kahneman</span>
+            <span class="tag">Extended Mind</span>
+            <span class="tag">Cognitive Architecture</span>
+            <span class="tag">Presemantic Processing</span>
+            <span class="tag">Attention Economy</span>
+            <span class="tag">Default Bias</span>
+            <span class="tag">Framing Effect</span>
+            <span class="tag">MIT Press</span>
+        </div>
+
+        <a href="./" class="back-btn">← 返回洞见列表</a>
+
+        <footer class="footer">
+            <p>AI 每日洞见 · Ainsight #050 · 2026-07-02</p>
+            <p>不代表投资建议 · 独立思考永远是最好的策略</p>
+        </footer>
+    </div>
+</body>
+</html>
