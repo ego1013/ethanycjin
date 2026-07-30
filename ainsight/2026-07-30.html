@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>决策崩盘：18个月300个项目，成功率0%——不是AI不行，是公司疯了 · AI 每日洞见 #057</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-alt: #1a1a1a;
+            --border: #222;
+            --border-accent: #333;
+            --text: #d4d4d4;
+            --text-dim: #888;
+            --text-muted: #555;
+            --white: #f0f0f0;
+            --accent: #60a5fa;
+            --accent-dim: rgba(96, 165, 250, 0.12);
+            --accent-border: rgba(96, 165, 250, 0.25);
+            --warn: #f59e0b;
+            --warn-dim: rgba(245, 158, 11, 0.10);
+            --warn-border: rgba(245, 158, 11, 0.25);
+            --green: #34d399;
+            --green-dim: rgba(52, 211, 153, 0.10);
+            --purple: #a78bfa;
+            --purple-dim: rgba(167, 139, 250, 0.12);
+            --purple-border: rgba(167, 139, 250, 0.25);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0 2rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav a:hover { color: var(--accent); }
+        .nav .sep { color: #333; }
+
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .issue-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .issue-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+        }
+
+        .issue-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .issue-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--green-dim);
+            border: 1px solid rgba(52,211,153,0.2);
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 750;
+            color: var(--white);
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .one-liner {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: var(--accent-dim);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .source-box {
+            padding: 0.85rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .source-box strong { color: var(--text); font-weight: 600; }
+        .source-box a { color: var(--accent); text-decoration: none; }
+        .source-box a:hover { text-decoration: underline; }
+
+        .body-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .body-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .body-section h2 .icon {
+            font-size: 1.1rem;
+        }
+
+        .body-text {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+
+        .body-text p {
+            margin-bottom: 1rem;
+        }
+
+        .body-text strong { color: var(--white); font-weight: 600; }
+
+        .body-text .highlight {
+            background: rgba(96, 165, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .body-text .highlight-purple {
+            background: rgba(167, 139, 250, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        .body-text .highlight-warn {
+            background: rgba(245, 158, 11, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--warn);
+            font-weight: 500;
+        }
+
+        .data-callout {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.1rem 1.3rem;
+            margin: 1.25rem 0;
+        }
+
+        .data-callout .data-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        .data-label {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-value.up { color: var(--green); }
+        .data-value.accent { color: var(--accent); }
+        .data-value.warn { color: var(--warn); }
+
+        .takeaway-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .takeaway-item {
+            padding: 0.9rem 1.1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .takeaway-item .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-right: 0.6rem;
+        }
+
+        .takeaway-item strong { color: var(--white); }
+
+        .warning-box {
+            padding: 1rem 1.25rem;
+            background: var(--warn-dim);
+            border: 1px solid var(--warn-border);
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .warning-box h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        .further {
+            margin-bottom: 2.5rem;
+        }
+
+        .further h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .further-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .further-item a {
+            display: block;
+            padding: 0.7rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .further-item a:hover {
+            border-color: var(--accent-border);
+            background: var(--surface-alt);
+        }
+
+        .further-item .label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        .closing-question {
+            padding: 1.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(167,139,250,0.06));
+            border: 1px solid rgba(96,165,250,0.15);
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .closing-question .q-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .closing-question p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--white);
+            line-height: 1.6;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: #333;
+        }
+
+        .footer a { color: #444; text-decoration: none; }
+        .footer a:hover { color: #666; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: var(--accent); }
+
+        .quote-block {
+            border-left: 3px solid var(--warn);
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            background: var(--warn-dim);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 0.88rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="../">Home</a>
+            <span class="sep">/</span>
+            <a href="./">Ainsight</a>
+            <span class="sep">/</span>
+            <span>#057</span>
+        </nav>
+
+        <header class="header">
+            <div class="issue-meta">
+                <span class="issue-badge">#057</span>
+                <span class="issue-date">2026-07-30</span>
+                <span class="issue-type">独立洞见</span>
+            </div>
+
+            <h1>决策崩盘：18个月300个项目，成功率0%——不是AI不行，是公司疯了</h1>
+
+            <div class="one-liner">
+                当AI采用从"工具选择"变成"信仰宣示"，组织的决策机制就被系统性扭曲了——<span class="highlight">真正崩溃的不是技术，而是说真话的能力</span>。
+            </div>
+        </header>
+
+        <div class="source-box">
+            <strong>核心信源：</strong><br>
+            Nikhil Suresh (Ludic / Hermit Tech) — AI Mania Is Eviscerating Global Decision-Making, 2026.07.18 / Mitchell Hashimoto (HashiCorp联合创始人, Ghostty作者) — "AI psychosis" 警告, 2026.05 / RAND Corporation — 80%+ AI项目失败率研究 / IBM — 仅25% CEO称AI达到预期回报
+        </div>
+
+        <section class="body-section">
+            <h2><span class="icon">🧩</span> 深度解读</h2>
+            <div class="body-text">
+                <p>2026年7月18日，一篇标题为《AI Mania Is Eviscerating Global Decision-Making》的博客文章在发出几小时内被三个不同用户同时提交到Hacker News首页，最高拿到131 points、52条评论，中文翻译登上Buzzing.cc热榜第二。作者Nikhil Suresh不是什么反AI的喷子——他是澳大利亚数据工程咨询公司Hermit Tech的董事，18个月里亲自跟进了300多次行业交流，客户从细分服务行业到Fortune 500高管。</p>
+
+                <p>他的开场白是一句让所有人愣住的话：<strong>"All of the AI projects we have observed are failing. Every single one."</strong> 我们观察到的所有AI项目，全部在失败。一个不剩。过去一年半，成功率是0%。</p>
+
+                <p>但Suresh立刻做了一个关键限定——这不是在说"AI技术没用"。他甚至承认AI工具确实能加速特定工作流。<span class="highlight">真正的问题是：投资的"方法和规模"完全不合理</span>。大多数公司本来就连普通软件项目都搞不定，给这样的人手里塞一套AI，就像给不会做炒蛋的人发一套分子料理工具包——工具不是问题是，厨子才是问题。</p>
+
+                <div class="data-callout">
+                    <div class="data-title">企业AI决策崩盘的典型症状</div>
+                    <div class="data-row">
+                        <span class="data-label">观察到的AI项目成功率</span>
+                        <span class="data-value warn">0%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">RAND估算的AI项目失败率</span>
+                        <span class="data-value warn">80%+</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">IBM调查CEO称AI达预期回报</span>
+                        <span class="data-value warn">25%</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">仅购买Copilot就宣称AI转型的上市公司</span>
+                        <span class="data-value warn">大量</span>
+                    </div>
+                </div>
+
+                <p><strong>案例一：三菱的"完美"客服机器人。</strong> Suresh的车坏了，致电三菱。接听的是一个语音机器人——语气自然、响应迅速、准确记录问题、承诺快速回电。这是他见过的"single most competent customer-service AI deployment"。然后，<span class="highlight">六个月过去了，没有回电</span>。内部KPI一定很漂亮：机器人"解决"了工单、"降低"了通话量。但Suresh因为这次体验，决定不再买三菱的车——而公司永远不会知道为什么丢了这个客户。</p>
+
+                <p><strong>案例二：Snowflake demo的"黑暗力量"。</strong> Suresh的团队基于Snowflake做数据基础设施，偶尔有客户对Cortex（自然语言查询层）感兴趣。他们<span class="highlight">明确告诉客户这东西不可靠</span>，然后演示。结果每一次都一样："Every lukewarm client that saw the chatbot in action, even with us telling them that it was not going to accomplish what they wanted, wanted to buy it immediately." Suresh的原文形容得像恐怖片："像一种黑暗而可怕的力量控制了他们的四肢，把手伸进自己的胸膛，献上还在跳动的心脏——也就是他们的信用卡。"团队最终把Cortex从演示清单中彻底移除。</p>
+
+                <p><strong>案例三：AI Washing（AI洗白）。</strong> 工程师按传统方式完成工作，然后告诉管理层是Claude做的——因为不用AI，经理就不高兴。更荒诞的是<span class="highlight">Token Leaderboards</span>：部分公司将AI支出游戏化为内部排名，越高越好。结果工程师专门hire来优化系统的人，现在把LLM设成半合理的自循环空转，然后看Netflix。"没有一个被抓到。"</p>
+
+                <p><strong>为什么没人敢说真话？</strong> Suresh用博弈论解释：这是<span class="highlight-purple">"高管囚徒困境"</span>。每个高管都拿枪指着对方，没人敢先放下。如果你质疑客户的AI收益声明，客户高管丢面子→感知为攻击→合同取消→你说真话被解雇。如果所有人同时承认真相可能有救，但没有协调机制。他称之为"分布式暗杀政府"——说真话的人被系统性地替换掉。</p>
+
+                <div class="quote-block">
+                    "The world's organisations have been captured by people in the throes of frothing excitement, and saner people who now live in a state of constant commingled fear and frustration."
+                </div>
+
+                <p>HashiCorp联合创始人Mitchell Hashimoto在5月就警告过："I strongly believe there are entire companies right now under heavy AI psychosis and it's impossible to have rational conversations with them about it." Suresh的递进在于：他不仅描述了现象，还解释了<span class="highlight">为什么不可能有理性对话——因为组织架构已被重构为系统性惩罚理性</span>。S&P 500董事会成员私下承认"早期投资风险大于收益"，两年后同一家公司公开rebrand为"AI-native"。</p>
+            </div>
+        </section>
+
+        <section class="body-section">
+            <h2><span class="icon">🎯</span> 对你意味着什么</h2>
+            <ul class="takeaway-list">
+                <li class="takeaway-item">
+                    <span class="num">1</span>
+                    <strong>学会识别"AI信仰"信号——当采用率变成KPI，理性就已经离场了。</strong> 如果你的公司把"AI使用率""Token消耗量"或"AI原生转型"写进OKR，这不是技术战略，是<span class="highlight">表演政治学</span>。真正的技术 adoption 衡量的是结果（解决了什么问题、节省了多少时间、质量提升了多少），而不是输入（用了多少AI）。当你看到"演示完立刻想买单"的场景，警惕——那不是理性评估，是被情绪劫持的决策。给自己设一条红线：任何不能明确说出"不用AI时是什么样"的AI项目，都不该被批准。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">2</span>
+                    <strong>如果你是工程师，保护你"不用AI"的权利——那是你专业判断力的最后防线。</strong> Suresh描述了一个令人毛骨悚然的转折点："Watching someone with a spectacular amount of money on the line fire their highest performers because they were achieving that performance without LLMs." 最高绩效员工因不用LLM被开除。这不是技术决策，是<span class="highlight">宗教裁判</span>。当你被迫在Token排行榜上刷数据、当你被告知"先证明AI做不到才能用手动方案"时，你正在经历的不是工程文化，是认知暴政。保持记录——用数据证明你的方案更有效，然后在合适的时机（通常是1:1而非群聊） quietly present facts。
+                </li>
+                <li class="takeaway-item">
+                    <span class="num">3</span>
+                    <strong>如果你是决策者，建立"AI项目失败可以安全讨论"的机制——这比任何AI工具都重要。</strong> 0%成功率的核心原因不是技术，是<span class="highlight-purple">没有人能在不丢工作的情况下讨论失败</span>。改变这一点的方法出奇地简单：匿名调查、1:1 truth-telling、从实际使用者（而非采购者）收集反馈、把"识别出一个不该做的AI项目"定义为成功而非失败。Suresh的建议很直接——"Assume that the organisation is going to burn you out and fire you. Start looking for a new job as if you have already been fired." 但如果你是那个能改变游戏规则的人，请成为第一个放下枪的高管。
+                </li>
+            </ul>
+        </section>
+
+        <div class="warning-box">
+            <h2>⚠️ 认知偏差提醒：从众压力（Conformity Pressure）× 沉没成本谬误（Sunk Cost Fallacy）</h2>
+            <p>这篇文章精准击中了两个在组织环境中被放大的认知偏差。<span class="highlight">从众压力</span>：当AI采用成为组织"信仰"时，质疑它不仅面临专业风险，还面临社会排斥——人类大脑对"被群体排斥"的恐惧与对"物理疼痛"的激活区域相同。这意味着，你的同事不是故意说谎，他们的大脑真的在保护他们免受社交疼痛。</p>
+            <p>更隐蔽的是<span class="highlight">沉没成本谬误</span>的变种：当一个高管已经为AI项目投入了个人信誉，承认失败不仅意味着项目失败，还意味着"我当初的判断错了"。这会触发强烈的自我防御机制，导致加倍下注而非止损。与#013"说服轰炸"形成危险的共振：AI不仅在说服你继续用，你的自我形象也在说服你继续投——<span class="highlight-warn">双重锁定</span>。</p>
+        </div>
+
+        <section class="further">
+            <h2>📖 延伸阅读</h2>
+            <ul class="further-list">
+                <li class="further-item">
+                    <a href="https://ludic.mataroa.blog/blog/ai-mania-is-eviscerating-global-decision-making/">
+                        AI Mania Is Eviscerating Global Decision-Making (原文)<br>
+                        <span class="label">Nikhil Suresh, Ludic / Mataroa, 2026.07.18 · 18个月300次观察的完整记录</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://news.ycombinator.com/item?id=48964185">
+                        Hacker News 讨论串 (131 points, 52 comments)<br>
+                        <span class="label">HN, 2026.07.18 · 技术社区对0%成功率 claim 的验证与反驳</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://www.remio.ai/post/ludicity-says-ai-mania-is-eviscerating-global-decision-making-and-the-evidence-s">
+                        Ludicity Says AI Mania Is Eviscerating Global Decision-Making<br>
+                        <span class="label">Remio.ai, 2026.07.19 · 第三方对论据的独立验证与RAND/IBM数据交叉</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="https://pithwire.com/en/articles/ai-mania-is-eviscerating-global-decision-making">
+                        AI Mania Is Destroying Rational Decision-Making Across Organizations<br>
+                        <span class="label">PithWire, 2026.07.19 · 结构化摘要与核心论点提炼</span>
+                    </a>
+                </li>
+                <li class="further-item">
+                    <a href="http://freeai.help/blog/ai-xiang-mu-0-cheng-gong-lv-yi_zh">
+                        AI项目0%成功率：一位澳洲顾问18个月观察笔记揭穿了什么<br>
+                        <span class="label">FreeAI, 2026.07 · 中文深度解读与中国创业者启示</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <div class="closing-question">
+            <div class="q-icon">💭</div>
+            <p>如果你现在回顾你公司过去6个月的AI项目，有多少个能明确说出"具体解决了什么问题、节省了多少时间、质量提升了多少"？如果答案是"说不清楚"——<span class="highlight">那问题可能不是AI不够好，而是你的组织已经丧失了讨论这件事的能力</span>。你敢在明天的会议上问这个问题吗？</p>
+        </div>
+
+        <div class="tags">
+            <span class="tag">AI Psychosis</span>
+            <span class="tag">Institutional Capture</span>
+            <span class="tag">Executive Prisoner's Dilemma</span>
+            <span class="tag">Nikhil Suresh</span>
+            <span class="tag">Mitchell Hashimoto</span>
+            <span class="tag">RAND</span>
+            <span class="tag">AI Washing</span>
+            <span class="tag">Token Leaderboards</span>
+            <span class="tag">Conformity Pressure</span>
+        </div>
+
+        <a href="./" class="back-btn">← 返回洞见列表</a>
+
+        <footer class="footer">
+            <p>AI 每日洞见 · Ainsight #057 · 2026-07-30</p>
+            <p>不代表投资建议 · 独立思考永远是最好的策略</p>
+        </footer>
+    </div>
+</body>
+</html>
