@@ -1,0 +1,1192 @@
+/* ================================================================
+   唯识学100讲 · 设计系统
+   Vijñaptimātratā: 100 Lectures on Consciousness-Only
+   ================================================================ */
+
+/* ── CSS Variables ── */
+:root {
+  /* 基础色 */
+  --paper: #f7f2e7;
+  --paper-dark: #ece3cf;
+  --ink: #1c2b45;
+  --ink-light: #2f4570;
+  --text: #2a2a28;
+  --text-muted: #6b6456;
+
+  /* 四角色配色 */
+  --role-dharaka: #1c2b45;
+  --role-bhasa: #4f7a63;
+  --role-vivadin: #a13d2f;
+  --role-yogin: #b8860b;
+
+  /* 六模块配色 */
+  --m1: #5b6b8c;
+  --m2: #1c2b45;
+  --m3: #4f7a63;
+  --m4: #b8860b;
+  --m5: #a13d2f;
+  --m6: #7a4f6b;
+
+  /* 徽章色 */
+  --badge-collision: #6B5B95;
+  --badge-dialectic: #9B3A3A;
+  --badge-meta: #b8860b;
+  --badge-closing: #3F6B6B;
+
+  /* 装饰色 */
+  --gold: #B8935A;
+  --gold-dark: #8C6B3E;
+  --gold-light: rgba(184, 147, 90, 0.12);
+  --gold-border: rgba(184, 147, 90, 0.25);
+
+  /* 字体 */
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --font-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* 字号（可由JS调节） */
+  --font-size-base: 16px;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  /* 间距 */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* 圆角 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* 过渡 */
+  --transition: 0.2s ease;
+  --transition-slow: 0.35s ease;
+}
+
+/* ── 暗色模式 ── */
+[data-theme="dark"] {
+  --paper: #1a1a24;
+  --paper-dark: #14141c;
+  --ink: #d0d0d8;
+  --ink-light: #a0a0b0;
+  --text: #d0d0d8;
+  --text-muted: #8888a0;
+
+  --role-dharaka: #5b7bb5;
+  --role-bhasa: #5a9a7a;
+  --role-vivadin: #c0554a;
+  --role-yogin: #c9a030;
+
+  --gold: #c9a858;
+  --gold-dark: #a08030;
+  --gold-light: rgba(200, 160, 80, 0.10);
+  --gold-border: rgba(200, 160, 80, 0.2);
+
+  --badge-collision: #8b7bc0;
+  --badge-dialectic: #c0554a;
+  --badge-meta: #c9a030;
+  --badge-closing: #5a9a8a;
+}
+
+/* ── Base Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.9;
+  min-height: 100vh;
+  transition: background var(--transition-slow), color var(--transition-slow);
+}
+
+a {
+  color: var(--gold-dark);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+a:hover {
+  color: var(--gold);
+}
+
+/* ── Gold Line ── */
+.gold-line {
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-dark), var(--gold));
+}
+
+/* ── Top Bar ── */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--paper-dark);
+  border-bottom: 1px solid var(--gold-border);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.topbar .site-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.topbar .site-title a {
+  color: var(--ink);
+}
+
+.topbar .controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.topbar .controls button {
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold-dark);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+
+.topbar .controls button:hover {
+  background: var(--gold-light);
+}
+
+.topbar .controls button.active {
+  background: var(--gold);
+  color: #fff;
+}
+
+/* ── Hero Section ── */
+.hero {
+  text-align: center;
+  padding: 56px 20px 36px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-family: var(--font-serif);
+  font-weight: 900;
+  font-size: var(--font-size-2xl);
+  letter-spacing: 4px;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.hero .subtitle {
+  font-family: var(--font-serif);
+  font-size: 1.06rem;
+  color: var(--gold-dark);
+  margin-top: 10px;
+  letter-spacing: 2px;
+}
+
+.hero .description {
+  max-width: 600px;
+  margin: 14px auto 0;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+}
+
+/* ── Progress Bar ── */
+.progress-bar-wrap {
+  max-width: 600px;
+  margin: 0 auto 16px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar-wrap .label {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--paper-dark);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--role-yogin));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+.progress-bar-wrap .count {
+  font-size: 12px;
+  color: var(--gold-dark);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Filters ── */
+.filters {
+  max-width: 900px;
+  margin: 0 auto 24px;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-group .group-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  align-self: center;
+  margin-right: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.filter-btn {
+  border: 1px solid var(--gold-border);
+  background: var(--paper-dark);
+  color: var(--text-muted);
+  padding: 5px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold-dark);
+}
+
+.filter-btn.active {
+  background: var(--gold);
+  color: #fff;
+  border-color: var(--gold);
+}
+
+/* ── Module Block ── */
+.module-block {
+  max-width: 960px;
+  margin: 0 auto 20px;
+  padding: 0 16px;
+}
+
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 14px 18px;
+  background: var(--paper-dark);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gold-border);
+  transition: background var(--transition);
+  user-select: none;
+}
+
+.module-header:hover {
+  background: var(--gold-light);
+}
+
+.module-header .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.module-header h2 {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  flex: 1;
+  color: var(--ink);
+}
+
+.module-header .range {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.module-header .arrow {
+  color: var(--gold-dark);
+  transition: transform var(--transition);
+  font-size: 14px;
+}
+
+.module-header.collapsed .arrow {
+  transform: rotate(-90deg);
+}
+
+/* ── Card Grid ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  padding: 4px 0;
+}
+
+.card {
+  background: var(--paper-dark);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 4px 14px rgba(140, 107, 62, 0.12);
+  transform: translateY(-1px);
+}
+
+.card .card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.card .lecture-num {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--gold-dark);
+}
+
+.card .lecture-title {
+  font-size: 14px;
+  margin-top: 4px;
+  color: var(--ink);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.card .read-mark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.card.card-read .read-mark {
+  display: flex;
+}
+
+.card.card-read {
+  opacity: 0.82;
+}
+
+.card.card-read .lecture-title {
+  color: var(--text-muted);
+}
+
+/* ── Meta Card (span 2 columns) ── */
+.card.card-meta {
+  grid-column: span 2;
+  background: linear-gradient(135deg, var(--paper-dark), rgba(184, 147, 90, 0.08));
+  border-color: var(--gold);
+  padding: 18px 20px;
+}
+
+.card.card-meta .lecture-num {
+  font-size: 14px;
+}
+
+.card.card-meta .lecture-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card.card-meta .meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: var(--gold);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  white-space: nowrap;
+  margin-top: 6px;
+}
+
+.badge-collision {
+  background: var(--badge-collision);
+}
+
+.badge-dialectic {
+  background: var(--badge-dialectic);
+}
+
+.badge-meta {
+  background: var(--badge-meta);
+}
+
+.badge-closing {
+  background: var(--badge-closing);
+}
+
+/* ── Lecture Page Layout ── */
+.lecture-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 100px);
+}
+
+/* Sidebar TOC */
+.lecture-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  padding: 20px 16px;
+  max-height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--gold-border);
+  background: var(--paper);
+}
+
+.sidebar-nav {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 13px;
+  transition: all var(--transition);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  font-family: var(--font-sans);
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  color: var(--gold-dark);
+  background: var(--gold-light);
+  border-left-color: var(--gold);
+}
+
+.sidebar-prev-next {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gold-border);
+}
+
+.sidebar-prev-next a {
+  display: block;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.sidebar-prev-next a:hover {
+  color: var(--gold-dark);
+}
+
+/* Main Content */
+.lecture-main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 32px 80px;
+  max-width: 760px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.breadcrumb a {
+  color: var(--gold-dark);
+}
+
+.breadcrumb .separator {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+/* Lecture Header */
+.lecture-header {
+  margin-bottom: 32px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--gold-border);
+}
+
+.lecture-header .lecture-num {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--gold-dark);
+  font-weight: 600;
+}
+
+.lecture-header h1 {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  margin-top: 6px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.lecture-header .tag-row {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.lecture-header .tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: var(--gold-light);
+  color: var(--gold-dark);
+  font-family: var(--font-sans);
+}
+
+/* Meta Banner */
+.meta-banner {
+  background: linear-gradient(135deg, var(--gold-light), rgba(184, 147, 90, 0.04));
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: var(--gold-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta-banner .meta-icon {
+  font-size: 18px;
+}
+
+/* ── Role Sections ── */
+.role-section {
+  margin-bottom: 24px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--paper-dark);
+  border: 1px solid var(--gold-border);
+  transition: background var(--transition-slow), border-color var(--transition-slow);
+}
+
+.role-section .role-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-left: 4px solid var(--role-color, var(--role-dharaka));
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.role-section .role-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+  background: var(--role-color, var(--role-dharaka));
+}
+
+.role-section .role-name {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.role-section .role-sanskrit {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-left: 4px;
+}
+
+.role-section .role-content {
+  padding: 0 22px 18px;
+  font-size: 0.97rem;
+  color: var(--text);
+  line-height: 1.95;
+}
+
+.role-section .role-content p {
+  margin-bottom: 10px;
+  text-indent: 2em;
+}
+
+.role-section .role-content .placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  text-indent: 0;
+  padding: 24px 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.role-section.dharaka {
+  --role-color: var(--role-dharaka);
+}
+
+.role-section.bhasa {
+  --role-color: var(--role-bhasa);
+}
+
+.role-section.vivadin {
+  --role-color: var(--role-vivadin);
+}
+
+.role-section.yogin {
+  --role-color: var(--role-yogin);
+}
+
+/* ── Collision Layout ── */
+.collision-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.collision-panel {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--gold-border);
+  background: var(--paper-dark);
+}
+
+.collision-panel .panel-head {
+  padding: 12px 16px;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.collision-panel.vijnapti .panel-head {
+  background: var(--role-dharaka);
+}
+
+.collision-panel.other .panel-head {
+  background: var(--badge-collision);
+}
+
+.collision-panel .panel-content {
+  padding: 0 18px 16px;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: var(--text);
+}
+
+.collision-panel .panel-content p {
+  margin-bottom: 8px;
+  text-indent: 2em;
+}
+
+.collision-panel .panel-content .placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  text-indent: 0;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.collision-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0 24px;
+  gap: 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.collision-divider::before,
+.collision-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gold-border);
+}
+
+.collision-divider .vs {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--role-vivadin);
+}
+
+/* ── Dharma Card ── */
+.dharma-card {
+  border: 1.5px dashed var(--gold);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  background: var(--gold-light);
+  margin: 28px 0;
+}
+
+.dharma-card h3 {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--gold-dark);
+  margin-bottom: 10px;
+}
+
+.dharma-card ul {
+  padding-left: 20px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.dharma-card li {
+  margin-bottom: 6px;
+  line-height: 1.7;
+}
+
+.dharma-card .placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 12px 0;
+  text-align: center;
+}
+
+/* ── Quote Block ── */
+.quote-block {
+  padding: 18px 28px;
+  position: relative;
+  margin: 20px 0;
+  color: var(--gold-dark);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.quote-block::before {
+  content: '"';
+  font-size: 36px;
+  position: absolute;
+  left: 0;
+  top: -4px;
+  opacity: 0.3;
+}
+
+.quote-block .placeholder {
+  font-style: normal;
+  color: var(--text-muted);
+}
+
+/* ── Connection Note ── */
+.connection-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 16px 0 24px;
+  padding: 12px 16px;
+  background: var(--gold-light);
+  border-radius: var(--radius-sm);
+  line-height: 1.6;
+}
+
+/* ── Mark as Read Button ── */
+.mark-read-section {
+  text-align: center;
+  margin: 28px 0 16px;
+}
+
+.mark-read-btn {
+  border: 1.5px solid var(--gold);
+  background: transparent;
+  color: var(--gold-dark);
+  padding: 8px 24px;
+  border-radius: 22px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mark-read-btn:hover {
+  background: var(--gold-light);
+}
+
+.mark-read-btn.marked {
+  background: var(--gold);
+  color: #fff;
+}
+
+/* ── Bottom Navigation ── */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gold-border);
+  gap: 12px;
+}
+
+.bottom-nav a,
+.bottom-nav .nav-btn {
+  border: 1px solid var(--gold);
+  background: var(--paper-dark);
+  color: var(--gold-dark);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  text-decoration: none;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.bottom-nav a:hover,
+.bottom-nav .nav-btn:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-dark);
+}
+
+.bottom-nav .nav-disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── Footer ── */
+.site-footer {
+  text-align: center;
+  padding: 24px 20px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--gold-border);
+}
+
+/* ── Tooltip (Sidebar TOC on mobile) ── */
+.toc-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  align-items: center;
+  justify-content: center;
+}
+
+.toc-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+
+.toc-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 280px;
+  background: var(--paper);
+  z-index: 201;
+  padding: 20px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform var(--transition-slow);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+}
+
+.toc-drawer.open {
+  transform: translateX(0);
+}
+
+.toc-drawer .toc-close {
+  float: right;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px 8px;
+}
+
+/* ── Scroll to top ── */
+.scroll-top {
+  position: fixed;
+  bottom: 72px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--paper-dark);
+  border: 1px solid var(--gold-border);
+  color: var(--gold-dark);
+  cursor: pointer;
+  font-size: 16px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+  transition: all var(--transition);
+}
+
+.scroll-top:hover {
+  background: var(--gold-light);
+}
+
+.scroll-top.visible {
+  display: flex;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state .empty-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.empty-state .empty-text {
+  font-size: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .card.card-meta {
+    grid-column: span 1;
+  }
+
+  .lecture-container {
+    flex-direction: column;
+  }
+
+  .lecture-sidebar {
+    display: none;
+  }
+
+  .lecture-main {
+    padding: 18px 16px 60px;
+  }
+
+  .toc-toggle {
+    display: flex;
+  }
+
+  .collision-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lecture-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .topbar {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .hero {
+    padding: 32px 16px 24px;
+  }
+
+  .lecture-main {
+    padding: 14px 12px 60px;
+  }
+
+  .collision-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Print Styles ── */
+@media print {
+  .gold-line,
+  .topbar,
+  .lecture-sidebar,
+  .toc-toggle,
+  .toc-overlay,
+  .toc-drawer,
+  .scroll-top,
+  .bottom-nav,
+  .mark-read-section,
+  .site-footer {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 13pt;
+    line-height: 1.8;
+  }
+
+  .lecture-container {
+    display: block;
+    max-width: none;
+  }
+
+  .lecture-main {
+    padding: 0;
+    max-width: none;
+  }
+
+  .lecture-header h1 {
+    font-size: 18pt;
+    color: #000;
+  }
+
+  .role-section {
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  .dharma-card {
+    border: 1.5px dashed #999;
+    break-inside: avoid;
+  }
+
+  .quote-block {
+    color: #555;
+  }
+
+  a {
+    color: #000;
+  }
+
+  @page {
+    margin: 2cm;
+  }
+}
