@@ -1,0 +1,249 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+现象学100讲 · 导航页生成器
+基于完整100讲目录数据生成 index.html（模块卡片 + 筛选 + 进度条）
+"""
+import json
+
+# type: normal | collision | dialectic | meta | closing
+LESSONS = [
+    (1, "现象学何以成为一门\"严格的科学\"：胡塞尔的初始野心", "normal"),
+    (2, "意向性（Intentionality）：意识为什么\"总是关于什么\"的意识", "normal"),
+    (3, "反心理主义之战：《逻辑研究》如何拯救逻辑的客观性", "normal"),
+    (4, "自然态度：我们从未真正\"看见\"过世界", "normal"),
+    (5, "悬置（Epoché）：括号里到底放进了什么？", "normal"),
+    (6, "本质直观（Wesensschau）：如何从一个个例中看见\"本质\"", "normal"),
+    (7, "想象变更法：现象学的实验室", "normal"),
+    (8, "诺耶思与诺耶玛：意向作用与意向对象的双重结构", "normal"),
+    (9, "意向性 × 认知科学表征理论：两种\"关于性\"的模型", "collision"),
+    (10, "【模块阶段收尾】胡塞尔前十讲留下的问题：意识如何\"抵达\"世界？", "closing"),
+    (11, "内时间意识：意识如何构造\"现在\"", "normal"),
+    (12, "滞留与前摄：一个音符如何被听成一段旋律", "normal"),
+    (13, "交互主体性问题：他人的意识如何被给予我？", "normal"),
+    (14, "移情（Einfühlung）：胡塞尔如何解决\"他心问题\"", "normal"),
+    (15, "生活世界（Lebenswelt）：晚期胡塞尔的转向", "normal"),
+    (16, "生活世界理论 × 库恩范式理论：两种\"前理论基础\"", "collision"),
+    (17, "欧洲科学的危机：技术化如何遗忘了生活世界", "normal"),
+    (18, "先验自我：现象学最受争议的转向", "normal"),
+    (19, "静态现象学 vs 生成现象学：胡塞尔自己的内部分裂", "dialectic"),
+    (20, "【模块收尾】胡塞尔留给后世的方法遗产与未解之题", "closing"),
+    (21, "师生决裂：海德格尔为何要\"重新提出\"存在的问题", "normal"),
+    (22, "存在与存在者的区分：被遗忘两千年的问题", "normal"),
+    (23, "此在（Dasein）：一种不同于\"意识\"的存在方式", "normal"),
+    (24, "在世界之中存在：拒绝主客二分的第一步", "normal"),
+    (25, "【元洞见 I】连点成线：从\"意识如何抵达世界\"到\"存在如何本身就是世界\"", "meta"),
+    (26, "上手状态与在手状态：一把锤子的现象学", "normal"),
+    (27, "常人（das Man）：谁在为你做决定？", "normal"),
+    (28, "沉沦与逃避自己：日常生活的现象学诊断", "normal"),
+    (29, "现身情态（Befindlichkeit）：情绪不是心理事件", "normal"),
+    (30, "领会与解释：诠释学循环第一次登场", "normal"),
+    (31, "焦虑：一种揭示\"无\"的独特情绪", "normal"),
+    (32, "向死而在：死亡不是终点事件，是一种存在方式", "normal"),
+    (33, "向死而在 × 佛教死亡观修：两种面对死亡的技术", "collision"),
+    (34, "良知的呼声与本真性：\"成为自己\"意味着什么", "normal"),
+    (35, "本真性是伪命题吗？列维纳斯与后世对海德格尔的批评", "dialectic"),
+    (36, "时间性：此在存在的终极结构", "normal"),
+    (37, "关心（Sorge）：此在存在的整体结构", "normal"),
+    (38, "从《存在与时间》未完成的转向说起", "normal"),
+    (39, "后期海德格尔：从此在分析到\"存在之思\"", "normal"),
+    (40, "【模块收尾】海德格尔留下的震撼与遗留的疑问", "closing"),
+    (41, "身体问题被遗忘的两千年：为什么哲学一直绕开身体", "normal"),
+    (42, "《知觉现象学》的双重反叛：拒绝经验主义，也拒绝理智主义", "normal"),
+    (43, "身体图式：身体如何先于思考而\"知道\"", "normal"),
+    (44, "能感之身与被感之身：触摸自己手的双重性", "normal"),
+    (45, "运动意向性：身体本身就是一种理解", "normal"),
+    (46, "幻肢现象：病理学对现象学的意外贡献", "normal"),
+    (47, "知觉的模糊性：世界从不曾\"清晰地\"被给予", "normal"),
+    (48, "知觉现象学 × 格式塔心理学：图形与背景之争", "collision"),
+    (49, "身体现象学 × 具身认知科学：瓦雷拉如何\"重新发明\"梅洛-庞蒂", "collision"),
+    (50, "【元洞见 II】连点成线：意识、存在、身体——三条路径为何最终汇合", "meta"),
+    (51, "语言现象学：身体如何在说话中表达自己", "normal"),
+    (52, "肉（la chair）：晚期最神秘的一个概念", "normal"),
+    (53, "肉身理论 × 弗洛伊德性欲理论：一次现象学式重读", "collision"),
+    (54, "可逆性：看与被看之间的暧昧结构", "normal"),
+    (55, "【模块收尾】\"我即我身体\"这句话到底改变了什么", "closing"),
+    (56, "自在与自为：萨特的存在论二分", "normal"),
+    (57, "自由的绝对性：人是\"被抛入自由\"的", "normal"),
+    (58, "恶意（mauvaise foi）：自我欺骗的现象学结构", "normal"),
+    (59, "凝视（le regard）：他人的目光如何把我变成物", "normal"),
+    (60, "凝视理论 × 拉康镜像阶段：两种\"被看见\"的心理动力学", "collision"),
+    (61, "虚无与焦虑：萨特版本的存在主义焦虑", "normal"),
+    (62, "施虐、受虐与爱情：萨特笔下最具体的人际关系分析", "normal"),
+    (63, "萨特 vs 梅洛-庞蒂：自由与身体，谁更根本？", "dialectic"),
+    (64, "伦理学作为第一哲学：列维纳斯对整个西方哲学传统的指控", "normal"),
+    (65, "他者的面容（le visage）：拒绝被归约的绝对外在性", "normal"),
+    (66, "总体性与无限：西方哲学如何习惯性地\"吞并\"他者", "normal"),
+    (67, "为他者负责：一种先于自由选择的伦理责任", "normal"),
+    (68, "列维纳斯的面容 × 拉康\"他者的欲望\"：两种\"他者\"模型", "collision"),
+    (69, "享受与好客：列维纳斯早期的日常生活现象学", "normal"),
+    (70, "列维纳斯是否真正走出了现象学？海德格尔阴影与伦理学僭越", "dialectic"),
+    (71, "【模块收尾】从萨特的自由到列维纳斯的责任：伦理转向的完整弧线", "closing"),
+    (72, "舍勒的价值现象学：情感也有自己的逻辑", "normal"),
+    (73, "舍勒情感现象学 × 情绪心理学：谁更早发现了\"情感的意向性\"", "collision"),
+    (74, "施泰因：移情现象学与共同体问题", "normal"),
+    (75, "【元洞见 III】连点成线：从奠基到分裂——现象学为何注定要\"枝繁叶散\"", "meta"),
+    (76, "明科夫斯基与宾斯万格：现象学如何进入精神病理学", "normal"),
+    (77, "现象学精神病理学 × DSM诊断体系：两种\"理解疾病\"的范式", "collision"),
+    (78, "波伏娃与伊利加雷：性别现象学的兴起", "normal"),
+    (79, "法农：种族现象学与\"活着的身体\"的政治性", "normal"),
+    (80, "现象学能否处理社会结构？马克思主义的批评", "dialectic"),
+    (81, "伽达默尔：诠释学与视域融合", "normal"),
+    (82, "米歇尔·亨利：生命现象学与\"无形象的显现\"", "normal"),
+    (83, "马里翁：给予性现象学与超越的礼物", "normal"),
+    (84, "伊德的后现象学：一支手机如何改变你与世界的关系", "normal"),
+    (85, "【模块收尾】现象学从一个方法到一片家族森林", "closing"),
+    (86, "现象学与佛教唯识学的对话：意向性与阿赖耶识", "normal"),
+    (87, "生活世界的背景给予性 × 唯识学的\"共业\"：两种\"世界如何被给予\"", "collision"),
+    (88, "现象学与认知科学：延展心智与生成主义", "normal"),
+    (89, "现象学 × 查尔默斯\"意识的难问题\"：描述能否替代解释？", "collision"),
+    (90, "人工智能能否具有意向性？现象学视角下的机器意识争论", "normal"),
+    (91, "瓦雷拉的神经现象学：让第一人称重新进入科学实验室", "normal"),
+    (92, "利科尔：叙事身份与自我的诠释学", "normal"),
+    (93, "分析哲学对现象学百年质疑：\"精致的内省\"是科学吗？", "dialectic"),
+    (94, "现象学与亲密关系：从\"凝视\"到\"面容\"的转变可能吗？", "normal"),
+    (95, "本真性与\"做自己\"的当代困境：海德格尔遗产的现代变形", "normal"),
+    (96, "向死而在与死亡焦虑：现象学能否安顿现代人的死亡恐惧", "normal"),
+    (97, "德里达与福柯：现象学\"终结\"了吗？后结构主义的清算", "normal"),
+    (98, "如果只能记住现象学的一个方法，应该是哪个？", "normal"),
+    (99, "为自己写一份\"现象学观察日记\"框架", "normal"),
+    (100, "【终极元洞见】连点成线：100讲现象学的整体拼图与你的意识地图", "meta"),
+]
+
+MODULES = [
+    {"id": 1, "name": "方法的诞生 · 胡塞尔与现象学奠基", "range": (1, 20), "color": "var(--m1)",
+     "desc": "在自然态度的迷雾中，第一次学会悬置判断——回到事物本身的方法诞生记"},
+    {"id": 2, "name": "存在的追问 · 海德格尔与生存论分析", "range": (21, 40), "color": "var(--m2)",
+     "desc": "从\"意识关于什么\"到\"存在本身就是世界\"——师生决裂后的另一条路径"},
+    {"id": 3, "name": "身体的复魅 · 梅洛-庞蒂与知觉现象学", "range": (41, 55), "color": "var(--m3)",
+     "desc": "身体不是被意识驾驭的机器，而是知觉本身——一场对身体的双重反叛"},
+    {"id": 4, "name": "自由与他者 · 萨特与列维纳斯", "range": (56, 71), "color": "var(--m4)",
+     "desc": "从被抛入自由的凝视，到被他者面容召唤的责任——伦理转向的完整弧线"},
+    {"id": 5, "name": "枝繁叶散 · 现象学的多元支流", "range": (72, 85), "color": "var(--m5)",
+     "desc": "一个方法如何长成一片思想的森林——情感、精神病理学、性别、政治的现象学"},
+    {"id": 6, "name": "跨学科对话与终极整合", "range": (86, 100), "color": "var(--m6)",
+     "desc": "当现象学遇见佛教唯识学、认知科学与人工智能——描述的方法如何面对当代难题"},
+]
+
+BADGE_MAP = {
+    "collision": ("badge-collision", "⚡ 碰撞讲"),
+    "dialectic": ("badge-dialectic", "⚖ 辩证讲"),
+    "meta": ("badge-meta", "🔗 元洞见"),
+    "closing": ("badge-closing", "◆ 模块收尾"),
+}
+
+def card_html(num, title, ltype, module_id):
+    is_meta = ltype == "meta"
+    cls = "lesson-card" + (" meta" if is_meta else "")
+    badge_html = ""
+    if ltype in BADGE_MAP:
+        badge_class, badge_label = BADGE_MAP[ltype]
+        icon = badge_label.split(" ")[0]
+        badge_html = f'<span class="badge-tag" title="{badge_label}">{icon}</span>'
+    return f'''<a href="lessons/lesson-{num:03d}.html" class="lesson-card{" meta" if is_meta else ""}"
+   data-lesson="{num}" data-module="{module_id}" data-type="{ltype}">
+  {badge_html}
+  <div class="num mono">⟨ {num:03d} ⟩</div>
+  <div class="title">{title}</div>
+  <div class="read-mark">✓</div>
+</a>'''
+
+def module_block_html(mod):
+    lo, hi = mod["range"]
+    cards = "\n".join(
+        card_html(n, t, ty, mod["id"]) for (n, t, ty) in LESSONS if lo <= n <= hi
+    )
+    return f'''<div class="module-block" data-module="{mod['id']}">
+  <div class="module-header" style="background: linear-gradient(135deg, {mod['color']}, color-mix(in srgb, {mod['color']} 60%, black));">
+    <div class="dot"></div>
+    <div class="m-title">模块{mod['id']} · {mod['name']}</div>
+    <div class="m-range mono">⟨ {lo}–{hi} ⟩</div>
+    <div class="arrow">▾</div>
+  </div>
+  <div class="module-desc-line">{mod['desc']}</div>
+  <div class="card-grid">
+{cards}
+  </div>
+</div>'''
+
+def build_index():
+    modules_html = "\n\n".join(module_block_html(m) for m in MODULES)
+    filter_module_btns = '<button class="filter-btn active" data-group="module" data-value="all">全部</button>\n' + \
+        "\n".join(f'    <button class="filter-btn" data-group="module" data-value="{m["id"]}">M{m["id"]}</button>' for m in MODULES)
+
+    html = f'''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>现象学100讲 · 导航总览</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="../" class="root-link">← Ethan&#39;s Lab</a>
+    <span class="topbar-sep">|</span>
+    <span class="site-title"><span class="bk">⟨</span> 现象学 · 100讲 <span class="bk">⟩</span></span>
+  </div>
+  <div class="controls">
+    <button id="fontSizeDecrease" title="缩小字号">A-</button>
+    <button id="fontSizeIncrease" title="放大字号">A+</button>
+    <button id="themeToggle" title="切换雾态模式">🌫 雾态</button>
+  </div>
+</div>
+
+<div class="hero">
+  <h1><span class="bk">⟨</span> 现象学 100 讲 <span class="bk">⟩</span></h1>
+  <p class="subtitle sans">溯源 · 描述 · 诤辩 · 还归 —— 一条从悬置走向生活世界的地平线</p>
+  <div class="horizon-line"></div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar-wrap">
+    <div class="progress-bar"><div class="fill"></div></div>
+    <div class="count sans" id="progressCount">已读 <span>0</span> / 100 讲</div>
+  </div>
+  <div class="legend">
+    <span>⚡ 碰撞讲</span><span>⚖ 辩证讲</span><span>🔗 元洞见</span><span>◆ 模块收尾</span>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <span class="group-label">模块</span>
+    {filter_module_btns}
+  </div>
+  <div class="filter-group">
+    <span class="group-label">类型</span>
+    <button class="filter-btn active" data-group="type" data-value="all">全部</button>
+    <button class="filter-btn" data-group="type" data-value="collision">⚡ 碰撞讲</button>
+    <button class="filter-btn" data-group="type" data-value="dialectic">⚖ 辩证讲</button>
+    <button class="filter-btn" data-group="type" data-value="meta">🔗 元洞见</button>
+    <button class="filter-btn" data-group="type" data-value="normal">常规讲</button>
+  </div>
+</div>
+
+<div id="modulesContainer">
+{modules_html}
+</div>
+
+<footer class="site-footer">
+  现象学100讲 · Phenomenology · 静态课程站点 · Ethan
+</footer>
+
+<button id="scrollTopBtn" class="scroll-top" title="回到顶部">↑</button>
+<script src="assets/script.js"></script>
+</body>
+</html>'''
+    return html
+
+if __name__ == "__main__":
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(build_index())
+    print("index.html generated,", len(LESSONS), "lessons")
+    with open("lessons_data.json", "w", encoding="utf-8") as f:
+        json.dump({"lessons": LESSONS, "modules": MODULES}, f, ensure_ascii=False, indent=2)
